@@ -1,7 +1,7 @@
 # OnlineRogueEditor
 > **OnlineRogueEditor** is a solution for editing official saves on pokerogue.net!
 
-> [If you are looking for an Editor to edit your Offline-Saves - Check this out](https://github.com/claudiunderthehood/OfflineRogueEditor)
+> [If you are looking for an Editor to edit your Offline-Saves - Check this out](https://github.com/rogueEdit/OfflineRogueEditor)
 
 [<img src="https://img.shields.io/badge/Join%20our%20Discord!-8A2BE2">](https://discord.gg/8ZAnsZfVQP)
 
