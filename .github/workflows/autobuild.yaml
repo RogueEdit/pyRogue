@@ -1,0 +1,75 @@
+name: Build binary files to selected branch (DANGER AREA)
+on:
+  workflow_dispatch:
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        name: Checkout
+
+      - name: Refresh data folder from source
+        run: |
+          rm -rf compiled/data
+          cp -rf src/data/ compiled/
+
+  build:
+    needs: prepare
+    strategy:
+      matrix:
+        os: ['windows-latest', 'ubuntu-latest', 'macos-latest']
+        python-version: ["3.10"]
+    runs-on: ${{ matrix.os }}
+        
+    steps:
+      - uses: actions/checkout@v4
+        name: Checkout
+          
+      - uses: actions/setup-python@v5
+        name: Setup Python
+        with:
+          python-version: ${{ matrix['python-version'] }}
+
+      - name: Build Executables (Windows)
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: |
+          pip install pyinstaller -r src/requirements.txt
+          pyinstaller --distpath compiled/ --workpath /tmp/win/ --hidden-import=_cffi_backend --name onlineEditor-windows.exe --clean --icon="src/data/icon.ico" -F src/main.py
+
+      - name: Upload Artifacts (Windows)
+        if: ${{ matrix.os == 'windows-latest' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: onlineEditor-windows
+          path: |
+            compiled/onlineEditor-windows.exe
+
+      - name: Build Executables (Linux)
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          pip install pyinstaller -r src/requirements.txt
+          pyinstaller --distpath compiled/ --workpath /tmp/linux/ --hidden-import=_cffi_backend --name onlineEditor-linux.sh --clean --icon="src/data/icon.ico" -F src/main.py
+
+      - name: Upload Artifacts (Linux)
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: onlineEditor-linux
+          path: |
+            compiled/onlineEditor-linux.sh
+      
+      - name: Build Executables (Mac)
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: |
+          python3 -m ensurepip
+          pip install pyinstaller -r src/requirements.txt
+          pyinstaller --distpath compiled/ --workpath /tmp/mac/ --hidden-import=_cffi_backend --name onlineEditor-mac.sh --clean --icon="src/data/icon.ico" -F src/main.py
+
+      - name: Upload Artifacts (Mac)
+        if: ${{ matrix.os == 'macos-latest' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: onlineEditor-mac
+          path: |
+            compiled/onlineEditor-Mac.sh

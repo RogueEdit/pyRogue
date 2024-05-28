@@ -1,0 +1,133 @@
+name-template: 'v$RESOLVED_VERSION 🌈'
+tag-template: 'v$RESOLVED_VERSION'
+
+# Specify Categories for Release Drafter
+categories:
+  - title: '🚀 Added Features'
+    collapse-after: 8
+    label: 'feature'
+  - title: '🔑 Security Additions'
+    collapse-after: 8
+    label: 'security'
+  - title: '🐛 Bug Fixes'
+    collapse-after: 8
+    label: 'bug'
+  - title: '🐢 Optimization'
+    collapse-after: 8
+    label: 'optimization'
+  - title: '🧰 from Dependency import Changes'
+    collapse-after: 8
+    label: 'dependency'
+  - title: '⚡ Workflow Changes'
+    collapse-after: 8
+    label: 'workflow'
+  - title: '📝 # Documentation Changes'
+    collapse-after: 8
+    label: 'documentation'
+  - title: '⚡ Changes made to the Data-handling'
+    collapse-after: 8
+    label: 'workflow'
+
+#Autolabeler, define your labels here and when to trigger. Escpae for '' is needed
+# example '/feature/'
+autolabeler:
+  # Label: Feature -------------------------
+  - label: 'feature'
+    body: 
+      - '/feature/'
+      - '/Feature/'
+    title: 
+      - '/feature/'
+      - '/Feature/'
+
+  # Label: Security -------------------------
+  - label: 'security'
+    body: 
+      - '/security/'
+      - '/Security/'
+      - '/CVE/'
+    title: 
+      - '/security/'
+      - '/Security/'
+      - '/CVE/'
+
+  # Label: Bug -------------------------
+  - label: 'bug'
+    body: 
+      - '/bug/'
+      - '/Bug/'
+      - '/bugfix/'
+    title: 
+      - '/bug/'
+      - '/Bug/'
+      - '/bugfix/'
+      - '/error/'
+      - '/fix/'
+
+  # Label: Optimization -------------------------
+  - label: 'optimization'
+    body:
+      - '/optimization/'
+      - '/performance/'
+    title: 
+      - '/optimization/'
+      - '/performance/'
+
+  # Label: Dependency -------------------------
+  - label: 'dependency'
+    body: 
+      - '/dependency/'
+      - '/Dependency/'
+      - '/dependabot/'
+    title: 
+      - '/dependency'
+      - '/Dependency/'
+      - '/dependabot/'
+      - '/bump'
+
+  # Label: Workflow -------------------------
+  - label: 'workflow'
+    body: 
+      - '/workflow/'
+      - '/Workflow/'
+      - '/yaml/'
+    title: 
+      - '/workflow/'
+      - '/Workflow/'
+      - '/yaml/'
+
+  # Label: Documentation -------------------------
+  - label: 'documentation'
+    body: 
+      - '/documentation/'
+      - '/Documentation/'
+      - '/.md/'
+    title: 
+      - '/documentation/'
+      - '/Documentation/'
+      - '/.md/'
+
+  # Label: Database -------------------------
+  - label: 'database'
+    body: 
+      - '/database/'
+      - '/Database/'
+      - '/.db/'
+    title: 
+      - '/database/'
+      - '/Database/'
+      - '/.db/'
+
+  # Label: enhancement -------------------------
+  - label: 'enhancement'
+    title: 
+      - '/enhance/'
+      - '/enhancement/'
+
+change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
+change-title-escapes: '\<*_&' 
+
+template: |
+  ## 🔆 What changed?
+
+  $CHANGES

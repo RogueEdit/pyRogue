@@ -1,0 +1,16 @@
+name: Black (Formatter)
+
+on:
+  pull_request:
+    branches: ["main", "patch", "dev", "test"]
+
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: psf/black@stable
+        with:
+          options: ". -v"
+          version: "~= 22.0"
