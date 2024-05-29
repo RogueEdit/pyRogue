@@ -1,6 +1,9 @@
 import requests, json, random, os, time
 import brotli
 import traceback
+import shutil
+
+from modules.eggLogic import *
 
 
 class Rogue:
@@ -26,6 +29,8 @@ class Rogue:
 
         self.slot = None
 
+        self.__MAX_BIG_INT = (2 ** 53) - 1
+
         
         with open("./data/pokemon.json") as f:
             self.pokemon_id_by_name = json.loads(f.read())
@@ -39,8 +44,12 @@ class Rogue:
         with open("./data/data.json") as f:
             self.extra_data = json.loads(f.read())
         
+        with open("./data/passive.json") as f:
+            self.passive_data = json.loads(f.read())
+        
         self.__dump_data()
         
+
 
 
     def __make_request(self, url):
@@ -101,6 +110,41 @@ class Rogue:
                 return
         except requests.exceptions.RequestException as e:
                 print(f"Exception during update_all() -> {e}. If the error persists, report on Github.")
+
+    
+    def __create_backup(self):
+
+        files = ["trainer.json", f"slot_{self.slot}.json"]
+
+        backup_folder = "./backup/"
+
+        if not os.path.exists(backup_folder):
+            os.makedirs("./backup/")
+            print("Backup folder created successfully.")
+
+        for file_name in files:
+            source_file = file_name
+            destination_file = os.path.join(backup_folder, file_name)
+            shutil.copy2(source_file, destination_file)
+            print(f"File '{file_name}' backed up to '{backup_folder}'.")
+
+    
+    def restore_backup(self):
+
+        choice = int(input(f"What file do you wanna recover?(1: trainer.json, 2: slot_{self.slot}.json): "))
+
+        if (choice < 1) or (choice > 2):
+            print("Invalid choice.")
+            return
+        elif choice == 1:
+            trainer_data = self.__load_data("./backup/trainer.json")
+            self.__write_data(trainer_data, "trainer.json")
+            print("Data restored")
+        elif choice == 2:
+            game_data = self.__load_data(f"./backup/slot_{self.slot}.json")
+            self.__write_data(game_data, f"slot_{self.slot}.json")
+            print("Data restored")
+
         
     def __dump_data(self, slot=None):
         data = self.get_trainer_data()
@@ -124,10 +168,13 @@ class Rogue:
         with open(f"slot_{slot}.json", "w") as f:
             json.dump(data, f, indent=2)
         print(f"Gamesave data for slot {slot} dumped to 'slot_{slot}.json'")
+
+        self.__create_backup()
+
         
     
     def __load_data(self, file):
-        if file not in os.listdir():
+        if not os.path.exists(file):
             print(f"{file} file not found!")
             return
         with open(file, "r") as f:
@@ -152,6 +199,33 @@ class Rogue:
         if not trainer_data:
             print("There was something wrong with the data, please restart the tool.")
             return None
+
+        choice = int(input("Do you want to unlock all forms(shiny tier 3) as well?(1: yes, 2: no): "))
+
+        if (choice < 1) or (choice > 2):
+            print("Invalid command.")
+            return
+        elif choice == 2:
+            is_shiny = int(input("Do you want the starters to be shiny?(1: yes, 2: no): "))
+
+            if (is_shiny < 1) or (is_shiny > 2):
+                print("Invalid command.")
+                return
+            elif is_shiny == 1:
+                shiny = 255
+            else:
+                shiny = 253
+        
+        iv = int(input("Do you want the starters to be 6 IVs?(1: yes, 2: no): "))
+        if (iv < 1) or (iv > 2):
+            print("Invalid command.")
+            return
+        
+        passive = int(input("Do you want the starters to have the passive unlocked?(1: yes, 2: no): "))
+        if (passive < 1) or (passive > 2):
+            print("Invalid command.")
+            return
+
         total_caught = 0
         total_seen = 0
         for entry in trainer_data["dexData"].keys():
@@ -159,22 +233,24 @@ class Rogue:
             seen = random.randint(150, 350)
             total_caught += caught
             total_seen += seen
+            randIv = random.sample(range(20, 30), 6)
+
             trainer_data["dexData"][entry] = {
                 "seenAttr": 479,
-                "caughtAttr": 255,
+                "caughtAttr": self.__MAX_BIG_INT if choice == 1 else shiny,
                 "natureAttr": 67108862,
                 "seenCount": seen,
                 "caughtCount": caught,
                 "hatchedCount": 0,
-                "ivs": [31, 31, 31, 31, 31, 31]
+                "ivs": randIv if iv == 2 else [31, 31, 31, 31, 31, 31]
             }
             trainer_data["starterData"][entry] = {
                 "moveset": None,
                 "eggMoves": 15,
                 "candyCount": caught + 20,
                 "abilityAttr": 7,
-                "passiveAttr": 0,
-                "valueReduction": 0
+                "passiveAttr": 0 if (entry in self.passive_data["noPassive"]) or (passive == 2) else 3,
+                "valueReduction": 2
             }
             trainer_data["gameStats"]["battles"] = total_caught + random.randint(1, total_caught)
             trainer_data["gameStats"]["pokemonCaught"] = total_caught
@@ -201,8 +277,37 @@ class Rogue:
                 if not dexId:
                     print(f"No Pokemon with ID: {dexId}")
                     return
-        is_shiny = int(input("Make the Pokemon shiny? (1: Yes, 2: No): "))
-        caught_attr = 255 if is_shiny == 1 else 253
+                
+
+        choice = int(input("Do you want to unlock all forms of the pokemon?(All forms are Tier 3 shinies. 1: Yes, 2: No): "))
+
+        if (choice < 1) or (choice > 2):
+            print("Invalid command.")
+            return
+        elif choice == 1:
+            caught_attr = self.__MAX_BIG_INT
+        else:
+            choice = int(input("Make the Pokemon shiny? (1: Yes, 2: No): "))
+
+            if (choice < 1) or (choice > 2):
+                print("Invalid choice.")
+                return
+            elif choice == 2:
+                caught_attr = 253
+            else:
+                choice = int(input("What tier shiny do you want? (1: Tier 1, 2: Tier 2, 3: Tier 3, 4: All shinies): "))
+                if (choice < 1) or (choice > 4):
+                    print("Invalid choice.")
+                    return
+                elif choice == 1:
+                    caught_attr = 159
+                elif choice == 2:
+                    caught_attr = 191
+                elif choice == 3:
+                    caught_attr = 223
+                else:
+                    caught_attr = 255
+            
         nature_attr = 67108862
         caught = int(input("How many of this Pokemon have you caught?: "))
         hatched = int(input("How many of this Pokemon have hatched from eggs?: "))
@@ -210,6 +315,21 @@ class Rogue:
         candies = int(input("How many candies do you want?: "))
         ivs = [int(input("SpA IVs: ")), int(input("DEF IVs: ")), int(input("Attack IVs: ")),
                int(input("HP IVs: ")), int(input("Spe IVs: ")), int(input("Def IVs: "))]
+        
+        passive = int(input("Do you want to unlock the passive?(1: Yes, 2: No): "))
+        if (passive < 1) or (passive > 2):
+            print("Invalid command.")
+            return
+        elif passive == 1:
+            if dexId in self.passive_data["noPassive"]:
+                print("This pokemon doesn't have a passive ability.")
+                passiveAttr = 0
+            else:
+                passiveAttr = 3
+        else:
+            passiveAttr = 0
+        
+
         trainer_data["dexData"][dexId] = {
             "seenAttr": 479,
             "caughtAttr": caught_attr,
@@ -224,8 +344,8 @@ class Rogue:
             "eggMoves": 15,
             "candyCount": candies,
             "abilityAttr": 7,
-            "passiveAttr": 0,
-            "valueReduction": 0
+            "passiveAttr": passiveAttr,
+            "valueReduction": 2
         }
 
         self.__write_data(trainer_data, "trainer.json")
@@ -302,6 +422,10 @@ class Rogue:
             print("There was something wrong with the data, please restart the tool.")
             return
         
+        if game_data["gameMode"] == 3:
+            print("Cannot edit this property on Daily Runs.")
+            return
+        
         options = [
             "1: Change species",
             "2: Set it shiny",
@@ -348,7 +472,9 @@ class Rogue:
                 return
             game_data["party"][party_num]["luck"] = luck
         elif command == 5:
-            game_data["party"][party_num]["ivs"] = [31, 31, 31, 31, 31, 31]
+            ivs = [int(input("SpA IVs: ")), int(input("DEF IVs: ")), int(input("Attack IVs: ")),
+               int(input("HP IVs: ")), int(input("Spe IVs: ")), int(input("Def IVs: "))]
+            game_data["party"][party_num]["ivs"] = ivs
         elif command == 6:
             move_slot = int(input("Select the move you want to change (from 0 to 3): "))
             if move_slot < 0 or move_slot > 3:
@@ -469,5 +595,136 @@ class Rogue:
         trainer_data["starterData"][dexId]["candyCount"] = candies
 
         self.__write_data(trainer_data, "trainer.json")
-        
+    
 
+    def edit_biome(self):
+        game_data = self.__load_data(f"slot_{self.slot}.json")
+
+        biome = int(input("Insert the biome ID: "))
+
+        game_data["arena"]["biome"] = biome
+
+        self.__write_data(game_data, f"slot_{self.slot}.json")
+    
+    def edit_pokeballs(self):
+        game_data = self.__load_data(f"slot_{self.slot}.json")
+
+        if game_data is None:
+            print("There was something wrong with the data, please restart the tool.")
+            return
+
+        if game_data["gameMode"] == 3:
+            print("Cannot edit this property on Daily Runs.")
+            return
+
+        choice = int(input("How many pokeballs do you want?: "))
+        game_data["pokeballCounts"]["0"] = choice
+
+        choice = int(input("How many great balls do you want?: "))
+        game_data["pokeballCounts"]["1"] = choice
+
+        choice = int(input("How many ultra balls do you want?: "))
+        game_data["pokeballCounts"]["2"] = choice
+
+        choice = int(input("How many rogue balls do you want?: "))
+        game_data["pokeballCounts"]["3"] = choice
+
+        choice = int(input("How many master balls do you want?: "))
+        game_data["pokeballCounts"]["4"] = choice
+
+        self.__write_data(game_data, f"slot_{self.slot}.json")
+
+    
+    def edit_money(self):
+        game_data = self.__load_data(f"slot_{self.slot}.json")
+
+        if game_data is None:
+            print("There was something wrong with the data, please restart the tool.")
+            return
+
+        if game_data["gameMode"] == 3:
+            print("Cannot edit this property on Daily Runs.")
+            return
+
+        choice = int(input("How many poke dollars do you want?: "))
+        game_data["money"] = choice
+
+        self.__write_data(game_data, f"slot_{self.slot}.json")
+    
+    def generate_eggs(self):
+
+        try:
+            trainer_data = self.__load_data("trainer.json")
+
+            if trainer_data["eggs"] is not None:
+                egg_len = len(trainer_data["eggs"])
+            else:
+                trainer_data["eggs"] = []
+                egg_len = len(trainer_data["eggs"])
+            
+
+            if egg_len >= 75:
+                replace_or_add = input(
+                    f"You have max number of eggs, replace eggs? (0: Cancel, 1: Replace): "
+                )
+                if replace_or_add == "2":
+                    replace_or_add = "1"
+            else:
+                replace_or_add = input(
+                    f"You have [{egg_len}] eggs, add or replace eggs? (0: Cancel, 1: Replace, 2: Add): "
+                )
+                
+            if replace_or_add not in ["1", "2"]:
+                raise ValueError("Invalid replace_or_add selected!")
+                
+
+            max_count = 75 - egg_len if replace_or_add == "2" else 75
+            
+            count = int(
+                input(f"How many eggs do you want to have? (0 - {max_count})(number): ")
+            )
+            tier = input(
+                "What tier should the eggs have? (1: Common, 2: Rare, 3: Epic, 4: Legendary, 5: Manaphy): "
+            )
+            # Map tier to string
+            tier_map = {
+                "1": "COMMON",
+                "2": "RARE",
+                "3": "EPIC",
+                "4": "LEGENDARY",
+                "5": "MANAPHY"
+            }
+            if tier not in tier_map:
+                raise ValueError("Invalid tier selected!")
+            tier = tier_map[tier]
+            
+            gacha_type = input(
+                "What gacha type do you want to have? (1: Move, 2: Legendary, 3: Shiny): "
+            )
+            # Map gacha type to string
+            gacha_map = {
+                "1": "MOVE",
+                "2": "LEGENDARY",
+                "3": "SHINY"
+            }
+            if gacha_type not in gacha_map:
+                raise ValueError("Invalid gacha_type selected!")
+            gacha_type = gacha_map[gacha_type]
+            
+            hatch_waves = int(
+                input("After how many waves should they hatch? (0-100)(number): ")
+            )
+
+            new_eggs = generate_eggs(tier, gacha_type, hatch_waves, count)
+
+            if replace_or_add == "1":
+                trainer_data["eggs"] = new_eggs
+            elif replace_or_add == "2":
+                trainer_data["eggs"].extend(new_eggs)
+                    
+            self.__write_data(trainer_data, "trainer.json")
+            
+            print(f"[{count}] eggs got generated and uploaded!")
+
+        except Exception as e:
+            print(f"Something went wrong while generating the data: {e}")

@@ -1,6 +1,3 @@
-import requests
-import json
-
 from modules.rogueClass import Rogue
 
 class RogueAPI:

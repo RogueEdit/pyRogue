@@ -10,6 +10,8 @@
 ## Important foreword
 [Feature & Bugboard aswell as Roadmap](https://github.com/orgs/RogueEdit/projects/7)
 
+Attention: When ever this tool detects you are trying to manipulate a daily seeded run it will abort.
+
 This tool relies on accurate timings to retrieve and manipulate data. The application will seemingly "sleep" but it will do its thing's. To ensure compatibility of all users across all different connection speeds this is neccesary. 
 
 If there is any error or cancel of action IT WILL DO tell you!!
@@ -55,12 +57,16 @@ If you wish to contribute we are always looking for keen people to support the c
 > - [X] means is working as intended, 
 > - [ ] means something is broken :(
 
+- [X] When logging in it will automatically create backups for you.
+
 - [X] Update all data on the server
 - This will sent the local .json file to the server and apply the changes
 
 - [X] Edit a starter
 - This will ask you for a pokemonID or a name and will allow you to edit following attributes:
-  - Is it shiny?
+  - Is it shiny? (T1, T2, T3)
+  - Unlock all hidden forms? (Dressed Peekachu etc.)
+  - Unlock passive? 
   - How many times have you seen it?
   - How many times have you caught it?
   - How many times have you hatched it?
@@ -68,7 +74,7 @@ If you wish to contribute we are always looking for keen people to support the c
   - All 6 IV's
 
 - [X] Unlock all starters
-- This will unlock every single Pokemon in the Pokedex with Perfect IVs, All natures, abilities, genders and optional shiny tiers.
+- This will unlock every single Pokemon in the Pokedex with Perfect IVs, All natures, abilities, genders aswell as all forms and passives and optional shiny tiers.
 
 - [X] Modify the number of egg gacha tickets you have
 - This allows you to set the amount of egg gacha tickets you have of every tier
@@ -90,6 +96,10 @@ If you wish to contribute we are always looking for keen people to support the c
 - [X] Show all biomes IDs
 - [X] Show all moves IDs
 - [X] Add friendship-candies to a pokemon
+- [X] Edit amount of money
+- [X] Edit pokeballs amount
+- [X] Edit current active biome
+- [X] Recover your Backup
 
 ## Deprecated
 
