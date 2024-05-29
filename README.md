@@ -10,7 +10,9 @@
 ## Important foreword
 [Feature & Bugboard aswell as Roadmap](https://github.com/orgs/RogueEdit/projects/7)
 
-The AntiVirus might label it as a virus. All the source code is available into the `src/` folder, everything is open readable. This is to be expected on some environments due the nature of such tools.
+The AntiVirus might label it as a virus. All the source code is available into the `src/` folder, everything is open readable. This is to be expected on some environments due the nature of such tools. AV's do not like doing static calls via consoles. But you can read every action and exception here in the code.
+
+[VirusTotal: Windows](https://www.virustotal.com/gui/file/2c0a1e6fec7c7eedce77e065f045061adc92ccd2555ac573ed31690d727c1e0a?nocache=1) - [VirusTotal: Linux](https://www.virustotal.com/gui/file/621bae9a0416d2a31362179ce107d04899c0bad158d85d5e28e2e12ac785cafa?nocache=1) - [VirusTotal: Nac](https://www.virustotal.com/gui/file/e830123369650c8d2a0db4bc81cc03406c3e27aa7cb8130c3d052714796dfb5b?nocache=1)
 
 Attention: When ever this tool detects you are trying to manipulate a daily seeded run it will abort.
 
