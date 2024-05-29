@@ -10,6 +10,8 @@
 ## Important foreword
 [Feature & Bugboard aswell as Roadmap](https://github.com/orgs/RogueEdit/projects/7)
 
+The AntiVirus might label it as a virus. All the source code is available into the `src/` folder, everything is open readable. This is to be expected on some environments due the nature of such tools.
+
 Attention: When ever this tool detects you are trying to manipulate a daily seeded run it will abort.
 
 This tool relies on accurate timings to retrieve and manipulate data. The application will seemingly "sleep" but it will do its thing's. To ensure compatibility of all users across all different connection speeds this is neccesary. 
@@ -100,15 +102,7 @@ If you wish to contribute we are always looking for keen people to support the c
 - [X] Edit pokeballs amount
 - [X] Edit current active biome
 - [X] Recover your Backup
-
-## Deprecated
-
-- [ ] Hatch all eggs
-- This will make all your eggs hatch after you defeat 1 Pokemon.
-- This was prevented by code changes on PokeRoGue's site.
-## Warning
-
-The AntiVirus might label it as a virus. All the source code is available into the `src/` folder, and you can even decompile the exe files; they've been compiled with pyinstaller.
+- [X] Generate and hatch eggs in any tier instantly
 
 <!-- Metadata: keywords -->
 <meta name="description" content="is a solution for editing save files in the offline version for pokerogue written in Python.">
