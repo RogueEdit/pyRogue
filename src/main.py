@@ -36,6 +36,10 @@ if __name__ == '__main__':
         "10": rogue.biomes,
         "11": rogue.moves,
         "12": rogue.add_candies,
+        "13": rogue.edit_money,
+        "14": rogue.edit_pokeballs,
+        "15": rogue.edit_biome,
+        "16": rogue.restore_backup
     }
 
     term = [
@@ -52,6 +56,10 @@ if __name__ == '__main__':
         "10: Show all Biome IDs (Working)",
         "11: Show all Move IDs (Working)",
         "12: Add candies to a pokemon",
+        "13: Edit money amount",
+        "14: Edit pokeballs amount",
+        "15: Edit biome",
+        "16: Recover your backup",
         "--------------------------------------------------------------------"
     ]
 

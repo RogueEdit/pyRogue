@@ -1,6 +1,7 @@
 import requests, json, random, os, time
 import brotli
 import traceback
+import shutil
 
 
 class Rogue:
@@ -41,6 +42,7 @@ class Rogue:
         
         self.__dump_data()
         
+
 
 
     def __make_request(self, url):
@@ -101,6 +103,41 @@ class Rogue:
                 return
         except requests.exceptions.RequestException as e:
                 print(f"Exception during update_all() -> {e}. If the error persists, report on Github.")
+
+    
+    def __create_backup(self):
+
+        files = ["trainer.json", f"slot_{self.slot}.json"]
+
+        backup_folder = "./backup/"
+
+        if not os.path.exists(backup_folder):
+            os.makedirs("./backup/")
+            print("Backup folder created successfully.")
+
+        for file_name in files:
+            source_file = file_name
+            destination_file = os.path.join(backup_folder, file_name)
+            shutil.copy2(source_file, destination_file)
+            print(f"File '{file_name}' backed up to '{backup_folder}'.")
+
+    
+    def restore_backup(self):
+
+        choice = int(input(f"What file do you wanna recover?(1: trainer.json, 2: slot_{self.slot}.json): "))
+
+        if (choice < 1) or (choice > 2):
+            print("Invalid choice.")
+            return
+        elif choice == 1:
+            trainer_data = self.__load_data("./backup/trainer.json")
+            self.__write_data(trainer_data, "trainer.json")
+            print("Data restored")
+        elif choice == 2:
+            game_data = self.__load_data(f"./backup/slot_{self.slot}.json")
+            self.__write_data(game_data, f"slot_{self.slot}.json")
+            print("Data restored")
+
         
     def __dump_data(self, slot=None):
         data = self.get_trainer_data()
@@ -124,10 +161,13 @@ class Rogue:
         with open(f"slot_{slot}.json", "w") as f:
             json.dump(data, f, indent=2)
         print(f"Gamesave data for slot {slot} dumped to 'slot_{slot}.json'")
+
+        self.__create_backup()
+
         
     
     def __load_data(self, file):
-        if file not in os.listdir():
+        if not os.path.exists(file):
             print(f"{file} file not found!")
             return
         with open(file, "r") as f:
@@ -201,8 +241,27 @@ class Rogue:
                 if not dexId:
                     print(f"No Pokemon with ID: {dexId}")
                     return
-        is_shiny = int(input("Make the Pokemon shiny? (1: Yes, 2: No): "))
-        caught_attr = 255 if is_shiny == 1 else 253
+        choice = int(input("Make the Pokemon shiny? (1: Yes, 2: No): "))
+
+        if (choice < 1) or (choice > 2):
+            print("Invalid choice.")
+            return
+        elif choice == 2:
+            caught_attr = 253
+        else:
+            choice = int(input("What tier shiny do you want? (1: Tier 1, 2: Tier 2, 3: Tier 3, 4: All shinies): "))
+            if (choice < 1) or (choice > 4):
+                print("Invalid choice.")
+                return
+            elif choice == 1:
+                caught_attr = 159
+            elif choice == 2:
+                caught_attr = 191
+            elif choice == 3:
+                caught_attr = 223
+            else:
+                caught_attr = 255
+            
         nature_attr = 67108862
         caught = int(input("How many of this Pokemon have you caught?: "))
         hatched = int(input("How many of this Pokemon have hatched from eggs?: "))
@@ -302,6 +361,10 @@ class Rogue:
             print("There was something wrong with the data, please restart the tool.")
             return
         
+        if game_data["gameMode"] == 3:
+            print("Cannot edit this property on Daily Runs.")
+            return
+        
         options = [
             "1: Change species",
             "2: Set it shiny",
@@ -348,7 +411,9 @@ class Rogue:
                 return
             game_data["party"][party_num]["luck"] = luck
         elif command == 5:
-            game_data["party"][party_num]["ivs"] = [31, 31, 31, 31, 31, 31]
+            ivs = [int(input("SpA IVs: ")), int(input("DEF IVs: ")), int(input("Attack IVs: ")),
+               int(input("HP IVs: ")), int(input("Spe IVs: ")), int(input("Def IVs: "))]
+            game_data["party"][party_num]["ivs"] = ivs
         elif command == 6:
             move_slot = int(input("Select the move you want to change (from 0 to 3): "))
             if move_slot < 0 or move_slot > 3:
@@ -469,5 +534,64 @@ class Rogue:
         trainer_data["starterData"][dexId]["candyCount"] = candies
 
         self.__write_data(trainer_data, "trainer.json")
+    
+
+    def edit_biome(self):
+        game_data = self.__load_data(f"slot_{self.slot}.json")
+
+        biome = int(input("Insert the biome ID: "))
+
+        game_data["arena"]["biome"] = biome
+
+        self.__write_data(game_data, f"slot_{self.slot}.json")
+    
+    def edit_pokeballs(self):
+        game_data = self.__load_data(f"slot_{self.slot}.json")
+
+        if game_data is None:
+            print("There was something wrong with the data, please restart the tool.")
+            return
+
+        if game_data["gameMode"] == 3:
+            print("Cannot edit this property on Daily Runs.")
+            return
+
+        choice = int(input("How many pokeballs do you want?: "))
+        game_data["pokeballCounts"]["0"] = choice
+
+        choice = int(input("How many great balls do you want?: "))
+        game_data["pokeballCounts"]["1"] = choice
+
+        choice = int(input("How many ultra balls do you want?: "))
+        game_data["pokeballCounts"]["2"] = choice
+
+        choice = int(input("How many rogue balls do you want?: "))
+        game_data["pokeballCounts"]["3"] = choice
+
+        choice = int(input("How many master balls do you want?: "))
+        game_data["pokeballCounts"]["4"] = choice
+
+        self.__write_data(game_data, f"slot_{self.slot}.json")
+
+    
+    def edit_money(self):
+        game_data = self.__load_data(f"slot_{self.slot}.json")
+
+        if game_data is None:
+            print("There was something wrong with the data, please restart the tool.")
+            return
+
+        if game_data["gameMode"] == 3:
+            print("Cannot edit this property on Daily Runs.")
+            return
+
+        choice = int(input("How many poke dollars do you want?: "))
+        game_data["money"] = choice
+
+        self.__write_data(game_data, f"slot_{self.slot}.json")
+
+
+    
+
         
 

@@ -13,10 +13,25 @@ class SeleniumLogic:
     def _process_browser_log_entry(self, entry):
         response = json.loads(entry['message'])['message']
         return response
+    
+    def print_until_timeout(self):
+        timeout_seconds = 60
+        start_time = time.time()
+        
+        while True:
+            current_time = time.time()
+            elapsed_time = current_time - start_time
+            
+            if elapsed_time >= timeout_seconds:
+                break
+            
+            print("Please do not log-in manually now in the new opened browser. Wait until the browser closes and do not touch anything.")
+            time.sleep(1)  
 
     def logic(self):
         opts = webdriver.ChromeOptions()
         opts.set_capability('goog:loggingPrefs', {'performance': 'ALL'})
+        opts.add_argument('--no-sandbox')
 
         driver = webdriver.Chrome(options=opts)
 
@@ -27,7 +42,7 @@ class SeleniumLogic:
         driver.get(url)
 
         # Wait for 20 seconds to allow the page to load completely
-        time.sleep(60)
+        self.print_until_timeout()
 
         username_field = driver.find_element(By.CSS_SELECTOR, "input[type='text']")
         password_field = driver.find_element(By.CSS_SELECTOR, "input[type='password']")
