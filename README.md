@@ -3,7 +3,7 @@
 
 > [If you are looking for an Editor to edit your Offline-Saves - Check this out](https://github.com/rogueEdit/OfflineRogueEditor)
 
-[<img src="https://img.shields.io/badge/Join%20our%20Discord!-8A2BE2">](https://discord.gg/8ZAnsZfVQP)
+[<img src="https://img.shields.io/badge/Join%20our%20News-Discord!-8A2BE2">](https://discord.gg/8ZAnsZfVQP)
 
 ![Preview Image](.github/preview.png)
 
@@ -17,6 +17,18 @@ If you are intending to use this Tool on a new account you have to atleast kill 
 When you launch the tool and login it will create a trainer.json - this is your save-data and is very precious. Please make a copy of it just in case anything goes wrong. - We take no responsibility for your actions when using this script. 
 
 We will not use the tool 24/7 - this means we will not see when it breaks due to changes on PokeRoGue's site. Please report on our discord or GitHub whenever you cannot finish any action.
+
+## FAQ
+- Will this get me banned?
+  - We dont know. 
+
+- Where can i donate?
+  - We will not accept any money or any form of payment. If you want to help then only by contributing.
+
+- Where are features like editing money and such?
+  - In our core we don't like cheating. This is and will be mostly for educational purposes, if you want to edit your money and such there are for sure plenty other ways to do it. Editing money and such can be used in daily seeded runs and on the leaderboard, this is something we don't like.
+
+
 
 ## How to use the tool
 
