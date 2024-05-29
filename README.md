@@ -31,7 +31,6 @@ We will not use the tool 24/7 - this means we will not see when it breaks due to
   - In our core we don't like cheating. This is and will be mostly for educational purposes, if you want to edit your money and such there are for sure plenty other ways to do it. Editing money and such can be used in daily seeded runs and on the leaderboard, this is something we don't like.
 
 
-
 ## How to use the tool
 
 - Step 1: Download the release according to your operating system
