@@ -8,6 +8,8 @@
 ![Preview Image](.github/preview.png)
 
 ## Important foreword
+[Feature & Bugboard aswell as Roadmap](https://github.com/orgs/RogueEdit/projects/7)
+
 This tool relies on accurate timings to retrieve and manipulate data. The application will seemingly "sleep" but it will do its thing's. To ensure compatibility of all users across all different connection speeds this is neccesary. 
 
 If there is any error or cancel of action IT WILL DO tell you!!
