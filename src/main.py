@@ -56,12 +56,12 @@ if __name__ == '__main__':
         "9: Show all Pokemon ID (Working)",
         "10: Show all Biome IDs (Working)",
         "11: Show all Move IDs (Working)",
-        "12: Add candies to a pokemon",
-        "13: Edit money amount",
-        "14: Edit pokeballs amount",
-        "15: Edit biome",
-        "16: Recover your backup",
-        "17: Generate eggs",
+        "12: Add candies to a pokemon (Working)",
+        "13: Edit money amount (Working)",
+        "14: Edit pokeballs amount (Working)",
+        "15: Edit biome (Working)",
+        "16: Recover your backup (Working)",
+        "17: Generate eggs (Working)",
         "--------------------------------------------------------------------"
     ]
 
