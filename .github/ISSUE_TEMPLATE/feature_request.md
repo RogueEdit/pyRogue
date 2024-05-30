@@ -3,18 +3,17 @@ name: Feature request
 about: Suggest an idea for this project
 title: 'Feature: Requested'
 labels: feature
-assignees: claudiunderthehood, JulianStiebler
+assignees: M6D6M6A, claudiunderthehood, JulianStiebler
 
 ---
 
 **Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+- ...
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+**Describe the solution you'd like to see implemented**
+- ...
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+**If you can link to the related source files that'd be great!**
+https://github.com/pagefaultgames/pokerogue
+https://github.com/pagefaultgames/rogueserver
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
