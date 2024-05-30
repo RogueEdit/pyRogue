@@ -13,4 +13,6 @@ assignees: M6D6M6A, claudiunderthehood, JulianStiebler
 **Describe the solution you'd like to see implemented**
 - ...
 
+https://github.com/pagefaultgames/pokerogue
+https://github.com/pagefaultgames/rogueserver
 
