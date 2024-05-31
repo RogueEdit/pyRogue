@@ -12,7 +12,7 @@
 
 The AntiVirus might label it as a virus. All the source code is available into the `src/` folder, everything is open readable. This is to be expected on some environments due the nature of such tools. AV's do not like doing static calls via consoles. But you can read every action and exception here in the code.
 
-[VirusTotal: Windows](https://www.virustotal.com/gui/file/8a84d76be8d1d3fe2b2b194dd7c63945b5afe2b9243b13098a3f77d9a04ffa9a?nocache=1) - [VirusTotal: Linux](https://www.virustotal.com/gui/file/f9e1ecc3bfced5102144f87ba51241b2b12e7f254babba4d3c409663a73bb9de?nocache=1) - [VirusTotal: Mac](https://www.virustotal.com/gui/file/f9c0b95294c9b0807cf6d4fda05712b06ca3e27a740720611680426c6ae5d4ec?nocache=1)
+[VirusTotal: Windows](https://www.virustotal.com/gui/file/a4007fd3226b8b175193285344a4e3994dc83dfb0ba3cf28f9ae9978337b66c8?nocache=1) - [VirusTotal: Linux](https://www.virustotal.com/gui/file/83acbdd58d1765f600721420ba5526fa1fef5f284ffdc40758005a48fd41e216?nocache=1) - [VirusTotal: Mac](https://www.virustotal.com/gui/file/9cba783852519c7f43b4d4da9dc7e95dcd105c8b33e63343fbaf2a72e072111e?nocache=1)
 
 Attention: When ever this tool detects you are trying to manipulate a daily seeded run it will abort.
 
@@ -75,10 +75,15 @@ If you wish to contribute we are always looking for keen people to support the c
   - How many times have you caught it?
   - How many times have you hatched it?
   - How many friendship-candys do you want?
+  - How high is the friendship value? *NEW*
+  - Unlock win-ribbon? *NEW*
+  - Unlock all natures *NEW*
   - All 6 IV's
 
 - [X] Unlock all starters
 - This will unlock every single Pokemon in the Pokedex with Perfect IVs, All natures, abilities, genders aswell as all forms and passives and optional shiny tiers.
+  - *NEW* Added win ribbons
+  - *NEW* All Natures
 
 - [X] Modify the number of egg gacha tickets you have
 - This allows you to set the amount of egg gacha tickets you have of every tier
@@ -105,6 +110,8 @@ If you wish to contribute we are always looking for keen people to support the c
 - [X] Edit current active biome
 - [X] Recover your Backup
 - [X] Generate and hatch eggs in any tier instantly
+- [X] Edit account stats
+- [X] Combined function to unlock all
 
 <!-- Metadata: keywords -->
 <meta name="description" content="is a solution for editing save files in the offline version for pokerogue written in Python.">
