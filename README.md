@@ -45,8 +45,8 @@ We will not use the tool 24/7 - this means we will not see when it breaks due to
 - Where can i donate?
   - We will not accept any money or any form of payment. If you want to help then only by contributing.
 
-- Where are features like editing money and such?
-  - In our core we don't like cheating. This is and will be mostly for educational purposes, if you want to edit your money and such there are for sure plenty other ways to do it. Editing money and such can be used in daily seeded runs and on the leaderboard, this is something we don't like.
+- Why are some features limited?
+  - In our core we don't like cheating. This is and will be mostly for educational purposes, if you want to edit your money and such in daily runs theres other options. We deny any changes made to gameMode 3 which is daily seeded runs.
 
 
 ## How to use the tool
