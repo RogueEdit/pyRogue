@@ -1,18 +1,45 @@
-import requests, json, random, os, time
-import brotli
+import requests
+import json
+import random
+import os
 import traceback
 import shutil
+from typing import Dict, Any, Union, Optional, List
 
 from modules.eggLogic import *
 
 
 class Rogue:
-    def __init__(self, auth_token, clientSessionId):
+    _MAX_BIG_INT = (2 ** 53) - 1
+    def __init__(self, auth_token: str, clientSessionId: str) -> None:
+        self.__MAX_BIG_INT = (2 ** 53) - 1
+        """
+        Initialize the Rogue class with authorization token and client session ID.
+
+        Args:
+            auth_token (str): Authorization token for API requests.
+            clientSessionId (str): Client session ID for API requests.
+        """
         self.auth_token = auth_token
         self.clientSessionId = clientSessionId
+        self.user_agents = [
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Safari/605.1.15",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:98.0) Gecko/20100101 Firefox/98.0",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36 Edg/98.0.1108.43",
+            "Opera/9.80 (Windows NT 6.0) Presto/2.12.388 Version/12.14",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36 OPR/98.0.4787.0",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/605.1.15",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:98.0) Gecko/20100101 Firefox/98.0",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Safari/605.1.15",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/605.1.15",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0"
+        ]
         self.headers = {
             "authorization": self.auth_token,
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:126.0) Gecko/20100101 Firefox/126.0",
+            "User-Agent": random.choice(self.user_agents),
             "Accept": "application/json",
             "Accept-Language": "it-IT,it;q=0.8,en-US;q=0.5,en;q=0.3",
             "Accept-Encoding": "gzip, deflate, br, zstd",
@@ -24,102 +51,131 @@ class Rogue:
             "Sec-Fetch-Dest": "empty",
             "Sec-Fetch-Mode": "cors",
             "Sec-Fetch-Site": "same-site",
-            "Priority": "u=1",
+            "Priority": "u=1"
         }
 
         self.slot = None
-
-        self.__MAX_BIG_INT = (2 ** 53) - 1
-
         
+
         with open("./data/pokemon.json") as f:
             self.pokemon_id_by_name = json.loads(f.read())
-        
+
         with open("./data/biomes.json") as f:
             self.biomes_by_id = json.loads(f.read())
 
         with open("./data/moves.json") as f:
             self.moves_by_id = json.loads(f.read())
-        
+
         with open("./data/data.json") as f:
             self.extra_data = json.loads(f.read())
-        
+
         with open("./data/passive.json") as f:
             self.passive_data = json.loads(f.read())
-        
+
         self.__dump_data()
-        
 
+    def __make_request(self, url: str) -> dict | None:
+        """
+        Make a request to the given URL and return the JSON response.
 
+        Args:
+            url (str): The URL to send the request to.
 
-    def __make_request(self, url):
+        Returns:
+            dict | None: The JSON response or None if an error occurred.
+        """
         try:
             with requests.session() as s:
                 response = s.get(url, headers=self.headers)
                 response.raise_for_status()
-
                 try:
-                    json_response = response.json()
-                    return json_response
+                    return response.json()
                 except json.JSONDecodeError as e:
                     print("Failed to parse response as JSON:", e)
-                    traceback.print_exc()  
+                    traceback.print_exc()
                     return None
-
         except requests.exceptions.RequestException as e:
             print(f"Exception during request -> {e}")
             return None
 
-    def get_trainer_data(self):
+    def get_trainer_data(self) -> dict | None:
+        """
+        Retrieve trainer data from the API.
+
+        Returns:
+            dict | None: Trainer data or None if an error occurred.
+        """
         url = f"https://api.pokerogue.net/savedata/system?clientSessionId={self.clientSessionId}"
         return self.__make_request(url)
 
-    def get_gamesave_data(self, slot=1):
-        url = f"https://api.pokerogue.net/savedata/session?slot={slot-1}&clientSessionId={self.clientSessionId}"
+    def get_gamesave_data(self, slot: int = 1) -> dict | None:
+        """
+        Retrieve game save data for the specified slot.
+
+        Args:
+            slot (int): The slot number (1-5). Defaults to 1.
+
+        Returns:
+            dict | None: Game save data or None if an error occurred.
+        """
+
+
+
+        url = f"https://api.pokerogue.net/savedata/session?slot={slot - 1}&clientSessionId={self.clientSessionId}"
         return self.__make_request(url)
 
-    def update_all(self):
+    def update_all(self) -> None:
+        """
+        Update all data to the server.
+        """
         url = "https://api.pokerogue.net/savedata/updateall"
 
         if "trainer.json" not in os.listdir():
             print("trainer.json file not found!")
             return
+
         with open("trainer.json", "r") as f:
             trainer_data = json.load(f)
-        
-        slot = self.slot
-        if slot > 5 or slot < 1:
-            print("Invalid slot number")
+
+        if self.slot is None or self.slot > 5 or self.slot < 1:
+            print("Invalid slot number!")
             return
-        filename = f"slot_{slot}.json"
+
+        filename = f"slot_{self.slot}.json"
         if filename not in os.listdir():
             print(f"{filename} not found")
             return
 
         with open(filename, "r") as f:
             game_data = json.load(f)
+
         try:
             with requests.session() as s:
-                payload = {'clientSessionId': self.clientSessionId, 'session': game_data, "sessionSlotId": slot-1, 'system': trainer_data}
+                payload = {
+                    'clientSessionId': self.clientSessionId,
+                    'session': game_data,
+                    "sessionSlotId": self.slot - 1,
+                    'system': trainer_data
+                }
                 response = s.post(url=url, headers=self.headers, json=payload)
                 if response.status_code == 400:
-                        print("Please do not play Pokerogue while using this tool. Restart the tool!")
-                        return
+                    print("Please do not play Pokerogue while using this tool. Restart the tool!")
+                    return
                 response.raise_for_status()
-                print("Updated data Succesfully!")
-                return
+                print("Updated data successfully!")
         except requests.exceptions.RequestException as e:
-                print(f"Exception during update_all() -> {e}. If the error persists, report on Github.")
+            print(f"Exception during update_all() -> {e}. If the error persists, report on Github.")
+            print("This usually does not mean something good.")
 
-    
-    def __create_backup(self):
-
+    def __create_backup(self) -> None:
+        """
+        Create a backup of trainer.json and slot data.
+        """
         files = ["trainer.json", f"slot_{self.slot}.json"]
-
         backup_folder = "./backup/"
 
         if not os.path.exists(backup_folder):
-            os.makedirs("./backup/")
+            os.makedirs(backup_folder)
             print("Backup folder created successfully.")
 
         for file_name in files:
@@ -128,15 +184,17 @@ class Rogue:
             shutil.copy2(source_file, destination_file)
             print(f"File '{file_name}' backed up to '{backup_folder}'.")
 
-    
-    def restore_backup(self):
+    def restore_backup(self) -> None:
+        """
+        Restore data from backup files.
+        """
+        choice = int(input(f"What file do you want to recover? (1: trainer.json | 2: slot_{self.slot}.json): "))
 
-        choice = int(input(f"What file do you wanna recover?(1: trainer.json, 2: slot_{self.slot}.json): "))
-
-        if (choice < 1) or (choice > 2):
+        if choice not in (1, 2):
             print("Invalid choice.")
             return
-        elif choice == 1:
+
+        if choice == 1:
             trainer_data = self.__load_data("./backup/trainer.json")
             self.__write_data(trainer_data, "trainer.json")
             print("Data restored")
@@ -145,95 +203,113 @@ class Rogue:
             self.__write_data(game_data, f"slot_{self.slot}.json")
             print("Data restored")
 
-        
-    def __dump_data(self, slot=None):
-        data = self.get_trainer_data()
-        if not data:
-            return None
-        with open("trainer.json", "w") as f:
-            json.dump(data, f, indent=2)
-        print("Trainer data dumped to 'trainer.json'")
+    def __dump_data(self, slot: int = 1) -> None:
+        """
+        Dump data from the API to local files.
 
-        if not slot:
+        Args:
+            slot (int): The slot number (1-5). Defaults to 1.
+
+        """
+        if not self.slot:
             slot = int(input("Enter slot (1-5): "))
             self.slot = slot
             if slot > 5 or slot < 1:
                 print("Invalid slot number")
                 return
-        data = self.get_gamesave_data(slot)
-        if not data:
-            print("No gamesave file available in that slot, Kill at least 1 pokemon and progress to stage two")
-            print("When finished, launch the tool again.")
-            return None
-        with open(f"slot_{slot}.json", "w") as f:
-            json.dump(data, f, indent=2)
-        print(f"Gamesave data for slot {slot} dumped to 'slot_{slot}.json'")
+
+        trainer_data = self.get_trainer_data()
+        game_data = self.get_gamesave_data(slot)
+
+        self.__write_data(trainer_data, "trainer.json")
+        self.__write_data(game_data, f"slot_{slot}.json")
 
         self.__create_backup()
 
-        
-    
-    def __load_data(self, file):
-        if not os.path.exists(file):
-            print(f"{file} file not found!")
-            return
-        with open(file, "r") as f:
-            data = json.load(f)
-            return data
+        print("Data dumped successfully!")
+
+    def __load_data(self, file_path: str) -> dict:
+        """
+        Load data from a specified file path.
+
+        Args:
+            file_path (str): Path to the file to be loaded.
+
+        Returns:
+            dict: Loaded data.
+        """
+        with open(file_path, "r") as f:
+            return json.load(f)
     
 
-    def __write_data(self, data, file):
+    def __write_data(self, data: Dict[str, Any], file: str) -> None:
+        """
+        Writes data to a JSON file.
+
+        Args:
+            data (Dict[str, Any]): The data to be written.
+            file (str): The file path.
+
+        Returns:
+            None
+        """
         with open(file, "w") as f:
             json.dump(data, f, indent=2)
-        print("Command applied successfully, remember to update the data to the server when you're done!")
+        print("---> Command applied successfully, remember to update the data to the server when you're done! <--- ")
 
-
-    def pokedex(self):
+    def pokedex(self) -> None:
+        """
+        Prints the Pokémon dex.
+        """
         dex = [f"{value}: {key}" for key, value in self.pokemon_id_by_name['dex'].items()]
         print("\n".join(dex))
 
-    def unlock_all_starters(self):
+    def unlock_all_starters(self) -> None:
+        """
+        Unlocks all starters.
 
+        Returns:
+            None
+        """
         trainer_data = self.__load_data("trainer.json")
-
         if not trainer_data:
             print("There was something wrong with the data, please restart the tool.")
             return None
 
-        choice = int(input("Do you want to unlock all forms(shiny tier 3) as well?(1: yes, 2: no): "))
-
+        choice: int = int(input("Do you want to unlock all forms (Shiny Tier 3) as well? (1: Yes | 2: No): "))
         if (choice < 1) or (choice > 2):
             print("Invalid command.")
             return
         elif choice == 2:
-            is_shiny = int(input("Do you want the starters to be shiny?(1: yes, 2: no): "))
-
+            is_shiny: int = int(input("Do you want the starters to be shiny? (1: Yes | 2: No): "))
             if (is_shiny < 1) or (is_shiny > 2):
                 print("Invalid command.")
                 return
             elif is_shiny == 1:
-                shiny = 255
+                shiny: int = 255
             else:
-                shiny = 253
+                shiny: int = 253
         
-        iv = int(input("Do you want the starters to be 6 IVs?(1: yes, 2: no): "))
+        iv: int = int(input("Do you want the starters to be 6 IVs? (1: Yes | 2: No): "))
         if (iv < 1) or (iv > 2):
             print("Invalid command.")
             return
         
-        passive = int(input("Do you want the starters to have the passive unlocked?(1: yes, 2: no): "))
+        passive: int = int(input("Do you want the starters to have the passive unlocked? (1: Yes | 2: No): "))
         if (passive < 1) or (passive > 2):
             print("Invalid command.")
             return
+        
+        ribbon: int = int(input("Do you want to unlock win-ribbons?: (1: Yes | 2: No): "))
 
-        total_caught = 0
-        total_seen = 0
+        total_caught: int = 0
+        total_seen: int = 0
         for entry in trainer_data["dexData"].keys():
-            caught = random.randint(150, 250)
-            seen = random.randint(150, 350)
+            caught: int = random.randint(150, 250)
+            seen: int = random.randint(150, 350)
             total_caught += caught
             total_seen += seen
-            randIv = random.sample(range(20, 30), 6)
+            randIv: List[int] = random.sample(range(20, 30), 6)
 
             trainer_data["dexData"][entry] = {
                 "seenAttr": 479,
@@ -248,19 +324,34 @@ class Rogue:
                 "moveset": None,
                 "eggMoves": 15,
                 "candyCount": caught + 20,
+                "friendship": random.randint(1, 300),
                 "abilityAttr": 7,
                 "passiveAttr": 0 if (entry in self.passive_data["noPassive"]) or (passive == 2) else 3,
-                "valueReduction": 2
+                "valueReduction": 2,
+                "classicWinCount": None if ribbon == 2 else random.randint(1, 5),
             }
+
+            
             trainer_data["gameStats"]["battles"] = total_caught + random.randint(1, total_caught)
             trainer_data["gameStats"]["pokemonCaught"] = total_caught
             trainer_data["gameStats"]["pokemonSeen"] = total_seen
             trainer_data["gameStats"]["shinyPokemonCaught"] = len(trainer_data["dexData"]) * 2
 
+            if ribbon == 1:
+                trainer_data["gameStats"]["classicWinCount"] = random.randint(1, 50)
+
         self.__write_data(trainer_data, "trainer.json")
 
-    def starter_edit(self, dexId=None):
-        
+    def starter_edit(self, dexId: Optional[Union[str, int]] = None) -> None:
+        """
+        Edits a starter Pokémon.
+
+        Args:
+            dexId (Optional[Union[str, int]]): The ID or name of the Pokémon. Defaults to None.
+
+        Returns:
+            None
+        """
         trainer_data = self.__load_data("trainer.json")       
 
         if not trainer_data:
@@ -279,56 +370,67 @@ class Rogue:
                     return
                 
 
-        choice = int(input("Do you want to unlock all forms of the pokemon?(All forms are Tier 3 shinies. 1: Yes, 2: No): "))
+        choice: int = int(input("Do you want to unlock all forms of the pokemon? (All forms are Tier 3 shinies. (1: Yes | 2: No)): "))
 
         if (choice < 1) or (choice > 2):
             print("Invalid command.")
             return
         elif choice == 1:
-            caught_attr = self.__MAX_BIG_INT
+            caught_attr: int = self.__MAX_BIG_INT
         else:
-            choice = int(input("Make the Pokemon shiny? (1: Yes, 2: No): "))
-
+            choice: int = int(input("Make the Pokemon shiny? (1: Yes | 2: No)): "))
             if (choice < 1) or (choice > 2):
                 print("Invalid choice.")
                 return
             elif choice == 2:
-                caught_attr = 253
+                caught_attr: int = 253
             else:
-                choice = int(input("What tier shiny do you want? (1: Tier 1, 2: Tier 2, 3: Tier 3, 4: All shinies): "))
+                choice: int = int(input("What tier shiny do you want? (1: Tier 1 | 2: Tier 2 | 3: Tier 3): "))
                 if (choice < 1) or (choice > 4):
                     print("Invalid choice.")
                     return
                 elif choice == 1:
-                    caught_attr = 159
+                    caught_attr: int = 159
                 elif choice == 2:
-                    caught_attr = 191
+                    caught_attr: int = 191
                 elif choice == 3:
-                    caught_attr = 223
-                else:
-                    caught_attr = 255
+                    caught_attr: int = 255
+
             
-        nature_attr = 67108862
-        caught = int(input("How many of this Pokemon have you caught?: "))
-        hatched = int(input("How many of this Pokemon have hatched from eggs?: "))
-        seen_count = int(input("How many of this Pokemon have you seen?: "))
-        candies = int(input("How many candies do you want?: "))
-        ivs = [int(input("SpA IVs: ")), int(input("DEF IVs: ")), int(input("Attack IVs: ")),
+        nature_attr: int = 67108862
+        caught_input = input("How many of this Pokemon have you caught?: ")
+        caught_input: str = input("How many of this Pokemon have you caught? If empty, random: ")
+        caught: int = random.randint(1, 100) if not caught_input else int(caught_input)
+
+        hatched_input: str = input("How many of this Pokemon have hatched from eggs? If empty, random: ")
+        hatched: int = random.randint(1, 100) if not hatched_input else int(hatched_input)
+
+        seen_count_input: str = input("How many of this Pokemon have you seen? If empty, random: ")
+        seen_count: int = random.randint(1, 100) if not seen_count_input else int(seen_count_input)
+
+        candies_input: str = input("How many Candies do you want? If empty, random: ")
+        candies: int = random.randint(1, 100) if not candies_input else int(candies_input)
+
+        ivs: List[int] = [int(input("SpA IVs: ")), int(input("DEF IVs: ")), int(input("Attack IVs: ")),
                int(input("HP IVs: ")), int(input("Spe IVs: ")), int(input("Def IVs: "))]
-        
-        passive = int(input("Do you want to unlock the passive?(1: Yes, 2: No): "))
+        passive: int = int(input("Do you want to unlock the passive? (1: Yes | 2: No): "))
+        ribbon: int = int(input("Do you want to unlock the win-ribbon?: (1: Yes | 2: No): "))
+
+        friendship_input: str = input("How many of this Pokemon have you seen? If empty, random: ")
+        friendship: int = random.randint(1, 300) if not friendship_input else int(friendship_input)
+
         if (passive < 1) or (passive > 2):
             print("Invalid command.")
             return
         elif passive == 1:
             if dexId in self.passive_data["noPassive"]:
                 print("This pokemon doesn't have a passive ability.")
-                passiveAttr = 0
+                passiveAttr: int = 0
             else:
-                passiveAttr = 3
+                passiveAttr: int = 3
         else:
-            passiveAttr = 0
-        
+            passiveAttr: int = 0
+
 
         trainer_data["dexData"][dexId] = {
             "seenAttr": 479,
@@ -343,48 +445,59 @@ class Rogue:
             "moveset": None,
             "eggMoves": 15,
             "candyCount": candies,
+            "friendship": None if not friendship else friendship,
             "abilityAttr": 7,
             "passiveAttr": passiveAttr,
-            "valueReduction": 2
+            "valueReduction": 2,
+            "classicWinCount": None if ribbon == 2 else random.randint(1, 50)
         }
+
+        if ribbon == 1:
+                trainer_data["gameStats"]["classicWinCount"] = random.randint(1, 50)
 
         self.__write_data(trainer_data, "trainer.json")
 
+    def egg_gacha(self) -> None:
+        """
+        Simulates an egg gacha.
 
-    def egg_gacha(self):
+        Allows the user to input the number of common, rare, epic, and legendary vouchers they want to use.
+        Updates the voucher counts in the trainer data.
 
+        Returns:
+            None
+        """
         trainer_data = self.__load_data("trainer.json")
 
         if not trainer_data:
             print("There was something wrong with the data, please restart the tool.")
             return None
 
-        c = int(input("How many common vouchers do you want(Max 300)?: "))
+        c: int = int(input("How many common vouchers do you want (Max 300)?: "))
 
         if c > 300:
             print("Cannot put more than 300 tickets, please retry.")
             return
 
-        r = int(input("How many rare vouchers do you want(Max 150)?: "))
-        
+        r: int = int(input("How many rare vouchers do you want (Max 150)?: "))
+
         if r > 150:
             print("Cannot put more than 150 tickets, please retry.")
             return
-        
-        e = int(input("How many epic vouchers do you want(Max 100)?: "))
+
+        e: int = int(input("How many epic vouchers do you want (Max 100)?: "))
 
         if e > 100:
             print("Cannot put more than 100 tickets, please retry.")
             return
-        
-        l = int(input("How many legendary vouchers do you want(Max 10)?: "))
+
+        l: int = int(input("How many legendary vouchers do you want (Max 10)?: "))
 
         if l > 10:
             print("Cannot put more than 10 tickets, please retry.")
             return
 
-
-        voucher_counts = {
+        voucher_counts: dict[str, int] = {
             "0": c,
             "1": r,
             "2": e,
@@ -394,25 +507,17 @@ class Rogue:
 
         self.__write_data(trainer_data, "trainer.json")
 
-    # def hatch_all_eggs(self):
 
-    #     trainer_data = self.__load_data("trainer.json")
+    def edit_pokemon_party(self) -> None:
+        """
+        Allows editing a Pokémon in the player's party.
 
-    #     if not trainer_data:
-    #         return None
-    #     eggs = trainer_data.get("eggs", [])
-    #     if not eggs:
-    #         print("No eggs to hatch")
-    #         return
-    #     for egg in eggs:
-    #         egg["hatchWaves"] = 0
-    #     trainer_data["eggs"] = eggs
+        This method presents a menu of options to edit a Pokémon in the player's party
+        including changing species, setting shininess, level, luck, IVs, and moves.
 
-
-    #     self.__write_data(trainer_data, "trainer.json")
-        
-    
-    def edit_pokemon_party(self):
+        Returns:
+            None
+        """
         slot = self.slot
         filename = f"slot_{slot}.json"
 
@@ -437,7 +542,11 @@ class Rogue:
         
         party_num = int(input("Select the party slot of the Pokémon you want to edit (0-5): "))
         if party_num < 0 or party_num > 5:
-            print("Invalid party slot")
+            print("Invalid party slot.")
+            return
+
+        if party_num >= len(game_data["party"]):
+            print("Selected party slot does not exist. Choose another.")
             return
         
         print("**************************** OPTIONS ****************************")
@@ -485,18 +594,23 @@ class Rogue:
                 print("Invalid move")
                 return
             game_data["party"][party_num]["moveset"][move_slot]["moveId"] = move
- 
 
         self.__write_data(game_data, filename)
     
-    def unlock_all_gamemodes(self):
+    def unlock_all_gamemodes(self) -> None:
+        """
+        Unlocks all game modes for the player.
 
+        This method unlocks all game modes for the player in the game data.
+
+        Returns:
+            None
+        """
         trainer_data = self.__load_data("trainer.json")
 
         if trainer_data is None:
             print("There was something wrong with the data, please restart the tool.")
             return
-
 
         try:
             unlocked_modes = trainer_data.get("unlocks", {})
@@ -507,15 +621,22 @@ class Rogue:
             for mode in unlocked_modes:
                 unlocked_modes[mode] = True
 
-            print("All gamemodes have been unlocked! Remember to update data!")
+            print("---> All gamemodes have been unlocked! Remember to update data!")
 
             self.__write_data(trainer_data, "trainer.json")
         
         except Exception as e:
             print(f"Error on unlock_all_gamemodes() -> {e}")
-    
-    def unlock_all_achievements(self):
-        
+
+    def unlock_all_achievements(self) -> None:
+        """
+        Unlocks all achievements for the player.
+
+        This method unlocks all achievements for the player in the game data.
+
+        Returns:
+            None
+        """
         try:
             trainer_data = self.__load_data("trainer.json")
 
@@ -531,7 +652,7 @@ class Rogue:
                 achievement: random.randint(min_time_ms, current_time_ms)
                 for achievement in achievements
             }
-            print("All achievements have been unlocked! Remember to update data!")
+            print("---> All achievements have been unlocked! Remember to update data!")
 
             self.__write_data(trainer_data, "trainer.json")
 
@@ -539,7 +660,15 @@ class Rogue:
             print(f"Error on unlock_all_achievements -> {e}")
 
     
-    def unlock_all_vouchers(self):
+    def unlock_all_vouchers(self) -> None:
+        """
+        Unlocks all vouchers for the player.
+
+        This method generates random unlock times for each voucher and updates the game data accordingly.
+
+        Returns:
+            None
+        """
         try:
             trainer_data = self.__load_data("trainer.json")
 
@@ -557,23 +686,49 @@ class Rogue:
                 voucher_unlocks[voucher] = random_time
             trainer_data["voucherUnlocks"] = voucher_unlocks
 
-            print("All vouchers have been unlocked! Remember to update data!")
+            print("---> All vouchers have been unlocked! Remember to update data!")
 
             self.__write_data(trainer_data, "trainer.json")
 
         except Exception as e:
             print(f"Error on unlock_all_vouchers -> {e}")
-    
-    def biomes(self):
+
+    def biomes(self) -> None:
+        """
+        Prints all biomes available in the game.
+
+        This method prints out all the biomes available in the game.
+
+        Returns:
+            None
+        """
         biomes = [f"{value}: {key}" for key, value in self.biomes_by_id['biomes'].items()]
         print("\n".join(biomes))
 
-    def moves(self):
+    def moves(self) -> None:
+        """
+        Prints all moves available in the game.
+
+        This method prints out all the moves available in the game.
+
+        Returns:
+            None
+        """
         moves = [f"{value}: {key}" for key, value in self.moves_by_id['moves'].items()]
         print("\n".join(moves))
     
-    def add_candies(self, dexId=None):
-    
+    def add_candies(self, dexId=None) -> None:
+        """
+        Adds candies to a Pokémon.
+
+        This method allows the player to add candies to a specific Pokémon.
+
+        Args:
+            dexId (str): The ID of the Pokémon. Defaults to None.
+
+        Returns:
+            None
+        """
         trainer_data = self.__load_data("trainer.json")
 
         if not trainer_data:
@@ -591,14 +746,25 @@ class Rogue:
                     print(f"No Pokemon with ID: {dexId}")
                     return
                 
-        candies = int(input("How many candies do you want?: "))
+        candies = int(input("How many : "))
         trainer_data["starterData"][dexId]["candyCount"] = candies
 
         self.__write_data(trainer_data, "trainer.json")
     
 
-    def edit_biome(self):
+    def edit_biome(self) -> None:
+        """
+        Edits the biome of the game.
+
+        This method allows the player to edit the biome of the game.
+
+        Returns:
+            None
+        """
+
         game_data = self.__load_data(f"slot_{self.slot}.json")
+
+        self.biomes()
 
         biome = int(input("Insert the biome ID: "))
 
@@ -606,7 +772,15 @@ class Rogue:
 
         self.__write_data(game_data, f"slot_{self.slot}.json")
     
-    def edit_pokeballs(self):
+    def edit_pokeballs(self) -> None:
+        """
+        Edits the number of pokeballs in the game.
+
+        This method allows the player to edit the number of different types of pokeballs in the game.
+
+        Returns:
+            None
+        """
         game_data = self.__load_data(f"slot_{self.slot}.json")
 
         if game_data is None:
@@ -635,7 +809,15 @@ class Rogue:
         self.__write_data(game_data, f"slot_{self.slot}.json")
 
     
-    def edit_money(self):
+    def edit_money(self) -> None:
+        """
+        Edits the amount of poke dollars in the game.
+
+        This method allows the player to edit the amount of poke dollars they have in the game.
+
+        Returns:
+            None
+        """
         game_data = self.__load_data(f"slot_{self.slot}.json")
 
         if game_data is None:
@@ -651,8 +833,15 @@ class Rogue:
 
         self.__write_data(game_data, f"slot_{self.slot}.json")
     
-    def generate_eggs(self):
+    def generate_eggs(self) -> None:
+        """
+        Generates eggs for the player.
 
+        This method allows the player to generate eggs with specified attributes and adds them to their inventory.
+
+        Returns:
+            None
+        """
         try:
             trainer_data = self.__load_data("trainer.json")
 
@@ -662,7 +851,6 @@ class Rogue:
                 trainer_data["eggs"] = []
                 egg_len = len(trainer_data["eggs"])
             
-
             if egg_len >= 75:
                 replace_or_add = input(
                     f"You have max number of eggs, replace eggs? (0: Cancel, 1: Replace): "
@@ -677,7 +865,6 @@ class Rogue:
             if replace_or_add not in ["1", "2"]:
                 raise ValueError("Invalid replace_or_add selected!")
                 
-
             max_count = 75 - egg_len if replace_or_add == "2" else 75
             
             count = int(
@@ -728,3 +915,185 @@ class Rogue:
 
         except Exception as e:
             print(f"Something went wrong while generating the data: {e}")
+
+    def edit_account_stats(self) -> None:
+        """
+        Edits the statistics of the player's account.
+
+        This method allows the player to edit various statistics related to their gameplay.
+
+        Returns:
+            None
+        """
+        try:
+            trainer_data = self.__load_data("trainer.json")
+
+            if trainer_data is None:
+                print("There was something wrong with the data, please restart the tool.")
+                return
+            
+            battles: int = int(input("How many battles: "))
+            classicSessionsPlayed: int = int(input("How many classicSessionsPlayed: "))
+            dailyRunSessionPlayed: int = int(input("How many dailyRunSessionPlayed: "))
+            dailyRunSessionWon: int = int(input("How many dailyRunSessionWon: "))
+            eggsPulled: int = int(input("How many ceggsPulled: "))
+            endlessSessionsPlayed: int = int(input("How many endlessSessionsPlayed: "))
+            epicEggsPulled: int = int(input("How many cepicEggsPulled: "))
+            highestDamage: int = int(input("How many highestDamage: "))
+            highestEndlessWave: int = int(input("How many highestEndlessWave: "))
+            highestHeal: int = int(input("How many highestHeal: "))
+            highestLevel: int = int(input("How many highestLevel: "))
+            highestMoney: int = int(input("How many highestMoney: "))
+            legendaryEggsPulled: int = int(input("How many legendaryEggsPulled: "))
+            legendaryPokemonCaught: int = int(input("How many legendaryPokemonCaught: "))
+            legendaryPokemonHatched: int = int(input("How many legendaryPokemonHatched: "))
+            legendaryPokemonSeen: int = int(input("How many clegendaryPokemonSeen: "))
+            manaphyEggsPulled: int = int(input("How many manaphyEggsPulled: "))
+            mythicalPokemonCaught: int = int(input("How many mythicalPokemonCaught: "))
+            mythicalPokemonHatched: int = int(input("How mythicalPokemonHatched: "))
+            mythicalPokemonSeen: int = int(input("How many mythicalPokemonSeen: "))
+            playTime: int = int(input("How much playtime in hours: ")*60)
+            pokemonCaught: int = int(input("How many pokemonCaught: "))
+            pokemonDefeated: int = int(input("How many pokemonDefeated: "))
+            pokemonFused: int = int(input("How many pokemonFused: "))
+            pokemonHatched: int = int(input("How many pokemonHatched: "))
+            pokemonSeen: int = int(input("How many pokemonSeen: "))
+            rareEggsPulled: int = int(input("How many rareEggsPulled: "))
+            ribbonsOwned: int = int(input("How many ribbonsOwned: "))
+            sessionsWon: int = int(input("How many sessionsWon: "))
+            shinyPokemonCaught: int = int(input("How many shinyPokemonCaught: "))
+            shinyPokemonHatched: int = int(input("How many shinyPokemonHatched: "))
+            shinyPokemonSeen: int = int(input("How many shinyPokemonSeen: "))
+            subLegendaryPokemonCaught: int = int(input("How many subLegendaryPokemonCaught: "))
+            subLegendaryPokemonHatched: int = int(input("How many subLegendaryPokemonHatched: "))
+            subLegendaryPokemonSeen: int = int(input("How many subLegendaryPokemonSeen: "))
+            trainersDefeated: int = int(input("How many trainersDefeated: "))
+
+            trainer_data["gameStats"] = {
+                "battles": battles,
+                "classicSessionsPlayed": classicSessionsPlayed,
+                "dailyRunSessionsPlayed": dailyRunSessionPlayed,
+                "dailyRunSessionsWon": dailyRunSessionWon,
+                "eggsPulled": eggsPulled,
+                "endlessSessionsPlayed": endlessSessionsPlayed,
+                "epicEggsPulled": epicEggsPulled,
+                "highestDamage": highestDamage,
+                "highestEndlessWave": highestEndlessWave,
+                "highestHeal": highestHeal,
+                "highestLevel": highestLevel,
+                "highestMoney": highestMoney,
+                "legendaryEggsPulled": legendaryEggsPulled,
+                "legendaryPokemonCaught": legendaryPokemonCaught,
+                "legendaryPokemonHatched": legendaryPokemonHatched,
+                "legendaryPokemonSeen": legendaryPokemonSeen,
+                "manaphyEggsPulled": manaphyEggsPulled,
+                "mythicalPokemonCaught": mythicalPokemonCaught,
+                "mythicalPokemonHatched": mythicalPokemonHatched,
+                "mythicalPokemonSeen": mythicalPokemonSeen,
+                "playTime": playTime,
+                "pokemonCaught": pokemonCaught,
+                "pokemonDefeated": pokemonDefeated,
+                "pokemonFused": pokemonFused,
+                "pokemonHatched": pokemonHatched,
+                "pokemonSeen": pokemonSeen,
+                "rareEggsPulled": rareEggsPulled,
+                "ribbonsOwned": ribbonsOwned,
+                "sessionsWon": sessionsWon,
+                "shinyPokemonCaught": shinyPokemonCaught,
+                "shinyPokemonHatched": shinyPokemonHatched,
+                "shinyPokemonSeen": shinyPokemonSeen,
+                "subLegendaryPokemonCaught": subLegendaryPokemonCaught,
+                "subLegendaryPokemonHatched": subLegendaryPokemonHatched,
+                "subLegendaryPokemonSeen": subLegendaryPokemonSeen,
+                "trainersDefeated": trainersDefeated,
+            }
+
+            self.__write_data(trainer_data, "trainer.json")
+        except Exception as e:
+            print(f"Error on edit_account_stats() -> {e}")
+
+    def max_account(self) -> None:
+        """
+        Maximizes the statistics and attributes of the player's account.
+
+        This method unlocks all game modes, achievements, vouchers, and starters. It also sets the account statistics
+        to a specified value for various attributes.
+
+        Returns:
+            None
+        """
+        try:
+            trainer_data = self.__load_data("trainer.json")
+
+            if trainer_data is None:
+                print("There was something wrong with the data, please restart the tool.")
+                return
+            
+            self.unlock_all_gamemodes()
+            self.unlock_all_achievements()
+            self.unlock_all_vouchers()
+            self.unlock_all_starters()
+        
+            total_caught = 0
+            total_seen = 0
+            for entry in trainer_data["dexData"].keys():
+                caught = random.randint(500, 1000)
+                seen = random.randint(500, 1000)
+                hatched = random.randint(500, 1000)
+                total_caught += caught
+                total_seen += seen
+                randIv: List[int] = random.sample(range(20, 30), 6)
+
+                trainer_data["dexData"][entry] = {
+                    "seenAttr": self._MAX_BIG_INT,
+                    "caughtAttr": self._MAX_BIG_INT,
+                    "natureAttr": self._MAX_BIG_INT,
+                    "seenCount": seen,
+                    "caughtCount": caught,
+                    "hatchedCount": hatched,
+                    "ivs": randIv
+                }
+
+            trainer_data["gameStats"] = {
+                "battles": total_caught + random.randint(1, total_caught),
+                "classicSessionsPlayed": random.randint(2500, 10000) // 10,
+                "dailyRunSessionsPlayed": random.randint(2500, 10000),
+                "dailyRunSessionsWon": random.randint(2500, 10000),
+                "eggsPulled": random.randint(2500, 10000),
+                "endlessSessionsPlayed": random.randint(2500, 10000),
+                "epicEggsPulled": random.randint(2500, 10000),
+                "highestDamage": random.randint(2500, 10000),
+                "highestEndlessWave": random.randint(2500, 10000),
+                "highestHeal": random.randint(2500, 10000),
+                "highestLevel": random.randint(2500, 10000),
+                "highestMoney": random.randint(2500, 10000),
+                "legendaryEggsPulled": random.randint(2500, 10000),
+                "legendaryPokemonCaught": random.randint(2500, 10000),
+                "legendaryPokemonHatched": random.randint(2500, 10000),
+                "legendaryPokemonSeen": random.randint(2500, 10000),
+                "manaphyEggsPulled": random.randint(2500, 10000),
+                "mythicalPokemonCaught": random.randint(2500, 10000),
+                "mythicalPokemonHatched": random.randint(2500, 10000),
+                "mythicalPokemonSeen": random.randint(2500, 10000),
+                "playTime": random.randint(2500, 10000) * 100,
+                "pokemonCaught": total_caught,
+                "pokemonDefeated": random.randint(2500, 10000),
+                "pokemonFused": random.randint(2500, 10000),
+                "pokemonHatched": random.randint(2500, 10000),
+                "pokemonSeen": total_seen,
+                "rareEggsPulled": random.randint(2500, 10000),
+                "ribbonsOwned": total_seen,
+                "sessionsWon": random.randint(2500, 10000),
+                "shinyPokemonCaught": len(list(trainer_data["dexData"])) * 2,
+                "shinyPokemonHatched": random.randint(2500, 10000),
+                "shinyPokemonSeen": random.randint(2500, 10000),
+                "subLegendaryPokemonCaught": random.randint(2500, 10000),
+                "subLegendaryPokemonHatched": random.randint(2500, 10000),
+                "subLegendaryPokemonSeen": random.randint(2500, 10000),
+                "trainersDefeated": random.randint(2500, 10000),
+            }
+
+            self.__write_data(trainer_data, "trainer.json")
+        except Exception as e:
+            print(f"Error on edit_account_stats() -> {e}")
+
