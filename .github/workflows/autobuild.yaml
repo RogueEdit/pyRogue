@@ -64,7 +64,7 @@ jobs:
         run: |
           python3 -m ensurepip
           pip install pyinstaller -r src/requirements.txt
-          pyinstaller --distpath compiled/ --workpath /tmp/mac/ --hidden-import=_cffi_backend --name onlineEditor-mac.sh --clean --icon="src/data/icon.ico" -F src/main.py
+          pyinstaller --distpath compiled/ --workpath /tmp/mac/ --hidden-import=_cffi_backend --name onlineEditor-mac.sh --clean --target-arch universal2 --icon="src/data/icon.ico" -F src/main.py
 
       - name: Upload Artifacts (Mac)
         if: ${{ matrix.os == 'macos-latest' }}
