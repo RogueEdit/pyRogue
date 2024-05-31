@@ -1,20 +1,41 @@
+"""Module for handling Selenium logic."""
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from modules.rogueApiClass import RogueAPI
 import json
 import time
+from modules.rogueApiClass import RogueAPI
 
 class SeleniumLogic:
-    def __init__(self, username, password) -> None:
+    """Class to handle Selenium logic for automated tasks."""
+
+    def __init__(self, username: str, password: str) -> None:
+        """
+        Initialize SeleniumLogic object.
+
+        Parameters:
+        username (str): The username for logging in.
+        password (str): The password for logging in.
+        """
         self.username = username
         self.password = password
     
-    def _process_browser_log_entry(self, entry):
+    def _process_browser_log_entry(self, entry: dict) -> dict:
+        """
+        Process a log entry from the browser.
+
+        Parameters:
+        entry (dict): The log entry from the browser.
+
+        Returns:
+        dict: Processed log entry.
+        """
         response = json.loads(entry['message'])['message']
         return response
     
-    def print_until_timeout(self):
+    def print_until_timeout(self) -> None:
+        """Print a message until a timeout is reached."""
         timeout_seconds = 60
         start_time = time.time()
         
@@ -28,7 +49,13 @@ class SeleniumLogic:
             print("Please do not log-in manually now in the new opened browser. Wait until the browser closes and do not touch anything.")
             time.sleep(1)  
 
-    def logic(self):
+    def logic(self) -> RogueAPI:
+        """
+        Perform the logic for automated tasks.
+
+        Returns:
+        RogueAPI: An instance of RogueAPI.
+        """
         opts = webdriver.ChromeOptions()
         opts.set_capability('goog:loggingPrefs', {'performance': 'ALL'})
         opts.add_argument('--no-sandbox')
@@ -99,9 +126,6 @@ class SeleniumLogic:
 
         print("Session ID:", session_id)
         print("Token:", token)
+        print("Sometimes this login here can take a bit.")
 
         return RogueAPI(token, session_id)
-
-        # time.sleep(69696969)
-
-        # driver.quit()
