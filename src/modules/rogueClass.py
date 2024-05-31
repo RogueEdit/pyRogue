@@ -118,6 +118,9 @@ class Rogue:
         Returns:
             dict | None: Game save data or None if an error occurred.
         """
+
+
+
         url = f"https://api.pokerogue.net/savedata/session?slot={slot - 1}&clientSessionId={self.clientSessionId}"
         return self.__make_request(url)
 
@@ -206,14 +209,22 @@ class Rogue:
 
         Args:
             slot (int): The slot number (1-5). Defaults to 1.
+
         """
-        self.slot = slot
+        if not self.slot:
+            slot = int(input("Enter slot (1-5): "))
+            self.slot = slot
+            if slot > 5 or slot < 1:
+                print("Invalid slot number")
+                return
 
         trainer_data = self.get_trainer_data()
         game_data = self.get_gamesave_data(slot)
 
         self.__write_data(trainer_data, "trainer.json")
         self.__write_data(game_data, f"slot_{slot}.json")
+
+        self.__create_backup()
 
         print("Data dumped successfully!")
 
@@ -750,11 +761,11 @@ class Rogue:
         Returns:
             None
         """
+
         game_data = self.__load_data(f"slot_{self.slot}.json")
 
-        biomes = [f"{value}: {key}" for key, value in self.biomes_by_id['biomes'].items()]
-        print("\n".join(biomes))
-        print("-------")
+        self.biomes()
+
         biome = int(input("Insert the biome ID: "))
 
         game_data["arena"]["biome"] = biome

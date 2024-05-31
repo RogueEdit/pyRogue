@@ -35,13 +35,13 @@ if __name__ == '__main__':
         "9": rogue.add_candies,
         "10": rogue.edit_money,
         "11": rogue.edit_pokeballs,
-        "12": rogue.biomes,
+        "12": rogue.edit_biome,
         "13": rogue.generate_eggs,
         "14": rogue.edit_account_stats,
         "15": rogue.max_account,
         "16": rogue.restore_backup,
         "17": rogue.pokedex,
-        "18": rogue.edit_biome,
+        "18": rogue.biomes,
         "19": rogue.moves,
     }
 
