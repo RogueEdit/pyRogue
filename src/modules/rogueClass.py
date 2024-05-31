@@ -313,9 +313,11 @@ class Rogue:
                 "moveset": None,
                 "eggMoves": 15,
                 "candyCount": caught + 20,
+                "friendship": random.randint(1, 300),
                 "abilityAttr": 7,
                 "passiveAttr": 0 if (entry in self.passive_data["noPassive"]) or (passive == 2) else 3,
-                "valueReduction": 2
+                "valueReduction": 2,
+                "classicWinCount": None if ribbon == 2 else random.randint(1, 5),
             }
 
             
@@ -325,7 +327,7 @@ class Rogue:
             trainer_data["gameStats"]["shinyPokemonCaught"] = len(trainer_data["dexData"]) * 2
 
             if ribbon == 1:
-                trainer_data["gameStats"]["classicWinCount"] = len(trainer_data["dexData"]) * 2
+                trainer_data["gameStats"]["classicWinCount"] = random.randint(1, 50)
 
         self.__write_data(trainer_data, "trainer.json")
 
@@ -385,14 +387,26 @@ class Rogue:
 
             
         nature_attr: int = 67108862
-        caught: int = int(input("How many of this Pokemon have you caught?: "))
-        hatched: int = int(input("How many of this Pokemon have hatched from eggs?: "))
-        seen_count: int = int(input("How many of this Pokemon have you seen?: "))
-        candies: int = int(input("How many Candies do you want?: "))
+        caught_input = input("How many of this Pokemon have you caught?: ")
+        caught_input: str = input("How many of this Pokemon have you caught? If empty, random: ")
+        caught: int = random.randint(1, 100) if not caught_input else int(caught_input)
+
+        hatched_input: str = input("How many of this Pokemon have hatched from eggs? If empty, random: ")
+        hatched: int = random.randint(1, 100) if not hatched_input else int(hatched_input)
+
+        seen_count_input: str = input("How many of this Pokemon have you seen? If empty, random: ")
+        seen_count: int = random.randint(1, 100) if not seen_count_input else int(seen_count_input)
+
+        candies_input: str = input("How many Candies do you want? If empty, random: ")
+        candies: int = random.randint(1, 100) if not candies_input else int(candies_input)
+
         ivs: List[int] = [int(input("SpA IVs: ")), int(input("DEF IVs: ")), int(input("Attack IVs: ")),
                int(input("HP IVs: ")), int(input("Spe IVs: ")), int(input("Def IVs: "))]
         passive: int = int(input("Do you want to unlock the passive? (1: Yes | 2: No): "))
-        ribbon: int = int(input("Do you want to unlock the win-ribbon?: (1: Yes | 2: No)"))
+        ribbon: int = int(input("Do you want to unlock the win-ribbon?: (1: Yes | 2: No): "))
+
+        friendship_input: str = input("How many of this Pokemon have you seen? If empty, random: ")
+        friendship: int = random.randint(1, 300) if not friendship_input else int(friendship_input)
 
         if (passive < 1) or (passive > 2):
             print("Invalid command.")
@@ -406,8 +420,6 @@ class Rogue:
         else:
             passiveAttr: int = 0
 
-        if ribbon == 2:
-            ribbon = 0
 
         trainer_data["dexData"][dexId] = {
             "seenAttr": 479,
@@ -422,9 +434,11 @@ class Rogue:
             "moveset": None,
             "eggMoves": 15,
             "candyCount": candies,
+            "friendship": None if not friendship else friendship,
             "abilityAttr": 7,
             "passiveAttr": passiveAttr,
             "valueReduction": 2,
+            "classicWinCount": None if ribbon == 2 else random.randint(1, 50)
         }
 
         if ribbon == 1:
