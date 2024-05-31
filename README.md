@@ -5,10 +5,22 @@
 
 [<img src="https://img.shields.io/badge/Join%20our%20News-Discord!-8A2BE2">](https://discord.gg/8ZAnsZfVQP)
 
-![Preview Image](.github/preview.png)
+![Preview Image](.github/previews/main.png)
+
+[More examples](PREVIEW.md)
+
+# List of content
+- [Foreword](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#important-foreword)
+- [FAQ](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#faq)
+- [How to use](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#how-to-use-the-tool)
+- [Contribute](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#if-you-wish-to-contribute)
+- [Features](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#editor-features)
+- [Deprecated Features](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#Deprecated-Features)
 
 ## Important foreword
 [Feature & Bugboard aswell as Roadmap](https://github.com/orgs/RogueEdit/projects/7)
+
+We will not sent you any files or contact you about anything. You can see who contributed and everything regarding us will be only done on GitHub. We will not contact you in any matter or will send you files. There are scammers out there. Here you can read the full source code, compile it from scratch and such or download a VT-checked release.
 
 The AntiVirus might label it as a virus. All the source code is available into the `src/` folder, everything is open readable. This is to be expected on some environments due the nature of such tools. AV's do not like doing static calls via consoles. But you can read every action and exception here in the code.
 
@@ -112,6 +124,9 @@ If you wish to contribute we are always looking for keen people to support the c
 - [X] Generate and hatch eggs in any tier instantly
 - [X] Edit account stats
 - [X] Combined function to unlock all
+
+## Deprecated Features
+- [X] None yet!
 
 <!-- Metadata: keywords -->
 <meta name="description" content="is a solution for editing save files in the offline version for pokerogue written in Python.">
