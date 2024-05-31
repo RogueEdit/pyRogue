@@ -503,7 +503,11 @@ class Rogue:
         
         party_num = int(input("Select the party slot of the Pokémon you want to edit (0-5): "))
         if party_num < 0 or party_num > 5:
-            print("Invalid party slot")
+            print("Invalid party slot.")
+            return
+
+        if party_num >= len(game_data["party"]):
+            print("Selected party slot does not exist. Choose another.")
             return
         
         print("**************************** OPTIONS ****************************")
@@ -969,43 +973,88 @@ class Rogue:
         except Exception as e:
             print(f"Error on edit_account_stats() -> {e}")
 
+    def max_account(self) -> None:
+        """
+        Maximizes the statistics and attributes of the player's account.
+
+        This method unlocks all game modes, achievements, vouchers, and starters. It also sets the account statistics
+        to a specified value for various attributes.
+
+        Returns:
+            None
+        """
+        try:
+            trainer_data = self.__load_data("trainer.json")
+
+            if trainer_data is None:
+                print("There was something wrong with the data, please restart the tool.")
+                return
+            
+            self.unlock_all_gamemodes()
+            self.unlock_all_achievements()
+            self.unlock_all_vouchers()
+            self.unlock_all_starters()
+
+            accStats = int(input("How many in each Stats of the account? (9999 is decent): "))
+            
+
+            total_caught = 0
+            total_seen = 0
+            for entry in trainer_data["dexData"].keys():
+                caught = random.randint(500, 1000)
+                seen = random.randint(500, 1000)
+                hatched = random.randint(500, 1000)
+                total_caught += caught
+                total_seen += seen
+                randIv: List[int] = random.sample(range(20, 30), 6)
+
+                trainer_data["dexData"][entry] = {
+                    "seenAttr": self._MAX_BIG_INT,
+                    "caughtAttr": self._MAX_BIG_INT,
+                    "natureAttr": self._MAX_BIG_INT,
+                    "seenCount": seen,
+                    "caughtCount": caught,
+                    "hatchedCount": hatched,
+                    "ivs": randIv
+                }
+
             trainer_data["gameStats"] = {
-                "battles": total_caught + rrandom.randint(1, total_caught),
-                "classicSessionsPlayed": random.randint(5000, 10000) // 10,
-                "dailyRunSessionsPlayed": random.randint(5000, 10000),
-                "dailyRunSessionsWon": random.randint(5000, 10000),
-                "eggsPulled": random.randint(5000, 10000),
-                "endlessSessionsPlayed": random.randint(5000, 10000),
-                "epicEggsPulled": random.randint(5000, 10000),
-                "highestDamage": random.randint(5000, 10000),
-                "highestEndlessWave": random.randint(5000, 10000),
-                "highestHeal": random.randint(5000, 10000),
-                "highestLevel": random.randint(5000, 10000),
-                "highestMoney": random.randint(5000, 10000),
-                "legendaryEggsPulled": random.randint(5000, 10000),
-                "legendaryPokemonCaught": random.randint(5000, 10000),
-                "legendaryPokemonHatched": random.randint(5000, 10000),
-                "legendaryPokemonSeen": random.randint(5000, 10000),
-                "manaphyEggsPulled": random.randint(5000, 10000),
-                "mythicalPokemonCaught": random.randint(5000, 10000),
-                "mythicalPokemonHatched": random.randint(5000, 10000),
-                "mythicalPokemonSeen": random.randint(5000, 10000),
-                "playTime": random.randint(5000, 10000) * 100,
+                "battles": total_caught + random.randint(1, total_caught),
+                "classicSessionsPlayed": accStats // 10,
+                "dailyRunSessionsPlayed": accStats,
+                "dailyRunSessionsWon": accStats,
+                "eggsPulled": accStats,
+                "endlessSessionsPlayed": accStats,
+                "epicEggsPulled": accStats,
+                "highestDamage": accStats,
+                "highestEndlessWave": accStats,
+                "highestHeal": accStats,
+                "highestLevel": accStats,
+                "highestMoney": accStats,
+                "legendaryEggsPulled": accStats,
+                "legendaryPokemonCaught": accStats,
+                "legendaryPokemonHatched": accStats,
+                "legendaryPokemonSeen": accStats,
+                "manaphyEggsPulled": accStats,
+                "mythicalPokemonCaught": accStats,
+                "mythicalPokemonHatched": accStats,
+                "mythicalPokemonSeen": accStats,
+                "playTime": accStats * 100,
                 "pokemonCaught": total_caught,
-                "pokemonDefeated": random.randint(5000, 10000),
-                "pokemonFused": random.randint(5000, 10000),
-                "pokemonHatched": random.randint(5000, 10000),
+                "pokemonDefeated": accStats,
+                "pokemonFused": accStats,
+                "pokemonHatched": accStats,
                 "pokemonSeen": total_seen,
-                "rareEggsPulled": random.randint(5000, 10000),
-                "ribbonsOwned": random.randint(5000, 10000),
-                "sessionsWon": random.randint(5000, 10000),
+                "rareEggsPulled": accStats,
+                "ribbonsOwned": accStats,
+                "sessionsWon": accStats,
                 "shinyPokemonCaught": len(list(trainer_data["dexData"])) * 2,
-                "shinyPokemonHatched": random.randint(5000, 10000),
-                "shinyPokemonSeen": random.randint(5000, 10000),
-                "subLegendaryPokemonCaught": random.randint(5000, 10000),
-                "subLegendaryPokemonHatched": random.randint(5000, 10000),
-                "subLegendaryPokemonSeen": random.randint(5000, 10000),
-                "trainersDefeated": random.randint(5000, 10000),
+                "shinyPokemonHatched": accStats,
+                "shinyPokemonSeen": accStats,
+                "subLegendaryPokemonCaught": accStats,
+                "subLegendaryPokemonHatched": accStats,
+                "subLegendaryPokemonSeen": accStats,
+                "trainersDefeated": accStats,
             }
 
             self.__write_data(trainer_data, "trainer.json")
