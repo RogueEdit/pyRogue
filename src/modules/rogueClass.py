@@ -8,11 +8,10 @@ from typing import Dict, Any, Union, Optional, List
 
 from modules.eggLogic import *
 
-
 class Rogue:
     _MAX_BIG_INT = (2 ** 53) - 1
+
     def __init__(self, auth_token: str, clientSessionId: str) -> None:
-        self.__MAX_BIG_INT = (2 ** 53) - 1
         """
         Initialize the Rogue class with authorization token and client session ID.
 
@@ -22,6 +21,8 @@ class Rogue:
         """
         self.auth_token = auth_token
         self.clientSessionId = clientSessionId
+        self.headers = None
+        self.slot = None
         self.user_agents = [
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Safari/605.1.15",
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36",
@@ -37,25 +38,8 @@ class Rogue:
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36",
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0"
         ]
-        self.headers = {
-            "authorization": self.auth_token,
-            "User-Agent": random.choice(self.user_agents),
-            "Accept": "application/json",
-            "Accept-Language": "it-IT,it;q=0.8,en-US;q=0.5,en;q=0.3",
-            "Accept-Encoding": "gzip, deflate, br, zstd",
-            "Referer": "https://pokerogue.net/",
-            "Content-Type": "application/json",
-            "content-encoding": "br",
-            "Origin": "https://pokerogue.net/",
-            "Connection": "keep-alive",
-            "Sec-Fetch-Dest": "empty",
-            "Sec-Fetch-Mode": "cors",
-            "Sec-Fetch-Site": "same-site",
-            "Priority": "u=1"
-        }
 
-        self.slot = None
-        
+        self._setup_headers()
 
         with open("./data/pokemon.json") as f:
             self.pokemon_id_by_name = json.loads(f.read())
@@ -74,29 +58,20 @@ class Rogue:
 
         self.__dump_data()
 
-    def __make_request(self, url: str) -> dict | None:
-        """
-        Make a request to the given URL and return the JSON response.
-
-        Args:
-            url (str): The URL to send the request to.
-
-        Returns:
-            dict | None: The JSON response or None if an error occurred.
-        """
-        try:
-            with requests.session() as s:
-                response = s.get(url, headers=self.headers)
-                response.raise_for_status()
-                try:
-                    return response.json()
-                except json.JSONDecodeError as e:
-                    print("Failed to parse response as JSON:", e)
-                    traceback.print_exc()
-                    return None
-        except requests.exceptions.RequestException as e:
-            print(f"Exception during request -> {e}")
-            return None
+    def _setup_headers(self):
+        self.headers = {
+            "Authorization": self.auth_token,
+            "User-Agent": random.choice(self.user_agents),
+            "Accept": "application/json",
+            "Accept-Language": "it-IT,it;q=0.8,en-US;q=0.5,en;q=0.3",
+            "Accept-Encoding": "gzip, deflate, br, zstd",
+            "Referer": "https://pokerogue.net/",
+            "Content-Type": "application/json",
+            "content-encoding": "br",
+            "Origin": "https://pokerogue.net/",
+            "Connection": "keep-alive",
+            "Sec-Fetch-Dest": "empty"  # <-- Adding the missing closing quotation mark
+        }
 
     def get_trainer_data(self) -> dict | None:
         """
@@ -105,8 +80,20 @@ class Rogue:
         Returns:
             dict | None: Trainer data or None if an error occurred.
         """
-        url = f"https://api.pokerogue.net/savedata/system?clientSessionId={self.clientSessionId}"
-        return self.__make_request(url)
+        url = "https://api.pokerogue.net/savedata/system"
+        headers = self.headers.copy()  # Make a copy of headers
+        if self.clientSessionId:
+            headers["clientSessionId"] = self.clientSessionId  # Add clientSessionId to headers
+
+        try:
+            with requests.session() as s:
+                response = s.get(url, headers=headers)
+                response.raise_for_status()
+                return response.json()
+        except Exception as e:
+            logger.exception("Error fetching trainer data: %s", e)
+            return None
+
 
     def get_gamesave_data(self, slot: int = 1) -> dict | None:
         """
