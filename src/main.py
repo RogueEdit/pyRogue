@@ -1,27 +1,25 @@
 import logging
 import getpass
-import requests
 from modules.loginLogic import loginLogic
-from modules.rogueClass import Rogue
+from modules.rogueClass import Rogue  # Importing the Rogue class
 
 # Configure logging to display debug messages
 logging.basicConfig(level=logging.DEBUG)
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
-    session = requests.Session()
     
     while True:
         print("\n<Login>")
         username = input("Username: ")
         password = getpass.getpass("Password (password is hidden): ")
 
-        login = loginLogic(session, username, password)
+        login = loginLogic(username, password)
 
         try:
             if login.login():
                 print(f"Logged in as: {username.capitalize()}")
-                rogue = Rogue(session, login.token, login.session_id)
+                rogue = Rogue(login.token, login.session_id)
                 
                 # Call the dump_data method after successful login
                 rogue.dump_data()
