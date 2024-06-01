@@ -11,10 +11,10 @@ from modules.eggLogic import *
 
 
 class Rogue:
-    def __init__(self, auth_token: str, client_session_id: str) -> None:
+    def __init__(self, auth_token: str, clientSessionId: str) -> None:
         self._MAX_BIG_INT = (2 ** 53) - 1
         self.auth_token = auth_token
-        self.client_session_id = client_session_id
+        self.clientSessionId = clientSessionId
         self.slot = None
         self.headers = None
         self.user_agents = [
@@ -75,7 +75,7 @@ class Rogue:
                 response.raise_for_status()
                 return response.json()
         except Exception as e:
-            logger.exception("Error fetching trainer data: %s", e)
+            print("Error during fetching data.")
             return None
 
 
