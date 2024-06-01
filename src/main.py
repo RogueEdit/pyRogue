@@ -20,6 +20,7 @@ if __name__ == '__main__':
             if login.login():
                 print(f"Logged in as: {username.capitalize()}")
                 rogue = Rogue(login.token, login.session_id)
+                rogue = Rogue.dump_data()
                 break
             else:
                 print("Incorrect credentials")
