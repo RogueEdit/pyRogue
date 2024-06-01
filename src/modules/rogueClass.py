@@ -1012,6 +1012,38 @@ class Rogue:
         except Exception as e:
             print(f"Error on edit_account_stats() -> {e}")
 
+
+    def edit_costs(self) -> None:
+        """
+        Edits the cost of the starters.
+
+        This method modifies the cost of the starters, enabling the player to select any combination of starters.
+
+        Returns:
+            None
+        """
+        trainer_data = self.__load_data("trainer.json")
+
+        if trainer_data is None:
+            print("There was something wrong with the data, please restart the tool.")
+            return
+
+        choice = int(input("Do you want to reduce every cost? (1: Enable, 2: Custom Value, 3: Disable): "))
+        if choice < 1 or choice > 3:
+            print("Invalid command.")
+            return
+        elif choice == 1:
+            new_value = 10
+        elif choice == 2:
+            new_value = int(input("Enter the new value: "))
+        elif choice == 3:
+            new_value = 2
+
+        for starter in trainer_data["starterData"]:
+            trainer_data["starterData"][starter]["valueReduction"] = new_value
+
+        self.__write_data(trainer_data, "trainer.json")
+
     def max_account(self) -> None:
         """
         Maximizes the statistics and attributes of the player's account.

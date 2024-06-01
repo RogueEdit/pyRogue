@@ -38,11 +38,12 @@ if __name__ == '__main__':
         "12": rogue.edit_biome,
         "13": rogue.generate_eggs,
         "14": rogue.edit_account_stats,
-        "15": rogue.max_account,
-        "16": rogue.restore_backup,
-        "17": rogue.pokedex,
-        "18": rogue.biomes,
-        "19": rogue.moves,
+        "15": rogue.edit_costs,
+        "16": rogue.max_account,
+        "17": rogue.restore_backup,
+        "18": rogue.pokedex,
+        "19": rogue.biomes,
+        "20": rogue.moves,
     }
 
     term = [
@@ -61,12 +62,13 @@ if __name__ == '__main__':
         "12: Edit biome (Working)",
         "13: Generate eggs (Working)",
         "14: Edit account stats (Working)",
-        "15: Unlock Everything (Working)",
+        "15: Edit costs (Working)", 
+        "16: Unlock Everything (Working)",
         "--------------------------------------------------------------------",
-        "16: Recover your backup (Working)",
-        "17: Show all Pokemon ID (Working)",
-        "18: Show all Biome IDs (Working)",
-        "19: Show all Move IDs (Working)",
+        "17: Recover your backup (Working)",
+        "18: Show all Pokemon ID (Working)",
+        "19: Show all Biome IDs (Working)",
+        "20: Show all Move IDs (Working)",
         "--------------------------------------------------------------------"
     ]
 
