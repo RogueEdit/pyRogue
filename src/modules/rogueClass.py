@@ -1,3 +1,4 @@
+# rogueClass.py
 import requests
 import json
 import random
@@ -8,11 +9,12 @@ from typing import Dict, Any, Union, Optional, List
 
 from modules.eggLogic import *
 
-
-
 class Rogue:
+    UPDATE_TRAINER_DATA_URL = "https://api.pokerogue.net/savedata/update?datatype=0"
+    UPDATE_GAMESAVE_SLOT_URL = "https://api.pokerogue.net/savedata/update?datatype=1&slot="
+
     def __init__(self, auth_token: str, clientSessionId: str) -> None:
-        self._MAX_BIG_INT = (2 ** 53) - 1
+        self.__MAX_BIG_INT = (2 ** 53) - 1
         self.auth_token = auth_token
         self.clientSessionId = clientSessionId
         self.slot = None
@@ -22,6 +24,22 @@ class Rogue:
             # Add more user agents if needed
         ]
         self._setup_headers()
+
+                # Load other data if needed from JSON files
+        with open("./data/pokemon.json") as f:
+            self.pokemon_id_by_name = json.loads(f.read())
+
+        with open("./data/biomes.json") as f:
+            self.biomes_by_id = json.loads(f.read())
+
+        with open("./data/moves.json") as f:
+            self.moves_by_id = json.loads(f.read())
+
+        with open("./data/data.json") as f:
+            self.extra_data = json.loads(f.read())
+
+        with open("./data/passive.json") as f:
+            self.passive_data = json.loads(f.read())
 
     def make_request(self, url: str, headers: dict = None) -> dict:
         """
@@ -34,7 +52,6 @@ class Rogue:
         Returns:
             dict: JSON response from the server.
         """
-
         try:
             with requests.session() as s:
                 response = s.get(url, headers=headers)
@@ -42,7 +59,7 @@ class Rogue:
                 data = response.json()
                 return data
         except requests.RequestException as e:
-            print("failed to make request")
+            print("Failed to make request:", e)
             return {}
 
     def _setup_headers(self):
@@ -60,23 +77,6 @@ class Rogue:
             "Sec-Fetch-Dest": "empty"
         }
 
-        # Load other data if needed from JSON files
-
-        with open("./data/pokemon.json") as f:
-            self.pokemon_id_by_name = json.loads(f.read())
-
-        with open("./data/biomes.json") as f:
-            self.biomes_by_id = json.loads(f.read())
-
-        with open("./data/moves.json") as f:
-            self.moves_by_id = json.loads(f.read())
-
-        with open("./data/data.json") as f:
-            self.extra_data = json.loads(f.read())
-
-        with open("./data/passive.json") as f:
-            self.passive_data = json.loads(f.read())
-
     def get_trainer_data(self) -> dict | None:
         """
         Retrieve trainer data from the API.
@@ -84,9 +84,8 @@ class Rogue:
         Returns:
             dict | None: Trainer data or None if an error occurred.
         """
-        url = f"https://api.pokerogue.net/savedata/system"
-        return self.make_request(url)
-
+        url = f"https://api.pokerogue.net/savedata/system?clientSessionId={self.clientSessionId}"
+        return self.make_request(url, headers=self.headers)
 
     def get_gamesave_data(self, slot: int = 1) -> dict | None:
         """
@@ -98,71 +97,44 @@ class Rogue:
         Returns:
             dict | None: Game save data or None if an error occurred.
         """
+        url = f"https://api.pokerogue.net/savedata/session?slot={slot - 1}&clientSessionId={self.clientSessionId}"
+        return self.make_request(url, headers=self.headers)
 
-
-
-        url = f"https://api.pokerogue.net/savedata/session?slot={slot - 1}"
-        return self.make_request(url)
-
-    def update_all(self) -> None:
+    def dump_data(self, slot: int = 1) -> None:
         """
-        Update all data to the server.
+        Dump data from the API to local files.
+
+        Args:
+            slot (int): The slot number (1-5). Defaults to 1.
         """
-        url = "https://api.pokerogue.net/savedata/updateall"
+        if not self.slot:
+            slot = int(input("Enter slot (1-5): "))
+            self.slot = slot
+            if slot > 5 or slot < 1:
+                print("Invalid slot number")
+                return
 
-        if "trainer.json" not in os.listdir():
-            print("trainer.json file not found!")
-            return
+        trainer_data = self.get_trainer_data()
+        game_data = self.get_gamesave_data(slot)
 
-        with open("trainer.json", "r") as f:
-            trainer_data = json.load(f)
+        self.__write_data(trainer_data, "trainer.json")
+        self.__write_data(game_data, f"slot_{slot}.json")
 
-        if self.slot is None or self.slot > 5 or self.slot < 1:
-            print("Invalid slot number!")
-            return
+        self.__create_backup()
 
-        filename = f"slot_{self.slot}.json"
-        if filename not in os.listdir():
-            print(f"{filename} not found")
-            return
+        print("Data dumped successfully!")
 
-        with open(filename, "r") as f:
-            game_data = json.load(f)
-
-        try:
-            with requests.session() as s:
-                payload = {
-                    'clientSessionId': self.clientSessionId,
-                    'session': game_data,
-                    "sessionSlotId": self.slot - 1,
-                    'system': trainer_data
-                }
-                response = s.post(url=url, headers=self.headers, json=payload)
-                if response.status_code == 400:
-                    print("Please do not play Pokerogue while using this tool. Restart the tool!")
-                    return
-                response.raise_for_status()
-                print("Updated data successfully!")
-        except requests.exceptions.RequestException as e:
-            print(f"Exception during update_all() -> {e}. If the error persists, report on Github.")
-            print("This usually does not mean something good.")
+    def __write_data(self, data: dict, filename: str) -> None:
+        with open(filename, 'w') as f:
+            json.dump(data, f, indent=4)
 
     def __create_backup(self) -> None:
-        """
-        Create a backup of trainer.json and slot data.
-        """
-        files = ["trainer.json", f"slot_{self.slot}.json"]
-        backup_folder = "./backup/"
-
-        if not os.path.exists(backup_folder):
-            os.makedirs(backup_folder)
-            print("Backup folder created successfully.")
-
-        for file_name in files:
-            source_file = file_name
-            destination_file = os.path.join(backup_folder, file_name)
-            shutil.copy2(source_file, destination_file)
-            print(f"File '{file_name}' backed up to '{backup_folder}'.")
+        backup_dir = "./backup"
+        if not os.path.exists(backup_dir):
+            os.makedirs(backup_dir)
+        for file in os.listdir("."):
+            if file.endswith(".json"):
+                shutil.copy(file, backup_dir)
 
     def restore_backup(self) -> None:
         """
@@ -183,30 +155,85 @@ class Rogue:
             self.__write_data(game_data, f"slot_{self.slot}.json")
             print("Data restored")
 
-    def dump_data(self, slot: int = 1) -> None:
+    def update_all(self) -> None:
         """
-        Dump data from the API to local files.
-
-        Args:
-            slot (int): The slot number (1-5). Defaults to 1.
-
+        Update all data to the server.
         """
-        if not self.slot:
-            slot = int(input("Enter slot (1-5): "))
-            self.slot = slot
-            if slot > 5 or slot < 1:
-                print("Invalid slot number")
-                return
+        if "trainer.json" not in os.listdir():
+            print("trainer.json file not found!")
+            return
 
-        trainer_data = self.get_trainer_data()
-        game_data = self.get_gamesave_data(slot)
+        with open("trainer.json", "r") as f:
+            trainer_data = json.load(f)
 
-        self.__write_data(trainer_data, "trainer.json")
-        self.__write_data(game_data, f"slot_{slot}.json")
+        if self.slot is None or self.slot > 5 or self.slot < 1:
+            print("Invalid slot number!")
+            return
 
-        self.__create_backup()
+        filename = f"slot_{self.slot}.json"
+        if filename not in os.listdir():
+            print(f"{filename} not found")
+            return
 
-        print("Data dumped successfully!")
+        with open(filename, "r") as f:
+            game_data = json.load(f)
+
+        try:
+            trainer_id = trainer_data["trainerId"]
+            secret_id = trainer_data["secretId"]
+        except KeyError as e:
+            print(f"KeyError: {e}")
+            return
+
+        try:
+            # Update trainer data
+            self.update_trainer_data(trainer_data)
+
+            # Update game save data
+            self.update_gamesave_data(self.slot, game_data)
+
+            print("Updated data successfully!")
+        except Exception as e:
+            print(f"An error occurred during data update: {e}")
+
+
+
+        # Update trainer data from json payload -> None
+    def update_trainer_data(self, payload):
+        try:
+            trainer = self.get_trainer_data()
+            trainer_id, trainer_secretId = trainer["trainerId"], trainer["secretId"]
+            url_ext = f"&trainerId={trainer_id}&secretId={trainer_secretId}"
+
+            with requests.session() as s:
+                data = s.post(
+                    self.UPDATE_TRAINER_DATA_URL,
+                    headers=self.headers,
+                    json=payload,
+                )
+                return data
+
+        except Exception as e:
+            print("Error:", e)
+
+    # Update game data from json payload (slot required -> int 1-5) -> None
+    def update_gamesave_data(self, slot, payload):
+        try:
+            trainer = self.get_trainer_data()
+            trainer_id, trainer_secretId = trainer["trainerId"], trainer["secretId"]
+            url_ext = f"&trainerId={trainer_id}&secretId={trainer_secretId}"
+
+            with requests.session() as s:
+                data = s.post(
+                    f"{self.UPDATE_GAMESAVE_SLOT_URL}{slot-1}{url_ext}",
+                    headers=self.headers,
+                    json=payload,
+                )
+                return data
+
+        except Exception as e:
+            print("Error:", e)
+
 
     def __load_data(self, file_path: str) -> dict:
         """
