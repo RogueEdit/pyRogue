@@ -41,7 +41,7 @@ class Rogue:
                 data = response.json()
                 return data
         except requests.RequestException as e:
-            logger.exception("Failed to make request to %s: %s", url, e)
+            print("failed to make request")
             return {}
 
     def _setup_headers(self):
@@ -84,7 +84,7 @@ class Rogue:
             dict | None: Trainer data or None if an error occurred.
         """
         url = f"https://api.pokerogue.net/savedata/system?clientSessionId={self.clientSessionId}"
-        return self.__make_request(url)
+        return self.make_request(url)
 
 
     def get_gamesave_data(self, slot: int = 1) -> dict | None:
@@ -101,7 +101,7 @@ class Rogue:
 
 
         url = f"https://api.pokerogue.net/savedata/session?slot={slot - 1}&clientSessionId={self.clientSessionId}"
-        return self.__make_request(url)
+        return self.make_request(url)
 
     def update_all(self) -> None:
         """
