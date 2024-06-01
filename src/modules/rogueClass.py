@@ -10,11 +10,10 @@ from typing import Dict, Any, Union, Optional, List
 from modules.eggLogic import *
 
 class Rogue:
-    UPDATE_TRAINER_DATA_URL = "https://api.pokerogue.net/savedata/update?datatype=0"
-    UPDATE_GAMESAVE_SLOT_URL = "https://api.pokerogue.net/savedata/update?datatype=1&slot="
 
-    def __init__(self, auth_token: str, clientSessionId: str) -> None:
+    def __init__(self, session, auth_token: str, clientSessionId: str) -> None:
         self.__MAX_BIG_INT = (2 ** 53) - 1
+        self.session = session
         self.auth_token = auth_token
         self.clientSessionId = clientSessionId
         self.slot = None
@@ -25,7 +24,7 @@ class Rogue:
         ]
         self._setup_headers()
 
-                # Load other data if needed from JSON files
+        # Load other data if needed from JSON files
         with open("./data/pokemon.json") as f:
             self.pokemon_id_by_name = json.loads(f.read())
 
@@ -53,11 +52,10 @@ class Rogue:
             dict: JSON response from the server.
         """
         try:
-            with requests.session() as s:
-                response = s.get(url, headers=headers)
-                response.raise_for_status()  # Raise an exception for non-2xx status codes
-                data = response.json()
-                return data
+            response = self.session.get(url, headers=headers)
+            response.raise_for_status()  # Raise an exception for non-2xx status codes
+            data = response.json()
+            return data
         except requests.RequestException as e:
             print("Failed to make request:", e)
             return {}
