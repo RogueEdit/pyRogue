@@ -16,6 +16,7 @@ class Rogue:
         self._MAX_BIG_INT = (2 ** 53) - 1
         self.auth_token = auth_token
         self.client_session_id = client_session_id
+        self.slot = None
         self.headers = None
         self.user_agents = [
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Safari/605.1.15",
