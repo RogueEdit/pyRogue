@@ -1,6 +1,8 @@
-# loginLogic.py
 import logging
+import getpass
 import requests
+import random
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -16,12 +18,12 @@ class loginLogic:
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
     }
 
-    def __init__(self, session, username: str, password: str) -> None:
-        self.session = session
+    def __init__(self, username: str, password: str) -> None:
         self.username = username
         self.password = password
         self.token = None
         self.session_id = None
+        self.session = requests.Session()
 
     def login(self) -> bool:
         data = {"username": self.username, "password": self.password}
@@ -43,3 +45,6 @@ class loginLogic:
             logger.error("Login failed with requests: %s", e)
             print("Login failed with requests:", e)
             return False
+
+    def get_auth_headers(self) -> dict:
+        return {"authorization": self.token}
