@@ -1,27 +1,35 @@
-import json
-
+import logging
 import getpass
+from modules.loginLogic import loginLogic
+from modules.rogueClass import Rogue  # Importing the Rogue class
 
-from modules.seleniumLogic import SeleniumLogic
+# Configure logging to display debug messages
+logging.basicConfig(level=logging.DEBUG)
 
 if __name__ == '__main__':
-
-    with open("./data/data.json") as f:
-         data = json.loads(f.read())
-
-    print(data["startup_message"])
-
     while True:
         print("\n<Login>")
-        username, password = input("Username: "), getpass.getpass("Password(password is hidden): ")
-        login = SeleniumLogic(username, password)
-        rogue_login = login.logic()
-        rogue = rogue_login.login()
-        if rogue:
-            print(f"Logged in as: {username.capitalize()}")
-            break
-        else:
-            print("Incorrect credentials")
+        username = input("Username: ")
+        password = getpass.getpass("Password (password is hidden): ")
+
+        # Create an instance of the loginLogic class
+        login = loginLogic(username, password)
+
+        try:
+            # Perform the login
+            if login.login():  # Call the login method and check for success
+                print(f"Logged in as: {username.capitalize()}")
+                # If login is successful, create an instance of the Rogue class with the obtained token
+                rogue = Rogue(login.token, login.session_id)  # Assuming session_id is still required
+                # Example: Call some method that requires authentication
+                # response = rogue.update_all()
+                # Process the response as needed
+                break
+            else:
+                print("Incorrect credentials")
+        except Exception as e:
+            print("An error occurred during login.")
+            logging.exception(e)
 
     func = {
         "1": rogue.update_all,

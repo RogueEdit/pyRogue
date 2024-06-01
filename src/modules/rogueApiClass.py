@@ -1,26 +1,10 @@
-"""Module for interacting with the Rogue API."""
-
+# rogueApiClass.py
 from modules.rogueClass import Rogue
 
 class RogueAPI:
-    """Class for interacting with the Rogue API."""
-
-    def __init__(self, auth_token: str, clientSessionId: str) -> None:
-        """
-        Initialize RogueAPI object.
-
-        Parameters:
-        auth_token (str): The authentication token.
-        clientSessionId (str): The client session ID.
-        """
+    def __init__(self, auth_token: str, session_id: str) -> None:
         self.auth_token = auth_token
-        self.clientSessionId = clientSessionId
+        self.session_id = session_id
 
     def login(self) -> Rogue:
-        """
-        Log in using the authentication token and client session ID.
-
-        Returns:
-        Rogue: An instance of Rogue.
-        """
-        return Rogue(self.auth_token, self.clientSessionId)
+        return Rogue(self.auth_token, self.session_id)
