@@ -10,6 +10,9 @@ from typing import Dict, Any, Union, Optional, List
 from modules.eggLogic import *
 
 class Rogue:
+    TRAINER_DATA_URL = "https://api.pokerogue.net/savedata/get?datatype=0"
+    # Update Trainer Data
+    UPDATE_TRAINER_DATA_URL = "https://api.pokerogue.net/savedata/update?datatype=0"
 
     def __init__(self, session, auth_token: str, clientSessionId: str) -> None:
         self.__MAX_BIG_INT = (2 ** 53) - 1
@@ -82,7 +85,7 @@ class Rogue:
         Returns:
             dict | None: Trainer data or None if an error occurred.
         """
-        url = f"https://api.pokerogue.net/savedata/system?clientSessionId={self.clientSessionId}"
+        url = f"https://api.pokerogue.net/savedata/system"
         return self.make_request(url, headers=self.headers)
 
     def get_gamesave_data(self, slot: int = 1) -> dict | None:
@@ -95,7 +98,7 @@ class Rogue:
         Returns:
             dict | None: Game save data or None if an error occurred.
         """
-        url = f"https://api.pokerogue.net/savedata/session?slot={slot - 1}&clientSessionId={self.clientSessionId}"
+        url = f"https://api.pokerogue.net/savedata/session?slot={slot - 1}"
         return self.make_request(url, headers=self.headers)
 
     def dump_data(self, slot: int = 1) -> None:
@@ -176,12 +179,7 @@ class Rogue:
         with open(filename, "r") as f:
             game_data = json.load(f)
 
-        try:
-            trainer_id = trainer_data["trainerId"]
-            secret_id = trainer_data["secretId"]
-        except KeyError as e:
-            print(f"KeyError: {e}")
-            return
+        trainer = self.get_trainer_data()
 
         try:
             # Update trainer data
@@ -199,28 +197,20 @@ class Rogue:
         # Update trainer data from json payload -> None
     def update_trainer_data(self, payload):
         try:
-            trainer = self.get_trainer_data()
-            trainer_id, trainer_secretId = trainer["trainerId"], trainer["secretId"]
-            url_ext = f"&trainerId={trainer_id}&secretId={trainer_secretId}"
-
             with requests.session() as s:
                 data = s.post(
                     self.UPDATE_TRAINER_DATA_URL,
-                    headers=self.headers,
+                    headers=self.AUTH_HEADERS,
                     json=payload,
                 )
                 return data
 
         except Exception as e:
-            print("Error:", e)
+            logger.exception(e)
 
     # Update game data from json payload (slot required -> int 1-5) -> None
     def update_gamesave_data(self, slot, payload):
         try:
-            trainer = self.get_trainer_data()
-            trainer_id, trainer_secretId = trainer["trainerId"], trainer["secretId"]
-            url_ext = f"&trainerId={trainer_id}&secretId={trainer_secretId}"
-
             with requests.session() as s:
                 data = s.post(
                     f"{self.UPDATE_GAMESAVE_SLOT_URL}{slot-1}{url_ext}",
