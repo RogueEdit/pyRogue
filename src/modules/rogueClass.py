@@ -8,15 +8,11 @@ from typing import Dict, Any, Union, Optional, List
 
 from modules.eggLogic import *
 
-class Rogue:
-    _MAX_BIG_INT = (2 ** 53) - 1
 
-import requests
-import json
-import random
 
 class Rogue:
     def __init__(self, auth_token: str, client_session_id: str) -> None:
+        self._MAX_BIG_INT = (2 ** 53) - 1
         self.auth_token = auth_token
         self.client_session_id = client_session_id
         self.headers = None
@@ -57,6 +53,8 @@ class Rogue:
 
         with open("./data/passive.json") as f:
             self.passive_data = json.loads(f.read())
+
+    
 
     def get_trainer_data(self) -> dict | None:
         """
@@ -175,7 +173,7 @@ class Rogue:
             self.__write_data(game_data, f"slot_{self.slot}.json")
             print("Data restored")
 
-    def __dump_data(self, slot: int = 1) -> None:
+    def dump_data(self, slot: int = 1) -> None:
         """
         Dump data from the API to local files.
 
