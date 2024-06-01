@@ -4,6 +4,7 @@ import random
 import os
 import traceback
 import shutil
+import brotli
 from typing import Dict, Any, Union, Optional, List
 
 from modules.eggLogic import *
