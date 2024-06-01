@@ -7,30 +7,26 @@ from modules.rogueClass import Rogue  # Importing the Rogue class
 logging.basicConfig(level=logging.DEBUG)
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG)
+    
     while True:
         print("\n<Login>")
         username = input("Username: ")
         password = getpass.getpass("Password (password is hidden): ")
 
-        # Create an instance of the loginLogic class
         login = loginLogic(username, password)
 
         try:
-            # Perform the login
-            if login.login():  # Call the login method and check for success
+            if login.login():
                 print(f"Logged in as: {username.capitalize()}")
-                # If login is successful, create an instance of the Rogue class with the obtained token
-                rogue = Rogue(login.token, login.session_id)  # Assuming session_id is still required
-                # Example: Call some method that requires authentication
-                # response = rogue.update_all()
-                # Process the response as needed
+                rogue = Rogue(login.token, login.session_id)
                 break
             else:
                 print("Incorrect credentials")
         except Exception as e:
             print("An error occurred during login.")
             logging.exception(e)
-
+            
     func = {
         "1": rogue.update_all,
         "2": rogue.starter_edit,
