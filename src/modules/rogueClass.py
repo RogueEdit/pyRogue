@@ -11,35 +11,37 @@ from modules.eggLogic import *
 class Rogue:
     _MAX_BIG_INT = (2 ** 53) - 1
 
-    def __init__(self, auth_token: str, clientSessionId: str) -> None:
-        """
-        Initialize the Rogue class with authorization token and client session ID.
+import requests
+import json
+import random
 
-        Args:
-            auth_token (str): Authorization token for API requests.
-            clientSessionId (str): Client session ID for API requests.
-        """
+class Rogue:
+    def __init__(self, auth_token: str, client_session_id: str) -> None:
         self.auth_token = auth_token
-        self.clientSessionId = clientSessionId
+        self.client_session_id = client_session_id
         self.headers = None
-        self.slot = None
         self.user_agents = [
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Safari/605.1.15",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:98.0) Gecko/20100101 Firefox/98.0",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36 Edg/98.0.1108.43",
-            "Opera/9.80 (Windows NT 6.0) Presto/2.12.388 Version/12.14",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36 OPR/98.0.4787.0",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/605.1.15",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:98.0) Gecko/20100101 Firefox/98.0",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Safari/605.1.15",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/605.1.15",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0"
+            # Add more user agents if needed
         ]
-
         self._setup_headers()
+
+    def _setup_headers(self):
+        self.headers = {
+            "Authorization": self.auth_token,
+            "User-Agent": random.choice(self.user_agents),
+            "Accept": "application/json",
+            "Accept-Language": "it-IT,it;q=0.8,en-US;q=0.5,en;q=0.3",
+            "Accept-Encoding": "gzip, deflate, br, zstd",
+            "Referer": "https://pokerogue.net/",
+            "Content-Type": "application/json",
+            "content-encoding": "br",
+            "Origin": "https://pokerogue.net/",
+            "Connection": "keep-alive",
+            "Sec-Fetch-Dest": "empty"
+        }
+
+        # Load other data if needed from JSON files
 
         with open("./data/pokemon.json") as f:
             self.pokemon_id_by_name = json.loads(f.read())
@@ -55,23 +57,6 @@ class Rogue:
 
         with open("./data/passive.json") as f:
             self.passive_data = json.loads(f.read())
-
-        self.__dump_data()
-
-    def _setup_headers(self):
-        self.headers = {
-            "Authorization": self.auth_token,
-            "User-Agent": random.choice(self.user_agents),
-            "Accept": "application/json",
-            "Accept-Language": "it-IT,it;q=0.8,en-US;q=0.5,en;q=0.3",
-            "Accept-Encoding": "gzip, deflate, br, zstd",
-            "Referer": "https://pokerogue.net/",
-            "Content-Type": "application/json",
-            "content-encoding": "br",
-            "Origin": "https://pokerogue.net/",
-            "Connection": "keep-alive",
-            "Sec-Fetch-Dest": "empty"  # <-- Adding the missing closing quotation mark
-        }
 
     def get_trainer_data(self) -> dict | None:
         """
