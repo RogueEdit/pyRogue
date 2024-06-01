@@ -19,8 +19,7 @@ class Rogue:
         self.slot = None
         self.headers = None
         self.user_agents = [
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Safari/605.1.15",
-            # Add more user agents if needed
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Safari/605.1.15"
         ]
         self._setup_headers()
 
@@ -35,6 +34,7 @@ class Rogue:
         Returns:
             dict: JSON response from the server.
         """
+
         try:
             with requests.session() as s:
                 response = s.get(url, headers=headers)
@@ -84,9 +84,8 @@ class Rogue:
         Returns:
             dict | None: Trainer data or None if an error occurred.
         """
-        url = f"https://api.pokerogue.net/savedata/system?clientSessionId={self.clientSessionId}"
+        url = f"https://api.pokerogue.net/savedata/system"
         return self.make_request(url)
-
 
     def get_gamesave_data(self, slot: int = 1) -> dict | None:
         """
@@ -101,7 +100,7 @@ class Rogue:
 
 
 
-        url = f"https://api.pokerogue.net/savedata/session?slot={slot - 1}&clientSessionId={self.clientSessionId}"
+        url = f"https://api.pokerogue.net/savedata/session?slot={slot - 1}"
         return self.make_request(url)
 
     def update_all(self) -> None:
@@ -183,30 +182,7 @@ class Rogue:
             self.__write_data(game_data, f"slot_{self.slot}.json")
             print("Data restored")
 
-    def dump_data(self, slot: int = 1) -> None:
-        """
-        Dump data from the API to local files.
 
-        Args:
-            slot (int): The slot number (1-5). Defaults to 1.
-
-        """
-        if not self.slot:
-            slot = int(input("Enter slot (1-5): "))
-            self.slot = slot
-            if slot > 5 or slot < 1:
-                print("Invalid slot number")
-                return
-
-        trainer_data = self.get_trainer_data()
-        game_data = self.get_gamesave_data(slot)
-
-        self.__write_data(trainer_data, "trainer.json")
-        self.__write_data(game_data, f"slot_{slot}.json")
-
-        self.__create_backup()
-
-        print("Data dumped successfully!")
 
     def __load_data(self, file_path: str) -> dict:
         """
