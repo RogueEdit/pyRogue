@@ -24,6 +24,27 @@ class Rogue:
         ]
         self._setup_headers()
 
+    def make_request(self, url: str, headers: dict = None) -> dict:
+        """
+        Make an HTTP GET request to the specified URL with optional headers.
+
+        Args:
+            url (str): The URL to make the request to.
+            headers (dict, optional): Headers to include in the request. Defaults to None.
+
+        Returns:
+            dict: JSON response from the server.
+        """
+        try:
+            with requests.session() as s:
+                response = s.get(url, headers=headers)
+                response.raise_for_status()  # Raise an exception for non-2xx status codes
+                data = response.json()
+                return data
+        except requests.RequestException as e:
+            logger.exception("Failed to make request to %s: %s", url, e)
+            return {}
+
     def _setup_headers(self):
         self.headers = {
             "Authorization": self.auth_token,
@@ -56,8 +77,6 @@ class Rogue:
         with open("./data/passive.json") as f:
             self.passive_data = json.loads(f.read())
 
-    
-
     def get_trainer_data(self) -> dict | None:
         """
         Retrieve trainer data from the API.
@@ -65,19 +84,8 @@ class Rogue:
         Returns:
             dict | None: Trainer data or None if an error occurred.
         """
-        url = "https://api.pokerogue.net/savedata/system"
-        headers = self.headers.copy()  # Make a copy of headers
-        if self.clientSessionId:
-            headers["clientSessionId"] = self.clientSessionId  # Add clientSessionId to headers
-
-        try:
-            with requests.session() as s:
-                response = s.get(url, headers=headers)
-                response.raise_for_status()
-                return response.json()
-        except Exception as e:
-            print("Error during fetching data.")
-            return None
+        url = f"https://api.pokerogue.net/savedata/system?clientSessionId={self.clientSessionId}"
+        return self.__make_request(url)
 
 
     def get_gamesave_data(self, slot: int = 1) -> dict | None:
