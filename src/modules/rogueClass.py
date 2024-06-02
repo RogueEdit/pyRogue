@@ -168,8 +168,9 @@ class Rogue:
             data = response.json()
             return data
         except requests.RequestException as e:
-            logger.error(Fore.RED + "Error fetching gamesave data: ", str(e) + Style.RESET_ALL)
-            return {}
+            logger.error(Fore.RED + "Error fetching savegame data. Please restart the tool" + Style.RESET_ALL)
+            #print(Fore.RED + "Error fetching trainer data." + Style.RESET_ALL)
+            #return {}
 
     def get_gamesave_data(self, slot=1):
         try:
@@ -179,8 +180,9 @@ class Rogue:
             data = response.json()
             return data
         except requests.RequestException as e:
-            logger.error(Fore.RED + f"Error fetching savegame data for {self.slot}: %s" + Style.RESET_ALL, e)
-            return {}
+            logger.error(Fore.RED + "Error fetching savegame data. Please restart the tool" + Style.RESET_ALL)
+            #logger.error(Fore.RED + f"Error fetching savegame data for {self.slot}: %s" + Style.RESET_ALL, e)
+            #return {}
 
     def update_trainer_data(self, trainer_payload: dict) -> dict:
         """
@@ -203,9 +205,10 @@ class Rogue:
                 return self.__handle_error_response(response)
             
         except requests.RequestException as e:
-            if isinstance(e, requests.HTTPError) and e.response.status_code != 200 or e.response.status_code != 400:
-            logger.error(Fore.RED + "Error updating trainer data: ", str(e) + "Restart restart your tool." + Style.RESET_ALL)
-            return {}
+            logger.error(Fore.RED + "Error updating trainer data. Please restart the tool." + Style.RESET_ALL)
+            #if isinstance(e, requests.HTTPError) and e.response.status_code != 200 or e.response.status_code != 400:
+            #logger.error(Fore.RED + "Error updating trainer data: ", str(e) + "Restart restart your tool." + Style.RESET_ALL)
+            #return {}
 
     def update_gamesave_data(self, slot: int, gamedata_payload: Dict[str, any], url_ext: str) -> Dict[str, any]:
         """
@@ -230,9 +233,11 @@ class Rogue:
                 return self.__handle_error_response(response)
             
         except requests.RequestException as e:
-            if isinstance(e, requests.HTTPError) and e.response.status_code != 200 or e.response.status_code != 400:
-                logger.error(Fore.RED + f"Error updating savegame data for {self.slot}: ", str(e) + "Restart the tool and try again." + Style.RESET_ALL)
-            return {}
+            logger.error(Fore.RED + "Error updating trainer data. Please restart the tool." + Style.RESET_ALL)
+            return 
+            #if isinstance(e, requests.HTTPError) and e.response.status_code != 200 or e.response.status_code != 400:
+            #    logger.error(Fore.RED + f"Error updating savegame data for {self.slot}: ", str(e) + "Restart the tool and try again." + Style.RESET_ALL)
+            #return {}
 
     def update_all(self) -> None:
         """
