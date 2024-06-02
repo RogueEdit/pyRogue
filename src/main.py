@@ -4,7 +4,6 @@ import requests
 from modules.loginLogic import loginLogic
 from modules.rogueClass import Rogue
 from colorama import Fore, Style, init
-import brotli
 
 #Initialize colorama
 init()
@@ -27,9 +26,6 @@ if __name__ == '__main__':
             if login.login():
                 print(f"Logged in as: {username.capitalize()}")
                 rogue = Rogue(session, login.token, login.session_id)
-                
-                # Call the dump_data method after successful login
-                rogue.dump_data()
                 
                 break
             else:
