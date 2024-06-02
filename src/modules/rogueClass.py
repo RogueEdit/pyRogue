@@ -417,26 +417,23 @@ class Rogue:
 
         self.__write_data(trainer_data, "trainer.json")
 
-    def starter_edit(self, dexId: Optional[Union[str, int]] = None) -> None:
+    def starter_edit(self, dexId: Optional[str] = None) -> None:
         """
-        Edits a starter Pokémon.
+        Allows the user to edit starter Pokemon data for a trainer.
 
         Args:
-            dexId (Optional[Union[str, int]]): The ID or name of the Pokémon. Defaults to None.
-
-        Returns:
-            None
+        - dexId (Optional[str]): The ID or name of the Pokemon. If None, the user will be prompted to enter it.
         """
         trainer_data = self.__load_data("trainer.json")       
 
         if not trainer_data:
-            print(Fore.RED + "There was something wrong with the Game data, please fetch your data anew." + Style.RESET_ALL)
+            print(Fore.RED + "There was something wrong with the data, please restart the tool." + Style.RESET_ALL)
             return None
         if not dexId:
             dexId = input("Enter Pokemon (Name / ID): ")
             if dexId.isnumeric():
                 if dexId not in trainer_data["starterData"]:
-                    print(f"No Pokemon with ID: {dexId}")
+                    print(Fore.BLUE + f"No Pokemon with ID: {dexId}" + Style.RESET_ALL)
                     return
             else:
                 dexId = self.pokemon_id_by_name["dex"].get(dexId.lower())
@@ -445,57 +442,57 @@ class Rogue:
                     return
                 
 
-        choice: int = int(input("Do you want to unlock all forms of the pokemon? (All forms are Tier 3 shinies. (1: Yes | 2: No)): "))
+        choice = int(input("Do you want to unlock all forms of the pokemon?(All forms are Tier 3 shinies. 1: Yes, 2: No): "))
 
         if (choice < 1) or (choice > 2):
-            print("Invalid command.")
+            print(Fore.BLUE + "Invalid command." + Style.RESET_ALL)
             return
         elif choice == 1:
-            caught_attr: int = self.__MAX_BIG_INT
+            caught_attr = self.__MAX_BIG_INT
         else:
-            choice: int = int(input("Make the Pokemon shiny? (1: Yes | 2: No)): "))
+            choice = int(input("Make the Pokemon shiny? (1: Yes, 2: No): "))
+
             if (choice < 1) or (choice > 2):
                 print(Fore.BLUE + "Invalid choice." + Style.RESET_ALL)
                 return
             elif choice == 2:
-                caught_attr: int = 253
+                caught_attr = 253
             else:
-                choice: int = int(input("What tier shiny do you want? (1: Tier 1 | 2: Tier 2 | 3: Tier 3): "))
+                choice = int(input("What tier shiny do you want? (1: Tier 1, 2: Tier 2, 3: Tier 3, 4: All shinies): "))
                 if (choice < 1) or (choice > 4):
                     print(Fore.BLUE + "Invalid choice." + Style.RESET_ALL)
                     return
                 elif choice == 1:
-                    caught_attr: int = 159
+                    caught_attr = 159
                 elif choice == 2:
-                    caught_attr: int = 191
+                    caught_attr = 191
                 elif choice == 3:
-                    caught_attr: int = 255
-
+                    caught_attr = 223
+                else:
+                    caught_attr = 255
             
-        nature_attr: int = 67108862
-        caught = input("How many of this Pokemon have you caught?: ")
-        hatched: str = input("How many of this Pokemon have hatched from eggs?: ")
-        seen_count: str = input("How many of this Pokemon have you seen: ")
-        candies: str = input("How many Candies do you want?: ")
-        print(Fore.BLUE + "Choose your pokemon stats now. Between 1 and 31." + Style.RESET_ALL)
-        ivs: List[int] = [int(input("SpA IVs: ")), int(input("DEF IVs: ")), int(input("Attack IVs: ")),
+        nature_attr = 67108862
+        caught = int(input("How many of this Pokemon have you caught?: "))
+        hatched = int(input("How many of this Pokemon have hatched from eggs?: "))
+        seen_count = int(input("How many of this Pokemon have you seen?: "))
+        candies = int(input("How many candies do you want?: "))
+        print(Fore.BLUE + "Choose a value between 1 and 31 for your IVs (Pokemon Stats)." + Style.RESET_ALL)
+        ivs = [int(input("SpA IVs: ")), int(input("DEF IVs: ")), int(input("Attack IVs: ")),
                int(input("HP IVs: ")), int(input("Spe IVs: ")), int(input("Def IVs: "))]
-        passive: int = int(input("Do you want to unlock the passive? (1: Yes | 2: No): "))
-        ribbon: int = int(input("Do you want to unlock the win-ribbon?: (1: Yes | 2: No): "))
-        friendship: str = input("How many friendship value with this pokemon?: ")
-
+        
+        passive = int(input("Do you want to unlock the passive?(1: Yes, 2: No): "))
         if (passive < 1) or (passive > 2):
-            print(Fore.BLUE + "Invalid choice." + Style.RESET_ALL)
+            print(Fore.BLUE + "Invalid command." + Style.RESET_ALL)
             return
         elif passive == 1:
             if dexId in self.passive_data["noPassive"]:
                 print(Fore.BLUE + "This pokemon doesn't have a passive ability." + Style.RESET_ALL)
-                passiveAttr: int = 0
+                passiveAttr = 0
             else:
-                passiveAttr: int = 3
+                passiveAttr = 3
         else:
-            passiveAttr: int = 0
-
+            passiveAttr = 0
+        
 
         trainer_data["dexData"][dexId] = {
             "seenAttr": 479,
@@ -510,15 +507,10 @@ class Rogue:
             "moveset": None,
             "eggMoves": 15,
             "candyCount": candies,
-            "friendship": None if not friendship else friendship,
             "abilityAttr": 7,
             "passiveAttr": passiveAttr,
-            "valueReduction": 2,
-            "classicWinCount": None if ribbon == 2 else random.randint(1, 50)
+            "valueReduction": 2
         }
-
-        if ribbon == 1:
-                trainer_data["gameStats"]["classicWinCount"] = random.randint(1, 50)
 
         self.__write_data(trainer_data, "trainer.json")
 
@@ -574,93 +566,83 @@ class Rogue:
 
 
     def edit_pokemon_party(self) -> None:
-        """
-        Allows editing a Pokémon in the player's party.
+            """
+            Allows the user to edit the Pokemon party.
+            """
+            slot = self.slot
+            filename = f"slot_{slot}.json"
 
-        This method presents a menu of options to edit a Pokémon in the player's party
-        including changing species, setting shininess, level, luck, IVs, and moves.
+            game_data = self.__load_data(filename)
 
-        Returns:
-            None
-        """
-        slot = self.slot
-        filename = f"slot_{slot}.json"
+            if game_data is None:
+                print(Fore.RED + "There was something wrong with the data, please restart the tool." + Style.RESET_ALL)
+                return
 
-        game_data = self.__load_data(filename)
-        
-        if game_data is None:
-            print(Fore.RED + "There was something wrong with the Game data, please fetch your data anew." + Style.RESET_ALL)
-            return
-        
-        if game_data["gameMode"] == 3:
-            print(Fore.RED + "Cannot edit this property on Daily Runs." + Style.RESET_ALL)
-            return
-        
-        options = [
-            "1: Change species",
-            "2: Set it shiny",
-            "3: Set Level",
-            "4: Set Luck",
-            "5: Set IVs",
-            "6: Change a move on a pokemon in your team"
-        ]
-        
-        party_num = int(input("Select the party slot of the Pokémon you want to edit (0-5): "))
-        if party_num < 0 or party_num > 5:
-            print(Fore.RED + "Invalid party slot." + Style.RESET_ALL)
-            return
+            if game_data["gameMode"] == 3:
+                print(Fore.BLUE + "Cannot edit this property on Daily Runs." + Style.RESET_ALL)
+                return
 
-        if party_num >= len(game_data["party"]):
-            print(Fore.RED + "Selected party slot does not exist. Choose another." + Style.RESET_ALL)
-            return
-        
-        print(Fore.GREEN + "**************************** OPTIONS ****************************" + Style.RESET_ALL)
-        print("\n".join(options))
-        print(Fore.Gren + "--------------------------------------------------------------------" + Style.RESET_ALL)
-        
-        command = int(input("Option: "))
-        if command < 1 or command > 6:
-            print(Fore.RED + "Invalid option" + Style.RESET_ALL)
-            return
-        
-        if command == 1:
-            poke_id = int(input("Choose the pokemon you'd like by ID: "))
-            game_data["party"][party_num]["species"] = poke_id
-        elif command == 2:
-            game_data["party"][party_num]["shiny"] = True
-            variant = int(input("Choose the shiny variant (from 0 to 2): "))
-            if variant < 0 or variant > 2:
+            options = [
+                "1: Change species",
+                "2: Set it shiny",
+                "3: Set Level",
+                "4: Set Luck",
+                "5: Set IVs",
+                "6: Change a move on a pokemon in your team"
+            ]
+
+            party_num = int(input("Select the party slot of the Pokémon you want to edit (0-5): "))
+            if party_num < 0 or party_num > 5:
+                print(Fore.RED + "Invalid party slot" + Style.RESET_ALL)
+                return
+
+            print("**************************** OPTIONS ****************************")
+            print("\n".join(options))
+            print("--------------------------------------------------------------------")
+
+            command = int(input("Option: "))
+            if command < 1 or command > 6:
                 print(Fore.BLUE + "Invalid input." + Style.RESET_ALL)
                 return
-            game_data["party"][party_num]["variant"] = variant
-        elif command == 3:
-            level = int(input("Choose the level: "))
-            if level < 1:
-                print(Fore.BLUE + "Invalid input." + Style.RESET_ALL)
-                return
-            game_data["party"][party_num]["level"] = level
-        elif command == 4:
-            luck = int(input("What luck level do you desire? (from 1 to 14): "))
-            if luck < 1 or luck > 14:
-                print(Fore.BLUE + "Invalid input." + Style.RESET_ALL)
-                return
-            game_data["party"][party_num]["luck"] = luck
-        elif command == 5:
-            ivs = [int(input("SpA IVs: ")), int(input("DEF IVs: ")), int(input("Attack IVs: ")),
-               int(input("HP IVs: ")), int(input("Spe IVs: ")), int(input("Def IVs: "))]
-            game_data["party"][party_num]["ivs"] = ivs
-        elif command == 6:
-            move_slot = int(input("Select the move you want to change (from 0 to 3): "))
-            if move_slot < 0 or move_slot > 3:
-                print(Fore.BLUE + "Invalid input." + Style.RESET_ALL)
-                return
-            move = int(input("What move do you want (ID)? "))
-            if move < 0 or move > 919:
-                print(Fore.BLUE + "Invalid input." + Style.RESET_ALL)
-                return
-            game_data["party"][party_num]["moveset"][move_slot]["moveId"] = move
 
-        self.__write_data(game_data, filename)
+            if command == 1:
+                poke_id = int(input("Choose the pokemon you'd like by ID: "))
+                game_data["party"][party_num]["species"] = poke_id
+            elif command == 2:
+                game_data["party"][party_num]["shiny"] = True
+                variant = int(input("Choose the shiny variant (from 0 to 2): "))
+                if variant < 0 or variant > 2:
+                    print(Fore.BLUE + "Invalid input." + Style.RESET_ALL)
+                    return
+                game_data["party"][party_num]["variant"] = variant
+            elif command == 3:
+                level = int(input("Choose the level: "))
+                if level < 1:
+                    print(Fore.BLUE + "Invalid input" + Style.RESET_ALL)
+                    return
+                game_data["party"][party_num]["level"] = level
+            elif command == 4:
+                luck = int(input("What luck level do you desire? (from 1 to 14): "))
+                if luck < 1 or luck > 14:
+                    print(Fore.BLUE + "Invalid input" + Style.RESET_ALL)
+                    return
+                game_data["party"][party_num]["luck"] = luck
+            elif command == 5:
+                ivs = [int(input("SpA IVs: ")), int(input("DEF IVs: ")), int(input("Attack IVs: ")),
+                    int(input("HP IVs: ")), int(input("Spe IVs: ")), int(input("Def IVs: "))]
+                game_data["party"][party_num]["ivs"] = ivs
+            elif command == 6:
+                move_slot = int(input("Select the move you want to change (from 0 to 3): "))
+                if move_slot < 0 or move_slot > 3:
+                    print(Fore.BLUE + "Invalid input" + Style.RESET_ALL)
+                    return
+                move = int(input("What move do you want (ID)? "))
+                if move < 0 or move > 919:
+                    print(Fore.BLUE + "Invalid input" + Style.RESET_ALL)
+                    return
+                game_data["party"][party_num]["moveset"][move_slot]["moveId"] = move
+
+            self.__write_data(game_data, filename)
     
     def unlock_all_gamemodes(self) -> None:
         """
