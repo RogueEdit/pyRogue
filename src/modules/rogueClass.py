@@ -155,34 +155,30 @@ class Rogue:
         print("Data dumped successfully!")
 
     def get_trainer_data(self) -> dict:
-        """
-        Fetch trainer data from the API.
-
-        Returns:
-            dict: Trainer data from the API.
-        """
         try:
             print("Fetching trainer data...")
-            response = self.session.get(self.TRAINER_DATA_URL, headers=self.headers)
-            response.raise_for_status()
-            data = response.json()
-            return data
-        except requests.RequestException as e:
-            logger.error(Fore.RED + "Error fetching savegame data. Please restart the tool" + Style.RESET_ALL)
-            #print(Fore.RED + "Error fetching trainer data." + Style.RESET_ALL)
-            #return {}
+            print(f"Request URL: {self.TRAINER_DATA_URL}")
+            print(f"Request Headers: {self.headers}")
 
-    def get_gamesave_data(self, slot=1):
-        try:
-            print("Fetching gamesave data...")
-            response = self.session.get(f"{self.GAMESAVE_SLOT_URL}{slot-1}", headers=self.headers)
+            response = self.session.get(self.TRAINER_DATA_URL, headers=self.headers)
+            
+            print(f"HTTP Status Code: {Fore.RED if response.status_code >= 400 else Fore.GREEN}{response.status_code}{Style.RESET_ALL}")
+            print(f"Response Headers: {response.headers}")
+            print(f"Response Content-Type: {response.headers.get('Content-Type')}")
+            
             response.raise_for_status()
-            data = response.json()
-            return data
+            
+            if response.content:  # Check if the response content is not empty
+                data = response.json()
+                print(f"Response JSON: {data}")
+                return data
+            else:
+                print(Fore.RED + "Error: Empty response content." + Style.RESET_ALL)
+                return self.__handle_error_response(response)
         except requests.RequestException as e:
-            logger.error(Fore.RED + "Error fetching savegame data. Please restart the tool" + Style.RESET_ALL)
-            #logger.error(Fore.RED + f"Error fetching savegame data for {self.slot}: %s" + Style.RESET_ALL, e)
-            #return {}
+            logger.error(Fore.RED + f"Error fetching trainer data: {e}" + Style.RESET_ALL)
+            print(Fore.RED + f"Error details: {e.response.text if e.response else 'No response received'}" + Style.RESET_ALL)
+            return {}
 
     def update_trainer_data(self, trainer_payload: dict) -> dict:
         """
