@@ -6,6 +6,7 @@
 [<img src="https://img.shields.io/badge/Join%20our%20News-Discord!-8A2BE2">](https://discord.gg/8ZAnsZfVQP)
 
 ![Preview Image](.github/previews/main.png)
+![Preview Image](.github/previews/tool.png)
 
 [More examples](PREVIEW.md)
 
