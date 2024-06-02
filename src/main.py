@@ -91,7 +91,7 @@ if __name__ == '__main__':
         f"19: Show all Biome IDs{' ' * 27}{formatted_working_status}",
         f"20: Show all Move IDs{' ' * 28}{formatted_working_status}",
         "----------------------------------------------------------",
-        f"21: >> Save data and upload to the Server{' ' * 17}{formatted_working_status}",
+            f"21: >> Save data and upload to the Server{' ' * 2}" + Fore.LIGHTYELLOW_EX + Style.BRIGHT +"(Use when done)" + Style.RESET_ALL,
         f"{formatted_title}",
     ]
     while True:
