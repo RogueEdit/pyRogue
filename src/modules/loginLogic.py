@@ -1,10 +1,7 @@
-import logging
-import getpass
 import requests
+from modules.headers import user_agents
 import random
-import json
-
-logger = logging.getLogger(__name__)
+from colorama import init, Fore, Style
 
 class loginLogic:
     LOGIN_URL = "https://api.pokerogue.net/account/login"
@@ -25,6 +22,19 @@ class loginLogic:
         self.session_id = None
         self.session = requests.Session()
 
+    # we need the hide we are python already
+    def _generate_headers(self) -> dict:
+        random_user_agent = random.choice(user_agents)
+        headers = {
+            "Accept": "application/x-www-form-urlencoded",
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Referer": "https://pokerogue.net/",
+            "Sec-Ch-Ua": '"Google Chrome";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
+            "Sec-Ch-Ua-Platform": "Windows",
+            "User-Agent": random_user_agent,
+        }
+        return headers
+
     def login(self) -> bool:
         data = {"username": self.username, "password": self.password}
         try:
@@ -32,18 +42,28 @@ class loginLogic:
             response.raise_for_status()
             login_response = response.json()
             self.token = login_response.get("token")
-            self.session_id = login_response.get("sessionID")
-            logger.info("Logged in successfully.")
-            print("Logged in successfully.")
+            self.session_id = login_response.get("clientSessionID")
+
+            print("--------------------------")
+            print(Fore.GREEN + "Logged in successfully.")
+            print("General Session data, you can ignore that - its when you have problems!" + Style.RESET_ALL)
             if self.token:
                 print(f"Token: {self.token}")
             if self.session_id:
                 print(f"Session ID: {self.session_id}")
-            print(f"Username: {self.username}")
+
+            print(Style.RESET_ALL + f"HTTP Status Code: {Fore.RED if response.status_code >= 400 else Fore.GREEN}{response.status_code}{Style.RESET_ALL}")
+            print(f"Request URL: {response.request.url}")
+            print(f"Request Headers: {response.request.headers}")
+            filtered_headers = {key: value for key, value in response.headers.items() if key != 'Report-To'}
+            print(f"Response Headers: {filtered_headers}")
+            print(f"Response Body: {response.text}")
+            print(Fore.GREEN + "Looks good!" + Style.RESET_ALL)
+            print("---------------------------")
             return True
         except requests.RequestException as e:
-            logger.error("Login failed with requests: %s", e)
-            print("Login failed with requests:", e)
+            print("--------------------------")
+            print(Fore.RED + f"Login failed with requests: {e}" + Style.RESET_ALL)
             return False
 
     def get_auth_headers(self) -> dict:
