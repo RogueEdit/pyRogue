@@ -8,6 +8,7 @@ from typing import Dict, Any, Union, Optional, List
 import logging
 from modules.headers import user_agents, header_languages
 from colorama import init, Fore, Style
+from time import sleep
 
 from modules.eggLogic import *
 logger = logging.getLogger(__name__)
@@ -107,7 +108,7 @@ class Rogue:
             return {}
 
     def _setup_headers(self) -> None:
-        """Set up headers for API requests."""
+        # Setup headers
         self.headers = {
             "Authorization": self.auth_token,
             "User-Agent": random.choice(self.user_agents),
@@ -167,7 +168,7 @@ class Rogue:
             data = response.json()
             return data
         except requests.RequestException as e:
-            logger.error(Fore.RED + f"Error fetching trainer data: {e}" + Style.RESET_ALL)
+            logger.error(Fore.RED + "Error fetching gamesave data: ", str(e) + Style.RESET_ALL)
             return {}
 
     def get_gamesave_data(self, slot=1):
@@ -178,7 +179,7 @@ class Rogue:
             data = response.json()
             return data
         except requests.RequestException as e:
-            logger.error(Fore.RED + f"Error fetching gamesave data for slot {slot}: %s", e + Style.RESET_ALL)
+            logger.error(Fore.RED + f"Error fetching savegame data for {self.slot}: %s" + Style.RESET_ALL, e)
             return {}
 
     def update_trainer_data(self, trainer_payload: dict) -> dict:
@@ -203,7 +204,7 @@ class Rogue:
             
         except requests.RequestException as e:
             if isinstance(e, requests.HTTPError) and e.response.status_code != 200 or e.response.status_code != 400:
-                logger.error(Fore.RED + "Error updating trainer data: %s", str(e) + "Restart the tool and try again." + Style.RESET_ALL)
+            logger.error(Fore.RED + "Error updating trainer data: ", str(e) + "Restart restart your tool." + Style.RESET_ALL)
             return {}
 
     def update_gamesave_data(self, slot: int, gamedata_payload: Dict[str, any], url_ext: str) -> Dict[str, any]:
@@ -230,7 +231,7 @@ class Rogue:
             
         except requests.RequestException as e:
             if isinstance(e, requests.HTTPError) and e.response.status_code != 200 or e.response.status_code != 400:
-                logger.error(Fore.RED + "Error updating trainer data: %s", str(e) + "Restart the tool and try again." + Style.RESET_ALL)
+                logger.error(Fore.RED + f"Error updating savegame data for {self.slot}: ", str(e) + "Restart the tool and try again." + Style.RESET_ALL)
             return {}
 
     def update_all(self) -> None:
@@ -260,6 +261,7 @@ class Rogue:
 
         self.update_trainer_data(trainer_data)
         self.update_gamesave_data(self.slot, game_data, url_ext)
+        sleep(5)
 
     def __write_data(self, data: Dict[str, any], filename: str) -> None:
         """
