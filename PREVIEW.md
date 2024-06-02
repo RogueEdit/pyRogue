@@ -1,3 +1,4 @@
+![Preview Image](.github/previews/tool.png)
 ![Preview Image](.github/previews/egg-list.png)
 ![Preview Image](.github/previews/eggs.gif)
 ![Preview Image](.github/previews/starter.png)

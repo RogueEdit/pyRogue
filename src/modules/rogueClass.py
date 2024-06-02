@@ -1,208 +1,111 @@
+# rogueClass.py
 import requests
 import json
 import random
 import os
-import traceback
 import shutil
 import brotli
 from typing import Dict, Any, Union, Optional, List
+import logging
+from utilities.headers import user_agents, header_languages
+from colorama import init, Fore, Style
+from time import sleep
 
-from modules.eggLogic import *
-
+from utilities.eggLogic import *
+logger = logging.getLogger(__name__)
 
 class Rogue:
-    _MAX_BIG_INT = (2 ** 53) - 1
-    def __init__(self, auth_token: str, clientSessionId: str) -> None:
-        self.__MAX_BIG_INT = (2 ** 53) - 1
+    """
+    A class to interact with the PokeRogue API for managing trainer and gamesave data.
+
+    Attributes:
+        TRAINER_DATA_URL (str): The URL to fetch trainer data from the API.
+        GAMESAVE_SLOT_URL (str): The base URL to fetch gamesave data from a specific slot from the API.
+        UPDATE_TRAINER_DATA_URL (str): The URL to update trainer data on the API.
+        UPDATE_GAMESAVE_SLOT_URL (str): The base URL to update gamesave data for a specific slot on the API.
+    """
+    TRAINER_DATA_URL = "https://api.pokerogue.net/savedata/get?datatype=0"
+    GAMESAVE_SLOT_URL = "https://api.pokerogue.net/savedata/get?datatype=1&slot="
+    UPDATE_TRAINER_DATA_URL = "https://api.pokerogue.net/savedata/update?datatype=0"
+    UPDATE_GAMESAVE_SLOT_URL = "https://api.pokerogue.net/savedata/update?datatype=1&slot="
+
+    def __init__(self, session: requests.Session, auth_token: str, clientSessionId: str) -> None:
         """
-        Initialize the Rogue class with authorization token and client session ID.
+        Initialize a Rogue instance.
 
         Args:
-            auth_token (str): Authorization token for API requests.
-            clientSessionId (str): Client session ID for API requests.
+            session (requests.Session): Session object to maintain HTTP connections.
+            auth_token (str): Authorization token for API access.
+            clientSessionId (str): Client session ID for authentication.
         """
+
+        # Append needed data
+        self.session = session
+        self.__MAX_BIG_INT = (2 ** 53) - 1
         self.auth_token = auth_token
         self.clientSessionId = clientSessionId
-        self.user_agents = [
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Safari/605.1.15",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:98.0) Gecko/20100101 Firefox/98.0",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36 Edg/98.0.1108.43",
-            "Opera/9.80 (Windows NT 6.0) Presto/2.12.388 Version/12.14",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36 OPR/98.0.4787.0",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/605.1.15",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:98.0) Gecko/20100101 Firefox/98.0",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Safari/605.1.15",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/605.1.15",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0"
-        ]
+        self.slot = None
+        self.headers = None
+        self.user_agents = user_agents
+        self.header_languages = header_languages
+        self._setup_headers()
+
+        # Load data from JSON files
+        with open("./data/pokemon.json") as f:
+            self.pokemon_id_by_name = json.load(f)
+
+        with open("./data/biomes.json") as f:
+            self.biomes_by_id = json.load(f)
+
+        with open("./data/moves.json") as f:
+            self.moves_by_id = json.load(f)
+
+        with open("./data/data.json") as f:
+            self.extra_data = json.load(f)
+
+        with open("./data/passive.json") as f:
+            self.passive_data = json.load(f)
+        
+        self.__dump_data()
+
+
+    def __handle_error_response(self, response: requests.Response) -> dict:
+        """
+        Handle error responses from the server.
+
+        Args:
+            response (requests.Response): The HTTP response object.
+
+        Returns:
+            dict: Empty dictionary.
+        """
+        if response.status_code == 400:
+            print(
+                Fore.RED + "Response 400 - Something went wrong. Are you playing meanwhile?" + Style.RESET_ALL)
+        elif response.status_code == 200:
+            print(
+                Fore.GREEN + "Response 200 - That worked!" + Style.RESET_ALL)
+        else:
+            logger.error(
+                Fore.RED + "Unexpected response received from server." + Style.RESET_ALL)
+        return {}
+
+
+    def _setup_headers(self) -> None:
+        # Setup headers
         self.headers = {
-            "authorization": self.auth_token,
+            "Authorization": self.auth_token,
             "User-Agent": random.choice(self.user_agents),
-            "Accept": "application/json",
-            "Accept-Language": "it-IT,it;q=0.8,en-US;q=0.5,en;q=0.3",
+            "Accept": "application/x-www-form-urlencoded",
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Accept-Language": random.choice(self.header_languages),
             "Accept-Encoding": "gzip, deflate, br, zstd",
             "Referer": "https://pokerogue.net/",
-            "Content-Type": "application/json",
             "content-encoding": "br",
             "Origin": "https://pokerogue.net/",
             "Connection": "keep-alive",
-            "Sec-Fetch-Dest": "empty",
-            "Sec-Fetch-Mode": "cors",
-            "Sec-Fetch-Site": "same-site",
-            "Priority": "u=1"
+            "Sec-Fetch-Dest": "empty"
         }
-
-        self.slot = None
-        
-
-        with open("./data/pokemon.json") as f:
-            self.pokemon_id_by_name = json.loads(f.read())
-
-        with open("./data/biomes.json") as f:
-            self.biomes_by_id = json.loads(f.read())
-
-        with open("./data/moves.json") as f:
-            self.moves_by_id = json.loads(f.read())
-
-        with open("./data/data.json") as f:
-            self.extra_data = json.loads(f.read())
-
-        with open("./data/passive.json") as f:
-            self.passive_data = json.loads(f.read())
-
-        self.__dump_data()
-
-    def __make_request(self, url: str) -> dict | None:
-        """
-        Make a request to the given URL and return the JSON response.
-
-        Args:
-            url (str): The URL to send the request to.
-
-        Returns:
-            dict | None: The JSON response or None if an error occurred.
-        """
-        try:
-            with requests.session() as s:
-                response = s.get(url, headers=self.headers)
-                response.raise_for_status()
-                try:
-                    return response.json()
-                except json.JSONDecodeError as e:
-                    print("Failed to parse response as JSON:", e)
-                    traceback.print_exc()
-                    return None
-        except requests.exceptions.RequestException as e:
-            print(f"Exception during request -> {e}")
-            return None
-
-    def get_trainer_data(self) -> dict | None:
-        """
-        Retrieve trainer data from the API.
-
-        Returns:
-            dict | None: Trainer data or None if an error occurred.
-        """
-        url = f"https://api.pokerogue.net/savedata/system?clientSessionId={self.clientSessionId}"
-        return self.__make_request(url)
-
-    def get_gamesave_data(self, slot: int = 1) -> dict | None:
-        """
-        Retrieve game save data for the specified slot.
-
-        Args:
-            slot (int): The slot number (1-5). Defaults to 1.
-
-        Returns:
-            dict | None: Game save data or None if an error occurred.
-        """
-
-
-
-        url = f"https://api.pokerogue.net/savedata/session?slot={slot - 1}&clientSessionId={self.clientSessionId}"
-        return self.__make_request(url)
-
-    def update_all(self) -> None:
-        """
-        Update all data to the server.
-        """
-        url = "https://api.pokerogue.net/savedata/updateall"
-
-        if "trainer.json" not in os.listdir():
-            print("trainer.json file not found!")
-            return
-
-        with open("trainer.json", "r") as f:
-            trainer_data = json.load(f)
-
-        if self.slot is None or self.slot > 5 or self.slot < 1:
-            print("Invalid slot number!")
-            return
-
-        filename = f"slot_{self.slot}.json"
-        if filename not in os.listdir():
-            print(f"{filename} not found")
-            return
-
-        with open(filename, "r") as f:
-            game_data = json.load(f)
-
-        try:
-            with requests.session() as s:
-                payload = {
-                    'clientSessionId': self.clientSessionId,
-                    'session': game_data,
-                    "sessionSlotId": self.slot - 1,
-                    'system': trainer_data
-                }
-                response = s.post(url=url, headers=self.headers, json=payload)
-                if response.status_code == 400:
-                    print("Please do not play Pokerogue while using this tool. Restart the tool!")
-                    return
-                response.raise_for_status()
-                print("Updated data successfully!")
-        except requests.exceptions.RequestException as e:
-            print(f"Exception during update_all() -> {e}. If the error persists, report on Github.")
-            print("This usually does not mean something good.")
-
-    def __create_backup(self) -> None:
-        """
-        Create a backup of trainer.json and slot data.
-        """
-        files = ["trainer.json", f"slot_{self.slot}.json"]
-        backup_folder = "./backup/"
-
-        if not os.path.exists(backup_folder):
-            os.makedirs(backup_folder)
-            print("Backup folder created successfully.")
-
-        for file_name in files:
-            source_file = file_name
-            destination_file = os.path.join(backup_folder, file_name)
-            shutil.copy2(source_file, destination_file)
-            print(f"File '{file_name}' backed up to '{backup_folder}'.")
-
-    def restore_backup(self) -> None:
-        """
-        Restore data from backup files.
-        """
-        choice = int(input(f"What file do you want to recover? (1: trainer.json | 2: slot_{self.slot}.json): "))
-
-        if choice not in (1, 2):
-            print("Invalid choice.")
-            return
-
-        if choice == 1:
-            trainer_data = self.__load_data("./backup/trainer.json")
-            self.__write_data(trainer_data, "trainer.json")
-            print("Data restored")
-        elif choice == 2:
-            game_data = self.__load_data(f"./backup/slot_{self.slot}.json")
-            self.__write_data(game_data, f"slot_{self.slot}.json")
-            print("Data restored")
 
     def __dump_data(self, slot: int = 1) -> None:
         """
@@ -210,7 +113,6 @@ class Rogue:
 
         Args:
             slot (int): The slot number (1-5). Defaults to 1.
-
         """
         if not self.slot:
             slot = int(input("Enter slot (1-5): "))
@@ -222,14 +124,177 @@ class Rogue:
         trainer_data = self.get_trainer_data()
         game_data = self.get_gamesave_data(slot)
 
-        self.__write_data(trainer_data, "trainer.json")
-        self.__write_data(game_data, f"slot_{slot}.json")
+        if trainer_data:
+            self.__write_data(trainer_data, "trainer.json")
+        else:
+            logger.error(Fore.RED + "Failed to fetch trainer data." + Style.RESET_ALL)
+
+        if game_data:
+            self.__write_data(game_data, f"slot_{slot}.json")
+        else:
+            logger.error(Fore.RED + f"Failed to fetch game data for slot {slot}." + Style.RESET_ALL)
 
         self.__create_backup()
 
         print("Data dumped successfully!")
 
-    def __load_data(self, file_path: str) -> dict:
+    def get_trainer_data(self) -> dict:
+        """
+        Fetch trainer data from the API.
+
+        Returns:
+            dict: Trainer data from the API.
+        """
+        try:
+            print("Fetching trainer data...")
+            response = self.session.get(self.TRAINER_DATA_URL, headers=self.headers)
+            response.raise_for_status()
+            data = response.json()
+            return data
+        except requests.RequestException as e:
+            logger.error(Fore.RED + "Error fetching savegame data. Please restart the tool" + Style.RESET_ALL)
+            #print(Fore.RED + "Error fetching trainer data." + Style.RESET_ALL)
+            #return {}
+
+    def get_gamesave_data(self, slot: int = 1):
+        try:
+            print("Fetching gamesave data...")
+            response = self.session.get(f"{self.GAMESAVE_SLOT_URL}{slot-1}", headers=self.headers)
+            response.raise_for_status()
+            data = response.json()
+            return data
+        except requests.RequestException as e:
+            logger.error(Fore.RED + "Error fetching savegame data. Please restart the tool" + Style.RESET_ALL)
+            #logger.error(Fore.RED + f"Error fetching savegame data for {self.slot}: %s" + Style.RESET_ALL, e)
+            #return {}
+
+    def __update_trainer_data(self, trainer_payload: dict) -> dict:
+        """
+        Update the trainer data on the server.
+
+        Args:
+            trainer_payload (dict): The payload containing trainer data to update.
+
+        Returns:
+            dict: JSON response from the server.
+        """
+        try:
+            print("Updating trainer data...")
+            response = self.session.post(self.UPDATE_TRAINER_DATA_URL, headers=self.headers, json=trainer_payload)
+            response.raise_for_status()
+            if response.content:  # Check if the response content is not empty
+                print(Fore.GREEN + "That worked! Trainer data succesfully saved." + Style.RESET_ALL)
+                return response.json()
+            else:
+                return self.__handle_error_response(response)
+            
+        except requests.RequestException as e:
+            logger.error(Fore.RED + "Error updating trainer data. Please restart the tool." + Style.RESET_ALL)
+            #if isinstance(e, requests.HTTPError) and e.response.status_code != 200 or e.response.status_code != 400:
+            #logger.error(Fore.RED + "Error updating trainer data: ", str(e) + "Restart restart your tool." + Style.RESET_ALL)
+            #return {}
+
+    def __update_gamesave_data(self, slot: int, gamedata_payload: Dict[str, any], url_ext: str) -> Dict[str, any]:
+        """
+        Update the gamesave data on the server.
+
+        Args:
+            slot (int): The slot number to update.
+            gamedata_payload (Dict[str, any]): The payload containing game save data to update.
+            url_ext (str): Additional URL parameters.
+
+        Returns:
+            Dict[str, any]: JSON response from the server.
+        """
+        try:
+            print("Updating gamesave data...")
+            response = self.session.post(
+                f"{self.UPDATE_GAMESAVE_SLOT_URL}{slot - 1}{url_ext}", headers=self.headers, json=gamedata_payload)
+            response.raise_for_status()
+            if response.content:  # Check if the response content is not empty
+                return response.json()
+            else:
+                return self.__handle_error_response(response)
+            
+        except requests.RequestException as e:
+            logger.error(Fore.RED + f"Error updating trainer data -> {e}. Please restart the tool." + Style.RESET_ALL)
+            return 
+            #if isinstance(e, requests.HTTPError) and e.response.status_code != 200 or e.response.status_code != 400:
+            #    logger.error(Fore.RED + f"Error updating savegame data for {self.slot}: ", str(e) + "Restart the tool and try again." + Style.RESET_ALL)
+            #return {}
+
+    def update_all(self) -> None:
+        """
+        Update all data to the server.
+        """
+        if self.slot is None or self.slot > 5 or self.slot < 1:
+            print(Fore.RED + "Invalid slot number!" + Style.RESET_ALL)
+            return
+        
+
+        if "trainer.json" not in os.listdir():
+            print(
+                Fore.RED + "trainer.json (Your game data) file not found!" + Style.RESET_ALL)
+            return
+        
+        trainer_data = self.__load_data("trainer.json")
+
+        filename = f"slot_{self.slot}.json"
+        if filename not in os.listdir():
+            print(Fore.RED + f"{filename} not found" + Style.RESET_ALL)
+            return
+        
+        game_data = self.__load_data(filename)
+
+        trainer_id, trainer_secretId = trainer_data["trainerId"], trainer_data["secretId"]
+        url_ext = f"&trainerId={trainer_id}&secretId={trainer_secretId}"
+
+        self.__update_trainer_data(trainer_data)
+        self.__update_gamesave_data(self.slot, game_data, url_ext)
+        sleep(5)
+
+    def __write_data(self, data: Dict[str, any], filename: str) -> None:
+        """
+        Write data to a JSON file.
+
+        Args:
+            data (Dict[str, any]): The data to write.
+            filename (str): The name of the file.
+        """
+        with open(filename, 'w') as f:
+            json.dump(data, f, indent=4)
+
+    def __create_backup(self) -> None:
+        """
+        Create a backup of JSON files.
+        """
+        backup_dir = "./backup"
+        if not os.path.exists(backup_dir):
+            os.makedirs(backup_dir)
+        for file in os.listdir("."):
+            if file.endswith(".json"):
+                shutil.copy(file, backup_dir)
+
+    def restore_backup(self) -> None:
+        """
+        Restore data from backup files.
+        """
+        choice = int(input(f"What file do you want to recover? (1: trainer.json | 2: slot_{self.slot}.json): "))
+
+        if choice not in (1, 2):
+            print(Fore.RED + "Invalid choice." + Style.RESET_ALL)
+            return
+
+        if choice == 1:
+            trainer_data = self.__load_data("./backup/trainer.json")
+            self.__write_data(trainer_data, "trainer.json")
+            print("Data restored")
+        elif choice == 2:
+            game_data = self.__load_data(f"./backup/slot_{self.slot}.json")
+            self.__write_data(game_data, f"slot_{self.slot}.json")
+            print(Fore.GREEN + "Data restored succesfully." + Style.RESET_ALL)
+
+    def __load_data(self, file_path: str) -> Dict[str, Any]:
         """
         Load data from a specified file path.
 
@@ -256,7 +321,7 @@ class Rogue:
         """
         with open(file, "w") as f:
             json.dump(data, f, indent=2)
-        print("---> Command applied successfully, remember to update the data to the server when you're done! <--- ")
+            print(Fore.GREEN + "Written to local data. Don't forget to apply to server when done!" + Style.RESET_ALL)
 
     def pokedex(self) -> None:
         """
@@ -274,7 +339,7 @@ class Rogue:
         """
         trainer_data = self.__load_data("trainer.json")
         if not trainer_data:
-            print("There was something wrong with the data, please restart the tool.")
+            print("There was something wrong with your data, please restart the tool.")
             return None
 
         choice: int = int(input("Do you want to unlock all forms (Shiny Tier 3) as well? (1: Yes | 2: No): "))
@@ -291,7 +356,7 @@ class Rogue:
             else:
                 shiny: int = 253
         
-        iv: int = int(input("Do you want the starters to be 6 IVs? (1: Yes | 2: No): "))
+        iv: int = int(input("Do you want the starters to have perfect IVs? (1: Yes | 2: No): "))
         if (iv < 1) or (iv > 2):
             print("Invalid command.")
             return
@@ -300,8 +365,16 @@ class Rogue:
         if (passive < 1) or (passive > 2):
             print("Invalid command.")
             return
+
+        ability: int = int(input("Do you want to unlock all abilities?(1: Yes | 2: No): "))
+        if (ability < 1) or (ability > 2):
+            print("Invalid command.")
+            return
         
         ribbon: int = int(input("Do you want to unlock win-ribbons?: (1: Yes | 2: No): "))
+        if (ribbon < 1) or (ribbon > 2):
+            print("Invalid command.")
+            return
 
         total_caught: int = 0
         total_seen: int = 0
@@ -326,7 +399,7 @@ class Rogue:
                 "eggMoves": 15,
                 "candyCount": caught + 20,
                 "friendship": random.randint(1, 300),
-                "abilityAttr": 7,
+                "abilityAttr": 0 if ability == 2 else 7,
                 "passiveAttr": 0 if (entry in self.passive_data["noPassive"]) or (passive == 2) else 3,
                 "valueReduction": 2,
                 "classicWinCount": None if ribbon == 2 else random.randint(1, 5),
@@ -343,95 +416,86 @@ class Rogue:
 
         self.__write_data(trainer_data, "trainer.json")
 
-    def starter_edit(self, dexId: Optional[Union[str, int]] = None) -> None:
+    def starter_edit(self, dexId: Optional[str] = None) -> None:
         """
-        Edits a starter Pokémon.
+        Allows the user to edit starter Pokemon data for a trainer.
 
         Args:
-            dexId (Optional[Union[str, int]]): The ID or name of the Pokémon. Defaults to None.
-
-        Returns:
-            None
+        - dexId (Optional[str]): The ID or name of the Pokemon. If None, the user will be prompted to enter it.
         """
         trainer_data = self.__load_data("trainer.json")       
 
         if not trainer_data:
-            print("There was something wrong with the data, please restart the tool.")
+            print(Fore.RED + "There was something wrong with the data, please restart the tool." + Style.RESET_ALL)
             return None
         if not dexId:
             dexId = input("Enter Pokemon (Name / ID): ")
             if dexId.isnumeric():
                 if dexId not in trainer_data["starterData"]:
-                    print(f"No Pokemon with ID: {dexId}")
+                    print(Fore.BLUE + f"No Pokemon with ID: {dexId}" + Style.RESET_ALL)
                     return
             else:
                 dexId = self.pokemon_id_by_name["dex"].get(dexId.lower())
                 if not dexId:
-                    print(f"No Pokemon with ID: {dexId}")
+                    print(Fore.BLUE + f"No Pokemon with ID: {dexId}" + Style.RESET_ALL)
                     return
                 
 
-        choice: int = int(input("Do you want to unlock all forms of the pokemon? (All forms are Tier 3 shinies. (1: Yes | 2: No)): "))
+        choice = int(input("Do you want to unlock all forms of the pokemon?(All forms are Tier 3 shinies. 1: Yes, 2: No): "))
 
         if (choice < 1) or (choice > 2):
-            print("Invalid command.")
+            print(Fore.BLUE + "Invalid command." + Style.RESET_ALL)
             return
         elif choice == 1:
-            caught_attr: int = self.__MAX_BIG_INT
+            caught_attr = self.__MAX_BIG_INT
         else:
-            choice: int = int(input("Make the Pokemon shiny? (1: Yes | 2: No)): "))
+            choice = int(input("Make the Pokemon shiny? (1: Yes, 2: No): "))
+
             if (choice < 1) or (choice > 2):
-                print("Invalid choice.")
+                print(Fore.BLUE + "Invalid choice." + Style.RESET_ALL)
                 return
             elif choice == 2:
-                caught_attr: int = 253
+                caught_attr = 253
             else:
-                choice: int = int(input("What tier shiny do you want? (1: Tier 1 | 2: Tier 2 | 3: Tier 3): "))
+                choice = int(input("What tier shiny do you want? (1: Tier 1, 2: Tier 2, 3: Tier 3, 4: All shinies): "))
                 if (choice < 1) or (choice > 4):
-                    print("Invalid choice.")
+                    print(Fore.BLUE + "Invalid choice." + Style.RESET_ALL)
                     return
                 elif choice == 1:
-                    caught_attr: int = 159
+                    caught_attr = 159
                 elif choice == 2:
-                    caught_attr: int = 191
+                    caught_attr = 191
                 elif choice == 3:
-                    caught_attr: int = 255
-
+                    caught_attr = 223
+                else:
+                    caught_attr = 255
             
-        nature_attr: int = 67108862
-        caught_input = input("How many of this Pokemon have you caught?: ")
-        caught_input: str = input("How many of this Pokemon have you caught? If empty, random: ")
-        caught: int = random.randint(1, 100) if not caught_input else int(caught_input)
-
-        hatched_input: str = input("How many of this Pokemon have hatched from eggs? If empty, random: ")
-        hatched: int = random.randint(1, 100) if not hatched_input else int(hatched_input)
-
-        seen_count_input: str = input("How many of this Pokemon have you seen? If empty, random: ")
-        seen_count: int = random.randint(1, 100) if not seen_count_input else int(seen_count_input)
-
-        candies_input: str = input("How many Candies do you want? If empty, random: ")
-        candies: int = random.randint(1, 100) if not candies_input else int(candies_input)
-
-        ivs: List[int] = [int(input("SpA IVs: ")), int(input("DEF IVs: ")), int(input("Attack IVs: ")),
+        nature_attr = 67108862
+        caught = int(input("How many of this Pokemon have you caught?: "))
+        hatched = int(input("How many of this Pokemon have hatched from eggs?: "))
+        seen_count = int(input("How many of this Pokemon have you seen?: "))
+        candies = int(input("How many candies do you want?: "))
+        print(Fore.BLUE + "Choose a value between 1 and 31 for your IVs (Pokemon Stats)." + Style.RESET_ALL)
+        ivs = [int(input("SpA IVs: ")), int(input("DEF IVs: ")), int(input("Attack IVs: ")),
                int(input("HP IVs: ")), int(input("Spe IVs: ")), int(input("Def IVs: "))]
-        passive: int = int(input("Do you want to unlock the passive? (1: Yes | 2: No): "))
-        ribbon: int = int(input("Do you want to unlock the win-ribbon?: (1: Yes | 2: No): "))
-
-        friendship_input: str = input("How many of this Pokemon have you seen? If empty, random: ")
-        friendship: int = random.randint(1, 300) if not friendship_input else int(friendship_input)
-
+        
+        passive = int(input("Do you want to unlock the passive?(1: Yes, 2: No): "))
         if (passive < 1) or (passive > 2):
-            print("Invalid command.")
+            print(Fore.BLUE + "Invalid command." + Style.RESET_ALL)
             return
         elif passive == 1:
             if dexId in self.passive_data["noPassive"]:
-                print("This pokemon doesn't have a passive ability.")
-                passiveAttr: int = 0
+                print(Fore.BLUE + "This pokemon doesn't have a passive ability." + Style.RESET_ALL)
+                passiveAttr = 0
             else:
-                passiveAttr: int = 3
+                passiveAttr = 3
         else:
-            passiveAttr: int = 0
-
+            passiveAttr = 0
+        
+        ability: int = int(input("Do you want to unlock all abilities?(1: Yes | 2: No): "))
+        if (ability < 1) or (ability > 2):
+            print("Invalid command.")
+            return
 
         trainer_data["dexData"][dexId] = {
             "seenAttr": 479,
@@ -446,15 +510,10 @@ class Rogue:
             "moveset": None,
             "eggMoves": 15,
             "candyCount": candies,
-            "friendship": None if not friendship else friendship,
-            "abilityAttr": 7,
+            "abilityAttr": 0 if passive == 2 else 7,
             "passiveAttr": passiveAttr,
-            "valueReduction": 2,
-            "classicWinCount": None if ribbon == 2 else random.randint(1, 50)
+            "valueReduction": 2
         }
-
-        if ribbon == 1:
-                trainer_data["gameStats"]["classicWinCount"] = random.randint(1, 50)
 
         self.__write_data(trainer_data, "trainer.json")
 
@@ -471,31 +530,31 @@ class Rogue:
         trainer_data = self.__load_data("trainer.json")
 
         if not trainer_data:
-            print("There was something wrong with the data, please restart the tool.")
+            print(Fore.RED + "There was something wrong with the data, please fetch your data." + Style.RESET_ALL)
             return None
 
         c: int = int(input("How many common vouchers do you want (Max 300)?: "))
 
         if c > 300:
-            print("Cannot put more than 300 tickets, please retry.")
+            print(Fore.BLUE + "Cannot put more than 300 tickets, please retry." + Style.RESET_ALL)
             return
 
         r: int = int(input("How many rare vouchers do you want (Max 150)?: "))
 
         if r > 150:
-            print("Cannot put more than 150 tickets, please retry.")
+            print(Fore.BLUE + "Cannot put more than 150 tickets, please retry." + Style.RESET_ALL)
             return
 
         e: int = int(input("How many epic vouchers do you want (Max 100)?: "))
 
         if e > 100:
-            print("Cannot put more than 100 tickets, please retry.")
+            print(Fore.BLUE + "Cannot put more than 100 tickets, please retry." + Style.RESET_ALL)
             return
 
         l: int = int(input("How many legendary vouchers do you want (Max 10)?: "))
 
         if l > 10:
-            print("Cannot put more than 10 tickets, please retry.")
+            print(Fore.BLUE + "Cannot put more than 10 tickets, please retry." + Style.RESET_ALL)
             return
 
         voucher_counts: dict[str, int] = {
@@ -510,93 +569,83 @@ class Rogue:
 
 
     def edit_pokemon_party(self) -> None:
-        """
-        Allows editing a Pokémon in the player's party.
+            """
+            Allows the user to edit the Pokemon party.
+            """
+            slot = self.slot
+            filename = f"slot_{slot}.json"
 
-        This method presents a menu of options to edit a Pokémon in the player's party
-        including changing species, setting shininess, level, luck, IVs, and moves.
+            game_data = self.__load_data(filename)
 
-        Returns:
-            None
-        """
-        slot = self.slot
-        filename = f"slot_{slot}.json"
+            if game_data is None:
+                print(Fore.RED + "There was something wrong with the data, please restart the tool." + Style.RESET_ALL)
+                return
 
-        game_data = self.__load_data(filename)
-        
-        if game_data is None:
-            print("There was something wrong with the data, please restart the tool.")
-            return
-        
-        if game_data["gameMode"] == 3:
-            print("Cannot edit this property on Daily Runs.")
-            return
-        
-        options = [
-            "1: Change species",
-            "2: Set it shiny",
-            "3: Set Level",
-            "4: Set Luck",
-            "5: Set IVs",
-            "6: Change a move on a pokemon in your team"
-        ]
-        
-        party_num = int(input("Select the party slot of the Pokémon you want to edit (0-5): "))
-        if party_num < 0 or party_num > 5:
-            print("Invalid party slot.")
-            return
+            if game_data["gameMode"] == 3:
+                print(Fore.BLUE + "Cannot edit this property on Daily Runs." + Style.RESET_ALL)
+                return
 
-        if party_num >= len(game_data["party"]):
-            print("Selected party slot does not exist. Choose another.")
-            return
-        
-        print("**************************** OPTIONS ****************************")
-        print("\n".join(options))
-        print("--------------------------------------------------------------------")
-        
-        command = int(input("Option: "))
-        if command < 1 or command > 6:
-            print("Invalid option")
-            return
-        
-        if command == 1:
-            poke_id = int(input("Choose the pokemon you'd like by ID: "))
-            game_data["party"][party_num]["species"] = poke_id
-        elif command == 2:
-            game_data["party"][party_num]["shiny"] = True
-            variant = int(input("Choose the shiny variant (from 0 to 2): "))
-            if variant < 0 or variant > 2:
-                print("Invalid shiny variant")
-                return
-            game_data["party"][party_num]["variant"] = variant
-        elif command == 3:
-            level = int(input("Choose the level: "))
-            if level < 1:
-                print("Invalid level")
-                return
-            game_data["party"][party_num]["level"] = level
-        elif command == 4:
-            luck = int(input("What luck level do you desire? (from 1 to 14): "))
-            if luck < 1 or luck > 14:
-                print("Invalid luck")
-                return
-            game_data["party"][party_num]["luck"] = luck
-        elif command == 5:
-            ivs = [int(input("SpA IVs: ")), int(input("DEF IVs: ")), int(input("Attack IVs: ")),
-               int(input("HP IVs: ")), int(input("Spe IVs: ")), int(input("Def IVs: "))]
-            game_data["party"][party_num]["ivs"] = ivs
-        elif command == 6:
-            move_slot = int(input("Select the move you want to change (from 0 to 3): "))
-            if move_slot < 0 or move_slot > 3:
-                print("Invalid move slot")
-                return
-            move = int(input("What move do you want (ID)? "))
-            if move < 0 or move > 919:
-                print("Invalid move")
-                return
-            game_data["party"][party_num]["moveset"][move_slot]["moveId"] = move
+            options = [
+                "1: Change species",
+                "2: Set it shiny",
+                "3: Set Level",
+                "4: Set Luck",
+                "5: Set IVs",
+                "6: Change a move on a pokemon in your team"
+            ]
 
-        self.__write_data(game_data, filename)
+            party_num = int(input("Select the party slot of the Pokémon you want to edit (0-5): "))
+            if party_num < 0 or party_num > 5:
+                print(Fore.RED + "Invalid party slot" + Style.RESET_ALL)
+                return
+
+            print("**************************** OPTIONS ****************************")
+            print("\n".join(options))
+            print("--------------------------------------------------------------------")
+
+            command = int(input("Option: "))
+            if command < 1 or command > 6:
+                print(Fore.BLUE + "Invalid input." + Style.RESET_ALL)
+                return
+
+            if command == 1:
+                poke_id = int(input("Choose the pokemon you'd like by ID: "))
+                game_data["party"][party_num]["species"] = poke_id
+            elif command == 2:
+                game_data["party"][party_num]["shiny"] = True
+                variant = int(input("Choose the shiny variant (from 0 to 2): "))
+                if variant < 0 or variant > 2:
+                    print(Fore.BLUE + "Invalid input." + Style.RESET_ALL)
+                    return
+                game_data["party"][party_num]["variant"] = variant
+            elif command == 3:
+                level = int(input("Choose the level: "))
+                if level < 1:
+                    print(Fore.BLUE + "Invalid input" + Style.RESET_ALL)
+                    return
+                game_data["party"][party_num]["level"] = level
+            elif command == 4:
+                luck = int(input("What luck level do you desire? (from 1 to 14): "))
+                if luck < 1 or luck > 14:
+                    print(Fore.BLUE + "Invalid input" + Style.RESET_ALL)
+                    return
+                game_data["party"][party_num]["luck"] = luck
+            elif command == 5:
+                ivs = [int(input("SpA IVs: ")), int(input("DEF IVs: ")), int(input("Attack IVs: ")),
+                    int(input("HP IVs: ")), int(input("Spe IVs: ")), int(input("Def IVs: "))]
+                game_data["party"][party_num]["ivs"] = ivs
+            elif command == 6:
+                move_slot = int(input("Select the move you want to change (from 0 to 3): "))
+                if move_slot < 0 or move_slot > 3:
+                    print(Fore.BLUE + "Invalid input" + Style.RESET_ALL)
+                    return
+                move = int(input("What move do you want (ID)? "))
+                if move < 0 or move > 919:
+                    print(Fore.BLUE + "Invalid input" + Style.RESET_ALL)
+                    return
+                game_data["party"][party_num]["moveset"][move_slot]["moveId"] = move
+
+            self.__write_data(game_data, filename)
     
     def unlock_all_gamemodes(self) -> None:
         """
@@ -610,24 +659,23 @@ class Rogue:
         trainer_data = self.__load_data("trainer.json")
 
         if trainer_data is None:
-            print("There was something wrong with the data, please restart the tool.")
+            print(Fore.RED + "There was something wrong with the Game data, please fetch your data anew." + Style.RESET_ALL)
             return
 
         try:
             unlocked_modes = trainer_data.get("unlocks", {})
             if not unlocked_modes:
-                print("Unable to find data entry: unlocks")
+                print(Fore.RED + "Unable to find data entry: unlocks" + Style.RESET_ALL)
                 return
 
             for mode in unlocked_modes:
                 unlocked_modes[mode] = True
 
-            print("---> All gamemodes have been unlocked! Remember to update data!")
 
             self.__write_data(trainer_data, "trainer.json")
         
         except Exception as e:
-            print(f"Error on unlock_all_gamemodes() -> {e}")
+            print(Fore.RED + f"Error on unlock_all_gamemodes() -> {e}" + Style.RESET_ALL)
 
     def unlock_all_achievements(self) -> None:
         """
@@ -642,7 +690,7 @@ class Rogue:
             trainer_data = self.__load_data("trainer.json")
 
             if trainer_data is None:
-                print("There was something wrong with the data, please restart the tool.")
+                print(Fore.RED + "There was something wrong with the Game data, please fetch your data anew." + Style.RESET_ALL)
                 return
 
             current_time_ms = int(time.time() * 1000) 
@@ -653,12 +701,11 @@ class Rogue:
                 achievement: random.randint(min_time_ms, current_time_ms)
                 for achievement in achievements
             }
-            print("---> All achievements have been unlocked! Remember to update data!")
 
             self.__write_data(trainer_data, "trainer.json")
 
         except Exception as e:
-            print(f"Error on unlock_all_achievements -> {e}")
+            print(Fore.RED + f"Error on unlock_all_achievements -> {e}" + Style.RESET_ALL)
 
     
     def unlock_all_vouchers(self) -> None:
@@ -674,7 +721,7 @@ class Rogue:
             trainer_data = self.__load_data("trainer.json")
 
             if trainer_data is None:
-                print("There was something wrong with the data, please restart the tool.")
+                print(Fore.RED + "There was something wrong with the Game data, please fetch your data anew." + Style.RESET_ALL)
                 return
 
             current_time_ms = int(time.time() * 1000) 
@@ -687,12 +734,10 @@ class Rogue:
                 voucher_unlocks[voucher] = random_time
             trainer_data["voucherUnlocks"] = voucher_unlocks
 
-            print("---> All vouchers have been unlocked! Remember to update data!")
-
             self.__write_data(trainer_data, "trainer.json")
 
         except Exception as e:
-            print(f"Error on unlock_all_vouchers -> {e}")
+            print(Fore.RED + f"Error on unlock_all_vouchers -> {e}" + Style.RESET_ALL)
 
     def biomes(self) -> None:
         """
@@ -733,21 +778,21 @@ class Rogue:
         trainer_data = self.__load_data("trainer.json")
 
         if not trainer_data:
-            print("There was something wrong with the data, please restart the tool.")
+            print(Fore.RED + "There was something wrong with the Game data, please fetch your data anew." + Style.RESET_ALL)
             return None
         if not dexId:
             dexId = input("Enter Pokemon (Name / ID): ")
             if dexId.isnumeric():
                 if dexId not in trainer_data["starterData"]:
-                    print(f"No Pokemon with ID: {dexId}")
+                    print(Fore.BLUE + f"No Pokemon with ID: {dexId}" + Style.RESET_ALL)
                     return
             else:
                 dexId = self.pokemon_id_by_name["dex"].get(dexId.lower())
                 if not dexId:
-                    print(f"No Pokemon with ID: {dexId}")
+                    print(Fore.BLUE + f"No Pokemon with ID: {dexId}" + Style.RESET_ALL)
                     return
                 
-        candies = int(input("How many : "))
+        candies = int(input("How many candies you want on your pokemon: "))
         trainer_data["starterData"][dexId]["candyCount"] = candies
 
         self.__write_data(trainer_data, "trainer.json")
@@ -785,11 +830,11 @@ class Rogue:
         game_data = self.__load_data(f"slot_{self.slot}.json")
 
         if game_data is None:
-            print("There was something wrong with the data, please restart the tool.")
+            print(Fore.RED + "There was something wrong with the Game data, please fetch your data." + Style.RESET_ALL)
             return
 
         if game_data["gameMode"] == 3:
-            print("Cannot edit this property on Daily Runs.")
+            print(Fore.RED + "Cannot edit this property on Daily Runs." + Style.RESET_ALL)
             return
 
         choice = int(input("How many pokeballs do you want?: "))
@@ -822,14 +867,14 @@ class Rogue:
         game_data = self.__load_data(f"slot_{self.slot}.json")
 
         if game_data is None:
-            print("There was something wrong with the data, please restart the tool.")
+            print(Fore.RED + "There was something wrong with the Game data, please fetch your data." + Style.RESET_ALL)
             return
 
         if game_data["gameMode"] == 3:
-            print("Cannot edit this property on Daily Runs.")
+            print(Fore.RED + "Cannot edit this property on Daily Runs." + Style.RESET_ALL)
             return
 
-        choice = int(input("How many poke dollars do you want?: "))
+        choice = int(input("How many Poke-Dollars do you want?: "))
         game_data["money"] = choice
 
         self.__write_data(game_data, f"slot_{self.slot}.json")
@@ -910,9 +955,9 @@ class Rogue:
             elif replace_or_add == "2":
                 trainer_data["eggs"].extend(new_eggs)
                     
+            print(Fore.GREEN + f"[{count}] eggs got generated succesfully." + Style.RESET_ALL)
             self.__write_data(trainer_data, "trainer.json")
             
-            print(f"[{count}] eggs got generated and uploaded!")
 
         except Exception as e:
             print(f"Something went wrong while generating the data: {e}")
@@ -930,7 +975,7 @@ class Rogue:
             trainer_data = self.__load_data("trainer.json")
 
             if trainer_data is None:
-                print("There was something wrong with the data, please restart the tool.")
+                print(Fore.RED + "There was something wrong with the Game data, please fetch your data anew." + Style.RESET_ALL)
                 return
             
             battles: int = int(input("How many battles: "))
@@ -1011,7 +1056,7 @@ class Rogue:
 
             self.__write_data(trainer_data, "trainer.json")
         except Exception as e:
-            print(f"Error on edit_account_stats() -> {e}")
+            print(Fore.RED + f"Error on edit_account_stats() -> {e}" + Style.RESET_ALL)
 
     def max_account(self) -> None:
         """
@@ -1027,7 +1072,7 @@ class Rogue:
             trainer_data = self.__load_data("trainer.json")
 
             if trainer_data is None:
-                print("There was something wrong with the data, please restart the tool.")
+                print(Fore.RED + "There was something wrong with the Game data, please fetch your data." + Style.RESET_ALL)
                 return
             
             self.unlock_all_gamemodes()
@@ -1096,5 +1141,4 @@ class Rogue:
 
             self.__write_data(trainer_data, "trainer.json")
         except Exception as e:
-            print(f"Error on edit_account_stats() -> {e}")
-
+            print(Fore.RED + f"Error on edit_account_stats() -> {e}" + Style.RESET_ALL)
