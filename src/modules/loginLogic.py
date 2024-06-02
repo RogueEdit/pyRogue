@@ -1,8 +1,7 @@
 import requests
-from modules.headers import user_agents
+from utilities.headers import user_agents
 import random
 from colorama import init, Fore, Style
-import brotli
 
 class loginLogic:
     LOGIN_URL = "https://api.pokerogue.net/account/login"
@@ -43,16 +42,12 @@ class loginLogic:
             response.raise_for_status()
             login_response = response.json()
             self.token = login_response.get("token")
-            self.session_id = login_response.get("clientSessionID")
 
             print("--------------------------")
             print(Fore.GREEN + "Logged in successfully.")
             print("General Session data, you can ignore that - its when you have problems!" + Style.RESET_ALL)
             if self.token:
                 print(f"Token: {self.token}")
-            if self.session_id:
-                print(f"Session ID: {self.session_id}")
-
             print(Style.RESET_ALL + f"HTTP Status Code: {Fore.RED if response.status_code >= 400 else Fore.GREEN}{response.status_code}{Style.RESET_ALL}")
             print(f"Request URL: {response.request.url}")
             print(f"Request Headers: {response.request.headers}")
