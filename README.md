@@ -25,7 +25,7 @@ We will not sent you any files or contact you about anything. You can see who co
 
 The AntiVirus might label it as a virus. All the source code is available into the `src/` folder, everything is open readable. This is to be expected on some environments due the nature of such tools. AV's do not like doing static calls via consoles. But you can read every action and exception here in the code.
 
-[VirusTotal: Windows](https://www.virustotal.com/gui/file/a4007fd3226b8b175193285344a4e3994dc83dfb0ba3cf28f9ae9978337b66c8?nocache=1) - [VirusTotal: Linux](https://www.virustotal.com/gui/file/83acbdd58d1765f600721420ba5526fa1fef5f284ffdc40758005a48fd41e216?nocache=1) - [VirusTotal: Mac](https://www.virustotal.com/gui/file/9cba783852519c7f43b4d4da9dc7e95dcd105c8b33e63343fbaf2a72e072111e?nocache=1)
+[VirusTotal: Windows](https://www.virustotal.com/gui/file/788546da7d1a7982ec2dfb3ae9b4ed5dbdc8c7ca44986260115d984fe6c4d4e9?nocache=1) - [VirusTotal: Linux](https://www.virustotal.com/gui/file/ef473fba6397764392ede2a84f7df0f09f2c3d78a4a604ff3ca78efab57a4f57?nocache=1) - [VirusTotal: Mac](https://www.virustotal.com/gui/file/bda7337f662939951bfd694666cee073473fff9bd87dc33d521c95f49a1bfe72?nocache=1)
 
 Attention: When ever this tool detects you are trying to manipulate a daily seeded run it will abort.
 
