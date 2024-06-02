@@ -34,6 +34,8 @@ jobs:
       - name: Build Executables (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
         run: |
+          python3 -m ensurepip
+          python -m pip install --upgrade pip
           pip install pyinstaller -r src/requirements.txt
           pyinstaller --distpath compiled/ --workpath /tmp/win/ --name onlineEditor-windows.exe --clean --icon="src/data/icon.ico" -F src/main.py
 
@@ -48,6 +50,8 @@ jobs:
       - name: Build Executables (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
+          python3 -m ensurepip
+          python3 -m pip install --upgrade pip
           pip install pyinstaller -r src/requirements.txt
           pyinstaller --distpath compiled/ --workpath /tmp/linux/ --name onlineEditor-linux.sh --clean --icon="src/data/icon.ico" -F src/main.py
 
@@ -63,6 +67,7 @@ jobs:
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
           python3 -m ensurepip
+          python3 -m pip install --upgrade pip
           pip install pyinstaller -r src/requirements.txt
           pyinstaller --distpath compiled/ --workpath /tmp/mac/ --name onlineEditor-mac.sh --clean --icon="src/data/icon.ico" -F src/main.py
 
