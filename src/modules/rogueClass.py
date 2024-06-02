@@ -366,13 +366,18 @@ class Rogue:
             print("Invalid command.")
             return
 
-        ability: int = int(input("Do you want to unlock all abilities?(1: Yes | 2: No): "))
+        ability: int = int(input("Do you want to unlock all abilities? (1: Yes | 2: No): "))
         if (ability < 1) or (ability > 2):
             print("Invalid command.")
             return
         
         ribbon: int = int(input("Do you want to unlock win-ribbons?: (1: Yes | 2: No): "))
         if (ribbon < 1) or (ribbon > 2):
+            print("Invalid command.")
+            return
+
+        reduction: int = int(input("Do you want to reduce the cost reduction for the starters? (1: Yes | 2: No): "))
+        if (reduction < 1) or (reduction > 2):
             print("Invalid command.")
             return
 
@@ -401,7 +406,7 @@ class Rogue:
                 "friendship": random.randint(1, 300),
                 "abilityAttr": 0 if ability == 2 else 7,
                 "passiveAttr": 0 if (entry in self.passive_data["noPassive"]) or (passive == 2) else 3,
-                "valueReduction": 2,
+                "valueReduction": 2 if reduction == 2 else 9,
                 "classicWinCount": None if ribbon == 2 else random.randint(1, 5),
             }
 
