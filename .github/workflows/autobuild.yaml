@@ -35,9 +35,9 @@ jobs:
         if: ${{ matrix.os == 'windows-latest' }}
         run: |
           python3 -m ensurepip
-          python -m pip install --upgrade pip
-          pip install pyinstaller -r src/requirements.txt
-          pyinstaller --distpath compiled/ --workpath /tmp/win/ --hidden-import=_cffi_backend --name onlineEditor-windows.exe --clean --icon="src/data/icon.ico" -F src/main.py
+          python3 -m pip install --upgrade pip
+          pip install pyinstaller -r requirements.txt
+          pyinstaller --distpath compiled/ --workpath /tmp/win/ --name onlineEditor-windows.exe --clean --icon="src/data/icon.ico" -F src/main.py
 
       - name: Upload Artifacts (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
@@ -51,9 +51,9 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           python3 -m ensurepip
-          python -m pip install --upgrade pip
-          pip install pyinstaller -r src/requirements.txt
-          pyinstaller --distpath compiled/ --workpath /tmp/linux/ --hidden-import=_cffi_backend --name onlineEditor-linux.sh --clean --icon="src/data/icon.ico" -F src/main.py
+          python3 -m pip install --upgrade pip
+          pip install pyinstaller -r requirements.txt
+          pyinstaller --distpath compiled/ --workpath /tmp/linux/ --name onlineEditor-linux.sh --clean --icon="src/data/icon.ico" -F src/main.py
 
       - name: Upload Artifacts (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
@@ -67,9 +67,9 @@ jobs:
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
           python3 -m ensurepip
-          python -m pip install --upgrade pip
-          pip install pyinstaller -r src/requirements.txt
-          pyinstaller --distpath compiled/ --workpath /tmp/mac/ --hidden-import=_cffi_backend --name onlineEditor-mac.sh --clean --icon="src/data/icon.ico" -F src/main.py
+          python3 -m pip install --upgrade pip
+          pip install pyinstaller -r requirements.txt
+          pyinstaller --distpath compiled/ --workpath /tmp/mac/ --name onlineEditor-mac.sh --clean --icon="src/data/icon.ico" -F src/main.py
 
       - name: Upload Artifacts (Mac)
         if: ${{ matrix.os == 'macos-latest' }}
