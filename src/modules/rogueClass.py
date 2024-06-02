@@ -155,39 +155,34 @@ class Rogue:
 
         print("Data dumped successfully!")
 
-    def get_gamesave_data(self, slot=1):
-
-        print("Fetching gamesave data...")
-        response = self.session.get(f"{self.GAMESAVE_SLOT_URL}{slot-1}", headers=self.headers)
-        response.raise_for_status()
-        data = response.json()
-        return data
-        
-
-    def update_trainer_data(self, trainer_payload: dict) -> dict:
+    def get_trainer_data(self) -> dict:
         """
-        Update the trainer data on the server.
-
-        Args:
-            trainer_payload (dict): The payload containing trainer data to update.
+        Fetch trainer data from the API.
 
         Returns:
-            dict: JSON response from the server.
+            dict: Trainer data from the API.
         """
         try:
-            print("Updating trainer data...")
-            response = self.session.post(self.UPDATE_TRAINER_DATA_URL, headers=self.headers, json=trainer_payload)
+            print("Fetching trainer data...")
+            response = self.session.get(self.TRAINER_DATA_URL, headers=self.headers)
             response.raise_for_status()
-            if response.content:  # Check if the response content is not empty
-                print(Fore.GREEN + "That worked! Trainer data succesfully saved." + Style.RESET_ALL)
-                return response.json()
-            else:
-                return self.__handle_error_response(response)
-            
+            data = response.json()
+            return data
         except requests.RequestException as e:
-            logger.error(Fore.RED + "Error updating trainer data. Please restart the tool." + Style.RESET_ALL)
-            #if isinstance(e, requests.HTTPError) and e.response.status_code != 200 or e.response.status_code != 400:
-            #logger.error(Fore.RED + "Error updating trainer data: ", str(e) + "Restart restart your tool." + Style.RESET_ALL)
+            logger.error(Fore.RED + "Error fetching savegame data. Please restart the tool" + Style.RESET_ALL)
+            #print(Fore.RED + "Error fetching trainer data." + Style.RESET_ALL)
+            #return {}
+
+    def get_gamesave_data(self, slot=1):
+        try:
+            print("Fetching gamesave data...")
+            response = self.session.get(f"{self.GAMESAVE_SLOT_URL}{slot-1}", headers=self.headers)
+            response.raise_for_status()
+            data = response.json()
+            return data
+        except requests.RequestException as e:
+            logger.error(Fore.RED + "Error fetching savegame data. Please restart the tool" + Style.RESET_ALL)
+            #logger.error(Fore.RED + f"Error fetching savegame data for {self.slot}: %s" + Style.RESET_ALL, e)
             #return {}
 
     def update_trainer_data(self, trainer_payload: dict) -> dict:
