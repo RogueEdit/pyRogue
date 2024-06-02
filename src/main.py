@@ -5,7 +5,10 @@ import brotli
 from modules.loginLogic import loginLogic
 from modules.rogueClass import Rogue
 from colorama import Fore, Style, init
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5772c92 (removed brotli)
 #Initialize colorama
 init()
 
