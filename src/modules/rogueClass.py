@@ -155,31 +155,40 @@ class Rogue:
 
         print("Data dumped successfully!")
 
-    def get_trainer_data(self) -> dict:
-        try:
-            print("Fetching trainer data...")
-            print(f"Request URL: {self.TRAINER_DATA_URL}")
-            print(f"Request Headers: {self.headers}")
+    def get_gamesave_data(self, slot=1):
 
-            response = self.session.get(self.TRAINER_DATA_URL, headers=self.headers)
-            
-            print(f"HTTP Status Code: {Fore.RED if response.status_code >= 400 else Fore.GREEN}{response.status_code}{Style.RESET_ALL}")
-            print(f"Response Headers: {response.headers}")
-            print(f"Response Content-Type: {response.headers.get('Content-Type')}")
-            
+        print("Fetching gamesave data...")
+        response = self.session.get(f"{self.GAMESAVE_SLOT_URL}{slot-1}", headers=self.headers)
+        response.raise_for_status()
+        data = response.json()
+        return data
+        
+
+    def update_trainer_data(self, trainer_payload: dict) -> dict:
+        """
+        Update the trainer data on the server.
+
+        Args:
+            trainer_payload (dict): The payload containing trainer data to update.
+
+        Returns:
+            dict: JSON response from the server.
+        """
+        try:
+            print("Updating trainer data...")
+            response = self.session.post(self.UPDATE_TRAINER_DATA_URL, headers=self.headers, json=trainer_payload)
             response.raise_for_status()
-            
             if response.content:  # Check if the response content is not empty
-                data = response.json()
-                print(f"Response JSON: {data}")
-                return data
+                print(Fore.GREEN + "That worked! Trainer data succesfully saved." + Style.RESET_ALL)
+                return response.json()
             else:
-                print(Fore.RED + "Error: Empty response content." + Style.RESET_ALL)
                 return self.__handle_error_response(response)
+            
         except requests.RequestException as e:
-            logger.error(Fore.RED + f"Error fetching trainer data: {e}" + Style.RESET_ALL)
-            print(Fore.RED + f"Error details: {e.response.text if e.response else 'No response received'}" + Style.RESET_ALL)
-            return {}
+            logger.error(Fore.RED + "Error updating trainer data. Please restart the tool." + Style.RESET_ALL)
+            #if isinstance(e, requests.HTTPError) and e.response.status_code != 200 or e.response.status_code != 400:
+            #logger.error(Fore.RED + "Error updating trainer data: ", str(e) + "Restart restart your tool." + Style.RESET_ALL)
+            #return {}
 
     def update_trainer_data(self, trainer_payload: dict) -> dict:
         """
