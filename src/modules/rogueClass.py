@@ -202,8 +202,8 @@ class Rogue:
                 return self.__handle_error_response(response)
             
         except requests.RequestException as e:
-            if isinstance(e, requests.HTTPError) and e.response.status_code != 200:
-                logger.error(Fore.RED + "Error updating trainer data: %s", str(e) + Style.RESET_ALL)
+            if isinstance(e, requests.HTTPError) and e.response.status_code != 200 or e.response.status_code != 400:
+                logger.error(Fore.RED + "Error updating trainer data: %s", str(e) + "Restart the tool and try again." + Style.RESET_ALL)
             return {}
 
     def update_gamesave_data(self, slot: int, gamedata_payload: Dict[str, any], url_ext: str) -> Dict[str, any]:
@@ -229,8 +229,8 @@ class Rogue:
                 return self.__handle_error_response(response)
             
         except requests.RequestException as e:
-            if isinstance(e, requests.HTTPError) and e.response.status_code != 200:
-                logger.error(Fore.RED + "Error updating trainer data: %s", str(e) + Style.RESET_ALL)
+            if isinstance(e, requests.HTTPError) and e.response.status_code != 200 or e.response.status_code != 400:
+                logger.error(Fore.RED + "Error updating trainer data: %s", str(e) + "Restart the tool and try again." + Style.RESET_ALL)
             return {}
 
     def update_all(self) -> None:
@@ -473,9 +473,9 @@ class Rogue:
             
         nature_attr: int = 67108862
         caught = input("How many of this Pokemon have you caught?: ")
-        hatched: str = input("How many of this Pokemon have hatched from eggs? If empty, random: ")
-        seen_count: str = input("How many of this Pokemon have you seen? If empty, random: ")
-        candies: str = input("How many Candies do you want? If empty, random: ")
+        hatched: str = input("How many of this Pokemon have hatched from eggs?: ")
+        seen_count: str = input("How many of this Pokemon have you seen: ")
+        candies: str = input("How many Candies do you want?: ")
         print(Fore.BLUE + "Choose your pokemon stats now. Between 1 and 31." + Style.RESET_ALL)
         ivs: List[int] = [int(input("SpA IVs: ")), int(input("DEF IVs: ")), int(input("Attack IVs: ")),
                int(input("HP IVs: ")), int(input("Spe IVs: ")), int(input("Def IVs: "))]
