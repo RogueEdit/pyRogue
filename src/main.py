@@ -15,7 +15,7 @@ if __name__ == '__main__':
     session = requests.Session()
     
     while True:
-        print("\n<Login>")
+        print(Fore.GREEN + "\n<PyRogue Login>" + Style.RESET_ALL)
         username = input("Username: ")
         password = getpass.getpass("Password (password is hidden): ")
         print("--------------------------")
