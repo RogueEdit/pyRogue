@@ -2,7 +2,6 @@ import requests
 from modules.headers import user_agents
 import random
 from colorama import init, Fore, Style
-import brotli
 
 class loginLogic:
     LOGIN_URL = "https://api.pokerogue.net/account/login"

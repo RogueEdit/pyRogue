@@ -4,8 +4,6 @@ import requests
 from modules.loginLogic import loginLogic
 from modules.rogueClass import Rogue
 from colorama import Fore, Style, init
-import brotli
-
 #Initialize colorama
 init()
 
