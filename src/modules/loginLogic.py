@@ -1,3 +1,11 @@
+# Authors
+# Organization: https://github.com/rogueEdit/
+# Repository: https://github.com/rogueEdit/OnlineRogueEditor
+# Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
+# Date of release: 04.06.2024 
+
+
+
 import requests
 from utilities.headers import user_agents
 import random

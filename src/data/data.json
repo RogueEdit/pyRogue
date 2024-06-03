@@ -1,5 +1,5 @@
 {
-  "startup_message": "OnlineRogueEditor",
+  "startup_message": "PyRogue",
   "achievements": [
     "_10K_MONEY", "_100K_MONEY", "_1M_MONEY", "_10M_MONEY",
     "_250_DMG", "_1000_DMG", "_2500_DMG", "_10000_DMG",
@@ -11,6 +11,7 @@
     "CATCH_MYTHICAL", "CATCH_SUB_LEGENDARY", "CATCH_LEGENDARY", "SEE_SHINY",
     "SHINY_PARTY", "HATCH_MYTHICAL", "HATCH_SUB_LEGENDARY", "HATCH_LEGENDARY",
     "HATCH_SHINY", "HIDDEN_ABILITY", "PERFECT_IVS", "CLASSIC_VICTORY"
+<<<<<<< HEAD
   ],
   "vouchers": [
     "CLASSIC_VICTORY", "BROCK", "MISTY", "LT_SURGE", 
@@ -38,5 +39,7 @@
     "LANCE_CHAMPION", "STEVEN", "WALLACE", "CYNTHIA",
     "ALDER", "IRIS", "DIANTHA", "HAU", "GEETA", "NEMONA",
     "KIERAN", "LEON"
+=======
+>>>>>>> 9225a9d (Logic Refactoring, Ultimate additions)
   ]
 }
