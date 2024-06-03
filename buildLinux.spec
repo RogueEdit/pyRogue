@@ -7,7 +7,7 @@ added_files = [
 
 
 a = Analysis(
-    ['main.py'],
+    ['src/main.py'],
     pathex=[],
     binaries=[],
     datas=added_files,
