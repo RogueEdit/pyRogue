@@ -7,11 +7,11 @@ import shutil
 import brotli
 from typing import Dict, Any, Union, Optional, List
 import logging
-from modules.headers import user_agents, header_languages
+from utilities.headers import user_agents, header_languages
 from colorama import init, Fore, Style
 from time import sleep
 
-from modules.eggLogic import *
+from utilities.eggLogic import *
 logger = logging.getLogger(__name__)
 
 class Rogue:
@@ -65,6 +65,9 @@ class Rogue:
 
         with open("./data/passive.json") as f:
             self.passive_data = json.load(f)
+        
+        self.__dump_data()
+
 
     def __handle_error_response(self, response: requests.Response) -> dict:
         """
@@ -88,26 +91,6 @@ class Rogue:
         return {}
 
 
-    def make_request(self, url: str, headers: dict = None) -> dict:
-        """
-        Make an HTTP GET request to the specified URL with optional headers.
-
-        Args:
-            url (str): The URL to make the request to.
-            headers (dict, optional): Headers to include in the request. Defaults to None.
-
-        Returns:
-            dict: JSON response from the server.
-        """
-        try:
-            response = self.session.get(url, headers=headers)
-            response.raise_for_status()
-            data = response.json()
-            return data
-        except requests.RequestException as e:
-            logger.error(Fore.RED + f"Failed to make request: {e}" + Style.RESET_ALL)
-            return {}
-
     def _setup_headers(self) -> None:
         # Setup headers
         self.headers = {
@@ -124,7 +107,7 @@ class Rogue:
             "Sec-Fetch-Dest": "empty"
         }
 
-    def dump_data(self, slot: int = 1) -> None:
+    def __dump_data(self, slot: int = 1) -> None:
         """
         Dump data from the API to local files.
 
@@ -173,7 +156,7 @@ class Rogue:
             #print(Fore.RED + "Error fetching trainer data." + Style.RESET_ALL)
             #return {}
 
-    def get_gamesave_data(self, slot=1):
+    def get_gamesave_data(self, slot: int = 1):
         try:
             print("Fetching gamesave data...")
             response = self.session.get(f"{self.GAMESAVE_SLOT_URL}{slot-1}", headers=self.headers)
@@ -185,7 +168,7 @@ class Rogue:
             #logger.error(Fore.RED + f"Error fetching savegame data for {self.slot}: %s" + Style.RESET_ALL, e)
             #return {}
 
-    def update_trainer_data(self, trainer_payload: dict) -> dict:
+    def __update_trainer_data(self, trainer_payload: dict) -> dict:
         """
         Update the trainer data on the server.
 
@@ -211,7 +194,7 @@ class Rogue:
             #logger.error(Fore.RED + "Error updating trainer data: ", str(e) + "Restart restart your tool." + Style.RESET_ALL)
             #return {}
 
-    def update_gamesave_data(self, slot: int, gamedata_payload: Dict[str, any], url_ext: str) -> Dict[str, any]:
+    def __update_gamesave_data(self, slot: int, gamedata_payload: Dict[str, any], url_ext: str) -> Dict[str, any]:
         """
         Update the gamesave data on the server.
 
@@ -234,7 +217,7 @@ class Rogue:
                 return self.__handle_error_response(response)
             
         except requests.RequestException as e:
-            logger.error(Fore.RED + "Error updating trainer data. Please restart the tool." + Style.RESET_ALL)
+            logger.error(Fore.RED + f"Error updating trainer data -> {e}. Please restart the tool." + Style.RESET_ALL)
             return 
             #if isinstance(e, requests.HTTPError) and e.response.status_code != 200 or e.response.status_code != 400:
             #    logger.error(Fore.RED + f"Error updating savegame data for {self.slot}: ", str(e) + "Restart the tool and try again." + Style.RESET_ALL)
@@ -247,26 +230,27 @@ class Rogue:
         if self.slot is None or self.slot > 5 or self.slot < 1:
             print(Fore.RED + "Invalid slot number!" + Style.RESET_ALL)
             return
+        
 
         if "trainer.json" not in os.listdir():
             print(
                 Fore.RED + "trainer.json (Your game data) file not found!" + Style.RESET_ALL)
             return
-        with open("trainer.json", "r") as f:
-            trainer_data = json.load(f)
+        
+        trainer_data = self.__load_data("trainer.json")
 
         filename = f"slot_{self.slot}.json"
         if filename not in os.listdir():
             print(Fore.RED + f"{filename} not found" + Style.RESET_ALL)
             return
-        with open(filename, "r") as f:
-            game_data = json.load(f)
+        
+        game_data = self.__load_data(filename)
 
         trainer_id, trainer_secretId = trainer_data["trainerId"], trainer_data["secretId"]
         url_ext = f"&trainerId={trainer_id}&secretId={trainer_secretId}"
 
-        self.update_trainer_data(trainer_data)
-        self.update_gamesave_data(self.slot, game_data, url_ext)
+        self.__update_trainer_data(trainer_data)
+        self.__update_gamesave_data(self.slot, game_data, url_ext)
         sleep(5)
 
     def __write_data(self, data: Dict[str, any], filename: str) -> None:
@@ -381,8 +365,16 @@ class Rogue:
         if (passive < 1) or (passive > 2):
             print("Invalid command.")
             return
+
+        ability: int = int(input("Do you want to unlock all abilities?(1: Yes | 2: No): "))
+        if (ability < 1) or (ability > 2):
+            print("Invalid command.")
+            return
         
         ribbon: int = int(input("Do you want to unlock win-ribbons?: (1: Yes | 2: No): "))
+        if (ribbon < 1) or (ribbon > 2):
+            print("Invalid command.")
+            return
 
         total_caught: int = 0
         total_seen: int = 0
@@ -407,7 +399,7 @@ class Rogue:
                 "eggMoves": 15,
                 "candyCount": caught + 20,
                 "friendship": random.randint(1, 300),
-                "abilityAttr": 7,
+                "abilityAttr": 0 if ability == 2 else 7,
                 "passiveAttr": 0 if (entry in self.passive_data["noPassive"]) or (passive == 2) else 3,
                 "valueReduction": 2,
                 "classicWinCount": None if ribbon == 2 else random.randint(1, 5),
@@ -500,6 +492,10 @@ class Rogue:
         else:
             passiveAttr = 0
         
+        ability: int = int(input("Do you want to unlock all abilities?(1: Yes | 2: No): "))
+        if (ability < 1) or (ability > 2):
+            print("Invalid command.")
+            return
 
         trainer_data["dexData"][dexId] = {
             "seenAttr": 479,
@@ -514,7 +510,7 @@ class Rogue:
             "moveset": None,
             "eggMoves": 15,
             "candyCount": candies,
-            "abilityAttr": 7,
+            "abilityAttr": 0 if passive == 2 else 7,
             "passiveAttr": passiveAttr,
             "valueReduction": 2
         }
