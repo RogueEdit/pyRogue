@@ -1,5 +1,6 @@
-![Preview Image](.github/previews/tool.png)
-![Preview Image](.github/previews/egg-list.png)
+![Preview Image](.github/previews/backup.png) 
+![Preview Image](.github/previews/autocomplete.png)
+![Preview Image](.github/previews/tool.png) ![Preview Image](.github/previews/egg-list.png)
 ![Preview Image](.github/previews/eggs.gif)
 ![Preview Image](.github/previews/starter.png)
 ![Preview Image](.github/previews/achievements.png)
@@ -7,5 +8,4 @@
 ![Preview Image](.github/previews/stats.png)
 ![Preview Image](.github/previews/field1.png)
 ![Preview Image](.github/previews/field2.png)
-![Preview Image](.github/previews/backup.png)
 
