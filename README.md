@@ -69,6 +69,9 @@ We will not use the tool 24/7 - this means we will not see when it breaks due to
  
 ## Editor Features
 
+- Autocomplete recomendations
+![Preview Image](.github/previews/autocomplete.png)
+
 - When logging in it will automatically create backups for you.
 
 - Update all data on the server
