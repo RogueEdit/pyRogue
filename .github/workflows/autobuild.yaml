@@ -45,7 +45,7 @@ jobs:
         with:
           name: onlineEditor-windows
           path: |
-            compiled/pyRogue-v014-windows.exe
+            dist/pyRogue-v014-windows.exe
 
       - name: Build Executables (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
@@ -61,7 +61,7 @@ jobs:
         with:
           name: onlineEditor-linux
           path: |
-            compiled/pyRogue-v014-Linux.sh
+            dist/pyRogue-v014-Linux.sh
       
       - name: Build Executables (Mac)
         if: ${{ matrix.os == 'macos-latest' }}
@@ -77,4 +77,4 @@ jobs:
         with:
           name: onlineEditor-mac
           path: |
-            compiled/pyRogue-v014-MacIntel.sh
+            dist/pyRogue-v014-MacIntel.sh
