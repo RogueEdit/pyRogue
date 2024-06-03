@@ -37,7 +37,7 @@ jobs:
           python3 -m ensurepip
           python -m pip install --upgrade pip
           pip install pyinstaller -r src/requirements.txt
-          pyinstaller --distpath compiled/ --workpath /tmp/win/ --name onlineEditor-windows.exe --clean --icon="src/data/icon.ico" -F src/main.py
+          pyinstaller --distpath compiled/ --workpath /tmp/win/ --name pyRogue-v014-windows.exe --clean --icon="src/data/icon.ico" -F src/main.py
 
       - name: Upload Artifacts (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
@@ -53,7 +53,7 @@ jobs:
           python3 -m ensurepip
           python3 -m pip install --upgrade pip
           pip install pyinstaller -r src/requirements.txt
-          pyinstaller --distpath compiled/ --workpath /tmp/linux/ --name onlineEditor-linux.sh --clean --icon="src/data/icon.ico" -F src/main.py
+          pyinstaller --distpath compiled/ --workpath /tmp/linux/ --name pyRogue-v014-linux.sh --clean --icon="src/data/icon.ico" -F src/main.py
 
       - name: Upload Artifacts (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
@@ -69,7 +69,7 @@ jobs:
           python3 -m ensurepip
           python3 -m pip install --upgrade pip
           pip install pyinstaller -r src/requirements.txt
-          pyinstaller --distpath compiled/ --workpath /tmp/mac/ --name onlineEditor-mac.sh --clean --icon="src/data/icon.ico" -F src/main.py
+          pyinstaller --distpath compiled/ --workpath /tmp/mac/ --name pyRogue-v014-mac.sh --clean --icon="src/data/icon.ico" -F src/main.py
 
       - name: Upload Artifacts (Mac)
         if: ${{ matrix.os == 'macos-latest' }}
