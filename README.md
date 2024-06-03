@@ -1,11 +1,11 @@
 # pyRogue
 > **pyRogue** is a educational project. This is mostly to be done, if you have any ideas or problems please use the issue feature.
 
-[<img src="https://img.shields.io/badge/Windows-blue">]() <img src="https://img.shields.io/badge/Checksumherew-Total"> [<img src="https://img.shields.io/badge/Virus%20Total-Total">]() 
+[<img src="https://img.shields.io/badge/Windows-blue">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.1.4/pyRogue-Windows.zip) <img src="https://img.shields.io/badge/f0b53593a97007587041f4c39dbf14e207d3db4402ed0ebe7504404f0584982a-blue"> [<img src="https://img.shields.io/badge/Virus%20Total-blue">](https://www.virustotal.com/gui/file/f0b53593a97007587041f4c39dbf14e207d3db4402ed0ebe7504404f0584982a?nocache=1) 
 
-[<img src="https://img.shields.io/badge/Linux-Green">]() <img src="https://img.shields.io/badge/Checksumherel-Total"> [<img src="https://img.shields.io/badge/Virus%20Total-Total">]()
+[<img src="https://img.shields.io/badge/Linux-Green">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.1.4/pyRogue-Linux.zip) <img src="https://img.shields.io/badge/1869cc6b281dd4989f1b01b910639b64e20d593e93272ae1e92bafedbe296c25-Green"> [<img src="https://img.shields.io/badge/Virus%20Total-Green">](https://www.virustotal.com/gui/file/1869cc6b281dd4989f1b01b910639b64e20d593e93272ae1e92bafedbe296c25?nocache=1)
 
-[<img src="https://img.shields.io/badge/Mac-silver">]() <img src="https://img.shields.io/badge/ChecksumHereM-Total"> [<img src="https://img.shields.io/badge/Virus%20Total-Total">]()
+[<img src="https://img.shields.io/badge/Mac-silver">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.1.4/pyRogue-MacIntel.zip) <img src="https://img.shields.io/badge/955ae749b5b8aafb2791de0b701cbda4c108f348f5580f41851ec162fb78de73-silver"> [<img src="https://img.shields.io/badge/Virus%20Total-silver">](https://www.virustotal.com/gui/file/955ae749b5b8aafb2791de0b701cbda4c108f348f5580f41851ec162fb78de73?nocache=1)
 
 ![Preview Image](.github/previews/main.png)
 ![Preview Image](.github/previews/tool.png)
