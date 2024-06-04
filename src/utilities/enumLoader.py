@@ -4,7 +4,7 @@
 # Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
 # Date of release: 04.06.2024 
 
-
+from utilities.cFormatter import cFormatter, Color
 import json
 
 from enum import Enum, auto
@@ -19,23 +19,26 @@ class EnumLoader:
         self.natureSlot_data = None
 
     def __load_data(self):
-        with open("./data/pokemon.json") as f:
-            self.pokemon_id_by_name = json.load(f)
+        try:
+            with open("./data/pokemon.json") as f:
+                self.pokemon_id_by_name = json.load(f)
 
-        with open("./data/biomes.json") as f:
-            self.biomes_by_id = json.load(f)
+            with open("./data/biomes.json") as f:
+                self.biomes_by_id = json.load(f)
 
-        with open("./data/moves.json") as f:
-            self.moves_by_id = json.load(f)
+            with open("./data/moves.json") as f:
+                self.moves_by_id = json.load(f)
 
-        with open("./data/natures.json") as f:
-            self.natures_data = json.load(f)
+            with open("./data/natures.json") as f:
+                self.natures_data = json.load(f)
 
-        with open("./data/vouchers.json") as f:
-            self.vouchers_data = json.load(f)
-        
-        with open("./data/natureSlot.json") as f:
-            self.natureSlot_data = json.load(f)
+            with open("./data/vouchers.json") as f:
+                self.vouchers_data = json.load(f)
+            
+            with open("./data/natureSlot.json") as f:
+                self.natureSlot_data = json.load(f)
+        except Exception as e:
+            cFormatter.print(Color.CRITICAL, f'Something went wrong. {e}', isLogging=True)
 
     def __create_enum_from_dict(self, data_dict, enum_name):
         enum_cls = Enum(enum_name, {key: value for key, value in data_dict.items()})

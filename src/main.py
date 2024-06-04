@@ -15,40 +15,48 @@ from colorama import Fore, Style, init
 <<<<<<< HEAD
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 5772c92 (removed brotli)
 #Initialize colorama
 =======
 >>>>>>> 9225a9d (Logic Refactoring, Ultimate additions)
+=======
+from utilities.cFormatter import cFormatter, Color
+# cFormatter.print(Color.CYAN, 'This is a test message', isLogging=True)
+# [CYAN]This is a test message[RESET]
+# cFormatter.print_separators(10, '-', Color.GREEN)
+# [GREEN]----------[RESET]
+
+from utilities.logger import CustomLogger
+
+>>>>>>> 68279c3 (More logic rewrite)
 init()
 
-logging.basicConfig(level=logging.DEBUG)
+logger = CustomLogger()
 
 if __name__ == '__main__':
     session = requests.Session()
     
     while True:
-        print(Fore.GREEN + "\n<PyRogue Login>" + Style.RESET_ALL)
+        cFormatter.print(Color.GREEN, '<(^.^(< pyRogue >)^.^)>')
         username = input("Username: ")
         password = getpass.getpass("Password (password is hidden): ")
-        print("--------------------------")
 
         login = loginLogic(username, password)
 
         try:
             if login.login():
-                print(f"Logged in as: {username.capitalize()}")
-                print(Fore.GREEN + "Backup created." + Style.RESET_ALL)
+                cFormatter.print(Color.CYAN, f"Logged in as: {username.capitalize()}")
+                cFormatter.print(Color.GREEN, 'Backup created.')
                 rogue = Rogue(session, login.token, login.session_id)
                 
                 break
             else:
-                print("Incorrect credentials")
+                cFormatter.print(Color.CYAN, 'Wrong credentials.')
         except Exception as e:
-            print("An error occurred during login.")
-            logging.exception(e)
+            cFormatter.print(Color.GREEN, f'Something went wrong. {e}', isLogging=True)
             
-    
     func = {
         "1": rogue.get_trainer_data,
         "2": rogue.get_gamesave_data,
@@ -131,4 +139,4 @@ if __name__ == '__main__':
         elif command == "exit":
             quit()
         else:
-            print("Command not found")
+            cFormatter.print(Color.CYAN, 'Command not found.')
