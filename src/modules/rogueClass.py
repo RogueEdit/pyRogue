@@ -125,27 +125,30 @@ class Rogue:
         Args:
             slot (int): The slot number (1-5). Defaults to 1.
         '''
-        if not self.slot:
-            slot = int(input('Enter slot (1-5): '))
-            self.slot = slot
-            if slot > 5 or slot < 1:
-                cFormatter.print(Color.INFO, 'Invalid input.')
-                return
+        try:
+            if not self.slot:
+                slot = int(input('Enter slot (1-5): '))
+                self.slot = slot
+                if slot > 5 or slot < 1:
+                    cFormatter.print(Color.INFO, 'Invalid input.')
+                    return
 
-        trainer_data = self.get_trainer_data()
-        game_data = self.get_gamesave_data(slot)
+            trainer_data = self.get_trainer_data()
+            game_data = self.get_gamesave_data(slot)
 
-        if trainer_data:
-            self.__write_data(trainer_data, 'trainer.json')
-        else:
-            cFormatter.print(Color.DEBUG, 'Failed to fetch trainer save data.')
+            if trainer_data:
+                self.__write_data(trainer_data, 'trainer.json')
+            else:
+                cFormatter.print(Color.DEBUG, 'Failed to fetch trainer save data.')
 
-        if game_data:
-            self.__write_data(game_data, f'slot_{slot}.json')
-        else:
-            cFormatter.print(Color.DEBUG, f'Failed to fetch save-slot data for slot {slot}.')
+            if game_data:
+                self.__write_data(game_data, f'slot_{slot}.json')
+            else:
+                cFormatter.print(Color.DEBUG, f'Failed to fetch save-slot data for slot {slot}.')
 
-        self.create_backup()
+            self.create_backup()
+        except Exception as e:
+            cFormatter.print(Color.CRITICAL, f'Error in function __dump_data(): {e}', isLogging=True)
 
     def get_trainer_data(self) -> dict:
         '''
@@ -227,7 +230,7 @@ class Rogue:
                 return self.__handle_error_response(response)
             
         except requests.RequestException as e:
-            # This might be TypeErros not sure
+            # This might be TypeErrors not sure since httpreponse might be invalid here
             cFormatter.print(Color.CRITICAL, f'Error updating trainer data. Please restart the tool. \n {e}', isLogging=True)
             return 
 
@@ -235,29 +238,32 @@ class Rogue:
         '''
         Update all data to the server.
         '''
-        if self.slot is None or self.slot > 5 or self.slot < 1:
-            cFormatter.print(Color.RED, 'Invalid slot number chosen.')
-            return
-        
-        if 'trainer.json' not in os.listdir():
-            cFormatter.print(Color.RED, 'Your gamefile trainer.json (Your game data) file not found')
-            return
-        
-        trainer_data = self.__load_data('trainer.json')
+        try:
+            if self.slot is None or self.slot > 5 or self.slot < 1:
+                cFormatter.print(Color.RED, 'Invalid slot number chosen.')
+                return
+            
+            if 'trainer.json' not in os.listdir():
+                cFormatter.print(Color.RED, 'Your gamefile trainer.json (Your game data) file not found')
+                return
+            
+            trainer_data = self.__load_data('trainer.json')
 
-        filename = f'slot_{self.slot}.json'
-        if filename not in os.listdir():
-            cFormatter.print(Color.RED, f'{filename} not found')
-            return
-        
-        game_data = self.__load_data(filename)
+            filename = f'slot_{self.slot}.json'
+            if filename not in os.listdir():
+                cFormatter.print(Color.RED, f'{filename} not found')
+                return
+            
+            game_data = self.__load_data(filename)
 
-        trainer_id, trainer_secretId = trainer_data['trainerId'], trainer_data['secretId']
-        url_ext = f'&trainerId={trainer_id}&secretId={trainer_secretId}'
+            trainer_id, trainer_secretId = trainer_data['trainerId'], trainer_data['secretId']
+            url_ext = f'&trainerId={trainer_id}&secretId={trainer_secretId}'
 
-        self.__update_trainer_data(trainer_data)
-        self.__update_gamesave_data(self.slot, game_data, url_ext)
-        sleep(5)
+            self.__update_trainer_data(trainer_data)
+            self.__update_gamesave_data(self.slot, game_data, url_ext)
+            sleep(5)
+        except Exception as e:
+            cFormatter.print(Color.CRITICAL, f'Error in function update_all(): {e}', isLogging=True)
 
     def __write_data(self, data: Dict[str, any], filename: str) -> None:
         '''
@@ -267,8 +273,12 @@ class Rogue:
             data (Dict[str, any]): The data to write.
             filename (str): The name of the file.
         '''
-        with open(filename, 'w') as f:
-            json.dump(data, f, indent=4)
+        try:
+            with open(filename, 'w') as f:
+                json.dump(data, f, indent=4)
+                cFormatter.print(Color.BRIGHT_YELLOW, 'Written to local data. Do not forget to apply to server when done!')
+        except Exception as e:
+            cFormatter.print(Color.CRITICAL, f'Error writing data(): {e}', isLogging=True)
 
     def create_backup(self) -> None:
         '''
@@ -296,91 +306,56 @@ class Rogue:
                         else:
                             shutil.copy(file, base_filepath)
         except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Something with your backup went wrong. {e}', isLogging=True)
+            cFormatter.print(Color.CRITICAL, f'Error in function create_backup(): {e}', isLogging=True)
 
     def restore_backup(self) -> None:
-        backup_dir = './backup'
-        files = os.listdir(backup_dir)
-        
-        # Filtering and sorting files
-        base_files = sorted(f for f in files if re.match(r'base_\d+\.json', f))
-        backup_files = sorted(
-            (f for f in files if re.match(r'backup_\d+_\d{8}_\d{6}\.json', f)),
-            key=lambda x: (re.findall(r'\d+', x)[0], re.findall(r'\d{8}_\d{6}', x)[0])
-        )
-        
-        all_files = base_files + backup_files
-        
-        if not all_files:
-            cFormatter.print(Color.INFO, 'No backup files found.')
-            return
-        
-        # Displaying sorted list with numbers
-        for idx, file in enumerate(all_files, 1):
-            sidenote = '        <- Created on first edit' if file.startswith('base_') else ''
-            cFormatter.print(Color.GREEN, f'{idx}{Style.RESET_ALL}: {file} {sidenote}')
-
-        cFormatter.print_separators(31, '-', Color.WHITE)
-
-        # Getting user's choice
-        while True:
-            try:
-                choice = int(input('Enter the number of the file you want to restore: '))
-                if 1 <= choice <= len(all_files):
-                    chosen_file = all_files[choice - 1]
-                    chosen_filepath = os.path.join(backup_dir, chosen_file)
-                    
-                    # Determine the output filepath
-                    parent_dir = os.path.abspath(os.path.join(backup_dir, os.pardir))
-                    output_filepath = os.path.join(parent_dir, './trainer.json')
-                    
-                    # Copy the chosen file to the output filepath
-                    shutil.copyfile(chosen_filepath, output_filepath)
-                    cFormatter.print(Color.INFO, f'Data restored.')
-                    break
-                else:
-                    cFormatter.print(Color.WARNING, f'Invalid choice. Please enter a number within range.')
-            except ValueError:
-                cFormatter.print(Color.WARNING, f'Invalid choice. Please enter a valid number.', isLogging=True)
-
-    def __load_data(self, file_path: str) -> Dict[str, Any]:
-        '''
-        Load data from a specified file path.
-
-        Args:
-            file_path (str): Path to the file to be loaded.
-
-        Returns:
-            dict: Loaded data.
-        '''
         try:
-            with open(file_path, 'r') as f:
-                return json.load(f)
+            backup_dir = './backup'
+            files = os.listdir(backup_dir)
+            
+            # Filtering and sorting files
+            base_files = sorted(f for f in files if re.match(r'base_\d+\.json', f))
+            backup_files = sorted(
+                (f for f in files if re.match(r'backup_\d+_\d{8}_\d{6}\.json', f)),
+                key=lambda x: (re.findall(r'\d+', x)[0], re.findall(r'\d{8}_\d{6}', x)[0])
+            )
+            
+            all_files = base_files + backup_files
+            
+            if not all_files:
+                cFormatter.print(Color.INFO, 'No backup files found.')
+                return
+            
+            # Displaying sorted list with numbers
+            for idx, file in enumerate(all_files, 1):
+                sidenote = '        <- Created on first edit' if file.startswith('base_') else ''
+                cFormatter.print(Color.GREEN, f'{idx}{Style.RESET_ALL}: {file} {sidenote}')
+
+            cFormatter.print_separators(31, '-', Color.WHITE)
+
+            # Getting user's choice
+            while True:
+                try:
+                    choice = int(input('Enter the number of the file you want to restore: '))
+                    if 1 <= choice <= len(all_files):
+                        chosen_file = all_files[choice - 1]
+                        chosen_filepath = os.path.join(backup_dir, chosen_file)
+                        
+                        # Determine the output filepath
+                        parent_dir = os.path.abspath(os.path.join(backup_dir, os.pardir))
+                        output_filepath = os.path.join(parent_dir, './trainer.json')
+                        
+                        # Copy the chosen file to the output filepath
+                        shutil.copyfile(chosen_filepath, output_filepath)
+                        cFormatter.print(Color.INFO, f'Data restored.')
+                        break
+                    else:
+                        cFormatter.print(Color.WARNING, f'Invalid choice. Please enter a number within range.')
+                except ValueError:
+                    cFormatter.print(Color.WARNING, f'Invalid choice. Please enter a valid number.', isLogging=True)
         except Exception as e:
-                cFormatter.print(Color.CRITICAL, f'Something went wrong loading your data. {e}', isLogging=True)
-    
-    def __write_data(self, data: Dict[str, Any], file: str) -> None:
-        '''
-        Writes data to a JSON file.
+            cFormatter.print(Color.CRITICAL, f'Error in function restore_backup(): {e}', isLogging=True)
 
-        Args:
-            data (Dict[str, Any]): The data to be written.
-            file (str): The file path.
-
-        Returns:
-            None
-        '''
-        with open(file, 'w') as f:
-            json.dump(data, f, indent=2)
-            cFormatter.print(Color.BRIGHT_YELLOW, 'Written to local data. Do not forget to apply to server when done!')
-
-    def print_pokedex(self) -> None:
-        '''
-        Prints the contents of the NaturesEnum.
-        '''
-        pokemons = [f'{member.value}: {member.name}' for member in self.pokemon_id_by_name]
-        cFormatter.print(Color.WHITE, '\n'.join(pokemons))
-        
     def unlock_all_starters(self) -> None:
         '''
         Unlocks all starters.
@@ -390,97 +365,96 @@ class Rogue:
         '''
         try:
             trainer_data = self.__load_data('trainer.json')
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Could not find data. Please refetch it from the server. {e}', isLogging=True)
-            return
 
-        choice: int = int(input('Do you want to unlock all forms (Shiny Tier 3) as well? (1: Yes | 2: No): '))
-        if (choice < 1) or (choice > 2):
-            cFormatter.print(Color.INFO, 'Invalid input.')
-            return
-        elif choice == 2:
-            is_shiny: int = int(input('Do you want the starters to be shiny? (1: Yes | 2: No): '))
-            if (is_shiny < 1) or (is_shiny > 2):
+            choice: int = int(input('Do you want to unlock all forms (Shiny Tier 3) as well? (1: Yes | 2: No): '))
+            if (choice < 1) or (choice > 2):
                 cFormatter.print(Color.INFO, 'Invalid input.')
                 return
-            elif is_shiny == 1:
-                shiny: int = 255
-            else:
-                shiny: int = 253
-        
-        iv: int = int(input('Do you want the starters to have perfect IVs? (1: Yes | 2: No): '))
-        if (iv < 1) or (iv > 2):
-            cFormatter.print(Color.INFO, 'Invalid input. Setting to NO.')
-            iv = 2
-        
-        passive: int = int(input('Do you want the starters to have the passive unlocked? (1: Yes | 2: No): '))
-        if (passive < 1) or (passive > 2):
-            cFormatter.print(Color.INFO, 'Invalid input. Setting to NO.')
-            passive = 2
-
-        ability: int = int(input('Do you want to unlock all abilities? (1: Yes | 2: No): '))
-        if (ability < 1) or (ability > 2):
-            cFormatter.print(Color.INFO, 'Invalid input. Setting to NO.')
-            ability = 2
-        
-        ribbon: int = int(input('Do you want to unlock win-ribbons?: (1: Yes | 2: No): '))
-        if (ribbon < 1) or (ribbon > 2):
-            cFormatter.print(Color.INFO, 'Invalid input. Setting to NO.')
-            ribbon = 2
-
-        costReduce = int(input('How much do you want to reduce the cost? Yes lugia can cost nearly 0! (Number between 1 and 20): '))
-        if (costReduce < 0) or (costReduce > 20):
-            cFormatter.print(Color.INFO, 'Invalid input. Setting to 0.')
-            costReduce = 0
-
-        abilityAttr = int(input('Do you want to unlock abilites? (1: None | 2: All with hidden): '))
-        if (abilityAttr < 1) or (abilityAttr > 2):
-            cFormatter.print(Color.INFO, 'Invalid input. Setting to none.')
-            abilityAttr = 0
-        elif abilityAttr == 2:
-            abilityAttr = 7
-        else:
-            abilityAttr = 0
-
-        total_caught: int = 0
-        total_seen: int = 0
-        for entry in trainer_data['dexData'].keys():
-            caught: int = random.randint(150, 250)
-            seen: int = random.randint(150, 350)
-            total_caught += caught
-            total_seen += seen
-            randIv: List[int] = random.sample(range(20, 30), 6)
-
-            trainer_data['dexData'][entry] = {
-                'seenAttr': 479,
-                'caughtAttr': self.__MAX_BIG_INT if choice == 1 else shiny,
-                'natureAttr': self.nature_data.UNLOCK_ALL.value,
-                'seenCount': seen,
-                'caughtCount': caught,
-                'hatchedCount': 0,
-                'ivs': randIv if iv == 2 else [31, 31, 31, 31, 31, 31]
-            }
-            trainer_data['starterData'][entry] = {
-                'moveset': None,
-                'eggMoves': 15,
-                'candyCount': caught + 20,
-                'friendship': random.randint(1, 300),
-                'abilityAttr': abilityAttr,
-                'passiveAttr': 0 if (entry in self.passive_data['noPassive']) or (passive == 2) else 3,
-                'valueReduction': costReduce,
-                'classicWinCount': None if ribbon == 2 else 1,
-            }
-
+            elif choice == 2:
+                is_shiny: int = int(input('Do you want the starters to be shiny? (1: Yes | 2: No): '))
+                if (is_shiny < 1) or (is_shiny > 2):
+                    cFormatter.print(Color.INFO, 'Invalid input.')
+                    return
+                elif is_shiny == 1:
+                    shiny: int = 255
+                else:
+                    shiny: int = 253
             
-            trainer_data['gameStats']['battles'] = total_caught + random.randint(1, total_caught)
-            trainer_data['gameStats']['pokemonCaught'] = total_caught
-            trainer_data['gameStats']['pokemonSeen'] = total_seen
-            trainer_data['gameStats']['shinyPokemonCaught'] = len(trainer_data['dexData']) * 2
+            iv: int = int(input('Do you want the starters to have perfect IVs? (1: Yes | 2: No): '))
+            if (iv < 1) or (iv > 2):
+                cFormatter.print(Color.INFO, 'Invalid input. Setting to NO.')
+                iv = 2
+            
+            passive: int = int(input('Do you want the starters to have the passive unlocked? (1: Yes | 2: No): '))
+            if (passive < 1) or (passive > 2):
+                cFormatter.print(Color.INFO, 'Invalid input. Setting to NO.')
+                passive = 2
 
-            if ribbon == 1:
-                trainer_data['gameStats']['classicWinCount'] = random.randint(1, 50)
+            ability: int = int(input('Do you want to unlock all abilities? (1: Yes | 2: No): '))
+            if (ability < 1) or (ability > 2):
+                cFormatter.print(Color.INFO, 'Invalid input. Setting to NO.')
+                ability = 2
+            
+            ribbon: int = int(input('Do you want to unlock win-ribbons?: (1: Yes | 2: No): '))
+            if (ribbon < 1) or (ribbon > 2):
+                cFormatter.print(Color.INFO, 'Invalid input. Setting to NO.')
+                ribbon = 2
 
-        self.__write_data(trainer_data, 'trainer.json')
+            costReduce = int(input('How much do you want to reduce the cost? Yes lugia can cost nearly 0! (Number between 1 and 20): '))
+            if (costReduce < 0) or (costReduce > 20):
+                cFormatter.print(Color.INFO, 'Invalid input. Setting to 0.')
+                costReduce = 0
+
+            abilityAttr = int(input('Do you want to unlock abilites? (1: None | 2: All with hidden): '))
+            if (abilityAttr < 1) or (abilityAttr > 2):
+                cFormatter.print(Color.INFO, 'Invalid input. Setting to none.')
+                abilityAttr = 0
+            elif abilityAttr == 2:
+                abilityAttr = 7
+            else:
+                abilityAttr = 0
+
+            total_caught: int = 0
+            total_seen: int = 0
+            for entry in trainer_data['dexData'].keys():
+                caught: int = random.randint(150, 250)
+                seen: int = random.randint(150, 350)
+                total_caught += caught
+                total_seen += seen
+                randIv: List[int] = random.sample(range(20, 30), 6)
+
+                trainer_data['dexData'][entry] = {
+                    'seenAttr': 479,
+                    'caughtAttr': self.__MAX_BIG_INT if choice == 1 else shiny,
+                    'natureAttr': self.nature_data.UNLOCK_ALL.value,
+                    'seenCount': seen,
+                    'caughtCount': caught,
+                    'hatchedCount': 0,
+                    'ivs': randIv if iv == 2 else [31, 31, 31, 31, 31, 31]
+                }
+                trainer_data['starterData'][entry] = {
+                    'moveset': None,
+                    'eggMoves': 15,
+                    'candyCount': caught + 20,
+                    'friendship': random.randint(1, 300),
+                    'abilityAttr': abilityAttr,
+                    'passiveAttr': 0 if (entry in self.passive_data['noPassive']) or (passive == 2) else 3,
+                    'valueReduction': costReduce,
+                    'classicWinCount': None if ribbon == 2 else 1,
+                }
+
+                
+                trainer_data['gameStats']['battles'] = total_caught + random.randint(1, total_caught)
+                trainer_data['gameStats']['pokemonCaught'] = total_caught
+                trainer_data['gameStats']['pokemonSeen'] = total_seen
+                trainer_data['gameStats']['shinyPokemonCaught'] = len(trainer_data['dexData']) * 2
+
+                if ribbon == 1:
+                    trainer_data['gameStats']['classicWinCount'] = random.randint(1, 50)
+
+            self.__write_data(trainer_data, 'trainer.json')
+        except Exception as e:
+            cFormatter.print(Color.CRITICAL, f'Error in function unlock_all_starter(): {e}', isLogging=True)
 
     def starter_edit(self, dexId: Optional[str] = None) -> None:
         '''
@@ -491,118 +465,117 @@ class Rogue:
         '''
         try:
             trainer_data = self.__load_data('trainer.json')
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Could not find data. Please refetch it from the server. {e}', isLogging=True)
-            return
-
-        if not dexId:
-            pokemon_completer: WordCompleter = WordCompleter(self.pokemon_id_by_name.__members__.keys(), ignore_case=True)
-
-            cFormatter.print(Color.INFO, 'Write the name of the pokemon, it will recommend for auto-completion.')
-            dexId: str = prompt('Enter Pokemon (Name / ID): ', completer=pokemon_completer)
             
-            if dexId.isnumeric():
-                if dexId not in trainer_data['starterData']:
-                    cFormatter.print(Color.INFO, f'No pokemon with ID: {dexId}')
-                    return
-            else:
-                try:
-                    dexId: str = self.pokemon_id_by_name[dexId.lower()].value
-                except KeyError:
-                    cFormatter.print(Color.INFO, f'No pokemon with ID: {dexId}')
-                    return
+            if not dexId:
+                pokemon_completer: WordCompleter = WordCompleter(self.pokemon_id_by_name.__members__.keys(), ignore_case=True)
 
-        choice = int(input('Do you want to unlock all forms of the pokemon? (All forms are Tier 3 shinies. 1: Yes, 2: No): '))
-        if (choice < 1) or (choice > 2):
-            cFormatter.print(Color.INFO, f'No pokemon with ID: {dexId}')
-            return
-        elif choice == 1:
-            caught_attr = self.__MAX_BIG_INT
-        else:
-            choice = int(input('Make the Pokemon shiny? (1: Yes, 2: No): '))
-
-            if (choice < 1) or (choice > 2):
-                cFormatter.print(Color.INFO, 'Invalid choice. Setting to NO')
-                choice
-            elif choice == 2:
-                caught_attr = 253
-            else:
-                choice = int(input('What tier shiny do you want? (1: Tier 1, 2: Tier 2, 3: Tier 3, 4: All shinies): '))
-                if (choice < 1) or (choice > 4):
-                    cFormatter.print(Color.INFO, 'Invalid choice.')
-                    return
-                elif choice == 1:
-                    caught_attr = 159
-                elif choice == 2:
-                    caught_attr = 191
-                elif choice == 3:
-                    caught_attr = 223
+                cFormatter.print(Color.INFO, 'Write the name of the pokemon, it will recommend for auto-completion.')
+                dexId: str = prompt('Enter Pokemon (Name / ID): ', completer=pokemon_completer)
+                
+                if dexId.isnumeric():
+                    if dexId not in trainer_data['starterData']:
+                        cFormatter.print(Color.INFO, f'No pokemon with ID: {dexId}')
+                        return
                 else:
-                    caught_attr = 255
-            
-        caught = int(input('How many of this Pokemon have you caught?: '))
-        hatched = int(input('How many of this Pokemon have hatched from eggs?: '))
-        seen_count = int(input('How many of this Pokemon have you seen?: '))
-        candies = int(input('How many candies do you want?: '))
-        cFormatter.print(Color.INFO, 'Choose a value between 1 and 31 for your IVs (Pokemon Stats).')
-        ivs = [int(input('SpA IVs: ')), int(input('DEF IVs: ')), int(input('Attack IVs: ')),
-               int(input('HP IVs: ')), int(input('Spe IVs: ')), int(input('Def IVs: '))]
-        
-        passive: int = int(input('Do you want the starters to have the passive unlocked? (1: Yes | 2: No): '))
-        if (passive < 1) or (passive > 2):
-            cFormatter.print(Color.INFO, 'Invalid input. Setting to NO.')
-            passive = 2
-        elif passive == 1:
-            if dexId in self.passive_data['noPassive']:
-                cFormatter.print(Color.INFO, 'This pokemon has no passive.')
-                passiveAttr = 0
+                    try:
+                        dexId: str = self.pokemon_id_by_name[dexId.lower()].value
+                    except KeyError:
+                        cFormatter.print(Color.INFO, f'No pokemon with ID: {dexId}')
+                        return
+
+            choice = int(input('Do you want to unlock all forms of the pokemon? (All forms are Tier 3 shinies. 1: Yes, 2: No): '))
+            if (choice < 1) or (choice > 2):
+                cFormatter.print(Color.INFO, f'No pokemon with ID: {dexId}')
+                return
+            elif choice == 1:
+                caught_attr = self.__MAX_BIG_INT
             else:
-                passiveAttr = 3
-        else:
-            passiveAttr = 0
-        
-        costReduce = int(input('How much do you want to reduce the cost? Yes lugia can cost nearly 0! (Number between 1 and 20): '))
-        if (costReduce < 0) or (costReduce > 20):
-            cFormatter.print(Color.INFO, 'Invalid input. Setting to 0.')
-            costReduce = 0
+                choice = int(input('Make the Pokemon shiny? (1: Yes, 2: No): '))
 
-        abilityAttr = int(input('Do you want to unlock abilites? (1: None | 2: All with hidden): '))
-        if (abilityAttr < 1) or (abilityAttr > 2):
-            cFormatter.print(Color.INFO, 'Invalid input. Setting to none.')
-            abilityAttr = 0
-        elif abilityAttr == 2:
-            abilityAttr = 7
-        else:
-            abilityAttr = 0
-        
-        self.print_natures()
+                if (choice < 1) or (choice > 2):
+                    cFormatter.print(Color.INFO, 'Invalid choice. Setting to NO')
+                    choice
+                elif choice == 2:
+                    caught_attr = 253
+                else:
+                    choice = int(input('What tier shiny do you want? (1: Tier 1, 2: Tier 2, 3: Tier 3, 4: All shinies): '))
+                    if (choice < 1) or (choice > 4):
+                        cFormatter.print(Color.INFO, 'Invalid choice.')
+                        return
+                    elif choice == 1:
+                        caught_attr = 159
+                    elif choice == 2:
+                        caught_attr = 191
+                    elif choice == 3:
+                        caught_attr = 223
+                    else:
+                        caught_attr = 255
+                
+            caught = int(input('How many of this Pokemon have you caught?: '))
+            hatched = int(input('How many of this Pokemon have hatched from eggs?: '))
+            seen_count = int(input('How many of this Pokemon have you seen?: '))
+            candies = int(input('How many candies do you want?: '))
+            cFormatter.print(Color.INFO, 'Choose a value between 1 and 31 for your IVs (Pokemon Stats).')
+            ivs = [int(input('SpA IVs: ')), int(input('DEF IVs: ')), int(input('Attack IVs: ')),
+                int(input('HP IVs: ')), int(input('Spe IVs: ')), int(input('Def IVs: '))]
+            
+            passive: int = int(input('Do you want the starters to have the passive unlocked? (1: Yes | 2: No): '))
+            if (passive < 1) or (passive > 2):
+                cFormatter.print(Color.INFO, 'Invalid input. Setting to NO.')
+                passive = 2
+            elif passive == 1:
+                if dexId in self.passive_data['noPassive']:
+                    cFormatter.print(Color.INFO, 'This pokemon has no passive.')
+                    passiveAttr = 0
+                else:
+                    passiveAttr = 3
+            else:
+                passiveAttr = 0
+            
+            costReduce = int(input('How much do you want to reduce the cost? Yes lugia can cost nearly 0! (Number between 1 and 20): '))
+            if (costReduce < 0) or (costReduce > 20):
+                cFormatter.print(Color.INFO, 'Invalid input. Setting to 0.')
+                costReduce = 0
 
-        nature_completer: WordCompleter = WordCompleter(self.nature_data.__members__.keys(), ignore_case=True)
-        
-        cFormatter.print(Color.BRIGHT_YELLOW, 'Write the name of the nature, it will recommend for auto-completion.')
-        nature: str = prompt('What nature would you like?: ', completer=nature_completer)
+            abilityAttr = int(input('Do you want to unlock abilites? (1: None | 2: All with hidden): '))
+            if (abilityAttr < 1) or (abilityAttr > 2):
+                cFormatter.print(Color.INFO, 'Invalid input. Setting to none.')
+                abilityAttr = 0
+            elif abilityAttr == 2:
+                abilityAttr = 7
+            else:
+                abilityAttr = 0
+            
+            self.print_natures()
 
-        nature: int = self.nature_data[nature].value
+            nature_completer: WordCompleter = WordCompleter(self.nature_data.__members__.keys(), ignore_case=True)
+            
+            cFormatter.print(Color.BRIGHT_YELLOW, 'Write the name of the nature, it will recommend for auto-completion.')
+            nature: str = prompt('What nature would you like?: ', completer=nature_completer)
 
-        trainer_data['dexData'][str(dexId)] = {
-            'seenAttr': 479,
-            'caughtAttr': caught_attr,
-            'natureAttr': nature,
-            'seenCount': seen_count,
-            'caughtCount': caught,
-            'hatchedCount': hatched,
-            'ivs': ivs
-        }
-        trainer_data['starterData'][dexId] = {
-            'moveset': None,
-            'eggMoves': 15,
-            'candyCount': candies,
-            'abilityAttr': abilityAttr,
-            'passiveAttr': passiveAttr,
-            'valueReduction': costReduce
-        }
+            nature: int = self.nature_data[nature].value
 
-        self.__write_data(trainer_data, 'trainer.json')
+            trainer_data['dexData'][str(dexId)] = {
+                'seenAttr': 479,
+                'caughtAttr': caught_attr,
+                'natureAttr': nature,
+                'seenCount': seen_count,
+                'caughtCount': caught,
+                'hatchedCount': hatched,
+                'ivs': ivs
+            }
+            trainer_data['starterData'][dexId] = {
+                'moveset': None,
+                'eggMoves': 15,
+                'candyCount': candies,
+                'abilityAttr': abilityAttr,
+                'passiveAttr': passiveAttr,
+                'valueReduction': costReduce
+            }
+
+            self.__write_data(trainer_data, 'trainer.json')
+        except Exception as e:
+            cFormatter.print(Color.CRITICAL, f'Error in function edit_starter(): {e}', isLogging=True)
 
     def add_ticket(self) -> None:
         '''
@@ -614,149 +587,149 @@ class Rogue:
         Returns:
             None
         '''
-        trainer_data = self.__load_data('trainer.json')
+        try:
+            trainer_data = self.__load_data('trainer.json')
 
-        c: int = int(input('How many common vouchers do you want (Max 300)?: '))
+            c: int = int(input('How many common vouchers do you want (Max 300)?: '))
 
-        if c > 300:
-            cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot put more than 300 Tickets.')
-            return
+            if c > 300:
+                cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot put more than 300 Tickets.')
+                return
 
-        r: int = int(input('How many rare vouchers do you want (Max 150)?: '))
+            r: int = int(input('How many rare vouchers do you want (Max 150)?: '))
 
-        if r > 150:
-            cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot put more than 300 Tickets.')
-            return
+            if r > 150:
+                cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot put more than 300 Tickets.')
+                return
 
-        e: int = int(input('How many epic vouchers do you want (Max 100)?: '))
+            e: int = int(input('How many epic vouchers do you want (Max 100)?: '))
 
-        if e > 100:
-            cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot put more than 300 Tickets.')
-            return
+            if e > 100:
+                cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot put more than 300 Tickets.')
+                return
 
-        l: int = int(input('How many legendary vouchers do you want (Max 10)?: '))
+            l: int = int(input('How many legendary vouchers do you want (Max 10)?: '))
 
-        if l > 10:
-            cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot put more than 300 Tickets.')
-            return
+            if l > 10:
+                cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot put more than 300 Tickets.')
+                return
 
-        voucher_counts: dict[str, int] = {
-            '0': c,
-            '1': r,
-            '2': e,
-            '3': l
-        }
-        trainer_data['voucherCounts'] = voucher_counts
+            voucher_counts: dict[str, int] = {
+                '0': c,
+                '1': r,
+                '2': e,
+                '3': l
+            }
+            trainer_data['voucherCounts'] = voucher_counts
 
-        self.__write_data(trainer_data, 'trainer.json')
+            self.__write_data(trainer_data, 'trainer.json')
+        except Exception as e:
+            cFormatter.print(Color.RED, f'Error in function add_tickets(): {e}')
 
     def edit_pokemon_party(self) -> None:
             '''
             Allows the user to edit the Pokemon party.
             '''
-            
-            slot = self.slot
-            filename = f'slot_{slot}.json'
+            try:
+                slot = self.slot
+                filename = f'slot_{slot}.json'
 
-            game_data = self.__load_data(filename)
+                game_data = self.__load_data(filename)
 
-            if game_data is None:
-                cFormatter.print(Color.CRITICAL, 'There was something wrong with the data, please restart the tool.')
-                return
+                if game_data['gameMode'] == 3:
+                    cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot edit this property on Daily Runs.')
+                    return
 
-            if game_data['gameMode'] == 3:
-                cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot edit this property on Daily Runs.')
-                return
+                options = [
+                    '1: Change species',
+                    '2: Set it shiny',
+                    '3: Set Level',
+                    '4: Set Luck',
+                    '5: Set IVs',
+                    '6: Change a move on a pokemon in your team',
+                    '7: Change nature of a pokemon in your team'
+                ]
 
-            options = [
-                '1: Change species',
-                '2: Set it shiny',
-                '3: Set Level',
-                '4: Set Luck',
-                '5: Set IVs',
-                '6: Change a move on a pokemon in your team',
-                '7: Change nature of a pokemon in your team'
-            ]
+                party_num = int(input('Select the party slot of the Pokémon you want to edit (0-5): '))
+                if party_num < 0 or party_num > 5:
+                    cFormatter.print(Color.BRIGHT_YELLOW, 'Invalid party slot.')
+                    return
 
-            party_num = int(input('Select the party slot of the Pokémon you want to edit (0-5): '))
-            if party_num < 0 or party_num > 5:
-                cFormatter.print(Color.BRIGHT_YELLOW, 'Invalid party slot.')
-                return
+                cFormatter.print_separators(65, '-', Color.WHITE)
+                cFormatter.print(Color.WHITE, f'\n'.join(options))
+                cFormatter.print_separators(65, '-', Color.WHITE)
 
-            print('**************************** OPTIONS ****************************')
-            print('\n'.join(options))
-            print('--------------------------------------------------------------------')
+                command = int(input('Option: '))
+                if command < 1 or command > 7:
+                    cFormatter.print(Color.INFO, 'Invalid input.')
+                    return
 
-            command = int(input('Option: '))
-            if command < 1 or command > 7:
-                cFormatter.print(Color.INFO, 'Invalid input.')
-                return
+                if command == 1:
+                        pokemon_completer: WordCompleter = WordCompleter(self.pokemon_id_by_name.__members__.keys(), ignore_case=True)
+                        cFormatter.print(Color.INFO, 'Write the name of the pokemon, it will recomend for auto-completion.')
+                        dexId: str = prompt('Enter Pokemon (Name / ID): ', completer=pokemon_completer)
+                        
+                        try:
+                            dexId: str = self.pokemon_id_by_name[dexId.lower()].value
+                        except KeyError:
+                            cFormatter.print(Color.INFO, f'No Pokemon with Name: {dexId}')
+                            return
+                        game_data['party'][party_num]['species'] = int(dexId)
 
-            if command == 1:
-                    pokemon_completer: WordCompleter = WordCompleter(self.pokemon_id_by_name.__members__.keys(), ignore_case=True)
-                    cFormatter.print(Color.INFO, 'Write the name of the pokemon, it will recomend for auto-completion.')
-                    dexId: str = prompt('Enter Pokemon (Name / ID): ', completer=pokemon_completer)
-                    
-                    try:
-                        dexId: str = self.pokemon_id_by_name[dexId.lower()].value
-                    except KeyError:
-                        cFormatter.print(Color.INFO, f'No Pokemon with Name: {dexId}')
+
+                elif command == 2:
+                    game_data['party'][party_num]['shiny'] = True
+                    variant = int(input('Choose the shiny variant (from 0 to 2): '))
+                    if variant < 0 or variant > 2:
+                        cFormatter.print(Color.INFO, 'Invalid input.')
                         return
-                    game_data['party'][party_num]['species'] = int(dexId)
+                    game_data['party'][party_num]['variant'] = variant
+                elif command == 3:
+                    level = int(input('Choose the level: '))
+                    if level < 1:
+                        cFormatter.print(Color.INFO, 'Invalid input.')
+                        return
+                    game_data['party'][party_num]['level'] = level
+                elif command == 4:
+                    luck = int(input('What luck level do you desire? (from 1 to 14): '))
+                    if luck < 1 or luck > 14:
+                        cFormatter.print(Color.INFO, 'Invalid input.')
+                        return
+                    game_data['party'][party_num]['luck'] = luck
+                elif command == 5:
+                    ivs = [int(input('SpA IVs: ')), int(input('DEF IVs: ')), int(input('Attack IVs: ')),
+                        int(input('HP IVs: ')), int(input('Spe IVs: ')), int(input('Def IVs: '))]
+                    game_data['party'][party_num]['ivs'] = ivs
+                elif command == 6:
+                    move_slot = int(input('Select the move you want to change (from 0 to 3): '))
+                    if move_slot < 0 or move_slot > 3:
+                        cFormatter.print(Color.INFO, 'Invalid input.')
+                        return
+                    
+                    self.print_moves()
 
+                    move_completer: WordCompleter = WordCompleter(self.moves_by_id.__members__.keys(), ignore_case=True)
+                    
+                    cFormatter.print(Color.INFO, 'Write the name of the move, it will recommend for auto completion.')
+                    move: str = prompt('What move would you like?: ', completer=move_completer)
 
-            elif command == 2:
-                game_data['party'][party_num]['shiny'] = True
-                variant = int(input('Choose the shiny variant (from 0 to 2): '))
-                if variant < 0 or variant > 2:
-                    cFormatter.print(Color.INFO, 'Invalid input.')
-                    return
-                game_data['party'][party_num]['variant'] = variant
-            elif command == 3:
-                level = int(input('Choose the level: '))
-                if level < 1:
-                    cFormatter.print(Color.INFO, 'Invalid input.')
-                    return
-                game_data['party'][party_num]['level'] = level
-            elif command == 4:
-                luck = int(input('What luck level do you desire? (from 1 to 14): '))
-                if luck < 1 or luck > 14:
-                    cFormatter.print(Color.INFO, 'Invalid input.')
-                    return
-                game_data['party'][party_num]['luck'] = luck
-            elif command == 5:
-                ivs = [int(input('SpA IVs: ')), int(input('DEF IVs: ')), int(input('Attack IVs: ')),
-                    int(input('HP IVs: ')), int(input('Spe IVs: ')), int(input('Def IVs: '))]
-                game_data['party'][party_num]['ivs'] = ivs
-            elif command == 6:
-                move_slot = int(input('Select the move you want to change (from 0 to 3): '))
-                if move_slot < 0 or move_slot > 3:
-                    cFormatter.print(Color.INFO, 'Invalid input.')
-                    return
+                    move: int = int(self.moves_by_id[move].value)
                 
-                self.print_moves()
+                    game_data['party'][party_num]['moveset'][move_slot]['moveId'] = move
+                else:
+                    self.print_natureSlot()
 
-                move_completer: WordCompleter = WordCompleter(self.moves_by_id.__members__.keys(), ignore_case=True)
+                    natureSlot_completer: WordCompleter = WordCompleter(self.natureSlot_data.__members__.keys(), ignore_case=True)
+                    cFormatter.print(Color.INFO, 'Write the name of the nature, it will recomend for auto-completion.')
+                    natureSlot: str = prompt('What nature would you like?: ', completer=natureSlot_completer)
+
+                    natureSlot: int = int(self.natureSlot_data[natureSlot].value)
                 
-                cFormatter.print(Color.INFO, 'Write the name of the move, it will recommend for auto completion.')
-                move: str = prompt('What move would you like?: ', completer=move_completer)
+                    game_data['party'][party_num]['nature'] = natureSlot
 
-                move: int = int(self.moves_by_id[move].value)
-               
-                game_data['party'][party_num]['moveset'][move_slot]['moveId'] = move
-            else:
-                self.print_natureSlot()
-
-                natureSlot_completer: WordCompleter = WordCompleter(self.natureSlot_data.__members__.keys(), ignore_case=True)
-                
-                print(Fore.LIGHTYELLOW_EX + Style.BRIGHT + 'Write the name of the nature, it will recomend for auto-completion.' + Style.RESET_ALL)
-                natureSlot: str = prompt('What nature would you like?: ', completer=natureSlot_completer)
-
-                natureSlot: int = int(self.natureSlot_data[natureSlot].value)
-               
-                game_data['party'][party_num]['nature'] = natureSlot
-
-            self.__write_data(game_data, filename)
+                self.__write_data(game_data, filename)
+            except Exception as e:
+                cFormatter.print(Color.RED, f'Error in function edit_pokemon_party(): {e}')
     
     def unlock_all_gamemodes(self) -> None:
         '''
@@ -769,14 +742,10 @@ class Rogue:
         '''
         trainer_data = self.__load_data('trainer.json')
 
-        if trainer_data is None:
-            print(Fore.RED + 'There was something wrong with the Game data, please fetch your data anew.' + Style.RESET_ALL)
-            return
-
         try:
             unlocked_modes = trainer_data.get('unlocks', {})
             if not unlocked_modes:
-                print(Fore.RED + 'Unable to find data entry: unlocks' + Style.RESET_ALL)
+                cFormatter.print(Color.INFO, 'Unable to find data entry: unlocks')
                 return
 
             for mode in unlocked_modes:
@@ -786,7 +755,7 @@ class Rogue:
             self.__write_data(trainer_data, 'trainer.json')
         
         except Exception as e:
-            print(Fore.RED + f'Error on unlock_all_gamemodes() -> {e}' + Style.RESET_ALL)
+            cFormatter.print(Color.CRITICAL, f'Error in function unlock_all_gamemodes(): {e}', isLogging=True)
 
     def unlock_all_achievements(self) -> None:
         '''
@@ -800,10 +769,6 @@ class Rogue:
         try:
             trainer_data = self.__load_data('trainer.json')
 
-            if trainer_data is None:
-                print(Fore.RED + 'There was something wrong with the Game data, please fetch your data anew.' + Style.RESET_ALL)
-                return
-
             current_time_ms = int(time.time() * 1000) 
             min_time_ms = current_time_ms - 3600 * 1000  
 
@@ -816,7 +781,7 @@ class Rogue:
             self.__write_data(trainer_data, 'trainer.json')
 
         except Exception as e:
-            print(Fore.RED + f'Error on unlock_all_achievements -> {e}' + Style.RESET_ALL)
+            cFormatter.print(Color.CRITICAL, f'Error in function unlock_all_achievements(): {e}', isLogging=True)
  
     def edit_vouchers(self) -> None:
         '''
@@ -830,10 +795,6 @@ class Rogue:
         try:
             trainer_data = self.__load_data('trainer.json')
 
-            if trainer_data is None:
-                print(Fore.RED + 'There was something wrong with the Game data, please fetch your data anew.' + Style.RESET_ALL)
-                return
-
             current_time_ms = int(time.time() * 1000) 
             min_time_ms = current_time_ms - 3600 * 1000  
             
@@ -842,7 +803,7 @@ class Rogue:
             choice: int = int(input('Do you want to unlock all vouchers or unlock a specific voucher? (1: All | 2: Specific): '))
 
             if (choice < 1) or (choice > 2):
-                print('Invalid command.')
+                cFormatter.print(Color.INFO, 'Invalid command.')
                 return
             elif choice == 1:
                 voucher_unlocks = {}
@@ -852,7 +813,8 @@ class Rogue:
                 trainer_data['voucherUnlocks'] = voucher_unlocks
             else:
                 vouchers_completer: WordCompleter = WordCompleter(self.vouchers_data.__members__.keys(), ignore_case=True)
-                print(Fore.LIGHTYELLOW_EX + Style.BRIGHT + 'Write the name of the voucher, it will recomend for auto-completion.' + Style.RESET_ALL)    
+                cFormatter.print(Color.INFO, 'Write the name of the voucher, it will recommend for auto-completion.')
+            
                 vouchers: str = prompt('What voucher would you like?: ', completer=vouchers_completer)
 
                 if 'voucherUnlocks' in trainer_data and vouchers in trainer_data['voucherUnlocks']:
@@ -865,7 +827,14 @@ class Rogue:
             self.__write_data(trainer_data, 'trainer.json')
 
         except Exception as e:
-            print(Fore.RED + f'Error on edit_vouchers -> {e}' + Style.RESET_ALL)
+            cFormatter.print(Color.RED, f'Error in function edit_vouchers(): {e}')
+
+    def print_pokedex(self) -> None:
+        '''
+        Prints the contents of the NaturesEnum.
+        '''
+        pokemons = [f'{member.value}: {member.name}' for member in self.pokemon_id_by_name]
+        cFormatter.print(Color.WHITE, '\n'.join(pokemons))
 
     def print_biomes(self) -> None:
         '''
@@ -877,7 +846,7 @@ class Rogue:
             None
         '''
         biomes = [f'{member.value}: {member.name}' for member in self.biomes_by_id]
-        print('\n'.join(biomes))
+        cFormatter.print(Color.WHITE, '\n'.join(biomes))
 
     def print_moves(self) -> None:
         '''
@@ -886,22 +855,46 @@ class Rogue:
         This method prints out all the moves available in the game.
 
         Returns:
-            None
+            None, just does print.
         '''
         moves = [f'{member.value}: {member.name}' for member in self.moves_by_id]
-        print('\n'.join(moves))
+        cFormatter.print(Color.WHITE, '\n'.join(moves))
 
     def print_natures(self) -> None:
+        '''
+        Prints all moves available in the game.
+
+        This method prints out all the natures available in the game.
+
+        Returns:
+            None, just does print.
+        '''
         natures = [f'{member.value}: {member.name}' for member in self.nature_data]
-        print('\n'.join(natures))
+        cFormatter.print(Color.WHITE, '\n'.join(natures))
     
     def print_vouchers(self) -> None:
+        '''
+        Prints all moves available in the game.
+
+        This method prints out all the vouchers available in the game.
+
+        Returns:
+            None, just does print.
+        '''
         vouchers = [f'{member.value}: {member.name}' for member in self.vouchers_data]
-        print('\n'.join(vouchers))
+        cFormatter.print(Color.WHITE, '\n'.join(vouchers))
 
     def print_natureSlot(self) -> None:
+        '''
+        Prints all moves available in the game.
+
+        This method prints out all the natureSlot IDs available in the game.
+        ## Do we need to sanitize with trys?
+        Returns:
+            None, just does print.
+        '''
         natureSlot = [f'{member.value}: {member.name}' for member in self.natureSlot_data]
-        print('\n'.join(natureSlot))
+        cFormatter.print(Color.WHITE, '\n'.join(natureSlot))
     
     def add_candies(self, dexId=None) -> None:
         '''
@@ -915,29 +908,28 @@ class Rogue:
         Returns:
             None
         '''
-        trainer_data = self.__load_data('trainer.json')
-
-        if not trainer_data:
-            print(Fore.RED + 'There was something wrong with the Game data, please fetch your data anew.' + Style.RESET_ALL)
-            return None
-        
-        if not dexId:
-            pokemon_completer: WordCompleter = WordCompleter(self.pokemon_id_by_name.__members__.keys(), ignore_case=True)
-
-            print(Fore.LIGHTYELLOW_EX + Style.BRIGHT + 'Write the name of the pokemon, it will recomend for auto-completion.' + Style.RESET_ALL)
-            dexId: str = prompt('Enter Pokemon (Name / ID): ', completer=pokemon_completer)
-           
-            try:
-                dexId: str = self.pokemon_id_by_name[dexId.lower()].value
-            except KeyError:
-                print(Fore.BLUE + f'No Pokemon with Name: {dexId}' + Style.RESET_ALL)
-                return
+        try:
+            trainer_data = self.__load_data('trainer.json')
             
-                
-        candies = int(input('How many candies you want on your pokemon: '))
-        trainer_data['starterData'][dexId]['candyCount'] = candies
+            if not dexId:
+                pokemon_completer: WordCompleter = WordCompleter(self.pokemon_id_by_name.__members__.keys(), ignore_case=True)
 
-        self.__write_data(trainer_data, 'trainer.json')
+                print(Fore.LIGHTYELLOW_EX + Style.BRIGHT + 'Write the name of the pokemon, it will recomend for auto-completion.' + Style.RESET_ALL)
+                dexId: str = prompt('Enter Pokemon (Name / ID): ', completer=pokemon_completer)
+            
+                try:
+                    dexId: str = self.pokemon_id_by_name[dexId.lower()].value
+                except KeyError:
+                    print(Fore.BLUE + f'No Pokemon with Name: {dexId}' + Style.RESET_ALL)
+                    return
+                
+                    
+            candies = int(input('How many candies you want on your pokemon: '))
+            trainer_data['starterData'][dexId]['candyCount'] = candies
+
+            self.__write_data(trainer_data, 'trainer.json')
+        except Exception as e:
+            cFormatter.print(Color.RED, f'Error in function add_candies(): {e}')
     
     def edit_biome(self) -> None:
         '''
@@ -948,21 +940,18 @@ class Rogue:
         Returns:
             None
         '''
+        try:
+            game_data = self.__load_data(f'slot_{self.slot}.json')
+            self.print_biomes()
+            biome_completer: WordCompleter = WordCompleter(self.biomes_by_id.__members__.keys(), ignore_case=True)
+            print(Fore.LIGHTYELLOW_EX + Style.BRIGHT + 'Write the name of the biome, it will recomend for auto-completion.' + Style.RESET_ALL)  
 
-        game_data = self.__load_data(f'slot_{self.slot}.json')
-
-        self.print_biomes()
-
-        biome_completer: WordCompleter = WordCompleter(self.biomes_by_id.__members__.keys(), ignore_case=True)
-
-        print(Fore.LIGHTYELLOW_EX + Style.BRIGHT + 'Write the name of the biome, it will recomend for auto-completion.' + Style.RESET_ALL)        
-        biome: str = prompt('What biome would you like?: ', completer=biome_completer)
-
-        biome: int = int(self.biomes_by_id[biome].value)
-
-        game_data['arena']['biome'] = biome
-
-        self.__write_data(game_data, f'slot_{self.slot}.json')
+            biome: str = prompt('What biome would you like?: ', completer=biome_completer)
+            biome: int = int(self.biomes_by_id[biome].value)
+            game_data['arena']['biome'] = biome
+            self.__write_data(game_data, f'slot_{self.slot}.json')
+        except Exception as e:
+            cFormatter.print(Color.RED, f'Error in function edit_hatchwaves(): {e}')
 
     def edit_pokeballs(self) -> None:
         '''
@@ -973,32 +962,31 @@ class Rogue:
         Returns:
             None
         '''
-        game_data = self.__load_data(f'slot_{self.slot}.json')
+        try:
+            game_data = self.__load_data(f'slot_{self.slot}.json')
 
-        if game_data is None:
-            print(Fore.RED + 'There was something wrong with the Game data, please fetch your data.' + Style.RESET_ALL)
-            return
+            if game_data['gameMode'] == 3:
+                print(Fore.RED + 'Cannot edit this property on Daily Runs.' + Style.RESET_ALL)
+                return
 
-        if game_data['gameMode'] == 3:
-            print(Fore.RED + 'Cannot edit this property on Daily Runs.' + Style.RESET_ALL)
-            return
+            choice = int(input('How many pokeballs do you want?: '))
+            game_data['pokeballCounts']['0'] = choice
 
-        choice = int(input('How many pokeballs do you want?: '))
-        game_data['pokeballCounts']['0'] = choice
+            choice = int(input('How many great balls do you want?: '))
+            game_data['pokeballCounts']['1'] = choice
 
-        choice = int(input('How many great balls do you want?: '))
-        game_data['pokeballCounts']['1'] = choice
+            choice = int(input('How many ultra balls do you want?: '))
+            game_data['pokeballCounts']['2'] = choice
 
-        choice = int(input('How many ultra balls do you want?: '))
-        game_data['pokeballCounts']['2'] = choice
+            choice = int(input('How many rogue balls do you want?: '))
+            game_data['pokeballCounts']['3'] = choice
 
-        choice = int(input('How many rogue balls do you want?: '))
-        game_data['pokeballCounts']['3'] = choice
+            choice = int(input('How many master balls do you want?: '))
+            game_data['pokeballCounts']['4'] = choice
 
-        choice = int(input('How many master balls do you want?: '))
-        game_data['pokeballCounts']['4'] = choice
-
-        self.__write_data(game_data, f'slot_{self.slot}.json')
+            self.__write_data(game_data, f'slot_{self.slot}.json')
+        except Exception as e:
+            cFormatter.print(Color.RED, f'Error in function edit_pokeballs(): {e}')
 
     def edit_money(self) -> None:
         '''
@@ -1009,20 +997,18 @@ class Rogue:
         Returns:
             None
         '''
-        game_data = self.__load_data(f'slot_{self.slot}.json')
+        try:
+            game_data = self.__load_data(f'slot_{self.slot}.json')
 
-        if game_data is None:
-            print(Fore.RED + 'There was something wrong with the Game data, please fetch your data.' + Style.RESET_ALL)
-            return
+            if game_data['gameMode'] == 3:
+                print(Fore.RED + 'Cannot edit this property on Daily Runs.' + Style.RESET_ALL)
+                return
 
-        if game_data['gameMode'] == 3:
-            print(Fore.RED + 'Cannot edit this property on Daily Runs.' + Style.RESET_ALL)
-            return
-
-        choice = int(input('How many Poke-Dollars do you want?: '))
-        game_data['money'] = choice
-
-        self.__write_data(game_data, f'slot_{self.slot}.json')
+            choice = int(input('How many Poke-Dollars do you want?: '))
+            game_data['money'] = choice
+            self.__write_data(game_data, f'slot_{self.slot}.json')
+        except Exception as e:
+            cFormatter.print(Color.RED, f'Error in function edit_money(): {e}')
     
     def generate_eggs(self) -> None:
         '''
@@ -1105,7 +1091,7 @@ class Rogue:
             
 
         except Exception as e:
-            print(f'Something went wrong while generating the data: {e}')
+            cFormatter.print(Color.RED, f'Error in function generate_eggs(): {e}')
 
     def edit_account_stats(self) -> None:
         '''
@@ -1118,10 +1104,6 @@ class Rogue:
         '''
         try:
             trainer_data = self.__load_data('trainer.json')
-
-            if trainer_data is None:
-                print(Fore.RED + 'There was something wrong with the Game data, please fetch your data anew.' + Style.RESET_ALL)
-                return
             
             battles: int = int(input('How many battles: '))
             classicSessionsPlayed: int = int(input('How many classicSessionsPlayed: '))
@@ -1201,7 +1183,7 @@ class Rogue:
 
             self.__write_data(trainer_data, 'trainer.json')
         except Exception as e:
-            print(Fore.RED + f'Error on edit_account_stats() -> {e}' + Style.RESET_ALL)
+            cFormatter.print(Color.RED, f'Error in function edit_hatchwaves(): {e}')
 
     def unlock_all_features(self) -> None:
         '''
@@ -1220,10 +1202,6 @@ class Rogue:
             self.unlock_all_starters()
 
             trainer_data = self.__load_data('trainer.json')
-
-            if trainer_data is None:
-                print(Fore.RED + 'There was something wrong with the Game data, please fetch your data.' + Style.RESET_ALL)
-                return
         
             total_caught = 0
             total_seen = 0
@@ -1286,7 +1264,7 @@ class Rogue:
 
             self.__write_data(trainer_data, 'trainer.json')
         except Exception as e:
-            print(Fore.RED + f'Error on edit_account_stats() -> {e}' + Style.RESET_ALL)
+            cFormatter.print(Color.CRITICAL, f'Error in function unlock_all_features(): {e}', isLogging=True)
   
     def edit_hatchWaves(self) -> None:
         try:
@@ -1307,7 +1285,7 @@ class Rogue:
             self.__write_data(trainer_data, 'trainer.json')
 
         except Exception as e:
-            print(Fore.RED + f'Something went wrong while setting hatchwaves. {e}' + Style.RESET_ALL)
+            cFormatter.print(Color.CRITICAL, f'Error in function edit_hatchwaves(): {e}', isLogging=True)
     
     def print_help(self) -> None:
         print(Fore.LIGHTYELLOW_EX + Style.BRIGHT + 'You can always edit your json manually aswell.')
