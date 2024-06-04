@@ -16,7 +16,7 @@ class loginLogic:
         'Accept': 'application/x-www-form-urlencoded',
         'Content-Type': 'application/x-www-form-urlencoded',
         'Referer': 'https://pokerogue.net/',
-        'Sec-Ch-Ua': 'Google Chrome';v='125', 'Chromium';v='125', 'Not.A/Brand';v='24'',
+        "Sec-Ch-Ua": '"Google Chrome";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
         'Sec-Ch-Ua-Mobile': '?0',
         'Sec-Ch-Ua-Platform': 'Windows',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
@@ -36,7 +36,7 @@ class loginLogic:
             'Accept': 'application/x-www-form-urlencoded',
             'Content-Type': 'application/x-www-form-urlencoded',
             'Referer': 'https://pokerogue.net/',
-            'Sec-Ch-Ua': 'Google Chrome';v='125', 'Chromium';v='125', 'Not.A/Brand';v='24',
+            "Sec-Ch-Ua": '"Google Chrome";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
             'Sec-Ch-Ua-Platform': 'Windows',
             'User-Agent': random_user_agent,
         }
