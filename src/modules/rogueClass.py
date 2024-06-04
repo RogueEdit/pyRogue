@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level = logging.INFO)
 
 class Rogue:
-    '''
+    """
     A class to interact with the PokeRogue API for managing trainer and gamesave data.
 
     Attributes:
@@ -40,21 +40,21 @@ class Rogue:
         GAMESAVE_SLOT_URL (str): The base URL to fetch gamesave data from a specific slot from the API.
         UPDATE_TRAINER_DATA_URL (str): The URL to update trainer data on the API.
         UPDATE_GAMESAVE_SLOT_URL (str): The base URL to update gamesave data for a specific slot on the API.
-    '''
+    """
     TRAINER_DATA_URL = 'https://api.pokerogue.net/savedata/get?datatype=0'
     GAMESAVE_SLOT_URL = 'https://api.pokerogue.net/savedata/get?datatype=1&slot='
     UPDATE_TRAINER_DATA_URL = 'https://api.pokerogue.net/savedata/update?datatype=0'
     UPDATE_GAMESAVE_SLOT_URL = 'https://api.pokerogue.net/savedata/update?datatype=1&slot='
 
     def __init__(self, session: requests.Session, auth_token: str, clientSessionId: str) -> None:
-        '''
+        """
         Initialize a Rogue instance.
 
         Args:
             session (requests.Session): Session object to maintain HTTP connections.
             auth_token (str): Authorization token for API access.
             clientSessionId (str): Client session ID for authentication.
-        '''
+        """
 
         # Append needed data
         self.session = session
@@ -86,7 +86,7 @@ class Rogue:
         self.__dump_data()
 
     def __handle_error_response(self, response: requests.Response) -> dict:
-        '''
+        """
         Handle error responses from the server.
 
         Args:
@@ -94,11 +94,11 @@ class Rogue:
 
         Returns:
             dict: Empty dictionary.
-        '''
+        """
         if response.status_code == 400:
             cFormatter.print(Color.WARNING, 'Response 400 - Something went wrong.', isLogging=True)
         elif response.status_code == 200:
-            cFormatter.print(Color.BRIGHT_GREEN, 'Response 200 - That worked!')
+            cFormatter.print(Color.BRIGHT_GREEN, 'Response 200 - That seemed to have worked!', isLogging=True)
         else:
             cFormatter.print(Color.CRITICAL, 'Unexpected response receiver from the server.', isLogging=True)
 
@@ -119,12 +119,12 @@ class Rogue:
         }
 
     def __dump_data(self, slot: int = 1) -> None:
-        '''
+        """
         Dump data from the API to local files.
 
         Args:
             slot (int): The slot number (1-5). Defaults to 1.
-        '''
+        """
         try:
             if not self.slot:
                 slot = int(input('Enter slot (1-5): '))
@@ -151,12 +151,12 @@ class Rogue:
             cFormatter.print(Color.CRITICAL, f'Error in function __dump_data(): {e}', isLogging=True)
 
     def get_trainer_data(self) -> dict:
-        '''
+        """
         Fetch trainer data from the API.
 
         Returns:
             dict: Trainer data from the API.
-        '''
+        """
         cFormatter.print(Color.INFO, 'Fetching trainer data...')
         try:
             response = self.session.get(self.TRAINER_DATA_URL, headers=self.headers)
@@ -185,7 +185,7 @@ class Rogue:
             cFormatter.print(Color.CRITICAL, f'Error fetching save-slot data. Please restart the tool. \n {e}', isLogging=True)
 
     def __update_trainer_data(self, trainer_payload: dict) -> dict:
-        '''
+        """
         Update the trainer data on the server.
 
         Args:
@@ -193,7 +193,7 @@ class Rogue:
 
         Returns:
             dict: JSON response from the server.
-        '''
+        """
         try:
             cFormatter.print(Color.INFO, 'Updating trainer data...')
             response = self.session.post(self.UPDATE_TRAINER_DATA_URL, headers=self.headers, json=trainer_payload)
@@ -208,7 +208,7 @@ class Rogue:
             cFormatter.print(Color.CRITICAL, f'Error updating trainer data. Please restart the tool. \n {e}', isLogging=True)
 
     def __update_gamesave_data(self, slot: int, gamedata_payload: Dict[str, any], url_ext: str) -> Dict[str, any]:
-        '''
+        """
         Update the gamesave data on the server.
 
         Args:
@@ -218,7 +218,7 @@ class Rogue:
 
         Returns:
             Dict[str, any]: JSON response from the server.
-        '''
+        """
         try:
             cFormatter.print(Color.INFO, f'Updating gamesave data for slot {slot}...')
             response = self.session.post(
@@ -235,9 +235,9 @@ class Rogue:
             return 
 
     def update_all(self) -> None:
-        '''
+        """
         Update all data to the server.
-        '''
+        """
         try:
             if self.slot is None or self.slot > 5 or self.slot < 1:
                 cFormatter.print(Color.RED, 'Invalid slot number chosen.')
@@ -266,13 +266,13 @@ class Rogue:
             cFormatter.print(Color.CRITICAL, f'Error in function update_all(): {e}', isLogging=True)
 
     def __write_data(self, data: Dict[str, any], filename: str) -> None:
-        '''
+        """
         Write data to a JSON file.
 
         Args:
             data (Dict[str, any]): The data to write.
             filename (str): The name of the file.
-        '''
+        """
         try:
             with open(filename, 'w') as f:
                 json.dump(data, f, indent=4)
@@ -280,10 +280,26 @@ class Rogue:
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error writing data(): {e}', isLogging=True)
 
+    def __load_data(self, file_path: str) -> Dict[str, Any]:
+            """
+            Load data from a specified file path.
+
+            Args:
+                file_path (str): Path to the file to be loaded.
+
+            Returns:
+                dict: Loaded data.
+            """
+            try:
+                with open(file_path, "r") as f:
+                    return json.load(f)
+            except Exception as e:
+                cFormatter.print(Color.CRITICAL, f'Error in function __load_data(): {e}', isLogging=True)
+
     def create_backup(self) -> None:
-        '''
+        """
         Create a backup of JSON files.
-        '''
+        """
         backup_dir = './backup'
         if not os.path.exists(backup_dir):
             os.makedirs(backup_dir)
@@ -357,12 +373,12 @@ class Rogue:
             cFormatter.print(Color.CRITICAL, f'Error in function restore_backup(): {e}', isLogging=True)
 
     def unlock_all_starters(self) -> None:
-        '''
+        """
         Unlocks all starters.
 
         Returns:
             None
-        '''
+        """
         try:
             trainer_data = self.__load_data('trainer.json')
 
@@ -456,13 +472,13 @@ class Rogue:
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function unlock_all_starter(): {e}', isLogging=True)
 
-    def starter_edit(self, dexId: Optional[str] = None) -> None:
-        '''
+    def edit_starter_separate(self, dexId: Optional[str] = None) -> None:
+        """
         Allows the user to edit starter Pokemon data for a trainer.
 
         Args:
         - dexId (Optional[str]): The ID or name of the Pokemon. If None, the user will be prompted to enter it.
-        '''
+        """
         try:
             trainer_data = self.__load_data('trainer.json')
             
@@ -575,10 +591,11 @@ class Rogue:
 
             self.__write_data(trainer_data, 'trainer.json')
         except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function edit_starter(): {e}', isLogging=True)
+            cFormatter.print(Color.CRITICAL, f'Error in function edit_starters(): {e}', isLogging=True)
+        
 
     def add_ticket(self) -> None:
-        '''
+        """
         Simulates an egg gacha.
 
         Allows the user to input the number of common, rare, epic, and legendary vouchers they want to use.
@@ -586,7 +603,7 @@ class Rogue:
 
         Returns:
             None
-        '''
+        """
         try:
             trainer_data = self.__load_data('trainer.json')
 
@@ -624,12 +641,12 @@ class Rogue:
 
             self.__write_data(trainer_data, 'trainer.json')
         except Exception as e:
-            cFormatter.print(Color.RED, f'Error in function add_tickets(): {e}')
+            cFormatter.print(Color.CRITICAL, f'Error in function add_tickets(): {e}', isLogging=True)
 
     def edit_pokemon_party(self) -> None:
-            '''
+            """
             Allows the user to edit the Pokemon party.
-            '''
+            """
             try:
                 slot = self.slot
                 filename = f'slot_{slot}.json'
@@ -729,17 +746,17 @@ class Rogue:
 
                 self.__write_data(game_data, filename)
             except Exception as e:
-                cFormatter.print(Color.RED, f'Error in function edit_pokemon_party(): {e}')
+                cFormatter.print(Color.CRITICAL, f'Error in function edit_pokemon_party(): {e}', isLogging=True)
     
     def unlock_all_gamemodes(self) -> None:
-        '''
+        """
         Unlocks all game modes for the player.
 
         This method unlocks all game modes for the player in the game data.
 
         Returns:
             None
-        '''
+        """
         trainer_data = self.__load_data('trainer.json')
 
         try:
@@ -758,14 +775,14 @@ class Rogue:
             cFormatter.print(Color.CRITICAL, f'Error in function unlock_all_gamemodes(): {e}', isLogging=True)
 
     def unlock_all_achievements(self) -> None:
-        '''
+        """
         Unlocks all achievements for the player.
 
         This method unlocks all achievements for the player in the game data.
 
         Returns:
             None
-        '''
+        """
         try:
             trainer_data = self.__load_data('trainer.json')
 
@@ -784,14 +801,14 @@ class Rogue:
             cFormatter.print(Color.CRITICAL, f'Error in function unlock_all_achievements(): {e}', isLogging=True)
  
     def edit_vouchers(self) -> None:
-        '''
+        """
         Unlocks all vouchers for the player.
 
         This method generates random unlock times for each voucher and updates the game data accordingly.
 
         Returns:
             None
-        '''
+        """
         try:
             trainer_data = self.__load_data('trainer.json')
 
@@ -827,77 +844,77 @@ class Rogue:
             self.__write_data(trainer_data, 'trainer.json')
 
         except Exception as e:
-            cFormatter.print(Color.RED, f'Error in function edit_vouchers(): {e}')
+            cFormatter.print(Color.CRITICAL, f'Error in function edit_vouchers(): {e}', isLogging=True)
 
     def print_pokedex(self) -> None:
-        '''
+        """
         Prints the contents of the NaturesEnum.
-        '''
+        """
         pokemons = [f'{member.value}: {member.name}' for member in self.pokemon_id_by_name]
         cFormatter.print(Color.WHITE, '\n'.join(pokemons))
 
     def print_biomes(self) -> None:
-        '''
+        """
         Prints all biomes available in the game.
 
         This method prints out all the biomes available in the game.
 
         Returns:
             None
-        '''
+        """
         biomes = [f'{member.value}: {member.name}' for member in self.biomes_by_id]
         cFormatter.print(Color.WHITE, '\n'.join(biomes))
 
     def print_moves(self) -> None:
-        '''
+        """
         Prints all moves available in the game.
 
         This method prints out all the moves available in the game.
 
         Returns:
             None, just does print.
-        '''
+        """
         moves = [f'{member.value}: {member.name}' for member in self.moves_by_id]
         cFormatter.print(Color.WHITE, '\n'.join(moves))
 
     def print_natures(self) -> None:
-        '''
+        """
         Prints all moves available in the game.
 
         This method prints out all the natures available in the game.
 
         Returns:
             None, just does print.
-        '''
+        """
         natures = [f'{member.value}: {member.name}' for member in self.nature_data]
         cFormatter.print(Color.WHITE, '\n'.join(natures))
     
     def print_vouchers(self) -> None:
-        '''
+        """
         Prints all moves available in the game.
 
         This method prints out all the vouchers available in the game.
 
         Returns:
             None, just does print.
-        '''
+        """
         vouchers = [f'{member.value}: {member.name}' for member in self.vouchers_data]
         cFormatter.print(Color.WHITE, '\n'.join(vouchers))
 
     def print_natureSlot(self) -> None:
-        '''
+        """
         Prints all moves available in the game.
 
         This method prints out all the natureSlot IDs available in the game.
         ## Do we need to sanitize with trys?
         Returns:
             None, just does print.
-        '''
+        """
         natureSlot = [f'{member.value}: {member.name}' for member in self.natureSlot_data]
         cFormatter.print(Color.WHITE, '\n'.join(natureSlot))
     
     def add_candies(self, dexId=None) -> None:
-        '''
+        """
         Adds candies to a Pokémon.
 
         This method allows the player to add candies to a specific Pokémon.
@@ -907,7 +924,7 @@ class Rogue:
 
         Returns:
             None
-        '''
+        """
         try:
             trainer_data = self.__load_data('trainer.json')
             
@@ -929,17 +946,17 @@ class Rogue:
 
             self.__write_data(trainer_data, 'trainer.json')
         except Exception as e:
-            cFormatter.print(Color.RED, f'Error in function add_candies(): {e}')
+            cFormatter.print(Color.CRITICAL, f'Error in function add_candies(): {e}', isLogging=True)
     
     def edit_biome(self) -> None:
-        '''
+        """
         Edits the biome of the game.
 
         This method allows the player to edit the biome of the game.
 
         Returns:
             None
-        '''
+        """
         try:
             game_data = self.__load_data(f'slot_{self.slot}.json')
             self.print_biomes()
@@ -951,17 +968,17 @@ class Rogue:
             game_data['arena']['biome'] = biome
             self.__write_data(game_data, f'slot_{self.slot}.json')
         except Exception as e:
-            cFormatter.print(Color.RED, f'Error in function edit_hatchwaves(): {e}')
+            cFormatter.print(Color.CRITICAL, f'Error in function edit_hatchwaves(): {e}', isLogging=True)
 
     def edit_pokeballs(self) -> None:
-        '''
+        """
         Edits the number of pokeballs in the game.
 
         This method allows the player to edit the number of different types of pokeballs in the game.
 
         Returns:
             None
-        '''
+        """
         try:
             game_data = self.__load_data(f'slot_{self.slot}.json')
 
@@ -986,17 +1003,17 @@ class Rogue:
 
             self.__write_data(game_data, f'slot_{self.slot}.json')
         except Exception as e:
-            cFormatter.print(Color.RED, f'Error in function edit_pokeballs(): {e}')
+            cFormatter.print(Color.CRITICAL, f'Error in function edit_pokeballs(): {e}', isLogging=True)
 
     def edit_money(self) -> None:
-        '''
+        """
         Edits the amount of poke dollars in the game.
 
         This method allows the player to edit the amount of poke dollars they have in the game.
 
         Returns:
             None
-        '''
+        """
         try:
             game_data = self.__load_data(f'slot_{self.slot}.json')
 
@@ -1008,17 +1025,17 @@ class Rogue:
             game_data['money'] = choice
             self.__write_data(game_data, f'slot_{self.slot}.json')
         except Exception as e:
-            cFormatter.print(Color.RED, f'Error in function edit_money(): {e}')
+            cFormatter.print(Color.CRITICAL, f'Error in function edit_money(): {e}', isLogging=True)
     
     def generate_eggs(self) -> None:
-        '''
+        """
         Generates eggs for the player.
 
         This method allows the player to generate eggs with specified attributes and adds them to their inventory.
 
         Returns:
             None
-        '''
+        """
         try:
             trainer_data = self.__load_data('trainer.json')
 
@@ -1091,17 +1108,17 @@ class Rogue:
             
 
         except Exception as e:
-            cFormatter.print(Color.RED, f'Error in function generate_eggs(): {e}')
+            cFormatter.print(Color.CRITICAL, f'Error in function generate_eggs(): {e}', isLogging=True)
 
     def edit_account_stats(self) -> None:
-        '''
+        """
         Edits the statistics of the player's account.
 
         This method allows the player to edit various statistics related to their gameplay.
 
         Returns:
             None
-        '''
+        """
         try:
             trainer_data = self.__load_data('trainer.json')
             
@@ -1183,10 +1200,10 @@ class Rogue:
 
             self.__write_data(trainer_data, 'trainer.json')
         except Exception as e:
-            cFormatter.print(Color.RED, f'Error in function edit_hatchwaves(): {e}')
+            cFormatter.print(Color.CRITICAL, f'Error in function edit_hatchwaves(): {e}', isLogging=True)
 
     def unlock_all_features(self) -> None:
-        '''
+        """
         Maximizes the statistics and attributes of the player's account.
 
         This method unlocks all game modes, achievements, vouchers, and starters. It also sets the account statistics
@@ -1194,7 +1211,7 @@ class Rogue:
 
         Returns:
             None
-        '''
+        """
         try:
             self.unlock_all_gamemodes()
             self.unlock_all_achievements()
