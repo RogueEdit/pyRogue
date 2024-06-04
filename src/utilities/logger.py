@@ -8,7 +8,6 @@ import logging
 import os
 from logging.handlers import TimedRotatingFileHandler
 from datetime import datetime
-from utilities.cFormatter import cFormatter
 
 # Define the path to the logs directory in the current working directory
 logs_directory = os.path.join(os.getcwd(), 'logs')
@@ -40,7 +39,7 @@ class CustomLogger:
         if not any(isinstance(handler, TimedRotatingFileHandler) for handler in root_logger.handlers):
             root_logger.addHandler(fh)
 
-        # Remove default console handler
+        # Remove default console handler to avoid outputs since we want to display em colored with less information
         for handler in root_logger.handlers:
             if isinstance(handler, logging.StreamHandler):
                 root_logger.removeHandler(handler)

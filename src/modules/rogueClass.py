@@ -103,7 +103,7 @@ class Rogue:
             cFormatter.print(Color.CRITICAL, 'Unexpected response receiver from the server.', isLogging=True)
 
     def _setup_headers(self) -> None:
-        # Setup headers
+        # Setup authorized headers, switching all data aswell to be more random
         self.headers = {
             'Authorization': self.auth_token,
             'User-Agent': random.choice(self.user_agents),
@@ -134,13 +134,12 @@ class Rogue:
                     return
 
             trainer_data = self.get_trainer_data()
-            game_data = self.get_gamesave_data(slot)
-
             if trainer_data:
                 self.__write_data(trainer_data, 'trainer.json')
             else:
                 cFormatter.print(Color.DEBUG, 'Failed to fetch trainer save data.')
 
+            game_data = self.get_gamesave_data(slot)
             if game_data:
                 self.__write_data(game_data, f'slot_{slot}.json')
             else:

@@ -6,7 +6,7 @@
 
 from utilities.cFormatter import cFormatter, Color
 import requests
-from utilities.headers import user_agents
+from utilities.headers import user_agents, header_languages
 import random
 from colorama import init, Fore, Style
 
@@ -14,16 +14,6 @@ init()
 
 class loginLogic:
     LOGIN_URL = 'https://api.pokerogue.net/account/login'
-    HEADERS = {
-        'Accept': 'application/x-www-form-urlencoded',
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Referer': 'https://pokerogue.net/',
-        "Sec-Ch-Ua": '"Google Chrome";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
-        'Sec-Ch-Ua-Mobile': '?0',
-        'Sec-Ch-Ua-Platform': 'Windows',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-    }
-
     def __init__(self, username: str, password: str) -> None:
         self.username = username
         self.password = password
@@ -31,28 +21,33 @@ class loginLogic:
         self.session_id = None
         self.session = requests.Session()
 
-    # we need the hide we are python already
+    # General purpose header
     def _generate_headers(self) -> dict:
-        random_user_agent = random.choice(user_agents)
         headers = {
+            'User-Agent': random.choice(user_agents),
             'Accept': 'application/x-www-form-urlencoded',
             'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept-Language': random.choice(header_languages),
+            'Accept-Encoding': 'gzip, deflate, br, zstd',
             'Referer': 'https://pokerogue.net/',
-            "Sec-Ch-Ua": '"Google Chrome";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
-            'Sec-Ch-Ua-Platform': 'Windows',
-            'User-Agent': random_user_agent,
+            'content-encoding': 'br',
+            'Origin': 'https://pokerogue.net/',
+            'Connection': 'keep-alive',
+            'Sec-Fetch-Dest': 'empty'
         }
         return headers
 
     def login(self) -> bool:
         data = {'username': self.username, 'password': self.password}
         try:
-            response = self.session.post(self.LOGIN_URL, headers=self.HEADERS, data=data)
+            # Generate headers dynamically using _generate_headers method
+            headers = self._generate_headers()
+            response = self.session.post(self.LOGIN_URL, headers=headers, data=data)
             response.raise_for_status()
             login_response = response.json()
             self.token = login_response.get('token')
             cFormatter.print_separators(30, '-')
-            cFormatter.print(Color.GREEN, f'Login succesful.')
+            cFormatter.print(Color.GREEN, f'Login successful.')
             if self.token:
                 cFormatter.print(Color.CYAN, f'Token: {self.token}')
             status_code_color = Color.BRIGHT_GREEN if response.status_code == 200 else Color.BRIGHT_RED
@@ -67,6 +62,3 @@ class loginLogic:
         except requests.RequestException as e:
             cFormatter.print(Color.CRITICAL, f'Login failed. {e}', isLogging=True)
             return False
-
-    def get_auth_headers(self) -> dict:
-        return {'authorization': self.token}
