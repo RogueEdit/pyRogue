@@ -11,6 +11,8 @@ import random
 from colorama import init, Fore, Style
 import brotli
 
+init()
+
 class loginLogic:
     LOGIN_URL = 'https://api.pokerogue.net/account/login'
     HEADERS = {
@@ -53,13 +55,14 @@ class loginLogic:
             cFormatter.print_separators(30, '-')
             cFormatter.print(Color.GREEN, f'Login succesful.')
             if self.token:
-                cFormatter.print(Color.INFO, f'Token: {Style.RESET_ALL}{self.token}')
-            cFormatter.print(Color.INFO, f'HTTP Status Code: {Color.RED if response.status_code >= 400 else Color.GREEN}{response.status_code}{Style.RESET_ALL}', isLogging=True)
-            cFormatter.print(Color.INFO, f'Response URL: {Style.RESET_ALL}{response.request.url}')
-            cFormatter.print(Color.INFO, f'Response Headers: {Style.RESET_ALL}{response.request.headers}')
+                cFormatter.print(Color.CYAN, f'Token: {self.token}')
+            status_code_color = Color.BRIGHT_GREEN if response.status_code == 200 else Color.BRIGHT_RED
+            cFormatter.print(status_code_color, f'HTTP Status Code: {response.status_code}', isLogging=True)
+            cFormatter.print(Color.CYAN, f'Response URL: {response.request.url}')
+            cFormatter.print(Color.CYAN, f'Response Headers: {response.request.headers}')
             filtered_headers = {key: value for key, value in response.headers.items() if key != 'Report-To'}
-            cFormatter.print(Color.INFO, f'Response Headers: {Style.RESET_ALL}{filtered_headers}')
-            cFormatter.print(Color.INFO, f'Response Body: {Style.RESET_ALL}{response.text}')
+            cFormatter.print(Color.CYAN, f'Response Headers: {filtered_headers}')
+            cFormatter.print(Color.CYAN, f'Response Body: {response.text}')
             cFormatter.print_separators(30, '-')
             return True
         except requests.RequestException as e:
