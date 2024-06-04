@@ -21,17 +21,20 @@ class CustomLogger:
         # Create and configure logger for console
         self.logger_console = logging.getLogger('console')
         self.logger_console.setLevel(logging.DEBUG)
+        self.logger_console.propagate = False  # Prevent log messages from being propagated to the root logger
 
-        # Create color formatter for console output
-        formatter_console = cFormatter('%(asctime)s - %(levelname)s - %(message)s')
+        # Check if console handler already exists
+        if not any(isinstance(handler, logging.StreamHandler) for handler in self.logger_console.handlers):
+            # Create color formatter for console output
+            formatter_console = cFormatter()
 
-        # Create color handler and set level to DEBUG for console output
-        ch = logging.StreamHandler()
-        ch.setLevel(logging.DEBUG)
-        ch.setFormatter(formatter_console)
+            # Create color handler and set level to DEBUG for console output
+            ch = logging.StreamHandler()
+            ch.setLevel(logging.DEBUG)
+            ch.setFormatter(formatter_console)
 
-        # Add console handler to console logger
-        self.logger_console.addHandler(ch)
+            # Add console handler to console logger
+            self.logger_console.addHandler(ch)
 
         # Create and configure file handler
         formatter_file = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
@@ -42,9 +45,11 @@ class CustomLogger:
         fh.setLevel(logging.DEBUG)
         fh.setFormatter(formatter_file)
 
-        # Add file handler to console logger
-        self.logger_console.addHandler(fh)  # Add file handler to console logger
+        # Add file handler to the console logger only if it doesn't already exist
+        if not any(isinstance(handler, TimedRotatingFileHandler) for handler in self.logger_console.handlers):
+            self.logger_console.addHandler(fh)
 
         # Add file handler to root logger
         root_logger = logging.getLogger()
-        root_logger.addHandler(fh)
+        if not any(isinstance(handler, TimedRotatingFileHandler) for handler in root_logger.handlers):
+            root_logger.addHandler(fh)

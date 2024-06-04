@@ -11,7 +11,31 @@ class Color(Enum):
     DEBUG = Style.BRIGHT + Fore.BLUE
     ERROR = Fore.RED
     WARNING = Fore.YELLOW
-    INFO = Fore.CYAN
+    INFO = Style.BRIGHT + Fore.LIGHTYELLOW_EX
+    BLACK = Fore.BLACK
+    RED = Fore.RED
+    GREEN = Fore.GREEN
+    YELLOW = Fore.YELLOW
+    BLUE = Fore.BLUE
+    MAGENTA = Fore.MAGENTA
+    CYAN = Fore.CYAN
+    WHITE = Fore.WHITE
+    BRIGHT_BLACK = Style.BRIGHT + Fore.BLACK
+    BRIGHT_RED = Style.BRIGHT + Fore.RED
+    BRIGHT_GREEN = Style.BRIGHT + Fore.GREEN
+    BRIGHT_YELLOW = Style.BRIGHT + Fore.YELLOW
+    BRIGHT_BLUE = Style.BRIGHT + Fore.BLUE
+    BRIGHT_MAGENTA = Style.BRIGHT + Fore.MAGENTA
+    BRIGHT_CYAN = Style.BRIGHT + Fore.CYAN
+    BRIGHT_WHITE = Style.BRIGHT + Fore.WHITE
+
+
+class Color(Enum):
+    CRITICAL = Style.BRIGHT + Fore.RED
+    DEBUG = Style.BRIGHT + Fore.BLUE
+    ERROR = Fore.RED
+    WARNING = Fore.YELLOW
+    INFO = Style.BRIGHT + Fore.LIGHTYELLOW_EX
     BLACK = Fore.BLACK
     RED = Fore.RED
     GREEN = Fore.GREEN
@@ -42,10 +66,10 @@ class cFormatter(logging.Formatter):
         print_separators(num_separators=None, separator='-', color=None): Prints separators with the specified color.
 
     Usage Example:
-        cFormatter.print(Color.CYAN, 'This is a debug message', isLogging=True)
+        cFormatter.print(Color.INFO, 'This is a debug message', isLogging=True)
         # Output: [CYAN]This is a debug message[RESET]
 
-    >>> cFormatter.print(Color.CYAN, 'This is a debug message', isLogging=True)
+    >>> cFormatter.print(Color.INFO, 'This is a debug message', isLogging=True)
     [CYAN]This is a debug message[RESET]
 
     >>> cFormatter.print_separators(10, '-', Color.GREEN)
@@ -67,8 +91,7 @@ class cFormatter(logging.Formatter):
         color_name = record.levelname.upper()
         if color_name in self.COLORS:
             color_code = self.COLORS[color_name]
-            formatted_message = f"{color_code}{record.msg}{Style.RESET_ALL}"
-            record.msg = formatted_message
+            record.msg = f"{color_code}{record.msg}{Style.RESET_ALL}"
         return super().format(record)
 
     @staticmethod
