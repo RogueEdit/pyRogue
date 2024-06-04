@@ -61,7 +61,7 @@ if __name__ == '__main__':
     func = {
         '1': rogue.get_trainer_data,
         '2': rogue.get_gamesave_data,
-        '3': rogue.starter_edit,
+        '3': rogue.edit_starter_separate,
         '4': rogue.unlock_all_starters,
         '5': rogue.add_ticket,
         '6': rogue.edit_pokemon_party,

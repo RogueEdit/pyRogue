@@ -266,13 +266,13 @@ class Vouchers(Enum):
 
 class Generator:
     def __init__(self, nature_names: Optional[List[str]] = None) -> None:
-        '''
+        """
         Initialize the NatureIDGenerator object.
 
         Args:
             nature_names (Optional[List[str]]): Optional list of nature names as strings. If provided, it will be used to initialize
             self.nature_names. If not provided, all names from the Nature enum will be used.
-        '''
+        """
         if nature_names is not None:
             self.nature_names: List[str] = nature_names
         else:
@@ -281,22 +281,22 @@ class Generator:
         self.max_id: int = max(self.nature_ids)  # Calculate max ID
 
     def __nature_to_json(self) -> str:
-        '''
+        """
             Dumps to json the natures IDs.
-        '''
+        """
         nature_dict: dict = {name: id for name, id in zip(self.nature_names, self.nature_ids)}
         return json.dumps({'natures': nature_dict}, indent=4)
     
     def __generate_no_passive_json(self) -> str:
-        '''
+        """
             Dumps to json the pokemon IDs wothout passive.
-        '''
+        """
         return json.dumps({'noPassive': NoPassive.NO_PASSIVE_DICT.value}, indent=4)
     
     def __generate_biomes_json(self) -> str:
-        '''
+        """
             Dumps to json the biomes IDs.
-        '''
+        """
         return json.dumps({'biomes': Biome.BIOMES_DICT.value}, indent=4)
     
     def __generate_vouchers_json(self) -> str:
