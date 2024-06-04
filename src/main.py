@@ -2,15 +2,14 @@
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
-# Date of release: 04.06.2024 
-
+# Date of release: 05.06.2024 
 
 import logging
 import getpass
 import requests
 import brotli
 from modules.loginLogic import loginLogic
-from modules.rogueClass import Rogue
+from modules.mainLogic import Rogue
 from colorama import Fore, Style, init
 
 from utilities.cFormatter import cFormatter, Color
@@ -39,12 +38,11 @@ if __name__ == '__main__':
         try:
             if login.login():
                 cFormatter.print(Color.INFO, f'Logged in as: {username.capitalize()}')
-                cFormatter.print(Color.GREEN, 'Backup created.')
                 rogue = Rogue(session, login.token, login.session_id)
                 
                 break
             else:
-                cFormatter.print(Color.INFO, 'Wrong credentials.')
+                cFormatter.print(Color.INFO, 'Wrong credentials.', isLogging=True)
         except Exception as e:
             cFormatter.print(Color.GREEN, f'Something went wrong. {e}', isLogging=True)
             

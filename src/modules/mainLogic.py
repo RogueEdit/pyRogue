@@ -2,8 +2,7 @@
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
-# Date of release: 04.06.2024 
-
+# Date of release: 05.06.2024 
 
 import requests
 import json
@@ -99,11 +98,12 @@ class Rogue:
             cFormatter.print(Color.WARNING, 'Response 400 - Something went wrong.', isLogging=True)
         elif response.status_code == 200:
             cFormatter.print(Color.BRIGHT_GREEN, 'Response 200 - That seemed to have worked!', isLogging=True)
+            cFormatter.print(Color.BRIGHT_GREEN, 'If it doesnt apply ingame refresh without Cache or try a private tab!', isLogging=True)
         else:
             cFormatter.print(Color.CRITICAL, 'Unexpected response receiver from the server.', isLogging=True)
 
     def _setup_headers(self) -> None:
-        # Setup headers
+        # Setup authorized headers, switching all data aswell to be more random
         self.headers = {
             'Authorization': self.auth_token,
             'User-Agent': random.choice(self.user_agents),
@@ -134,13 +134,12 @@ class Rogue:
                     return
 
             trainer_data = self.get_trainer_data()
-            game_data = self.get_gamesave_data(slot)
-
             if trainer_data:
                 self.__write_data(trainer_data, 'trainer.json')
             else:
                 cFormatter.print(Color.DEBUG, 'Failed to fetch trainer save data.')
 
+            game_data = self.get_gamesave_data(slot)
             if game_data:
                 self.__write_data(game_data, f'slot_{slot}.json')
             else:
@@ -273,16 +272,22 @@ class Rogue:
         Args:
             data (Dict[str, any]): The data to write.
             filename (str): The name of the file.
+
+        Example:
+            # Assuming data is a dictionary and filename is a string.
+            __write_data(data, 'trainer.json')
+            # Output: -> writes into trainer.json
+            # Written to local data. Do not forget to apply to server when done!
         """
         try:
             with open(filename, 'w') as f:
                 json.dump(data, f, indent=4)
-                cFormatter.print(Color.BRIGHT_YELLOW, 'Written to local data. Do not forget to apply to server when done!')
+                cFormatter.print(Color.BRIGHT_GREEN, 'Written to local data. Do not forget to apply to server when done!')
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error .__writing_data(): {e}', isLogging=True)
 
     def __load_data(self, file_path: str) -> Dict[str, Any]:
-            """
+            """"
             Load data from a specified file path.
 
             Args:
@@ -290,6 +295,15 @@ class Rogue:
 
             Returns:
                 dict: Loaded data.
+
+            Example:
+                # Assuming file_path is a valid file path.
+                __load_data('trainer.json')
+                # Output:
+                # Loaded data as a dictionary.
+
+            Raises:
+                Exception: If any error occurs during the process.
             """
             try:
                 with open(file_path, "r") as f:
@@ -300,6 +314,14 @@ class Rogue:
     def create_backup(self) -> None:
         """
         Create a backup of JSON files.
+
+        Example:
+            create_backup()
+            # Output: backup/backup_{trainerid}_{timestamp}.json
+            # Backup created.
+
+        Raises:
+            Exception: If any error occurs during the process.
         """
         backup_dir = './backup'
         if not os.path.exists(backup_dir):
@@ -309,7 +331,6 @@ class Rogue:
                 if file.endswith('.json'):
                     with open(file, 'r') as f:
                         data = json.load(f)
-                    
                     trainer_id = data.get('trainerId')
                     if trainer_id is not None:
                         timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
@@ -322,10 +343,25 @@ class Rogue:
                             shutil.copy(file, backup_filepath)
                         else:
                             shutil.copy(file, base_filepath)
+                        cFormatter.print(Color.GREEN, 'Backup created.', isLogging=True)    
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function create_backup(): {e}', isLogging=True)
 
     def restore_backup(self) -> None:
+        """
+        Restore a backup of JSON files.
+
+        Example:
+            restore_backup()
+            # Output:
+            # 1: base_123.json         <- Created on first edit
+            # 2: backup_123_20230101_121212.json
+            # Enter the number of the file you want to restore: 2
+            # Data restored.
+
+        Raises:
+            Exception: If any error occurs during the process.
+        """
         try:
             backup_dir = './backup'
             files = os.listdir(backup_dir)
@@ -375,10 +411,10 @@ class Rogue:
 
     def unlock_all_starters(self) -> None:
         """
-        Unlocks all starters.
-
-        Returns:
-            None
+        Allows to unlock various options for starters and updates the local .json
+        
+        Raises:
+            Exception: If any error occurs during the process.
         """
         try:
             trainer_data = self.__load_data('trainer.json')
@@ -417,6 +453,11 @@ class Rogue:
                 cFormatter.print(Color.INFO, 'Invalid input. Setting to NO.')
                 ribbon = 2
 
+            nature: int = int(input('Do you want to unlock all natures?: (1: Yes | 2: No): '))
+            if (ribbon < 1) or (ribbon > 2):
+                cFormatter.print(Color.INFO, 'Invalid input. Setting to NO.')
+                nature = 2
+
             costReduce = int(input('How much do you want to reduce the cost? Yes lugia can cost nearly 0! (Number between 1 and 20): '))
             if (costReduce < 0) or (costReduce > 20):
                 cFormatter.print(Color.INFO, 'Invalid input. Setting to 0.')
@@ -443,7 +484,7 @@ class Rogue:
                 trainer_data['dexData'][entry] = {
                     'seenAttr': 479,
                     'caughtAttr': self.__MAX_BIG_INT if choice == 1 else shiny,
-                    'natureAttr': self.nature_data.UNLOCK_ALL.value,
+                    'natureAttr': self.nature_data.UNLOCK_ALL.value if nature == 1 else None,
                     'seenCount': seen,
                     'caughtCount': caught,
                     'hatchedCount': 0,
@@ -467,7 +508,8 @@ class Rogue:
                 trainer_data['gameStats']['shinyPokemonCaught'] = len(trainer_data['dexData']) * 2
 
                 if ribbon == 1:
-                    trainer_data['gameStats']['classicWinCount'] = random.randint(1, 50)
+                    trainer_data['gameStats']['classicWinCount'] = 1
+
 
             self.__write_data(trainer_data, 'trainer.json')
         except Exception as e:
@@ -1268,6 +1310,12 @@ class Rogue:
             cFormatter.print(Color.CRITICAL, f'Error in function unlock_all_features(): {e}', isLogging=True)
   
     def edit_hatchWaves(self) -> None:
+        """
+        Edits the hatch waves for eggs in the trainer's inventory.
+
+        Raises:
+            Exception: If any error occurs during the process.
+        """
         try:
             trainer_data = self.__load_data('trainer.json')
 
@@ -1289,10 +1337,18 @@ class Rogue:
             cFormatter.print(Color.CRITICAL, f'Error in function edit_hatchwaves(): {e}', isLogging=True)
     
     def print_help(self) -> None:
+        """
+        Print helpful information for the user.
+
+        This method prints various helpful messages for the user, including information
+        about manual JSON editing, assistance through the program's GitHub page, release
+        version details, and cautions about account safety and program authenticity.
+        """
         cFormatter.print(Color.INFO, 'You can always edit your json manually aswell.')
         cFormatter.print(Color.INFO, 'If you need assistance please refer to the programs GitHub page.')
         cFormatter.print(Color.INFO, 'https://github.com/RogueEdit/onlineRogueEditor/.')
-        cFormatter.print(Color.INFO, 'This is release version v0.1.4 - please include that in your issue or question report.')
+        cFormatter.print(Color.INFO, 'This is release version v0.1.5 - please include that in your issue or question report.')
+        cFormatter.print(Color.INFO, 'This version now also features a log file.')
         cFormatter.print(Color.INFO, 'We do not take responsibility if your accounts get flagged or banned, and')
         cFormatter.print(Color.INFO, 'you never know if there is a clone from this programm. If you are not sure please')
         cFormatter.print(Color.INFO, 'calculate the checksum of this binary and visit https://github.com/RogueEdit/onlineRogueEditor/')

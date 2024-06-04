@@ -2,13 +2,12 @@
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
-# Date of release: 04.06.2024 
+# Date of release: 05.06.2024 
 
 import logging
 import os
 from logging.handlers import TimedRotatingFileHandler
 from datetime import datetime
-from utilities.cFormatter import cFormatter
 
 # Define the path to the logs directory in the current working directory
 logs_directory = os.path.join(os.getcwd(), 'logs')
@@ -22,7 +21,6 @@ class CustomLogger:
     """
     A custom logger class that logs messages to a weekly log file.
     """
-
     def __init__(self):
         # Create and configure file handler
         formatter_file = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
@@ -40,7 +38,7 @@ class CustomLogger:
         if not any(isinstance(handler, TimedRotatingFileHandler) for handler in root_logger.handlers):
             root_logger.addHandler(fh)
 
-        # Remove default console handler
+        # Remove default console handler to avoid outputs since we want to display em colored with less information
         for handler in root_logger.handlers:
             if isinstance(handler, logging.StreamHandler):
                 root_logger.removeHandler(handler)

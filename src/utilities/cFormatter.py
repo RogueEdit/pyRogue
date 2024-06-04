@@ -2,12 +2,13 @@
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
-# Date of release: 04.06.2024 
+# Date of release: 05.06.2024 
 
 from colorama import Fore, Style, init
 from enum import Enum
 import logging
 import shutil
+from typing import Optional
 
 class Color(Enum):
     CRITICAL = Style.BRIGHT + Fore.RED
@@ -49,10 +50,24 @@ class cFormatter(logging.Formatter):
     def print(color: Color, text: str, isLogging: bool = False) -> None:
         """
         Logs the text to the file without color and prints it to the console with color.
+        
         Args:
             color (Color): The color index to use for formatting.
             text (str): The text to log.
             isLogging (bool, optional): Specifies whether the text is for logging. Defaults to False.
+            
+        Usage Example:
+            CRITICAL DEBUG ERROR WARNING INFO it will leave more accurate information will log as those category when set as color.
+            cFormatter.print(Color.INFO, 'This is a info message # also logged to file and console', isLogging=True)
+            cFormatter.print(Color.DEBUG, 'This is a debug message logging as debug', isLogging=True)
+            cFormatter.print(Color.CYAN, 'This is a testmessage')
+            cFormatter.print_separators(10, '-', Color.GREEN) # Also can create separators
+            
+        Example Outputs:
+            [LIGHTYELLOW_EX]This is a info message # also logged to file and console[RESET]
+            [YELLOW]This is a info message # also logged to file and console[RESET]
+            [CYAN]This is a testmessage[RESET] # isLogging is optional
+            [GREEN]----------[RESET]
         """
         logger = logging.getLogger('root')
         if isLogging:
@@ -69,13 +84,22 @@ class cFormatter(logging.Formatter):
         print(formatted_text)  # Print to console with color
 
     @staticmethod
-    def print_separators(num_separators: int = None, separator: str = '-', color: Color = None) -> None:
+    def print_separators(num_separators: Optional[int] = None, separator: str = '-', color: Optional[Color] = None) -> None:
         """
         Prints separators with the specified color.
+        
         Args:
             num_separators (int, optional): The number of separators to print. If None, uses the terminal width. Defaults to None.
             separator (str, optional): The character used for the separators. Defaults to '-'.
             color (Color, optional): The color to use for the separators. Defaults to None.
+            
+        Usage Example:
+            cFormatter.print_separators(10, '-', Color.GREEN)
+            cFormatter.print_separators('-', Color.GREEN)
+            
+        Example Output:
+            [GREEN]----------[RESET]
+            [GREEN]---------------------------------------------[RESET]
         """
         if num_separators is None:
             terminal_width = shutil.get_terminal_size().columns
