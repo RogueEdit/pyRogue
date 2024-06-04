@@ -4,15 +4,14 @@
 # Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/ https://github.com/M6D6M6A/
 # Date of release: 04.06.2024 
 
-
 import random
 import time
 
 EGG_MULTIPLIER = 1073741824
 
-GACHA_TYPES = ["MOVE", "LEGENDARY", "SHINY"]
+GACHA_TYPES = ['MOVE', 'LEGENDARY', 'SHINY']
 
-EGG_TIERS = ["COMMON", "RARE", "EPIC", "LEGENDARY", "MANAPHY"]
+EGG_TIERS = ['COMMON', 'RARE', 'EPIC', 'LEGENDARY', 'MANAPHY']
 
 def get_id_bounds(tier):
     start = tier * EGG_MULTIPLIER
@@ -29,7 +28,7 @@ def get_random_id(start, end, manaphy=False):
         return result
 
 def generate_eggs(tier, g_type, hatch_waves, num_eggs):
-    manaphy_flag = tier == "MANAPHY"
+    manaphy_flag = tier == 'MANAPHY'
     start, end = get_id_bounds(0 if manaphy_flag else EGG_TIERS.index(tier))
     
     eggs = []
@@ -38,10 +37,10 @@ def generate_eggs(tier, g_type, hatch_waves, num_eggs):
 
         timestamp = int(time.time() * 1000)
         eggs.append({
-            "id": egg_id,
-            "gachaType": GACHA_TYPES.index(g_type),
-            "hatchWaves": hatch_waves,
-            "timestamp": timestamp,
+            'id': egg_id,
+            'gachaType': GACHA_TYPES.index(g_type),
+            'hatchWaves': hatch_waves,
+            'timestamp': timestamp,
         })
     
     return eggs
