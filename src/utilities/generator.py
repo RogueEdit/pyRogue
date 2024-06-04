@@ -267,7 +267,7 @@ class Vouchers(Enum):
 class Generator:
     def __init__(self, nature_names: Optional[List[str]] = None) -> None:
         """
-        Initialize the NatureIDGenerator object.
+        Initialize the Generator object.
 
         Args:
             nature_names (Optional[List[str]]): Optional list of nature names as strings. If provided, it will be used to initialize
@@ -282,30 +282,43 @@ class Generator:
 
     def __nature_to_json(self) -> str:
         """
-            Dumps to json the natures IDs.
+        Dumps to json the natures IDs.
         """
         nature_dict: dict = {name: id for name, id in zip(self.nature_names, self.nature_ids)}
         return json.dumps({'natures': nature_dict}, indent=4)
     
     def __generate_no_passive_json(self) -> str:
         """
-            Dumps to json the pokemon IDs wothout passive.
+        Dumps to json the pokemon IDs without passive.
         """
         return json.dumps({'noPassive': NoPassive.NO_PASSIVE_DICT.value}, indent=4)
     
     def __generate_biomes_json(self) -> str:
         """
-            Dumps to json the biomes IDs.
+        Dumps to json the biomes IDs.
         """
         return json.dumps({'biomes': Biome.BIOMES_DICT.value}, indent=4)
     
     def __generate_vouchers_json(self) -> str:
+        """
+        Dumps to json the vouchers IDs.
+        """
         return json.dumps({'vouchers': Vouchers.VOUCHERS_DICT.value}, indent=4)
     
     def __natureSlot_to_json(self) -> str:
+        """
+        Dumps to json the nature slot IDs.
+        """
         return json.dumps({'natureSlot': NatureSlot.NATURE_SLOT.value}, indent=4)
     
     def __save_to_file(self, data: str, filename: str) -> None:
+        """
+        Save data to a file.
+
+        Args:
+            data (str): The data to be saved.
+            filename (str): The name of the file.
+        """
         try:
             directory: str = './data/'
             if not os.path.exists(directory):
@@ -317,6 +330,9 @@ class Generator:
             cFormatter.print(Color.CRITICAL, f'Something went wrong. {e}', isLogging=True)
     
     def generate(self) -> None:
+        """
+        Generate various JSON files.
+        """
         try:
             nature_json: str = self.__nature_to_json()
             self.__save_to_file(nature_json, 'natures.json')
@@ -333,4 +349,4 @@ class Generator:
             natureSlot: str = self.__natureSlot_to_json()
             self.__save_to_file(natureSlot, 'natureSlot.json')
         except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Something went wrong. {e}', isLogging=True)
+            cFormatter.print(Color.CRITICAL, f'Generating data on initalizing startup failed. {e}', isLogging=True)

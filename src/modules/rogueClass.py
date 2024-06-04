@@ -75,7 +75,7 @@ class Rogue:
         self.pokemon_id_by_name, self.biomes_by_id, self.moves_by_id, self.nature_data, self.vouchers_data, self.natureSlot_data = self.enum.convert_to_enums()
 
         try:
-            with open('./data/data.json') as f:
+            with open('./data/extra.json') as f:
                 self.extra_data = json.load(f)
             
             with open('./data/passive.json') as f:
@@ -233,6 +233,7 @@ class Rogue:
             # This might be TypeErrors not sure since httpreponse might be invalid here
             cFormatter.print(Color.CRITICAL, f'Error updating trainer data. Please restart the tool. \n {e}', isLogging=True)
             return 
+        sleep(1)
 
     def update_all(self) -> None:
         """
@@ -278,7 +279,7 @@ class Rogue:
                 json.dump(data, f, indent=4)
                 cFormatter.print(Color.BRIGHT_YELLOW, 'Written to local data. Do not forget to apply to server when done!')
         except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error writing data(): {e}', isLogging=True)
+            cFormatter.print(Color.CRITICAL, f'Error .__writing_data(): {e}', isLogging=True)
 
     def __load_data(self, file_path: str) -> Dict[str, Any]:
             """
@@ -294,7 +295,7 @@ class Rogue:
                 with open(file_path, "r") as f:
                     return json.load(f)
             except Exception as e:
-                cFormatter.print(Color.CRITICAL, f'Error in function __load_data(): {e}', isLogging=True)
+                cFormatter.print(Color.CRITICAL, f'Error in function .__load_data(): {e}', isLogging=True)
 
     def create_backup(self) -> None:
         """
@@ -593,7 +594,6 @@ class Rogue:
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function edit_starters(): {e}', isLogging=True)
         
-
     def add_ticket(self) -> None:
         """
         Simulates an egg gacha.
@@ -607,29 +607,13 @@ class Rogue:
         try:
             trainer_data = self.__load_data('trainer.json')
 
-            c: int = int(input('How many common vouchers do you want (Max 300)?: '))
+            c: int = int(input('How many common vouchers do you want: '))
 
-            if c > 300:
-                cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot put more than 300 Tickets.')
-                return
+            r: int = int(input('How many rare vouchers do you want: '))
 
-            r: int = int(input('How many rare vouchers do you want (Max 150)?: '))
+            e: int = int(input('How many epic vouchers do you want: '))
 
-            if r > 150:
-                cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot put more than 300 Tickets.')
-                return
-
-            e: int = int(input('How many epic vouchers do you want (Max 100)?: '))
-
-            if e > 100:
-                cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot put more than 300 Tickets.')
-                return
-
-            l: int = int(input('How many legendary vouchers do you want (Max 10)?: '))
-
-            if l > 10:
-                cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot put more than 300 Tickets.')
-                return
+            l: int = int(input('How many legendary vouchers do you want: '))
 
             voucher_counts: dict[str, int] = {
                 '0': c,

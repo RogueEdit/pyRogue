@@ -29,7 +29,8 @@ if __name__ == '__main__':
     session = requests.Session()
     
     while True:
-        cFormatter.print(Color.GREEN, '<(^.^(< pyRogue >)^.^)>')
+        print('')
+        cFormatter.print(Color.GREEN, '<pyRogue>')
         username = input('Username: ')
         password = getpass.getpass('Password (password is hidden): ')
 
