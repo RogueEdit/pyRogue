@@ -1,13 +1,12 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 added_files = [
-    ( 'src/utilities/*.py', 'utilities' ),
-    ( 'src/modules/*.py', 'modules' )
+    ( '../../src/utilities/*.py', 'utilities' ),
+    ( '../../src/modules/*.py', 'modules' )
 ]
 
-
 a = Analysis(
-    ['src/main.py'],
+    ['../../src/main.py'],
     pathex=[],
     binaries=[],
     datas=added_files,
