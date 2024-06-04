@@ -53,17 +53,17 @@ class loginLogic:
             cFormatter.print(Color.GREEN, f'Login succesful.')
             cFormatter.print(Color.WHITE, 'This is a test message')
             if self.token:
-                print(f"Token: {self.token}")
-            cFormatter.print(Color.CYAN, f'HTTP Status Code: {Color.RED if response.status_code >= 400 else Color.GREEN}{response.status_code}{Style.RESET_ALL}"', isLogging=True)
-            cFormatter.print(Color.CYAN, f'Response URL: {Style.RESET_ALL}{response.request.url}')
-            cFormatter.print(Color.CYAN, f'Response Headers: {Style.RESET_ALL}{response.request.headers}')
+                cFormatter.print(Color.INFO, f'Token: {Style.RESET_ALL}{self.token}')
+            cFormatter.print(Color.INFO, f'HTTP Status Code: {Color.RED if response.status_code >= 400 else Color.GREEN}{response.status_code}{Style.RESET_ALL}"', isLogging=True)
+            cFormatter.print(Color.INFO, f'Response URL: {Style.RESET_ALL}{response.request.url}')
+            cFormatter.print(Color.INFO, f'Response Headers: {Style.RESET_ALL}{response.request.headers}')
             filtered_headers = {key: value for key, value in response.headers.items() if key != 'Report-To'}
-            cFormatter.print(Color.CYAN, f'Response Headers: {Style.RESET_ALL}{filtered_headers}')
-            cFormatter.print(Color.CYAN, f'Response Body: {Style.RESET_ALL}{response.text}')
+            cFormatter.print(Color.INFO, f'Response Headers: {Style.RESET_ALL}{filtered_headers}')
+            cFormatter.print(Color.INFO, f'Response Body: {Style.RESET_ALL}{response.text}')
             cFormatter.print_separators(30, '-')
             return True
         except requests.RequestException as e:
-            cFormatter.print(Color.CYAN, f'Login failed. {e}', isLogging=True)
+            cFormatter.print(Color.CRITICAL, f'Login failed. {e}', isLogging=True)
             return False
 
     def get_auth_headers(self) -> dict:

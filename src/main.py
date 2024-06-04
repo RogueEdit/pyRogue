@@ -14,7 +14,7 @@ from modules.rogueClass import Rogue
 from colorama import Fore, Style, init
 
 from utilities.cFormatter import cFormatter, Color
-# cFormatter.print(Color.CYAN, 'This is a test message', isLogging=True)
+# cFormatter.print(Color.INFO, 'This is a test message', isLogging=True)
 # [CYAN]This is a test message[RESET]
 # cFormatter.print_separators(10, '-', Color.GREEN)
 # [GREEN]----------[RESET]
@@ -29,6 +29,7 @@ if __name__ == '__main__':
     session = requests.Session()
     
     while True:
+        cFormatter.print(Color.CRITICAL, 'TEST', isLogging=True)
         cFormatter.print(Color.GREEN, '<(^.^(< pyRogue >)^.^)>')
         username = input("Username: ")
         password = getpass.getpass("Password (password is hidden): ")
@@ -37,13 +38,13 @@ if __name__ == '__main__':
 
         try:
             if login.login():
-                cFormatter.print(Color.CYAN, f"Logged in as: {username.capitalize()}")
+                cFormatter.print(Color.INFO, f"Logged in as: {username.capitalize()}")
                 cFormatter.print(Color.GREEN, 'Backup created.')
                 rogue = Rogue(session, login.token, login.session_id)
                 
                 break
             else:
-                cFormatter.print(Color.CYAN, 'Wrong credentials.')
+                cFormatter.print(Color.INFO, 'Wrong credentials.')
         except Exception as e:
             cFormatter.print(Color.GREEN, f'Something went wrong. {e}', isLogging=True)
             
@@ -129,4 +130,4 @@ if __name__ == '__main__':
         elif command == "exit":
             quit()
         else:
-            cFormatter.print(Color.CYAN, 'Command not found.')
+            cFormatter.print(Color.INFO, 'Command not found.')
