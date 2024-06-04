@@ -12,15 +12,15 @@ from colorama import init, Fore, Style
 import brotli
 
 class loginLogic:
-    LOGIN_URL = "https://api.pokerogue.net/account/login"
+    LOGIN_URL = 'https://api.pokerogue.net/account/login'
     HEADERS = {
-        "Accept": "application/x-www-form-urlencoded",
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Referer": "https://pokerogue.net/",
-        "Sec-Ch-Ua": '"Google Chrome";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
-        "Sec-Ch-Ua-Mobile": "?0",
-        "Sec-Ch-Ua-Platform": "Windows",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+        'Accept': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Referer': 'https://pokerogue.net/',
+        'Sec-Ch-Ua': 'Google Chrome';v='125', 'Chromium';v='125', 'Not.A/Brand';v='24'',
+        'Sec-Ch-Ua-Mobile': '?0',
+        'Sec-Ch-Ua-Platform': 'Windows',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
     }
 
     def __init__(self, username: str, password: str) -> None:
@@ -34,28 +34,28 @@ class loginLogic:
     def _generate_headers(self) -> dict:
         random_user_agent = random.choice(user_agents)
         headers = {
-            "Accept": "application/x-www-form-urlencoded",
-            "Content-Type": "application/x-www-form-urlencoded",
-            "Referer": "https://pokerogue.net/",
-            "Sec-Ch-Ua": '"Google Chrome";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
-            "Sec-Ch-Ua-Platform": "Windows",
-            "User-Agent": random_user_agent,
+            'Accept': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Referer': 'https://pokerogue.net/',
+            'Sec-Ch-Ua': 'Google Chrome';v='125', 'Chromium';v='125', 'Not.A/Brand';v='24',
+            'Sec-Ch-Ua-Platform': 'Windows',
+            'User-Agent': random_user_agent,
         }
         return headers
 
     def login(self) -> bool:
-        data = {"username": self.username, "password": self.password}
+        data = {'username': self.username, 'password': self.password}
         try:
             response = self.session.post(self.LOGIN_URL, headers=self.HEADERS, data=data)
             response.raise_for_status()
             login_response = response.json()
-            self.token = login_response.get("token")
+            self.token = login_response.get('token')
             cFormatter.print_separators(30, '-')
             cFormatter.print(Color.GREEN, f'Login succesful.')
             cFormatter.print(Color.WHITE, 'This is a test message')
             if self.token:
                 cFormatter.print(Color.INFO, f'Token: {Style.RESET_ALL}{self.token}')
-            cFormatter.print(Color.INFO, f'HTTP Status Code: {Color.RED if response.status_code >= 400 else Color.GREEN}{response.status_code}{Style.RESET_ALL}"', isLogging=True)
+            cFormatter.print(Color.INFO, f'HTTP Status Code: {Color.RED if response.status_code >= 400 else Color.GREEN}{response.status_code}{Style.RESET_ALL}', isLogging=True)
             cFormatter.print(Color.INFO, f'Response URL: {Style.RESET_ALL}{response.request.url}')
             cFormatter.print(Color.INFO, f'Response Headers: {Style.RESET_ALL}{response.request.headers}')
             filtered_headers = {key: value for key, value in response.headers.items() if key != 'Report-To'}
@@ -68,4 +68,4 @@ class loginLogic:
             return False
 
     def get_auth_headers(self) -> dict:
-        return {"authorization": self.token}
+        return {'authorization': self.token}

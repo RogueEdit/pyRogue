@@ -10,12 +10,12 @@ logs_directory = os.path.join(os.getcwd(), 'logs')
 # Create the logs directory if it doesn't exist
 if not os.path.exists(logs_directory):
     os.makedirs(logs_directory)
-    print(f"Created logs directory: {logs_directory}")
+    print(f'Created logs directory: {logs_directory}')
 
 class CustomLogger:
-    """
+    '''
     A custom logger class that logs messages to the console with color formatting and to a weekly log file.
-    """
+    '''
 
     def __init__(self):
         # Create and configure logger for console
@@ -40,7 +40,7 @@ class CustomLogger:
         formatter_file = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 
         # Create file handler and set level to DEBUG for file output
-        log_filename = os.path.join(logs_directory, f"{datetime.now().strftime('%Y-%W')}.log")
+        log_filename = os.path.join(logs_directory, f'{datetime.now().strftime('%Y-%W')}.log')
         fh = TimedRotatingFileHandler(log_filename, when='W0', backupCount=52)
         fh.setLevel(logging.DEBUG)
         fh.setFormatter(formatter_file)

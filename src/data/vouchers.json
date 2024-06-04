@@ -129,6 +129,7 @@
         "LEON": 127,
         "GEETA": 128,
         "NEMONA": 129,
+<<<<<<< HEAD
         "KIERAN": 130,
         "ROCKET_BOSS_GIOVANNI_1": 131,
         "ROCKET_BOSS_GIOVANNI_2": 132,
@@ -142,5 +143,8 @@
         "GHETSIS_2": 140,
         "LYSANDRE": 141,
         "LYSANDRE_2": 142
+=======
+        "KIERAN": 130
+>>>>>>> 1c097c1 (Coding convention...^^)
     }
 }

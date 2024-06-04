@@ -25,6 +25,10 @@
         "SASSY": 8388608,
         "CAREFUL": 16777216,
         "QUIRKY": 33554432,
+<<<<<<< HEAD
         "UNLOCK_ALL": 67108862
+=======
+        "UNLOCK_ALL": 67108864
+>>>>>>> 1c097c1 (Coding convention...^^)
     }
 }

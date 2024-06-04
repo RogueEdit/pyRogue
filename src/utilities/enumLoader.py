@@ -20,22 +20,22 @@ class EnumLoader:
 
     def __load_data(self):
         try:
-            with open("./data/pokemon.json") as f:
+            with open('./data/pokemon.json') as f:
                 self.pokemon_id_by_name = json.load(f)
 
-            with open("./data/biomes.json") as f:
+            with open('./data/biomes.json') as f:
                 self.biomes_by_id = json.load(f)
 
-            with open("./data/moves.json") as f:
+            with open('./data/moves.json') as f:
                 self.moves_by_id = json.load(f)
 
-            with open("./data/natures.json") as f:
+            with open('./data/natures.json') as f:
                 self.natures_data = json.load(f)
 
-            with open("./data/vouchers.json") as f:
+            with open('./data/vouchers.json') as f:
                 self.vouchers_data = json.load(f)
             
-            with open("./data/natureSlot.json") as f:
+            with open('./data/natureSlot.json') as f:
                 self.natureSlot_data = json.load(f)
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Something went wrong. {e}', isLogging=True)
@@ -48,12 +48,12 @@ class EnumLoader:
 
         self.__load_data()
 
-        self.pokemon_id_by_name = self.__create_enum_from_dict(self.pokemon_id_by_name["dex"], "PokemonEnum")
-        self.biomes_by_id = self.__create_enum_from_dict(self.biomes_by_id["biomes"], "BiomesEnum")
-        self.moves_by_id = self.__create_enum_from_dict(self.moves_by_id["moves"], "MovesEnum")
-        self.natures_data = self.__create_enum_from_dict(self.natures_data["natures"], "NaturesEnum")
-        self.vouchers_data = self.__create_enum_from_dict(self.vouchers_data["vouchers"], "VouchersEnum")
-        self.natureSlot_data = self.__create_enum_from_dict(self.natureSlot_data["natureSlot"], "NaturesSlotEnum")
+        self.pokemon_id_by_name = self.__create_enum_from_dict(self.pokemon_id_by_name['dex'], 'PokemonEnum')
+        self.biomes_by_id = self.__create_enum_from_dict(self.biomes_by_id['biomes'], 'BiomesEnum')
+        self.moves_by_id = self.__create_enum_from_dict(self.moves_by_id['moves'], 'MovesEnum')
+        self.natures_data = self.__create_enum_from_dict(self.natures_data['natures'], 'NaturesEnum')
+        self.vouchers_data = self.__create_enum_from_dict(self.vouchers_data['vouchers'], 'VouchersEnum')
+        self.natureSlot_data = self.__create_enum_from_dict(self.natureSlot_data['natureSlot'], 'NaturesSlotEnum')
 
         return self.pokemon_id_by_name, self.biomes_by_id, self.moves_by_id, self.natures_data, self.vouchers_data, self.natureSlot_data
     
