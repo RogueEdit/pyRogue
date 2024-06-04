@@ -8,21 +8,46 @@ from utilities.cFormatter import cFormatter, Color
 import requests
 from utilities.headers import user_agents, header_languages
 import random
-from colorama import init, Fore, Style
+from colorama import init
 
 init()
 
 class loginLogic:
+    """
+    A class to handle login logic for pokerogue.net API.
+
+    Attributes:
+        LOGIN_URL (str): The URL for the login endpoint.
+        username (str): The username for login.
+        password (str): The password for login.
+        token (str): The authentication token retrieved after successful login.
+        session_id (str): The session ID obtained after successful login.
+        session (requests.Session): The session object for making HTTP requests.
+    """
+
     LOGIN_URL = 'https://api.pokerogue.net/account/login'
+
     def __init__(self, username: str, password: str) -> None:
+        """
+        Initializes the loginLogic object.
+
+        Args:
+            username (str): The username for login.
+            password (str): The password for login.
+        """
         self.username = username
         self.password = password
         self.token = None
         self.session_id = None
         self.session = requests.Session()
 
-    # General purpose header
     def _generate_headers(self) -> dict:
+        """
+        Generates HTTP headers for requests.
+
+        Returns:
+            dict: A dictionary containing HTTP headers.
+        """
         headers = {
             'User-Agent': random.choice(user_agents),
             'Accept': 'application/x-www-form-urlencoded',
@@ -38,9 +63,14 @@ class loginLogic:
         return headers
 
     def login(self) -> bool:
+        """
+        Logs in to the pokerogue.net API.
+
+        Returns:
+            bool: True if login is successful, False otherwise.
+        """
         data = {'username': self.username, 'password': self.password}
         try:
-            # Generate headers dynamically using _generate_headers method
             headers = self._generate_headers()
             response = self.session.post(self.LOGIN_URL, headers=headers, data=data)
             response.raise_for_status()
