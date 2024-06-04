@@ -70,59 +70,62 @@ We will not use the tool 24/7 - this means we will not see when it breaks due to
 ## Editor Features
 
 - Autocomplete recomendations
+
 ![Preview Image](.github/previews/autocomplete.png)
 
 - When logging in it will automatically create backups for you.
 
-- Update all data on the server
-- This will sent the local .json file to the server and apply the changes
+- Load data from server
+  - This will fetch the trainer.json containing your account save data
 
-- Edit a starter
-- This will ask you for a pokemonID or a name and will allow you to edit following attributes:
+- Load Save-slot data from server
+  - This will fetch slot_{digit}.json containing data about a current run
+
+- Edit a starter - This will ask you to take multiple inputs:
   - Unlock all hidden forms? (Dressed Peekachu etc.)
-  - Is it shiny? (T1, T2, T3)
+  - Should it be shiny? (T1, T2, T3)
   - How many times have you hatched it?
   - How many times have you caught it?
   - How many times have you seen it?
-  - How many friendship-candys do you want?
+  - How many friendship-candys should it have?
   - All 6 IV's
-  - Unlock passive? 
-  - How much should we reduce cost?
-  - Unlock all ablities?
-  - Unlock nature or all
+  - Should it have its passive unlocked? 
+  - Should the cost be reduced?
+  - Should it have all abilites?
+  - Should it have a specific nature or all?
 
-- Unlock all starters
+- Unlock all starters | same as above but for all pokemons
   - This will unlock every single Pokemon depending on your choosings like above
 
 - Modify the number of egg-tickets you have
   - This allows you to set the amount of egg gacha tickets you have of every tier
   - due to changes on PokeRoGue's Site this is now limited to certain amounts.
+  - This was reverted; https://github.com/pagefaultgames/rogueserver/commit/0526c7a0f197ecec009cbd59b9e07cab00b01a44 but we still keep it limited.
 
 - Edit a pokemon in your party
-- Let's you edit moves, species and level of a Pokemon in your team. It let's you set it shiny and its variant and makes it 6 IVs
+  - Let's you edit moves, species and level of a Pokemon in your team. It let's you set it shiny and its variant and makes it 6 IVs
 
 - Unlock all achievements
-- Unlocks every achievement
-
 - Unlock all game modes
-- Unlocks: classic, endless, spliced endless
-
+  - Unlocks: classic, endless, spliced endless
 - Add one or unlock all vouchers
+
 - Edit candies on a pokemon
 - Edit amount of money
 - Edit pokeballs amount
-- Edito biome
+- Edit biome
 - Generate eggs
   - Depending on your liking, whatever rarity - gacha type and such
 - Set your eggs to hatch
 - Edit account stats
 - Unlock everything
-    - Just calls mulitiple features from above
+  - Just calls mulitiple features from above
+  - Will also edit account stats with "legit" constraints. Based on your seen variables and such and randomized between reasonable values.
 
 - Create a backup
-- Restory a backup
+- Restore a backup
 
-- Display all PokÃ©mon with their names and id
+- Display all Pokemon with their names and id
 - Display all Biomes IDs
 - Display all Moves IDs
 - Display all Voucher IDs
