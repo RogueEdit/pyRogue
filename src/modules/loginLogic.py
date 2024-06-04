@@ -51,7 +51,6 @@ class loginLogic:
             self.token = login_response.get('token')
             cFormatter.print_separators(30, '-')
             cFormatter.print(Color.GREEN, f'Login succesful.')
-            cFormatter.print(Color.WHITE, 'This is a test message')
             if self.token:
                 cFormatter.print(Color.INFO, f'Token: {Style.RESET_ALL}{self.token}')
             cFormatter.print(Color.INFO, f'HTTP Status Code: {Color.RED if response.status_code >= 400 else Color.GREEN}{response.status_code}{Style.RESET_ALL}', isLogging=True)
