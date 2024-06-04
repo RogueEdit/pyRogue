@@ -570,7 +570,7 @@ class Rogue:
 
         nature_completer: WordCompleter = WordCompleter(self.nature_data.__members__.keys(), ignore_case=True)
         
-        print(Fore.LIGHTYELLOW_EX + Style.BRIGHT + 'Write the name of the nature, it will recomend for auto-completion.' + Style.RESET_ALL)
+        cFormatter.print(Color.BRIGHT_YELLOW, 'Write the name of the nature, it will recommend for auto-completion.')
         nature: str = prompt('What nature would you like?: ', completer=nature_completer)
 
         nature: int = self.nature_data[nature].value
@@ -614,25 +614,25 @@ class Rogue:
         c: int = int(input("How many common vouchers do you want (Max 300)?: "))
 
         if c > 300:
-            print(Fore.BLUE + "Cannot put more than 300 tickets, please retry." + Style.RESET_ALL)
+            cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot put more than 300 Tickets.')
             return
 
         r: int = int(input("How many rare vouchers do you want (Max 150)?: "))
 
         if r > 150:
-            print(Fore.BLUE + "Cannot put more than 150 tickets, please retry." + Style.RESET_ALL)
+            cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot put more than 300 Tickets.')
             return
 
         e: int = int(input("How many epic vouchers do you want (Max 100)?: "))
 
         if e > 100:
-            print(Fore.BLUE + "Cannot put more than 100 tickets, please retry." + Style.RESET_ALL)
+            cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot put more than 300 Tickets.')
             return
 
         l: int = int(input("How many legendary vouchers do you want (Max 10)?: "))
 
         if l > 10:
-            print(Fore.BLUE + "Cannot put more than 10 tickets, please retry." + Style.RESET_ALL)
+            cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot put more than 300 Tickets.')
             return
 
         voucher_counts: dict[str, int] = {
@@ -649,91 +649,91 @@ class Rogue:
             """
             Allows the user to edit the Pokemon party.
             """
+            
             slot = self.slot
-            filename = f"slot_{slot}.json"
+            filename = f'slot_{slot}.json'
 
             game_data = self.__load_data(filename)
 
             if game_data is None:
-                print(Fore.RED + "There was something wrong with the data, please restart the tool." + Style.RESET_ALL)
+                cFormatter.print(Color.CRITICAL, 'There was something wrong with the data, please restart the tool.')
                 return
 
             if game_data["gameMode"] == 3:
-                print(Fore.BLUE + "Cannot edit this property on Daily Runs." + Style.RESET_ALL)
+                cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot edit this property on Daily Runs.')
                 return
 
             options = [
-                "1: Change species",
-                "2: Set it shiny",
-                "3: Set Level",
-                "4: Set Luck",
-                "5: Set IVs",
-                "6: Change a move on a pokemon in your team",
-                "7: Change nature of a pokemon in your team"
+                '1: Change species',
+                '2: Set it shiny',
+                '3: Set Level',
+                '4: Set Luck',
+                '5: Set IVs',
+                '6: Change a move on a pokemon in your team',
+                '7: Change nature of a pokemon in your team'
             ]
 
             party_num = int(input("Select the party slot of the Pokémon you want to edit (0-5): "))
             if party_num < 0 or party_num > 5:
-                print(Fore.RED + "Invalid party slot" + Style.RESET_ALL)
+                cFormatter.print(Color.BRIGHT_YELLOW, 'Invalid party slot.')
                 return
 
             print("**************************** OPTIONS ****************************")
             print("\n".join(options))
             print("--------------------------------------------------------------------")
 
-            command = int(input("Option: "))
+            command = int(input('Option: '))
             if command < 1 or command > 7:
-                print(Fore.BLUE + "Invalid input." + Style.RESET_ALL)
+                cFormatter.print(Color.INFO, 'Invalid input.')
                 return
 
             if command == 1:
                     pokemon_completer: WordCompleter = WordCompleter(self.pokemon_id_by_name.__members__.keys(), ignore_case=True)
-
-                    print(Fore.LIGHTYELLOW_EX + Style.BRIGHT + "Write the name of the pokemon, it will recomend for auto-completion." + Style.RESET_ALL)
+                    cFormatter.print(Color.INFO, 'Write the name of the pokemon, it will recomend for auto-completion.')
                     dexId: str = prompt("Enter Pokemon (Name / ID): ", completer=pokemon_completer)
                     
                     try:
                         dexId: str = self.pokemon_id_by_name[dexId.lower()].value
                     except KeyError:
-                        print(Fore.BLUE + f"No Pokemon with Name: {dexId}" + Style.RESET_ALL)
+                        cFormatter.print(Color.INFO, f'No Pokemon with Name: {dexId}')
                         return
                     game_data["party"][party_num]["species"] = int(dexId)
 
 
             elif command == 2:
                 game_data["party"][party_num]["shiny"] = True
-                variant = int(input("Choose the shiny variant (from 0 to 2): "))
+                variant = int(input('Choose the shiny variant (from 0 to 2): '))
                 if variant < 0 or variant > 2:
-                    print(Fore.BLUE + "Invalid input." + Style.RESET_ALL)
+                    cFormatter.print(Color.INFO, 'Invalid input.')
                     return
                 game_data["party"][party_num]["variant"] = variant
             elif command == 3:
-                level = int(input("Choose the level: "))
+                level = int(input('Choose the level: '))
                 if level < 1:
-                    print(Fore.BLUE + "Invalid input" + Style.RESET_ALL)
+                    cFormatter.print(Color.INFO, 'Invalid input.')
                     return
                 game_data["party"][party_num]["level"] = level
             elif command == 4:
-                luck = int(input("What luck level do you desire? (from 1 to 14): "))
+                luck = int(input('What luck level do you desire? (from 1 to 14): '))
                 if luck < 1 or luck > 14:
-                    print(Fore.BLUE + "Invalid input" + Style.RESET_ALL)
+                    cFormatter.print(Color.INFO, 'Invalid input.')
                     return
                 game_data["party"][party_num]["luck"] = luck
             elif command == 5:
-                ivs = [int(input("SpA IVs: ")), int(input("DEF IVs: ")), int(input("Attack IVs: ")),
-                    int(input("HP IVs: ")), int(input("Spe IVs: ")), int(input("Def IVs: "))]
+                ivs = [int(input('SpA IVs: ')), int(input('DEF IVs: ')), int(input('Attack IVs: ')),
+                    int(input('HP IVs: ')), int(input('Spe IVs: ')), int(input('Def IVs: '))]
                 game_data["party"][party_num]["ivs"] = ivs
             elif command == 6:
-                move_slot = int(input("Select the move you want to change (from 0 to 3): "))
+                move_slot = int(input('Select the move you want to change (from 0 to 3): '))
                 if move_slot < 0 or move_slot > 3:
-                    print(Fore.BLUE + "Invalid input" + Style.RESET_ALL)
+                    cFormatter.print(Color.INFO, 'Invalid input.')
                     return
                 
                 self.print_moves()
 
                 move_completer: WordCompleter = WordCompleter(self.moves_by_id.__members__.keys(), ignore_case=True)
                 
-                print(Fore.LIGHTYELLOW_EX + Style.BRIGHT + "Write the name of the move, it will recomend for auto-completion." + Style.RESET_ALL)
+                cFormatter.print(Color.INFO, 'Write the name of the move, it will recommend for auto completion.')
                 move: str = prompt("What move would you like?: ", completer=move_completer)
 
                 move: int = int(self.moves_by_id[move].value)
