@@ -2,7 +2,7 @@
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
-# Date of release: 04.06.2024 
+# Date of release: 05.06.2024 
 
 from typing import Optional, List
 from enum import Enum, auto
@@ -37,7 +37,6 @@ class Nature(Enum):
     CAREFUL = auto()
     QUIRKY = auto()
     UNLOCK_ALL = auto()
-
 
 class NatureSlot(Enum):
     NATURE_SLOT = {
@@ -128,7 +127,6 @@ class Biome(Enum):
         'LABORATORY': '33',
         'END': '50'
     }
-
 
 class Vouchers(Enum):
     VOUCHERS_DICT = {
