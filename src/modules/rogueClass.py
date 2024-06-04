@@ -931,13 +931,13 @@ class Rogue:
             if not dexId:
                 pokemon_completer: WordCompleter = WordCompleter(self.pokemon_id_by_name.__members__.keys(), ignore_case=True)
 
-                print(Fore.LIGHTYELLOW_EX + Style.BRIGHT + 'Write the name of the pokemon, it will recomend for auto-completion.' + Style.RESET_ALL)
+                cFormatter.print(Color.INFO, 'Write the name of the pokemon it will recommend for auto-completion.')
                 dexId: str = prompt('Enter Pokemon (Name / ID): ', completer=pokemon_completer)
             
                 try:
                     dexId: str = self.pokemon_id_by_name[dexId.lower()].value
                 except KeyError:
-                    print(Fore.BLUE + f'No Pokemon with Name: {dexId}' + Style.RESET_ALL)
+                    cFormatter.print(Color.INFO, f'No Pokemon with Name: {dexId}')
                     return
                 
                     
@@ -961,7 +961,7 @@ class Rogue:
             game_data = self.__load_data(f'slot_{self.slot}.json')
             self.print_biomes()
             biome_completer: WordCompleter = WordCompleter(self.biomes_by_id.__members__.keys(), ignore_case=True)
-            print(Fore.LIGHTYELLOW_EX + Style.BRIGHT + 'Write the name of the biome, it will recomend for auto-completion.' + Style.RESET_ALL)  
+            cFormatter.print(Color.INFO, 'Write the name of the biome, it will recommend for auto-completion.')
 
             biome: str = prompt('What biome would you like?: ', completer=biome_completer)
             biome: int = int(self.biomes_by_id[biome].value)
@@ -983,7 +983,7 @@ class Rogue:
             game_data = self.__load_data(f'slot_{self.slot}.json')
 
             if game_data['gameMode'] == 3:
-                print(Fore.RED + 'Cannot edit this property on Daily Runs.' + Style.RESET_ALL)
+                cFormatter.print(Color.CRITICAL, 'Cannot edit this property on daily runs!')
                 return
 
             choice = int(input('How many pokeballs do you want?: '))
@@ -1018,7 +1018,7 @@ class Rogue:
             game_data = self.__load_data(f'slot_{self.slot}.json')
 
             if game_data['gameMode'] == 3:
-                print(Fore.RED + 'Cannot edit this property on Daily Runs.' + Style.RESET_ALL)
+                cFormatter.print(Color.CRITICAL, 'Cannot edit this property on daily runs!')
                 return
 
             choice = int(input('How many Poke-Dollars do you want?: '))
@@ -1102,8 +1102,8 @@ class Rogue:
                 trainer_data['eggs'] = new_eggs
             elif replace_or_add == '2':
                 trainer_data['eggs'].extend(new_eggs)
-                    
-            print(Fore.GREEN + f'[{count}] eggs got generated succesfully.' + Style.RESET_ALL)
+            
+            cFormatter.print(Color.GREEN, f'[{count}] eggs got generated succesfully.')
             self.__write_data(trainer_data, 'trainer.json')
             
 
@@ -1297,7 +1297,7 @@ class Rogue:
                     egg['hatchWaves'] = hatch_waves
 
             else:
-                print(Fore.BLUE + 'You have no eggs to hatch.' + Style.RESET_ALL)
+                cFormatter.print(Color.GREEN, 'You have no eggs to hatch.')
             
             self.__write_data(trainer_data, 'trainer.json')
 
@@ -1305,11 +1305,11 @@ class Rogue:
             cFormatter.print(Color.CRITICAL, f'Error in function edit_hatchwaves(): {e}', isLogging=True)
     
     def print_help(self) -> None:
-        print(Fore.LIGHTYELLOW_EX + Style.BRIGHT + 'You can always edit your json manually aswell.')
-        print(Fore.LIGHTYELLOW_EX + Style.BRIGHT + 'If you need assistance please refer to the programs GitHub page.')
-        print(Fore.LIGHTYELLOW_EX + Style.BRIGHT + 'https://github.com/RogueEdit/onlineRogueEditor/.')
-        print(Fore.LIGHTYELLOW_EX + Style.BRIGHT + 'This is release version v0.1.4 - please include that in your issue or question report.')
-        print(Fore.LIGHTYELLOW_EX + Style.BRIGHT + 'We do not take responsibility if your accounts get flagged or banned, and')
-        print(Fore.LIGHTYELLOW_EX + Style.BRIGHT + 'you never know if there is a clone from this programm. If you are not sure please')
-        print(Fore.LIGHTYELLOW_EX + Style.BRIGHT + 'calculate the checksum of this binary and visit https://github.com/RogueEdit/onlineRogueEditor/')
-        print(Fore.LIGHTYELLOW_EX + Style.BRIGHT + 'to see the value it should have to know its original from source.' + Style.RESET_ALL)
+        cFormatter.print(Color.INFO, 'You can always edit your json manually aswell.')
+        cFormatter.print(Color.INFO, 'If you need assistance please refer to the programs GitHub page.')
+        cFormatter.print(Color.INFO, 'https://github.com/RogueEdit/onlineRogueEditor/.')
+        cFormatter.print(Color.INFO, 'This is release version v0.1.4 - please include that in your issue or question report.')
+        cFormatter.print(Color.INFO, 'We do not take responsibility if your accounts get flagged or banned, and')
+        cFormatter.print(Color.INFO, 'you never know if there is a clone from this programm. If you are not sure please')
+        cFormatter.print(Color.INFO, 'calculate the checksum of this binary and visit https://github.com/RogueEdit/onlineRogueEditor/')
+        cFormatter.print(Color.INFO, 'to see the value it should have to know its original from source.')
