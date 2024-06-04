@@ -22,6 +22,7 @@ import re
 
 from utilities.generator import Generator
 from utilities.enumLoader import EnumLoader
+from utilities.cFormatter import cFormatter, Color
 
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
@@ -79,8 +80,6 @@ class Rogue:
         with open("./data/passive.json") as f:
             self.passive_data = json.load(f)
         
-
-        
         self.__dump_data()
 
 
@@ -95,16 +94,11 @@ class Rogue:
             dict: Empty dictionary.
         """
         if response.status_code == 400:
-            print(
-                Fore.RED + "Response 400 - Something went wrong. Are you playing meanwhile?" + Style.RESET_ALL)
+            cFormatter.print(Color.WARNING, 'Response 400 - Something went wrong.', isLogging=True)
         elif response.status_code == 200:
-            print(
-                Fore.GREEN + "Response 200 - That worked!" + Style.RESET_ALL)
+            cFormatter.print(Color.CYAN, 'Response 200 - That worked!')
         else:
-            logger.error(
-                Fore.RED + "Unexpected response received from server." + Style.RESET_ALL)
-        return {}
-
+            cFormatter.print(Color.CRITICAL, 'Unexpected response receiver from the server.', isLogging=True)
 
     def _setup_headers(self) -> None:
         # Setup headers
@@ -133,7 +127,7 @@ class Rogue:
             slot = int(input("Enter slot (1-5): "))
             self.slot = slot
             if slot > 5 or slot < 1:
-                print("Invalid slot number")
+                cFormatter.print(Color.CYAN, 'Invalid input.')
                 return
 
         trainer_data = self.get_trainer_data()
@@ -142,12 +136,12 @@ class Rogue:
         if trainer_data:
             self.__write_data(trainer_data, "trainer.json")
         else:
-            logger.error(Fore.RED + "Failed to fetch trainer data." + Style.RESET_ALL)
+            cFormatter.print(Color.DEBUG, 'Failed to fetch trainer save data.')
 
         if game_data:
             self.__write_data(game_data, f"slot_{slot}.json")
         else:
-            logger.error(Fore.RED + f"Failed to fetch game data for slot {slot}." + Style.RESET_ALL)
+            cFormatter.print(Color.DEBUG, f'Failed to fetch save-slot data for slot {slot}.')
 
         self.create_backup()
 
@@ -161,27 +155,23 @@ class Rogue:
             dict: Trainer data from the API.
         """
         try:
-            print("Fetching trainer data...")
+            cFormatter.print(Color.CYAN, 'Fetching trainer data...')
             response = self.session.get(self.TRAINER_DATA_URL, headers=self.headers)
             response.raise_for_status()
             data = response.json()
             return data
         except requests.RequestException as e:
-            logger.error(Fore.RED + "Error fetching savegame data. Please restart the tool" + Style.RESET_ALL)
-            #print(Fore.RED + "Error fetching trainer data." + Style.RESET_ALL)
-            #return {}
+            cFormatter.print(Color.DEBUG, f'Error fetching trainer data. Please restart the tool. \n {e}', isLogging=True)
 
     def get_gamesave_data(self, slot: int = 1):
         try:
-            print("Fetching gamesave data...")
+            cFormatter.print(Color.CYAN, f'Fecthing data for Slot {slot}')
             response = self.session.get(f"{self.GAMESAVE_SLOT_URL}{slot-1}", headers=self.headers)
             response.raise_for_status()
             data = response.json()
             return data
         except requests.RequestException as e:
-            logger.error(Fore.RED + "Error fetching savegame data. Please restart the tool" + Style.RESET_ALL)
-            #logger.error(Fore.RED + f"Error fetching savegame data for {self.slot}: %s" + Style.RESET_ALL, e)
-            #return {}
+            cFormatter.print(Color.CRITICAL, f'Error fetching trainer data. Please restart the tool. \n {e}', isLogging=True)
 
     def __update_trainer_data(self, trainer_payload: dict) -> dict:
         """
@@ -194,20 +184,17 @@ class Rogue:
             dict: JSON response from the server.
         """
         try:
-            print("Updating trainer data...")
+            cFormatter.print(Color.CYAN, 'Updating trainer data...')
             response = self.session.post(self.UPDATE_TRAINER_DATA_URL, headers=self.headers, json=trainer_payload)
             response.raise_for_status()
             if response.content:  # Check if the response content is not empty
-                print(Fore.GREEN + "That worked! Trainer data succesfully saved." + Style.RESET_ALL)
+                cFormatter.print(Color.GREEN, 'That worked! Dont forget to clear your browser cache.')
                 return response.json()
             else:
                 return self.__handle_error_response(response)
             
         except requests.RequestException as e:
-            logger.error(Fore.RED + "Error updating trainer data. Please restart the tool." + Style.RESET_ALL)
-            #if isinstance(e, requests.HTTPError) and e.response.status_code != 200 or e.response.status_code != 400:
-            #logger.error(Fore.RED + "Error updating trainer data: ", str(e) + "Restart restart your tool." + Style.RESET_ALL)
-            #return {}
+            cFormatter.print(Color.CRITICAL, f'Error fetching trainer data. Please restart the tool. \n {e}', isLogging=True)
 
     def __update_gamesave_data(self, slot: int, gamedata_payload: Dict[str, any], url_ext: str) -> Dict[str, any]:
         """
@@ -222,17 +209,17 @@ class Rogue:
             Dict[str, any]: JSON response from the server.
         """
         try:
-            print("Updating gamesave data...")
+            cFormatter.print(Color.CYAN, f'Updating gamesave data for slot {slot}...')
             response = self.session.post(
                 f"{self.UPDATE_GAMESAVE_SLOT_URL}{slot - 1}{url_ext}", headers=self.headers, json=gamedata_payload)
             response.raise_for_status()
             if response.content:  # Check if the response content is not empty
-                return response.json()
+                cFormatter.print(Color.GREEN, f'{response.json()} - That worked! Dont forget to clear your browser cache.')
             else:
                 return self.__handle_error_response(response)
             
         except requests.RequestException as e:
-            logger.error(Fore.RED + f"Error updating trainer data -> {e}. Please restart the tool." + Style.RESET_ALL)
+            cFormatter.print(Color.CRITICAL, f'Error updating trainer data. Please restart the tool. \n {e}', isLogging=True)
             return 
             #if isinstance(e, requests.HTTPError) and e.response.status_code != 200 or e.response.status_code != 400:
             #    logger.error(Fore.RED + f"Error updating savegame data for {self.slot}: ", str(e) + "Restart the tool and try again." + Style.RESET_ALL)
@@ -246,17 +233,15 @@ class Rogue:
             print(Fore.RED + "Invalid slot number!" + Style.RESET_ALL)
             return
         
-
         if "trainer.json" not in os.listdir():
-            print(
-                Fore.RED + "trainer.json (Your game data) file not found!" + Style.RESET_ALL)
+            cFormatter.print(Color.RED, 'Your gamefile trainer.json (Your game data) file not found')
             return
         
         trainer_data = self.__load_data("trainer.json")
 
         filename = f"slot_{self.slot}.json"
         if filename not in os.listdir():
-            print(Fore.RED + f"{filename} not found" + Style.RESET_ALL)
+            cFormatter.print(Color.RED, f'{filename} not found')
             return
         
         game_data = self.__load_data(filename)
@@ -441,8 +426,8 @@ class Rogue:
             print("Invalid command.")
             return
 
-        costReduce = int(input("How much do you want to reduce the cost?(0 1 2): "))
-        if (costReduce < 0) or (costReduce > 2):
+        costReduce = int(input("How much do you want to reduce the cost? Yes lugia can cost nearly 0! (Number between 1 and 20): "))
+        if (costReduce < 0) or (costReduce > 20):
             print(Fore.BLUE + "Incorrect input. setting to 0. Continuing." + Style.RESET_ALL)
             costReduce = 0
 
@@ -579,8 +564,8 @@ class Rogue:
         else:
             passiveAttr = 0
         
-        costReduce = int(input("How much do you want to reduce the cost?(0 1 2): "))
-        if (costReduce < 0) or (costReduce > 2):
+        costReduce = int(input("How much do you want to reduce the cost? Yes lugia can cost nearly 0! (Number between 1 and 20): "))
+        if (costReduce < 0) or (costReduce > 20):
             print(Fore.BLUE + "Incorrect input. setting to 0. Continuing." + Style.RESET_ALL)
             costReduce = 0
 

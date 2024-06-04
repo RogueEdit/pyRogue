@@ -4,12 +4,11 @@
 # Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
 # Date of release: 04.06.2024 
 
-
-
 from typing import Optional, List
 from enum import Enum, auto
 import json
 import os
+from utilities.cFormatter import cFormatter, Color
 
 class Nature(Enum):
     HARDY = auto()
@@ -282,9 +281,6 @@ class Generator:
         self.nature_ids: List[int] = [2 ** i for i in range(1, len(self.nature_names) + 1)]  # Start with ID 2
         self.max_id: int = max(self.nature_ids)  # Calculate max ID
 
-
-
-    
     def __nature_to_json(self) -> str:
         """
             Dumps to json the natures IDs.
@@ -311,25 +307,31 @@ class Generator:
         return json.dumps({"natureSlot": NatureSlot.NATURE_SLOT.value}, indent=4)
     
     def __save_to_file(self, data: str, filename: str) -> None:
-        directory: str = "./data/"
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-        filepath: os.path = os.path.join(directory, filename)
-        with open(filepath, "w") as file:
-            file.write(data)
+        try:
+            directory: str = "./data/"
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+            filepath: os.path = os.path.join(directory, filename)
+            with open(filepath, "w") as file:
+                file.write(data)
+        except Exception as e:
+            cFormatter.print(Color.CRITICAL, f'Something went wrong. {e}', isLogging=True)
     
     def generate(self) -> None:
-        nature_json: str = self.__nature_to_json()
-        self.__save_to_file(nature_json, "natures.json")
+        try:
+            nature_json: str = self.__nature_to_json()
+            self.__save_to_file(nature_json, "natures.json")
 
-        no_passive_json: str = self.__generate_no_passive_json()
-        self.__save_to_file(no_passive_json, "passive.json")
+            no_passive_json: str = self.__generate_no_passive_json()
+            self.__save_to_file(no_passive_json, "passive.json")
 
-        biomes_json: str = self.__generate_biomes_json()
-        self.__save_to_file(biomes_json, "biomes.json")
+            biomes_json: str = self.__generate_biomes_json()
+            self.__save_to_file(biomes_json, "biomes.json")
 
-        vouchers_json: str = self.__generate_vouchers_json()
-        self.__save_to_file(vouchers_json, "vouchers.json")
+            vouchers_json: str = self.__generate_vouchers_json()
+            self.__save_to_file(vouchers_json, "vouchers.json")
 
-        natureSlot: str = self.__natureSlot_to_json()
-        self.__save_to_file(natureSlot, "natureSlot.json")
+            natureSlot: str = self.__natureSlot_to_json()
+            self.__save_to_file(natureSlot, "natureSlot.json")
+        except Exception as e:
+            cFormatter.print(Color.CRITICAL, f'Something went wrong. {e}', isLogging=True)
