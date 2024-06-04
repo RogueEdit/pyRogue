@@ -1,11 +1,11 @@
 # pyRogue
 > **pyRogue** is a educational project. This is mostly to be done, if you have any ideas or problems please use the issue feature.
 
-[<img src="https://img.shields.io/badge/Windows-blue">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.1.4/pyRogue-Windows.zip) <img src="https://img.shields.io/badge/f0b53593a97007587041f4c39dbf14e207d3db4402ed0ebe7504404f0584982a-blue"> [<img src="https://img.shields.io/badge/Virus%20Total-blue">](https://www.virustotal.com/gui/file/f0b53593a97007587041f4c39dbf14e207d3db4402ed0ebe7504404f0584982a?nocache=1) 
+[<img src="https://img.shields.io/badge/Windows-blue">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.1.5/pyRogue-v015-Windows.zip) <img src="https://img.shields.io/badge/d7c3c3673fdf08968cca37a20b5ff05a7545df7edc057a5284efee8867c0539c-blue"> [<img src="https://img.shields.io/badge/Virus%20Total-blue">](https://www.virustotal.com/gui/file/d7c3c3673fdf08968cca37a20b5ff05a7545df7edc057a5284efee8867c0539c?nocache=1) 
 
-[<img src="https://img.shields.io/badge/Linux-Green">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.1.4/pyRogue-Linux.zip) <img src="https://img.shields.io/badge/1869cc6b281dd4989f1b01b910639b64e20d593e93272ae1e92bafedbe296c25-Green"> [<img src="https://img.shields.io/badge/Virus%20Total-Green">](https://www.virustotal.com/gui/file/1869cc6b281dd4989f1b01b910639b64e20d593e93272ae1e92bafedbe296c25?nocache=1)
+[<img src="https://img.shields.io/badge/Linux-Green">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.1.5/pyRogue-v015-Linux.zip) <img src="https://img.shields.io/badge/4066b4b8bfe6f687c9f78cfb637b14fe9a5ec39e3758f8df75951b139f8aec84-Green"> [<img src="https://img.shields.io/badge/Virus%20Total-Green">](https://www.virustotal.com/gui/file/4066b4b8bfe6f687c9f78cfb637b14fe9a5ec39e3758f8df75951b139f8aec84?nocache=1)
 
-[<img src="https://img.shields.io/badge/Mac-silver">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.1.4/pyRogue-MacIntel.zip) <img src="https://img.shields.io/badge/955ae749b5b8aafb2791de0b701cbda4c108f348f5580f41851ec162fb78de73-silver"> [<img src="https://img.shields.io/badge/Virus%20Total-silver">](https://www.virustotal.com/gui/file/955ae749b5b8aafb2791de0b701cbda4c108f348f5580f41851ec162fb78de73?nocache=1)
+[<img src="https://img.shields.io/badge/Mac-silver">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.1.5/pyRogue-v-015-MacIntel.zip) <img src="https://img.shields.io/badge/1ee0216cced15a5d86e38ef347c007641eb8aaa9405b7b2adbce8cb29cc4119e-silver"> [<img src="https://img.shields.io/badge/Virus%20Total-silver">](https://www.virustotal.com/gui/file/1ee0216cced15a5d86e38ef347c007641eb8aaa9405b7b2adbce8cb29cc4119e?nocache=1)
 
 ![Preview Image](.github/previews/main.png)
 ![Preview Image](.github/previews/tool.png)
@@ -132,6 +132,8 @@ We will not use the tool 24/7 - this means we will not see when it breaks due to
 - Display all Natures
 - Display all Nature Slot IDs
 - Save data to server via open accesible API calls
+
+- Propper logging in case you need to troubleshoot
 
 ## How to run from code
  - Install python
