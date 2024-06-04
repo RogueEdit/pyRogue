@@ -64,7 +64,7 @@ user_agents = [
     'AppleWebKit/537.36 (Windows NT 6.1; WOW64) Chrome/97.0.4692.71 Safari/537.36 OPR/83.0.4254.48',
     'DuckDuckGo/97.0.4692.71 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36'
 ]
-    
+
 header_languages = [
     'it-IT,it;q=0.8,en-US;q=0.5,en;q=0.3',
     'en-US,en;q=0.9',

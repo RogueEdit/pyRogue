@@ -2,7 +2,7 @@
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
-# Date of release: 04.06.2024 
+# Date of release: 05.06.2024 
 
 from colorama import Fore, Style, init
 from enum import Enum
@@ -57,13 +57,17 @@ class cFormatter(logging.Formatter):
             isLogging (bool, optional): Specifies whether the text is for logging. Defaults to False.
             
         Usage Example:
-            cFormatter.print(Color.INFO, 'This is a test message', isLogging=True)
-            If you use it on a color that is related to logging such as
-                CRITICAL DEBUG ERROR WARNING INFO it will leave more accurate information.
+            CRITICAL DEBUG ERROR WARNING INFO it will leave more accurate information will log as those category when set as color.
+            cFormatter.print(Color.INFO, 'This is a info message # also logged to file and console', isLogging=True)
+            cFormatter.print(Color.DEBUG, 'This is a debug message logging as debug', isLogging=True)
+            cFormatter.print(Color.CYAN, 'This is a testmessage')
+            cFormatter.print_separators(10, '-', Color.GREEN) # Also can create separators
             
-        Example Output:
-            [LIGHTYELLOW_EX]This is a test message[RESET]
-            -> Will also output to logfile.
+        Example Outputs:
+            [LIGHTYELLOW_EX]This is a info message # also logged to file and console[RESET]
+            [YELLOW]This is a info message # also logged to file and console[RESET]
+            [CYAN]This is a testmessage[RESET] # isLogging is optional
+            [GREEN]----------[RESET]
         """
         logger = logging.getLogger('root')
         if isLogging:

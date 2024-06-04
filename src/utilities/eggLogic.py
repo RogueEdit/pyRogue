@@ -2,7 +2,7 @@
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/ https://github.com/M6D6M6A/
-# Date of release: 04.06.2024 
+# Date of release: 05.06.2024 
 
 import random
 import time
@@ -16,7 +16,6 @@ GACHA_TYPES = ['MOVE', 'LEGENDARY', 'SHINY']
 
 # List of possible egg tiers
 EGG_TIERS = ['COMMON', 'RARE', 'EPIC', 'LEGENDARY', 'MANAPHY']
-
 
 def get_id_bounds(tier: int) -> tuple:
     """
@@ -32,7 +31,6 @@ def get_id_bounds(tier: int) -> tuple:
     start = tier * EGG_MULTIPLIER
     end = (tier + 1) * EGG_MULTIPLIER - 1
     return start or 255, end
-
 
 def get_random_id(start: int, end: int, manaphy: bool = False) -> int:
     """
@@ -58,7 +56,6 @@ def get_random_id(start: int, end: int, manaphy: bool = False) -> int:
         # Ensure the ID is positive
         result = result if result > 0 else 1
         return result
-
 
 def generate_eggs(tier: str, g_type: str, hatch_waves: int, num_eggs: int) -> List[dict]:
     """

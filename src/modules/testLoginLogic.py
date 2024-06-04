@@ -1,3 +1,9 @@
+# Authors
+# Organization: https://github.com/rogueEdit/
+# Repository: https://github.com/rogueEdit/OnlineRogueEditor
+# Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
+# Date of release: 05.06.2024 
+
 import unittest
 from loginLogic import loginLogic
 

@@ -2,7 +2,7 @@
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
-# Date of release: 04.06.2024 
+# Date of release: 05.06.2024 
 
 from utilities.cFormatter import cFormatter, Color
 import json

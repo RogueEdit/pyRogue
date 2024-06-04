@@ -2,8 +2,7 @@
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
-# Date of release: 04.06.2024 
-
+# Date of release: 05.06.2024 
 
 import requests
 import json
@@ -99,6 +98,7 @@ class Rogue:
             cFormatter.print(Color.WARNING, 'Response 400 - Something went wrong.', isLogging=True)
         elif response.status_code == 200:
             cFormatter.print(Color.BRIGHT_GREEN, 'Response 200 - That seemed to have worked!', isLogging=True)
+            cFormatter.print(Color.BRIGHT_GREEN, 'If it doesnt apply ingame refresh without Cache or try a private tab!', isLogging=True)
         else:
             cFormatter.print(Color.CRITICAL, 'Unexpected response receiver from the server.', isLogging=True)
 
@@ -1337,10 +1337,18 @@ class Rogue:
             cFormatter.print(Color.CRITICAL, f'Error in function edit_hatchwaves(): {e}', isLogging=True)
     
     def print_help(self) -> None:
+        """
+        Print helpful information for the user.
+
+        This method prints various helpful messages for the user, including information
+        about manual JSON editing, assistance through the program's GitHub page, release
+        version details, and cautions about account safety and program authenticity.
+        """
         cFormatter.print(Color.INFO, 'You can always edit your json manually aswell.')
         cFormatter.print(Color.INFO, 'If you need assistance please refer to the programs GitHub page.')
         cFormatter.print(Color.INFO, 'https://github.com/RogueEdit/onlineRogueEditor/.')
-        cFormatter.print(Color.INFO, 'This is release version v0.1.4 - please include that in your issue or question report.')
+        cFormatter.print(Color.INFO, 'This is release version v0.1.5 - please include that in your issue or question report.')
+        cFormatter.print(Color.INFO, 'This version now also features a log file.')
         cFormatter.print(Color.INFO, 'We do not take responsibility if your accounts get flagged or banned, and')
         cFormatter.print(Color.INFO, 'you never know if there is a clone from this programm. If you are not sure please')
         cFormatter.print(Color.INFO, 'calculate the checksum of this binary and visit https://github.com/RogueEdit/onlineRogueEditor/')
