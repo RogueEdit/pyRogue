@@ -54,6 +54,9 @@ jobs:
           python3 -m pip install --upgrade pip
           pip install pyinstaller -r src/requirements.txt
           pyinstaller .github/CIBuildFIles/buildLinux.spec
+          sudo apt-get update
+          sudo apt-get install make
+          make -f .github/CIBuildFiles/android-makefile build
 
       - name: Upload Artifacts (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
