@@ -27,11 +27,24 @@
         "iPad": "iOS",
         "Windows Phone": "Windows Phone"
     },
+    "sec_ch_ua_values": [
+        "\"Google Chrome\";v=\"93\", \"Chromium\";v=\"93\", \"Not.A/Brand\";v=\"99\"",
+        "\"Microsoft Edge\";v=\"93\", \"Chromium\";v=\"93\", \"Not.A/Brand\";v=\"99\"",
+        "\"Firefox\";v=\"89\", \"Not.A/Brand\";v=\"99\", \"Chromium\";v=\"89\"",
+        "\"Safari\";v=\"14\", \"Not.A/Brand\";v=\"99\", \"Chromium\";v=\"93\""
+    ],
     "static_headers": {
         "Accept": "application/x-www-form-urlencoded",
         "Content-Type": "application/x-www-form-urlencoded",
-        "Referer": "https://github.com/pagefaultgames/pokerogue",
-        "Sec-Ch-Ua": "\"Google Chrome\";v=\"93\", \"Chromium\";v=\"93\", \"Not.A/Brand\";v=\"99\"",
-        "Sec-Ch-Ua-Mobile": "?0"
+        "Referer": "https://pokerogue.net/",
+        "Sec-Ch-Ua-Mobile": "?0",
+        "Origin": "https://pokerogue.net/",
+        "Sec-Fetch-Site": "same-origin",
+        "Sec-Fetch-Mode": "navigate",
+        "Sec-Fetch-User": "?1",
+        "Sec-Fetch-Dest": "document",
+        "Upgrade-Insecure-Requests": "1",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Accept-Language": "en-US,en;q=0.9"
     }
 }

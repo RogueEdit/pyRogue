@@ -9,7 +9,7 @@ import requests
 import os
 import random
 from colorama import init
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from utilities.limiter import Limiter
 from utilities.cFormatter import cFormatter, Color
@@ -82,12 +82,12 @@ class HeaderGenerator:
     extra_file_path = './data/extra.json'
 
     @classmethod
-    def load_headers(cls) -> Dict[str, str]:
+    def load_headers(cls, auth_token: Optional[str] = None) -> Dict[str, str]:
         if os.path.exists(cls.headerfile_public):
             with open(cls.headerfile_public, 'r') as f:
                 headers = json.load(f)
                 cls.set_attributes(headers)
-                return cls.generate_headers()
+                return cls.generate_headers(auth_token)
         else:
             response = requests.get(cls.git_url)
             if response.status_code == 200:
@@ -95,7 +95,7 @@ class HeaderGenerator:
                 with open(cls.headerfile_public, 'w') as f:
                     json.dump(headers_response, f, indent=4)
                 cls.set_attributes(headers_response)
-                return cls.generate_headers()
+                return cls.generate_headers(auth_token)
         return {}
 
     @classmethod
@@ -104,6 +104,7 @@ class HeaderGenerator:
         cls.browsers = headers.get('browsers', [])
         cls.static_headers = headers.get('static_headers', {})
         cls.platforms = headers.get('platforms', {})
+        cls.sec_ch_ua_values = headers.get('sec_ch_ua_values', [])
 
     @classmethod
     def save_headers(cls, headers: Dict[str, str]) -> None:
@@ -123,15 +124,17 @@ class HeaderGenerator:
         os = random.choice(cls.operating_systems[device])
         browser = random.choice(cls.browsers)
         user_agent = cls.generate_user_agent(os, browser)
+        sec_ch_ua = random.choice(cls.sec_ch_ua_values) if cls.sec_ch_ua_values else ""
 
         headers = cls.static_headers.copy()
         headers.update({
             'User-Agent': user_agent,
+            'Sec-Ch-Ua': sec_ch_ua,
             'Sec-Ch-Ua-Platform': cls.platforms.get(device, ''),
         })
 
         if auth_token:
-            headers['Authorization'] = auth_token
+            headers['Authorization'] = f'Bearer {auth_token}'
 
         return headers
 
@@ -239,11 +242,12 @@ class loginLogic:
             # Load headers, utilizing the saved header file if it exists
             headers = HeaderGenerator.load_headers()
             
-            #faking 403
-            #headers = {'Authorization': 'Bearer invalid_token'}
+            # Faking 403
+            # headers = {'Authorization': 'Bearer invalid_token'}
 
             if not headers:
                 headers = HeaderGenerator.generate_headers()
+
             # Make the POST request with the generated headers
             response = self.session.post(self.LOGIN_URL, headers=headers, data=data)
             cFormatter.print(Color.CYAN, f'Response URL: {response.request.url}', isLogging=True)
@@ -254,9 +258,9 @@ class loginLogic:
             login_response = response.json()
             self.token = login_response.get('token')
             cFormatter.print_separators(30, '-')
-            cFormatter.print(Color.GREEN, f'Login successful.')
             if self.token:
                 cFormatter.print(Color.CYAN, f'Token: {self.token}')
+            cFormatter.print(Color.GREEN, f'Login successful.')
 
             status_code_color = Color.BRIGHT_GREEN if response.status_code == 200 else Color.BRIGHT_RED
             cFormatter.print(status_code_color, f'HTTP Status Code: {response.status_code}', isLogging=True)
