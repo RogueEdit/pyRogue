@@ -9,7 +9,7 @@ import requests
 import os
 import random
 from colorama import init
-from typing import List, Dict, Optional
+from typing import List, Dict
 
 from utilities.limiter import Limiter
 from utilities.cFormatter import cFormatter, Color
@@ -39,6 +39,7 @@ def handle_error_response(response: requests.Response) -> dict:
         cFormatter.print(Color.BRIGHT_RED, 'Response 401 - Unauthorized: Authentication is required and has failed or has not yet been provided.', isLogging=True)
     elif response.status_code == 403:
         HeaderGenerator.handle_dynamic_header_data()
+        cFormatter.print(Color.CRITICAL, 'Response 403 - Forbidden: The client does not have access rights to the content.', isLogging=True)
     elif response.status_code == 404:
         cFormatter.print(Color.BRIGHT_RED, 'Response 404 - Not Found: The server can not find the requested resource.', isLogging=True)
     elif response.status_code == 405:
@@ -76,68 +77,56 @@ def handle_error_response(response: requests.Response) -> dict:
 
 class HeaderGenerator:
     retry_count = 0
-    headerfile = './data/headerfile-save.json'
+    headerfile_save = './data/headerfile-save.json'
     headerfile_public = './data/headerfile-public.json'
-    git_url = 'https://raw.githubusercontent.com/RogueEdit/onlineRogueEditor/headerfile/headerfile-public.json'
     extra_file_path = './data/extra.json'
 
     @classmethod
-    def load_headers(cls, auth_token: Optional[str] = None) -> Dict[str, str]:
-        if os.path.exists(cls.headerfile_public):
-            with open(cls.headerfile_public, 'r') as f:
-                headers = json.load(f)
-                cls.set_attributes(headers)
-                return cls.generate_headers(auth_token)
-        else:
-            response = requests.get(cls.git_url)
-            if response.status_code == 200:
-                headers_response = response.json()
-                with open(cls.headerfile_public, 'w') as f:
-                    json.dump(headers_response, f, indent=4)
-                cls.set_attributes(headers_response)
-                return cls.generate_headers(auth_token)
+    def set_attributes(cls, headers: Dict[str, list]) -> None:
+        cls.user_agents = headers.get('user_agents', [])
+        cls.static_headers = headers.get('static_headers', {})
+
+    @classmethod
+    def load_headers(cls) -> Dict[str, str]:
+        if os.path.exists(cls.headerfile_save):
+            try:
+                with open(cls.headerfile_save, 'r') as f:
+                    headers = json.load(f)
+                    cls.set_attributes(headers)
+                    return headers
+            except Exception as e:
+                print(f"Error loading headers from {cls.headerfile_save}: {e}")
         return {}
 
     @classmethod
-    def set_attributes(cls, headers: Dict[str, list]) -> None:
-        cls.operating_systems = headers.get('operating_systems', {})
-        cls.browsers = headers.get('browsers', [])
-        cls.static_headers = headers.get('static_headers', {})
-        cls.platforms = headers.get('platforms', {})
-        cls.sec_ch_ua_values = headers.get('sec_ch_ua_values', [])
-
-    @classmethod
     def save_headers(cls, headers: Dict[str, str]) -> None:
-        with open(cls.headerfile, 'w') as f:
+        with open(cls.headerfile_save, 'w') as f:
             json.dump(headers, f, indent=4)
 
     @classmethod
-    def generate_user_agent(cls, os: str, browser: str) -> str:
-        return f"Mozilla/5.0 ({os}) AppleWebKit/537.36 (KHTML, like Gecko) {browser}/88.0.4324.150 Safari/537.36"
-
-    @classmethod
     def generate_headers(cls, auth_token: str = None) -> Dict[str, str]:
-        if not hasattr(cls, 'operating_systems'):
-            cls.load_headers()
+        # Check if the headerfile_save already exists
+        if os.path.exists(cls.headerfile_save):
+            return cls.load_headers()
 
-        device = random.choice(list(cls.operating_systems.keys()))
-        os = random.choice(cls.operating_systems[device])
-        browser = random.choice(cls.browsers)
-        user_agent = cls.generate_user_agent(os, browser)
-        sec_ch_ua = random.choice(cls.sec_ch_ua_values) if cls.sec_ch_ua_values else ""
+        # Load user agents from the public header file if not already loaded
+        if not hasattr(cls, 'user_agents') or not cls.user_agents:
+            with open(cls.headerfile_public, 'r') as f:
+                public_headers = json.load(f)
+                cls.set_attributes(public_headers)
+                if not cls.user_agents:
+                    raise ValueError("User agents are not loaded and are required for header generation.")
 
         headers = cls.static_headers.copy()
-        headers.update({
-            'User-Agent': user_agent,
-            'Sec-Ch-Ua': sec_ch_ua,
-            'Sec-Ch-Ua-Platform': cls.platforms.get(device, ''),
-        })
+        user_agent = random.choice(cls.user_agents)
+        headers.update({'User-Agent': user_agent})
 
         if auth_token:
-            headers['Authorization'] = f'Bearer {auth_token}'
+            headers['Authorization'] = f'{auth_token}'
 
+        cls.save_headers(headers)
         return headers
-
+    
     @classmethod
     def read_403_count(cls) -> int:
         if not os.path.exists(cls.extra_file_path):
@@ -157,10 +146,9 @@ class HeaderGenerator:
                 with open(cls.extra_file_path, 'r') as f:
                     data = json.load(f)
             except json.JSONDecodeError as e:
-                print(f'DEBUG: JSONDecodeError while reading extra file: {e}')
-        
+
         data['total_403_errors'] = count
-        
+
         with open(cls.extra_file_path, 'w') as f:
             json.dump(data, f, indent=4)
 
@@ -169,66 +157,24 @@ class HeaderGenerator:
         total_403_errors = cls.read_403_count()
 
         if force_fetch or total_403_errors >= 3:
-            cls.retry_count = 3  # Set retry_count to 3 to force fetch
+            cls.retry_count = 3
 
-        cls.retry_count += 1
-
-        # Always delete the existing header file
-        if os.path.exists(cls.headerfile):
-            os.remove(cls.headerfile)
-
-        if cls.retry_count < 3:
-            cFormatter.print(Color.CRITICAL, 'Response 403 - Forbidden: The client does not have access rights to the content.', isLogging=True)
-            cFormatter.print(Color.INFO, 'Headers refetched restart the tool.', isLogging=True)
-            cFormatter.print(Color.BRIGHT_CYAN, f'Total number of 403 errors encountered: {total_403_errors}', isLogging=True)
+        while cls.retry_count < 3:
             headers = cls.generate_headers()
             cls.save_headers(headers)
-            # Write the current 403 count to extra.json
-            total_403_errors += 1  # Increment the total 403 error count
+            total_403_errors += 1
             cls.write_403_count(total_403_errors)
-        else:
-            response = requests.get(cls.git_url)
-            if response.status_code == 200:
-                try:
-                    headers_response = response.json()
-                    cls.set_attributes(headers_response)
-                    headers = cls.generate_headers()
-                    cls.save_headers(headers)
-                    cls.retry_count = 0  # Reset the counter
-                    # Reset total_403_errors count in the JSON file after fetch
-                    cls.write_403_count(0)
-                except json.JSONDecodeError as e:
-                    print(f'DEBUG: JSONDecodeError while decoding response content: {e}')
-            else:
-                print(f'DEBUG: Failed to fetch headers from remote source, status_code={response.status_code}')
+            cls.retry_count += 1
+            os.remove(cls.headerfile_save)
+            return
 
-        if force_fetch:
-            cFormatter.print(Color.BRIGHT_GREEN, 'Header data new constructed. Restart the tool.', isLogging=True)
-            cFormatter.print(Color.BRIGHT_CYAN, f'Total number of 403 errors encountered reset.', isLogging=True)
-
+        cls.write_403_count(0)
+        os.remove(cls.headerfile_save)
 
 class loginLogic:
-    """
-    A class to handle login logic for pokerogue.net API.
-
-    Attributes:
-        LOGIN_URL (str): The URL for the login endpoint.
-        username (str): The username for login.
-        password (str): The password for login.
-        token (str): The authentication token retrieved after successful login.
-        session_id (str): The session ID obtained after successful login.
-        session (requests.Session): The session object for making HTTP requests.
-    """
     LOGIN_URL = 'https://api.pokerogue.net/account/login'
 
     def __init__(self, username: str, password: str) -> None:
-        """
-        Initializes the loginLogic object.
-
-        Args:
-            username (str): The username for login.
-            password (str): The password for login.
-        """
         self.username = username
         self.password = password
         self.token = None
@@ -239,28 +185,21 @@ class loginLogic:
     def login(self) -> bool:
         data = {'username': self.username, 'password': self.password}
         try:
-            # Load headers, utilizing the saved header file if it exists
             headers = HeaderGenerator.load_headers()
-            
-            # Faking 403
-            # headers = {'Authorization': 'Bearer invalid_token'}
 
             if not headers:
                 headers = HeaderGenerator.generate_headers()
+            
 
-            # Make the POST request with the generated headers
             response = self.session.post(self.LOGIN_URL, headers=headers, data=data)
-            cFormatter.print(Color.CYAN, f'Response URL: {response.request.url}', isLogging=True)
-            cFormatter.print(Color.CYAN, f'Response Headers: {response.request.headers}', isLogging=True)
             response.raise_for_status()
 
-            # Process the response
             login_response = response.json()
             self.token = login_response.get('token')
             cFormatter.print_separators(30, '-')
+            cFormatter.print(Color.GREEN, f'Login successful.')
             if self.token:
                 cFormatter.print(Color.CYAN, f'Token: {self.token}')
-            cFormatter.print(Color.GREEN, f'Login successful.')
 
             status_code_color = Color.BRIGHT_GREEN if response.status_code == 200 else Color.BRIGHT_RED
             cFormatter.print(status_code_color, f'HTTP Status Code: {response.status_code}', isLogging=True)
@@ -272,8 +211,8 @@ class loginLogic:
             cFormatter.print(Color.CYAN, f'Response Headers: {filtered_headers}', isLogging=True)
             cFormatter.print(Color.CYAN, f'Response Body: {response.text}', isLogging=True)
             cFormatter.print_separators(30, '-')
-            
             return True
 
         except requests.RequestException as e:
             handle_error_response(response)
+            return False

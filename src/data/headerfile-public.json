@@ -1,37 +1,25 @@
 {
-    "browsers": [
-        "Chrome",
-        "Firefox",
-        "Safari",
-        "Edge",
-        "Opera",
-        "Brave",
-        "Vivaldi",
-        "UC Browser"
-    ],
-    "operating_systems": {
-        "Windows": ["Windows NT 10.0", "Windows NT 6.3", "Windows NT 6.4", "Windows NT 6.5"],
-        "Macintosh": ["Macintosh; Intel Mac OS X 11_2_3", "Macintosh; Intel Mac OS X 11_3_1", "Macintosh; Intel Mac OS X 11_4_1"],
-        "Linux": ["X11; Ubuntu; Linux x86_64", "X11; Fedora; Linux x86_64", "X11; Arch; Linux x86_64"],
-        "Android": ["Android 11; Mobile", "Android 12; Mobile", "Android 13; Mobile"],
-        "iPhone": ["iPhone; CPU iPhone OS 15_0 like Mac OS X", "iPhone; CPU iPhone OS 15_1 like Mac OS X", "iPhone; CPU iPhone OS 15_2 like Mac OS X"],
-        "iPad": ["iPad; CPU OS 15_0 like Mac OS X", "iPad; CPU OS 15_1 like Mac OS X", "iPad; CPU OS 15_2 like Mac OS X"],
-        "Windows Phone": ["Windows Phone 11.0", "Windows Phone 12.0", "Windows Phone 13.0"]
-    },
-    "platforms": {
-        "Windows": "Windows",
-        "Macintosh": "macOS",
-        "Linux": "Linux",
-        "Android": "Android",
-        "iPhone": "iOS",
-        "iPad": "iOS",
-        "Windows Phone": "Windows Phone"
-    },
-    "sec_ch_ua_values": [
-        "\"Google Chrome\";v=\"93\", \"Chromium\";v=\"93\", \"Not.A/Brand\";v=\"99\"",
-        "\"Microsoft Edge\";v=\"93\", \"Chromium\";v=\"93\", \"Not.A/Brand\";v=\"99\"",
-        "\"Firefox\";v=\"89\", \"Not.A/Brand\";v=\"99\", \"Chromium\";v=\"89\"",
-        "\"Safari\";v=\"14\", \"Not.A/Brand\";v=\"99\", \"Chromium\";v=\"93\""
+    "user_agents": [
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Firefox/89.0",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Safari/605.1.15",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edge/91.0.864.54 Safari/537.36",
+        "Mozilla/5.0 (X11; Ubuntu; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+        "Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Firefox/89.0",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.2 Safari/605.1.15",
+        "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; AS; rv:11.0) like Gecko",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1",
+        "Mozilla/5.0 (iPad; CPU OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1",
+        "Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Mobile Safari/537.36",
+        "Mozilla/5.0 (Linux; Android 10; SM-G960F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Mobile Safari/537.36",
+        "Mozilla/5.0 (Windows Phone 10.0; Android 6.0.1; HP Elite x3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Mobile Safari/537.36 Edge/40.15254.369",
+        "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:84.0) Gecko/20100101 Firefox/84.0",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Brave/91.0.4472.124 Chrome/91.0.4472.124 Safari/537.36",
+        "Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Vivaldi/4.0.2312.41 Chrome/91.0.4472.124 Safari/537.36",
+        "Mozilla/5.0 (Linux; U; Android 9; en-US; SM-J600G Build/PPR1.180610.011) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Mobile Safari/537.36"
     ],
     "static_headers": {
         "Accept": "application/x-www-form-urlencoded",
