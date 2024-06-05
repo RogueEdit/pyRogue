@@ -423,8 +423,8 @@ class Rogue:
 
             choice = int(input('Do you want to unlock all forms of the pokemon? (All forms are Tier 3 shinies. 1: Yes | 2: No): '))
             if (choice < 1) or (choice > 2):
-                cFormatter.print(Color.INFO, f'No pokemon with ID: {dexId}')
-                return
+                cFormatter.print(Color.INFO, f'Incorrect command. Setting to NO')
+                choice = 2
             elif choice == 1:
                 caught_attr = self.__MAX_BIG_INT
             else:
@@ -432,7 +432,7 @@ class Rogue:
 
                 if (choice < 1) or (choice > 2):
                     cFormatter.print(Color.INFO, 'Invalid choice. Setting to NO')
-                    choice
+                    choice = 2
                 elif choice == 2:
                     caught_attr = 253
                 else:
@@ -500,7 +500,7 @@ class Rogue:
 
                 trainer_data['dexData'][entry] = {
                     'seenAttr': 479,
-                    'caughtAttr': self.__MAX_BIG_INT if choice == 1 else shiny,
+                    'caughtAttr': self.__MAX_BIG_INT if choice == 1 else caught_attr,
                     'natureAttr': self.nature_data.UNLOCK_ALL.value if nature == 1 else None,
                     'seenCount': seen,
                     'caughtCount': caught,
@@ -1360,3 +1360,25 @@ class Rogue:
         cFormatter.print(Color.INFO, 'you never know if there is a clone from this programm. If you are not sure please')
         cFormatter.print(Color.INFO, 'calculate the checksum of this binary and visit https://github.com/RogueEdit/onlineRogueEditor/')
         cFormatter.print(Color.INFO, 'to see the value it should have to know its original from source.')
+    
+    def refetch_headers(self) -> None:
+        file_path = './logs/headerfile-save'
+        file_path_public = './logs/headerfile-public'
+        git_url = 'https://raw.githubusercontent.com/RogueEdit/.github/main/headergen-data'
+
+        os.remove(file_path)
+        os.remove(file_path_public)
+        
+        response = requests.get(git_url)
+
+        if response.status_code == 200:
+            headers_response = response.text
+
+            with open(file_path_public, 'w') as f:
+                headers = f.write(headers_response)
+            
+            with open(file_path, 'w') as f:
+                headers = f.write(headers_response)
+        
+        cFormatter.print(Color.INFO, 'Headers refetched restart the tool.')
+            
