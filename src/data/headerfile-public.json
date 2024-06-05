@@ -1,0 +1,30 @@
+{
+    "browsers": [
+        "Chrome",
+        "Firefox",
+        "Safari",
+        "Edge",
+        "Opera"
+    ],
+    "operating_systems": {
+        "Windows": ["Windows NT 10.0", "Windows NT 6.1"],
+        "Macintosh": ["Macintosh; Intel Mac OS X 10_15_7"],
+        "Linux": ["X11; Linux x86_64"],
+        "Android": ["Android 10; Mobile", "Android 9; Mobile"],
+        "iPhone": ["iPhone; CPU iPhone OS 14_0 like Mac OS X", "iPhone; CPU iPhone OS 13_0 like Mac OS X"]
+    },
+    "platforms": {
+        "Windows": "Windows",
+        "Macintosh": "macOS",
+        "Linux": "Linux",
+        "Android": "Android",
+        "iPhone": "iOS"
+    },
+    "static_headers": {
+        "Accept": "application/x-www-form-urlencoded",
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Referer": "https://pokerogue.net/",
+        "Sec-Ch-Ua": "\"Google Chrome\";v=\"125\", \"Chromium\";v=\"125\", \"Not.A/Brand\";v=\"24\"",
+        "Sec-Ch-Ua-Mobile": "?0"
+    }
+}

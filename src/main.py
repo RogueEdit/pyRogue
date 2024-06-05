@@ -66,10 +66,8 @@ if __name__ == '__main__':
                 rogue = Rogue(session, login.token, login.session_id)
                 
                 break
-            else:
-                cFormatter.print(Color.INFO, 'Wrong credentials.', isLogging=True)
         except Exception as e:
-            cFormatter.print(Color.GREEN, f'Something went wrong. {e}', isLogging=True)
+            cFormatter.print(Color.CRITICAL, f'Something went wrong. {e}', isLogging=True)
             
     func = {
         '1': rogue.get_trainer_data,
@@ -99,8 +97,7 @@ if __name__ == '__main__':
         '25': rogue.print_natureSlot,
         '26': rogue.update_all,
         '27': rogue.print_help,
-        '28': HeaderGenerator.handle_dynamic_header_data(),
-        '29': HeaderGenerator.handle_dynamic_header_data(force_fetch=True)
+        '28': HeaderGenerator.handle_dynamic_header_data
     }
 
     title = '************************ PyRogue *************************'
@@ -143,8 +140,7 @@ if __name__ == '__main__':
         Fore.LIGHTYELLOW_EX + Style.BRIGHT + '-- You can always edit your trainer.json also yourself! --' + Style.RESET_ALL,
         f'26: >> Save data and upload to the Server{" " * 2}' + Fore.LIGHTYELLOW_EX + Style.BRIGHT +'(Use when done)' + Style.RESET_ALL,
         f'27: >> Print help and program information{" " * 17}',
-        f'28: >> Getting errors? Regenerate some data{" " * 17}{formatted_header}',
-        f'29: >> Errors persisting? Refetch dynamic data{" "* 17}{formatted_header}'
+        f'28: >> Getting errors? Regenerate some data{" " * 1}{formatted_header}',
         f'{formatted_title}',
     ]
 
