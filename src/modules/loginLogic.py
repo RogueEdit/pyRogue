@@ -13,7 +13,7 @@ from typing import List, Dict
 
 from utilities.limiter import Limiter
 from utilities.cFormatter import cFormatter, Color
-limiter = Limiter(lockout_period=60, timestamp_file='./data/extra.json')
+limiter = Limiter(lockout_period=10, timestamp_file='./data/extra.json')
 init()
 
 def handle_error_response(response: requests.Response) -> dict:
@@ -40,8 +40,6 @@ def handle_error_response(response: requests.Response) -> dict:
     elif response.status_code == 403:
         HeaderGenerator.handle_dynamic_header_data()
         cFormatter.print(Color.CRITICAL, 'Response 403 - Forbidden: The client does not have access rights to the content.', isLogging=True)
-        cFormatter.print(Color.INFO, 'If this errors keeps popping up, try it a total of 3 times. Then it will refetch new access data from GitHub.')
-        cFormatter.print(Color.INFO, 'https://github.com/RogueEdit/.github/blob/main/headergen-data will be then fetched and rebuild.')
     elif response.status_code == 404:
         cFormatter.print(Color.BRIGHT_RED, 'Response 404 - Not Found: The server can not find the requested resource.', isLogging=True)
     elif response.status_code == 405:
@@ -78,30 +76,14 @@ def handle_error_response(response: requests.Response) -> dict:
         cFormatter.print(Color.CRITICAL, 'Unexpected response received from the server.', isLogging=True)
 
 class HeaderGenerator:
-    """
-    A class to generate and manage HTTP headers for making requests to the pokerogue.net API.
-
-    Attributes:
-        retry_count (int): The number of times the header generation has been retried.
-        headerfile (str): Path to the saved header file.
-        headerfile_public (str): Path to the public header configuration file.
-        git_url (str): URL to fetch the header data from the remote source.
-        extra_file_path (str): Path to the file storing additional data, such as the number of 403 errors.
-    """
     retry_count = 0
     headerfile = './data/headerfile-save.json'
     headerfile_public = './data/headerfile-public.json'
-    git_url = 'https://raw.githubusercontent.com/RogueEdit/.github/main/headergen-data'
+    git_url = 'https://raw.githubusercontent.com/RogueEdit/.github/main/headerfile-public.json'
     extra_file_path = './data/extra.json'
 
     @classmethod
     def load_headers(cls) -> Dict[str, str]:
-        """
-        Loads headers from the public header file. If the file doesn't exist, fetches the data from a remote source.
-
-        Returns:
-            dict: A dictionary containing the generated headers.
-        """
         if os.path.exists(cls.headerfile_public):
             with open(cls.headerfile_public, 'r') as f:
                 headers = json.load(f)
@@ -119,12 +101,6 @@ class HeaderGenerator:
 
     @classmethod
     def set_attributes(cls, headers: Dict[str, list]) -> None:
-        """
-        Sets the class attributes based on the loaded headers.
-
-        Args:
-            headers (dict): A dictionary containing header information.
-        """
         cls.operating_systems = headers.get("operating_systems", {})
         cls.browsers = headers.get("browsers", [])
         cls.static_headers = headers.get("static_headers", {})
@@ -132,41 +108,15 @@ class HeaderGenerator:
 
     @classmethod
     def save_headers(cls, headers: Dict[str, str]) -> None:
-        """
-        Saves the generated headers to a file.
-
-        Args:
-            headers (dict): A dictionary containing the headers to save.
-        """
         with open(cls.headerfile, 'w') as f:
             json.dump(headers, f, indent=4)
 
     @classmethod
     def generate_user_agent(cls, os: str, browser: str) -> str:
-        """
-        Generates a User-Agent string based on the operating system and browser.
-
-        Args:
-            os (str): The operating system string.
-            browser (str): The browser string.
-
-        Returns:
-            str: The generated User-Agent string.
-        """
         return f"Mozilla/5.0 ({os}) AppleWebKit/537.36 (KHTML, like Gecko) {browser}/88.0.4324.150 Safari/537.36"
 
     @classmethod
     def generate_headers(cls, auth_token: str = None) -> Dict[str, str]:
-        """
-        Generates HTTP headers, including dynamic User-Agent and Sec-Ch-Ua-Platform.
-
-        Args:
-            auth_token (str, optional): An optional authentication token to include in the headers.
-
-        Returns:
-            dict: A dictionary containing the generated headers.
-        """
-        # Ensure attributes are loaded
         if not hasattr(cls, 'operating_systems'):
             cls.load_headers()
 
@@ -188,77 +138,80 @@ class HeaderGenerator:
 
     @classmethod
     def read_403_count(cls) -> int:
-        """
-        Reads the total number of 403 errors from the extra file.
-
-        Returns:
-            int: The total number of 403 errors encountered.
-        """
         if not os.path.exists(cls.extra_file_path):
+            print("DEBUG: extra.json does not exist.")
             return 0
-        with open(cls.extra_file_path, 'r') as f:
-            data = json.load(f)
-            return data.get('total_403_errors', 0)
+        try:
+            with open(cls.extra_file_path, 'r') as f:
+                data = json.load(f)
+                print(f"DEBUG: Contents of extra.json: {data}")
+                return data.get('total_403_errors', 0)
+        except json.JSONDecodeError as e:
+            print(f"DEBUG: JSONDecodeError while reading 403 count: {e}")
+            return 0
 
     @classmethod
     def write_403_count(cls, count: int) -> None:
-        """
-        Writes the total number of 403 errors to the extra file.
-
-        Args:
-            count (int): The total number of 403 errors to write.
-        """
         data = {}
         if os.path.exists(cls.extra_file_path):
-            with open(cls.extra_file_path, 'r') as f:
-                data = json.load(f)
+            try:
+                with open(cls.extra_file_path, 'r') as f:
+                    data = json.load(f)
+            except json.JSONDecodeError as e:
+                print(f"DEBUG: JSONDecodeError while reading extra file: {e}")
+        
         data['total_403_errors'] = count
+        
         with open(cls.extra_file_path, 'w') as f:
             json.dump(data, f, indent=4)
+        print(f"DEBUG: Wrote total_403_errors={count} to extra.json")  # Debug print
 
     @classmethod
     def handle_dynamic_header_data(cls, force_fetch: bool = False) -> None:
-        """
-        Handles the dynamic generation and fetching of header data. Regenerates headers if needed or fetches new header data from a remote source.
-
-        Args:
-            force_fetch (bool, optional): Forces fetching new header data from the remote source if set to True.
-        """
         total_403_errors = cls.read_403_count()
+        print(f"DEBUG: total_403_errors={total_403_errors}")
 
         if force_fetch or total_403_errors >= 3:
             cls.retry_count = 3  # Set retry_count to 3 to force fetch
 
         cls.retry_count += 1
+        print(f"DEBUG: retry_count={cls.retry_count}")
 
         # Always delete the existing header file
         if os.path.exists(cls.headerfile):
             os.remove(cls.headerfile)
+            print("DEBUG: Removed headerfile")
 
         if cls.retry_count < 3:
             headers = cls.generate_headers()
             cls.save_headers(headers)
-            cFormatter.print(Color.INFO, 'Headers regenerated and saved.', isLogging=True)
-            cFormatter.print(Color.INFO, f'If the errors persist, please retry {3 - cls.retry_count} more times.', isLogging=True)
+            print("DEBUG: Headers regenerated and saved.")
+            
+            # Write the current 403 count to extra.json
+            total_403_errors += 1  # Increment the total 403 error count
+            cls.write_403_count(total_403_errors)
         else:
             response = requests.get(cls.git_url)
             if response.status_code == 200:
-                headers_response = response.json()
-                cls.set_attributes(headers_response)
-                headers = cls.generate_headers()
-                cls.save_headers(headers)
-                cFormatter.print(Color.WARNING, 'Fetched new header data from remote source.', isLogging=True)
-            cls.retry_count = 0  # Reset the counter
-            total_403_errors += 1  # Increment the total 403 error count
-            cls.write_403_count(total_403_errors)
+                try:
+                    headers_response = response.json()
+                    cls.set_attributes(headers_response)
+                    headers = cls.generate_headers()
+                    cls.save_headers(headers)
+                    print("DEBUG: Fetched new header data from remote source.")
+                    cls.retry_count = 0  # Reset the counter
+                    # Reset total_403_errors count in the JSON file after fetch
+                    cls.write_403_count(0)
+                except json.JSONDecodeError as e:
+                    print(f"DEBUG: JSONDecodeError while decoding response content: {e}")
+            else:
+                print(f"DEBUG: Failed to fetch headers from remote source, status_code={response.status_code}")
 
-        if not force_fetch:
-            cFormatter.print(Color.INFO, 'Headers refetched restart the tool.')
-            cFormatter.print(Color.INFO, f'Total number of 403 errors encountered: {total_403_errors}', isLogging=True)
+        if force_fetch:
+            print("DEBUG: Headers refetched restart the tool.")
+            print(f"DEBUG: Total number of 403 errors encountered: {total_403_errors}")
 
-        # Reset total_403_errors in the JSON file after 3 retries or force fetch
-        if cls.retry_count == 0 or total_403_errors >= 3:
-            cls.write_403_count(0)
+        print(f"DEBUG: Exiting handle_dynamic_header_data with total_403_errors={total_403_errors}")
 
 class loginLogic:
     """
