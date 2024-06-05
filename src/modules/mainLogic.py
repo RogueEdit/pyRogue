@@ -27,8 +27,11 @@ from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 
 from utilities.eggLogic import *
+
 logger = logging.getLogger(__name__)
 logging.basicConfig(level = logging.INFO)
+
+from modules.loginLogic import HeaderGenerator
 
 class Rogue:
     """
@@ -62,15 +65,14 @@ class Rogue:
         self.clientSessionId = clientSessionId
         self.slot = None
         self.headers = None
-        self.user_agents = user_agents
-        self.header_languages = header_languages
-        self._setup_headers()
+        self.headers = HeaderGenerator.generate_headers(self.auth_token)
 
+        # json generators
         self.generator = Generator()
         self.generator.generate()
-
         self.enum = EnumLoader()
         
+        # wordcomplete
         self.pokemon_id_by_name, self.biomes_by_id, self.moves_by_id, self.nature_data, self.vouchers_data, self.natureSlot_data = self.enum.convert_to_enums()
 
         try:

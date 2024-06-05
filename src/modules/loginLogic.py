@@ -13,9 +13,75 @@ from colorama import init, Fore, Style
 import brotli
 =======
 from colorama import init
+<<<<<<< HEAD
 >>>>>>> fc832e9 (giga refactoring nearing an end)
+=======
+from typing import List, Dict
+>>>>>>> f8d0f9c (header fix)
 
 init()
+
+class HeaderGenerator:
+    """
+    A class to generate randomized but valid HTTP headers with User-Agent strings.
+    The class maintains lists of different components used to construct User-Agent strings and headers.
+    """
+
+    browsers: List[str] = [
+        'Chrome', 'Firefox', 'Safari', 'Edge', 'Opera'
+    ]
+
+    operating_systems: Dict[str, List[str]] = {
+        'Windows': ['Windows NT 10.0', 'Windows NT 6.1'],
+        'Macintosh': ['Macintosh; Intel Mac OS X 10_15_7'],
+        'Linux': ['X11; Linux x86_64'],
+        'Android': ['Android 10; Mobile', 'Android 9; Mobile'],
+        'iPhone': ['iPhone; CPU iPhone OS 14_0 like Mac OS X', 'iPhone; CPU iPhone OS 13_0 like Mac OS X']
+    }
+
+    platforms: Dict[str, str] = {
+        'Windows': 'Windows',
+        'Macintosh': 'macOS',
+        'Linux': 'Linux',
+        'Android': 'Android',
+        'iPhone': 'iOS'
+    }
+
+    static_headers: Dict[str, str] = {
+        "Accept": "application/x-www-form-urlencoded",
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Referer": "https://pokerogue.net/",
+        "Sec-Ch-Ua": '"Google Chrome";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
+        "Sec-Ch-Ua-Mobile": "?0",
+    }
+
+    @classmethod
+    def generate_user_agent(cls, os: str, browser: str) -> str:
+        """
+        Generate a User-Agent string based on the given operating system and browser.
+        """
+        return f"Mozilla/5.0 ({os}) AppleWebKit/537.36 (KHTML, like Gecko) {browser}/88.0.4324.150 Safari/537.36"
+
+    @classmethod
+    def generate_headers(cls, auth_token: str = None) -> Dict[str, str]:
+        """
+        Generate randomized but valid HTTP headers including a User-Agent string.
+        """
+        device = random.choice(list(cls.operating_systems.keys()))
+        os = random.choice(cls.operating_systems[device])
+        browser = random.choice(cls.browsers)
+        user_agent = cls.generate_user_agent(os, browser)
+
+        headers = cls.static_headers.copy()
+        headers.update({
+            "User-Agent": user_agent,
+            "Sec-Ch-Ua-Platform": cls.platforms[device],
+        })
+
+        if auth_token:
+            headers["Authorization"] = auth_token
+
+        return headers
 
 class loginLogic:
     """
@@ -45,26 +111,6 @@ class loginLogic:
         self.session_id = None
         self.session = requests.Session()
 
-    def _generate_headers(self) -> dict:
-        """
-        Generates HTTP headers for requests.
-
-        Returns:
-            dict: A dictionary containing HTTP headers.
-        """
-        headers = {
-            'User-Agent': random.choice(user_agents),
-            'Accept': 'application/x-www-form-urlencoded',
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Accept-Language': random.choice(header_languages),
-            'Accept-Encoding': 'gzip, deflate, br, zstd',
-            'Referer': 'https://pokerogue.net/',
-            'content-encoding': 'br',
-            'Origin': 'https://pokerogue.net/',
-            'Connection': 'keep-alive',
-            'Sec-Fetch-Dest': 'empty'
-        }
-        return headers
 
     def login(self) -> bool:
         """
@@ -75,7 +121,7 @@ class loginLogic:
         """
         data = {'username': self.username, 'password': self.password}
         try:
-            headers = self._generate_headers()
+            headers = HeaderGenerator.generate_headers()
             response = self.session.post(self.LOGIN_URL, headers=headers, data=data)
             response.raise_for_status()
             login_response = response.json()
