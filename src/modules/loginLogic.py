@@ -81,11 +81,11 @@ class loginLogic:
                 cFormatter.print(Color.CYAN, f'Token: {self.token}')
             status_code_color = Color.BRIGHT_GREEN if response.status_code == 200 else Color.BRIGHT_RED
             cFormatter.print(status_code_color, f'HTTP Status Code: {response.status_code}', isLogging=True)
-            cFormatter.print(Color.CYAN, f'Response URL: {response.request.url}')
-            cFormatter.print(Color.CYAN, f'Response Headers: {response.request.headers}')
+            cFormatter.print(Color.CYAN, f'Response URL: {response.request.url}', isLogging=True)
+            cFormatter.print(Color.CYAN, f'Response Headers: {response.request.headers}', isLogging=True)
             filtered_headers = {key: value for key, value in response.headers.items() if key != 'Report-To'}
             cFormatter.print(Color.CYAN, f'Response Headers: {filtered_headers}')
-            cFormatter.print(Color.CYAN, f'Response Body: {response.text}')
+            cFormatter.print(Color.CYAN, f'Response Body: {response.text}', isLogging=True)
             cFormatter.print_separators(30, '-')
             return True
         except requests.RequestException as e:

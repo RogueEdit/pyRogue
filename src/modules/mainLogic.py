@@ -1268,7 +1268,7 @@ class Rogue:
 
             trainer_data['gameStats'] = {
                 'battles': total_caught + random.randint(1, total_caught),
-                'classicSessionsPlayed': random.randint(2500, 10000) // 10,
+                'classicSessionsPlayed': random.randint(2500, 10000),
                 'dailyRunSessionsPlayed': random.randint(2500, 10000),
                 'dailyRunSessionsWon': random.randint(50, 150),
                 'eggsPulled': random.randint(100, 300),
@@ -1278,7 +1278,7 @@ class Rogue:
                 'highestEndlessWave': random.randint(300, 1000),
                 'highestHeal': random.randint(10000, 12000),
                 'highestLevel': random.randint(3000, 8000),
-                'highestMoney': random.randint(1000000, 100000000),
+                'highestMoney': random.randint(1000000, 10000000),
                 'legendaryEggsPulled': random.randint(10, 50),
                 'legendaryPokemonCaught': random.randint(25, 100),
                 'legendaryPokemonHatched': random.randint(25, 100),
@@ -1294,8 +1294,8 @@ class Rogue:
                 'pokemonHatched': random.randint(2500, 10000),
                 'pokemonSeen': total_seen,
                 'rareEggsPulled': random.randint(150, 250),
-                'ribbonsOwned': total_seen,
-                'sessionsWon': random.randint(250, 1000),
+                'ribbonsOwned': random.randint(600, 1000),
+                'sessionsWon': random.randint(50, 100),
                 'shinyPokemonCaught': len(list(trainer_data['dexData'])) * 2,
                 'shinyPokemonHatched': random.randint(70, 150),
                 'shinyPokemonSeen': random.randint(50, 150),
