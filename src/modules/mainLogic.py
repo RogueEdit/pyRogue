@@ -86,7 +86,7 @@ class Rogue:
         
         self.__dump_data()
 
-    def __handle_error_response(self, response: requests.Response) -> dict:
+    def handle_error_response(self, response: requests.Response) -> dict:
         """
         Handle error responses from the server.
 
@@ -95,30 +95,57 @@ class Rogue:
 
         Returns:
             dict: Empty dictionary.
-        """
-        if response.status_code == 400:
-            cFormatter.print(Color.WARNING, 'Response 400 - Something went wrong.', isLogging=True)
-        elif response.status_code == 200:
-            cFormatter.print(Color.BRIGHT_GREEN, 'Response 200 - That seemed to have worked!', isLogging=True)
-            cFormatter.print(Color.BRIGHT_GREEN, 'If it doesnt apply ingame refresh without Cache or try a private tab!', isLogging=True)
-        else:
-            cFormatter.print(Color.CRITICAL, 'Unexpected response receiver from the server.', isLogging=True)
 
-    def _setup_headers(self) -> None:
-        # Setup authorized headers, switching all data aswell to be more random
-        self.headers = {
-            'Authorization': self.auth_token,
-            'User-Agent': random.choice(self.user_agents),
-            'Accept': 'application/x-www-form-urlencoded',
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Accept-Language': random.choice(self.header_languages),
-            'Accept-Encoding': 'gzip, deflate, br, zstd',
-            'Referer': 'https://pokerogue.net/',
-            'content-encoding': 'br',
-            'Origin': 'https://pokerogue.net/',
-            'Connection': 'keep-alive',
-            'Sec-Fetch-Dest': 'empty'
-        }
+        This method handles various HTTP response status codes and prints corresponding
+        messages using the cFormatter class. It covers common client and server error
+        codes, information from cloudflare docs.
+        """
+        if response.status_code == 200:
+            cFormatter.print(Color.BRIGHT_GREEN, 'Response 200 - That seemed to have worked!', isLogging=True)
+            cFormatter.print(Color.BRIGHT_GREEN, 'If it doesn\'t apply in-game, refresh without cache or try a private tab!', isLogging=True)
+        elif response.status_code == 400:
+            cFormatter.print(Color.WARNING, 'Response 400 - Bad Request: The server could not understand the request due to invalid syntax. This is usually related to wrong credentials.', isLogging=True)
+        elif response.status_code == 401:
+            cFormatter.print(Color.BRIGHT_RED, 'Response 401 - Unauthorized: Authentication is required and has failed or has not yet been provided.', isLogging=True)
+        elif response.status_code == 403:
+            HeaderGenerator.handle_dynamic_header_data()
+            cFormatter.print(Color.CRITICAL, 'Response 403 - Forbidden: The client does not have access rights to the content.', isLogging=True)
+            cFormatter.print(Color.INFO, 'If this errors keeps popping up, try it a total of 3 times. Then it will refetch new access data from GitHub.')
+            cFormatter.print(Color.INFO, 'https://github.com/RogueEdit/.github/blob/main/headergen-data will be then fetched and rebuild.')
+        elif response.status_code == 404:
+            cFormatter.print(Color.BRIGHT_RED, 'Response 404 - Not Found: The server can not find the requested resource.', isLogging=True)
+        elif response.status_code == 405:
+            cFormatter.print(Color.BRIGHT_RED, 'Response 405 - Method Not Allowed: The request method is known by the server but is not supported by the target resource.', isLogging=True)
+        elif response.status_code == 406:
+            cFormatter.print(Color.BRIGHT_RED, 'Response 406 - Not Acceptable: The server cannot produce a response matching the list of acceptable values defined in the request\'s proactive content negotiation headers.', isLogging=True)
+        elif response.status_code == 407:
+            cFormatter.print(Color.BRIGHT_RED, 'Response 407 - Proxy Authentication Required: The client must first authenticate itself with the proxy.', isLogging=True)
+        elif response.status_code == 408:
+            cFormatter.print(Color.BRIGHT_RED, 'Response 408 - Request Timeout: The server would like to shut down this unused connection.', isLogging=True)
+        elif response.status_code == 413:
+            cFormatter.print(Color.BRIGHT_RED, 'Response 413 - Payload Too Large: The request entity is larger than limits defined by server.', isLogging=True)
+        elif response.status_code == 429:
+            cFormatter.print(Color.BRIGHT_RED, 'Response 429 - Too Many Requests: The user has sent too many requests in a given amount of time ("rate limiting").', isLogging=True)
+        elif response.status_code == 500:
+            cFormatter.print(Color.CRITICAL, 'Error 500 - Internal Server Error: The server has encountered a situation it does not know how to handle.', isLogging=True)
+        elif response.status_code == 502:
+            cFormatter.print(Color.CRITICAL, 'Error 502 - Bad Gateway: The server was acting as a gateway or proxy and received an invalid response from the upstream server.', isLogging=True)
+        elif response.status_code == 503:
+            cFormatter.print(Color.CRITICAL, 'Error 503 - Service Temporarily Unavailable: The server is not ready to handle the request.', isLogging=True)
+        elif response.status_code == 504:
+            cFormatter.print(Color.CRITICAL, 'Error 504 - Gateway Timeout: The server is acting as a gateway or proxy and did not receive a timely response from the upstream server.', isLogging=True)
+        elif response.status_code == 520:
+            cFormatter.print(Color.CRITICAL, 'Error 520 - Web Server Returns an Unknown Error: The server has returned an unknown error.', isLogging=True)
+        elif response.status_code == 521:
+            cFormatter.print(Color.CRITICAL, 'Error 521 - Web Server Is Down: The server is not responding to Cloudflare requests.', isLogging=True)
+        elif response.status_code == 522:
+            cFormatter.print(Color.CRITICAL, 'Error 522 - Connection Timed Out: Cloudflare was able to complete a TCP connection to the origin server, but the origin server did not reply with an HTTP response.', isLogging=True)
+        elif response.status_code == 523:
+            cFormatter.print(Color.CRITICAL, 'Error 523 - Origin Is Unreachable: Cloudflare could not reach the origin server.', isLogging=True)
+        elif response.status_code == 524:
+            cFormatter.print(Color.CRITICAL, 'Error 524 - A Timeout Occurred: Cloudflare was able to complete a TCP connection to the origin server, but the origin server did not reply with an HTTP response.', isLogging=True)
+        else:
+            cFormatter.print(Color.CRITICAL, 'Unexpected response received from the server.', isLogging=True)
 
     def __dump_data(self, slot: int = 1) -> None:
         """
@@ -166,7 +193,7 @@ class Rogue:
                 cFormatter.print(Color.GREEN, 'Succesfully fetched data.')
                 return response.json()
             else:
-                return self.__handle_error_response(response)
+                return self.handle_error_response(response)
 
         except requests.RequestException as e:
             cFormatter.print(Color.DEBUG, f'Error fetching trainer data. Please restart the tool. \n {e}', isLogging=True)
@@ -180,7 +207,7 @@ class Rogue:
                 cFormatter.print(Color.GREEN, 'Succesfully fetched data.')
                 return response.json()
             else:
-                return self.__handle_error_response(response)
+                return self.handle_error_response(response)
 
         except requests.RequestException as e:
             cFormatter.print(Color.CRITICAL, f'Error fetching save-slot data. Please restart the tool. \n {e}', isLogging=True)
@@ -200,10 +227,10 @@ class Rogue:
             response = self.session.post(self.UPDATE_TRAINER_DATA_URL, headers=self.headers, json=trainer_payload)
             response.raise_for_status()
             if response.content:  # Check if the response content is not empty
-                cFormatter.print(Color.GREEN, 'Succesfully updated data on the sever.')
+                cFormatter.print(Color.GREEN, 'Succesfully updated trainer data on the sever.')
                 return response.json()
             else:
-                return self.__handle_error_response(response)
+                return self.handle_error_response(response)
             
         except requests.RequestException as e:
             cFormatter.print(Color.CRITICAL, f'Error updating trainer data. Please restart the tool. \n {e}', isLogging=True)
@@ -226,9 +253,9 @@ class Rogue:
                 f'{self.UPDATE_GAMESAVE_SLOT_URL}{slot - 1}{url_ext}', headers=self.headers, json=gamedata_payload)
             response.raise_for_status()
             if response.content:  # Check if the response content is not empty
-                cFormatter.print(Color.GREEN, f'{response.json()} - That worked! Dont forget to clear your browser cache.')
+                cFormatter.print(Color.GREEN, f'Successfully updated gamesave-slot data on the server.')
             else:
-                return self.__handle_error_response(response)
+                return self.handle_error_response(response)
             
         except requests.RequestException as e:
             # This might be TypeErrors not sure since httpreponse might be invalid here
@@ -1354,31 +1381,10 @@ class Rogue:
         cFormatter.print(Color.INFO, 'You can always edit your json manually aswell.')
         cFormatter.print(Color.INFO, 'If you need assistance please refer to the programs GitHub page.')
         cFormatter.print(Color.INFO, 'https://github.com/RogueEdit/onlineRogueEditor/.')
-        cFormatter.print(Color.INFO, 'This is release version v0.1.5 - please include that in your issue or question report.')
+        cFormatter.print(Color.INFO, 'This is release version v0.1.7 - please include that in your issue or question report.')
         cFormatter.print(Color.INFO, 'This version now also features a log file.')
         cFormatter.print(Color.INFO, 'We do not take responsibility if your accounts get flagged or banned, and')
         cFormatter.print(Color.INFO, 'you never know if there is a clone from this programm. If you are not sure please')
         cFormatter.print(Color.INFO, 'calculate the checksum of this binary and visit https://github.com/RogueEdit/onlineRogueEditor/')
         cFormatter.print(Color.INFO, 'to see the value it should have to know its original from source.')
-    
-    def refetch_headers(self) -> None:
-        file_path = './logs/headerfile-save'
-        file_path_public = './logs/headerfile-public'
-        git_url = 'https://raw.githubusercontent.com/RogueEdit/.github/main/headergen-data'
-
-        os.remove(file_path)
-        os.remove(file_path_public)
-        
-        response = requests.get(git_url)
-
-        if response.status_code == 200:
-            headers_response = response.text
-
-            with open(file_path_public, 'w') as f:
-                headers = f.write(headers_response)
-            
-            with open(file_path, 'w') as f:
-                headers = f.write(headers_response)
-        
-        cFormatter.print(Color.INFO, 'Headers refetched restart the tool.')
             
