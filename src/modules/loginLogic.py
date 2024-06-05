@@ -79,7 +79,7 @@ class HeaderGenerator:
     retry_count = 0
     headerfile = './data/headerfile-save.json'
     headerfile_public = './data/headerfile-public.json'
-    git_url = 'https://raw.githubusercontent.com/RogueEdit/.github/main/headerfile-public.json'
+    git_url = 'https://raw.githubusercontent.com/RogueEdit/onlineRogueEditor/headerfile/headerfile-public.json'
     extra_file_path = './data/extra.json'
 
     @classmethod
@@ -144,7 +144,6 @@ class HeaderGenerator:
         try:
             with open(cls.extra_file_path, 'r') as f:
                 data = json.load(f)
-                print(f"DEBUG: Contents of extra.json: {data}")
                 return data.get('total_403_errors', 0)
         except json.JSONDecodeError as e:
             print(f"DEBUG: JSONDecodeError while reading 403 count: {e}")
