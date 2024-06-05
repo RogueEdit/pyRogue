@@ -4,11 +4,10 @@
 # Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
 # Date of release: 05.06.2024 
 
-import logging
 import getpass
 import requests
 import brotli
-from modules.loginLogic import loginLogic
+from modules.loginLogic import loginLogic, HeaderGenerator
 from modules.mainLogic import Rogue
 from colorama import Fore, Style, init
 <<<<<<< HEAD
@@ -35,8 +34,34 @@ init()
 logger = CustomLogger()
 
 if __name__ == '__main__':
+    """
+        Main script execution for user login and session initialization.
+
+        This script prompts the user for a username and password, attempts to log in,
+        and if successful, initializes a PokeRogue session.
+
+        Workflow:
+            1. Initializes a requests session.
+            2. Prompts the user for username and password.
+            3. Attempts to log in using the provided credentials.
+            4. If login is successful, prints a success message and breaks the loop.
+            5. If login fails, prints an error message and re-prompts the user.
+            6. Handles any exceptions that occur during the login process.
+
+        Usage:
+            Run the script directly to initiate the login process:
+            $ python script_name.py
+
+        Modules:
+            - requests: For session handling.
+            - getpass: For securely obtaining the password.
+            - custom_logger: Custom logging functionality.
+            - login_logic: Handles the login logic.
+            - rogue: Initializes the Rogue session.
+            - c_formatter: Custom formatter for colored printing.
+            - color: Enum or module defining color codes.
+    """
     session = requests.Session()
-    
     while True:
         print('')
         cFormatter.print(Color.GREEN, '<pyRogue>')
@@ -84,15 +109,18 @@ if __name__ == '__main__':
         '25': rogue.print_natureSlot,
         '26': rogue.update_all,
         '27': rogue.print_help,
-        '28': rogue.refetch_headers
+        '28': HeaderGenerator.handle_dynamic_header_data(),
+        '29': HeaderGenerator.handle_dynamic_header_data(force_fetch=True)
     }
 
     title = '************************ PyRogue *************************'
     working_status = '(Working)'
     broken_status = ' (Broken)'
+    header_status = '(Use when Broken)'
 
     formatted_title = f'{Fore.GREEN}{Style.BRIGHT}{title}{Style.RESET_ALL}'
     formatted_working_status = f'{Fore.GREEN}{Style.BRIGHT}{working_status}{Style.RESET_ALL}'
+    formatted_header = f'{Fore.RED}{Style.BRIGHT}{header_status}{Style.RESET_ALL}'
 
     term = [
         f'{formatted_title}',
@@ -125,7 +153,8 @@ if __name__ == '__main__':
         Fore.LIGHTYELLOW_EX + Style.BRIGHT + '-- You can always edit your trainer.json also yourself! --' + Style.RESET_ALL,
         f'26: >> Save data and upload to the Server{" " * 2}' + Fore.LIGHTYELLOW_EX + Style.BRIGHT +'(Use when done)' + Style.RESET_ALL,
         f'27: >> Print help and program information{" " * 17}',
-        f'28: >> Refetch the headers{" " * 17}',
+        f'28: >> Getting errors? Regenerate some data{" " * 17}{formatted_header}',
+        f'29: >> Errors persisting? Refetch dynamic data{" "* 17}{formatted_header}'
         f'{formatted_title}',
     ]
 
