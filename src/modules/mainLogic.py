@@ -419,19 +419,33 @@ class Rogue:
         try:
             trainer_data = self.__load_data('trainer.json')
 
-            choice: int = int(input('Do you want to unlock all forms (Shiny Tier 3) as well? (1: Yes | 2: No): '))
+            choice = int(input('Do you want to unlock all forms of the pokemon? (All forms are Tier 3 shinies. 1: Yes | 2: No): '))
             if (choice < 1) or (choice > 2):
-                cFormatter.print(Color.INFO, 'Invalid input.')
+                cFormatter.print(Color.INFO, f'No pokemon with ID: {dexId}')
                 return
-            elif choice == 2:
-                is_shiny: int = int(input('Do you want the starters to be shiny? (1: Yes | 2: No): '))
-                if (is_shiny < 1) or (is_shiny > 2):
-                    cFormatter.print(Color.INFO, 'Invalid input.')
-                    return
-                elif is_shiny == 1:
-                    shiny: int = 255
+            elif choice == 1:
+                caught_attr = self.__MAX_BIG_INT
+            else:
+                choice = int(input('Make the Pokemon shiny? (1: Yes, 2: No): '))
+
+                if (choice < 1) or (choice > 2):
+                    cFormatter.print(Color.INFO, 'Invalid choice. Setting to NO')
+                    choice
+                elif choice == 2:
+                    caught_attr = 253
                 else:
-                    shiny: int = 253
+                    choice = int(input('What tier shiny do you want? (1: Tier 1, 2: Tier 2, 3: Tier 3, 4: All shinies): '))
+                    if (choice < 1) or (choice > 4):
+                        cFormatter.print(Color.INFO, 'Invalid choice.')
+                        return
+                    elif choice == 1:
+                        caught_attr = 159
+                    elif choice == 2:
+                        caught_attr = 191
+                    elif choice == 3:
+                        caught_attr = 223
+                    else:
+                        caught_attr = 255
             
             iv: int = int(input('Do you want the starters to have perfect IVs? (1: Yes | 2: No): '))
             if (iv < 1) or (iv > 2):
@@ -463,11 +477,11 @@ class Rogue:
                 cFormatter.print(Color.INFO, 'Invalid input. Setting to 0.')
                 costReduce = 0
 
-            abilityAttr = int(input('Do you want to unlock abilites? (1: None | 2: All with hidden): '))
+            abilityAttr = int(input('Do you want to unlock all abilites? (1: Yes | 2: No): '))
             if (abilityAttr < 1) or (abilityAttr > 2):
                 cFormatter.print(Color.INFO, 'Invalid input. Setting to none.')
                 abilityAttr = 0
-            elif abilityAttr == 2:
+            elif abilityAttr == 1:
                 abilityAttr = 7
             else:
                 abilityAttr = 0
@@ -475,8 +489,9 @@ class Rogue:
             total_caught: int = 0
             total_seen: int = 0
             for entry in trainer_data['dexData'].keys():
-                caught: int = random.randint(150, 250)
-                seen: int = random.randint(150, 350)
+                caught: int = random.randint(100, 200)
+                seen: int = random.randint(300, 400)
+                hatched: int = random.randint(30, 50)
                 total_caught += caught
                 total_seen += seen
                 randIv: List[int] = random.sample(range(20, 30), 6)
@@ -487,7 +502,7 @@ class Rogue:
                     'natureAttr': self.nature_data.UNLOCK_ALL.value if nature == 1 else None,
                     'seenCount': seen,
                     'caughtCount': caught,
-                    'hatchedCount': 0,
+                    'hatchedCount': hatched,
                     'ivs': randIv if iv == 2 else [31, 31, 31, 31, 31, 31]
                 }
                 trainer_data['starterData'][entry] = {
@@ -500,16 +515,6 @@ class Rogue:
                     'valueReduction': costReduce,
                     'classicWinCount': None if ribbon == 2 else 1,
                 }
-
-                
-                trainer_data['gameStats']['battles'] = total_caught + random.randint(1, total_caught)
-                trainer_data['gameStats']['pokemonCaught'] = total_caught
-                trainer_data['gameStats']['pokemonSeen'] = total_seen
-                trainer_data['gameStats']['shinyPokemonCaught'] = len(trainer_data['dexData']) * 2
-
-                if ribbon == 1:
-                    trainer_data['gameStats']['classicWinCount'] = 1
-
 
             self.__write_data(trainer_data, 'trainer.json')
         except Exception as e:
@@ -596,11 +601,11 @@ class Rogue:
                 cFormatter.print(Color.INFO, 'Invalid input. Setting to 0.')
                 costReduce = 0
 
-            abilityAttr = int(input('Do you want to unlock abilites? (1: None | 2: All with hidden): '))
+            abilityAttr = int(input('Do you want to unlock all abilites? (1: Yes, with hidden | 2: No): '))
             if (abilityAttr < 1) or (abilityAttr > 2):
                 cFormatter.print(Color.INFO, 'Invalid input. Setting to none.')
                 abilityAttr = 0
-            elif abilityAttr == 2:
+            elif abilityAttr == 1:
                 abilityAttr = 7
             else:
                 abilityAttr = 0
