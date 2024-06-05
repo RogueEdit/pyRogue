@@ -470,7 +470,7 @@ class Rogue:
                 ribbon = 2
 
             nature: int = int(input('Do you want to unlock all natures?: (1: Yes | 2: No): '))
-            if (ribbon < 1) or (ribbon > 2):
+            if (nature < 1) or (nature > 2):
                 cFormatter.print(Color.INFO, 'Invalid input. Setting to NO.')
                 nature = 2
 
