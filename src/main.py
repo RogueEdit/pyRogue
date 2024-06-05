@@ -74,6 +74,7 @@ if __name__ == '__main__':
         '25': rogue.print_natureSlot,
         '26': rogue.update_all,
         '27': rogue.print_help,
+        '28': rogue.refetch_headers
     }
 
     title = '************************ PyRogue *************************'
@@ -114,6 +115,7 @@ if __name__ == '__main__':
         Fore.LIGHTYELLOW_EX + Style.BRIGHT + '-- You can always edit your trainer.json also yourself! --' + Style.RESET_ALL,
         f'26: >> Save data and upload to the Server{" " * 2}' + Fore.LIGHTYELLOW_EX + Style.BRIGHT +'(Use when done)' + Style.RESET_ALL,
         f'27: >> Print help and program information{" " * 17}',
+        f'28: >> Refetch the headers{" " * 17}',
         f'{formatted_title}',
     ]
 

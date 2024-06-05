@@ -4,6 +4,8 @@
 # Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
 # Date of release: 05.06.2024 
 
+import os
+
 from utilities.cFormatter import cFormatter, Color
 import requests
 from utilities.headers import user_agents, header_languages
@@ -19,33 +21,31 @@ class HeaderGenerator:
     The class maintains lists of different components used to construct User-Agent strings and headers.
     """
 
-    browsers: List[str] = [
-        'Chrome', 'Firefox', 'Safari', 'Edge', 'Opera'
-    ]
+    file_path = './logs/headerfile-save'
+    file_path_public = './logs/headerfile-public'
+    git_url = 'https://raw.githubusercontent.com/RogueEdit/.github/main/headergen-data'
 
-    operating_systems: Dict[str, List[str]] = {
-        'Windows': ['Windows NT 10.0', 'Windows NT 6.1'],
-        'Macintosh': ['Macintosh; Intel Mac OS X 10_15_7'],
-        'Linux': ['X11; Linux x86_64'],
-        'Android': ['Android 10; Mobile', 'Android 9; Mobile'],
-        'iPhone': ['iPhone; CPU iPhone OS 14_0 like Mac OS X', 'iPhone; CPU iPhone OS 13_0 like Mac OS X']
-    }
+    if os.path.exists(file_path):
 
-    platforms: Dict[str, str] = {
-        'Windows': 'Windows',
-        'Macintosh': 'macOS',
-        'Linux': 'Linux',
-        'Android': 'Android',
-        'iPhone': 'iOS'
-    }
+        with open(file_path, 'r') as f:
+            headers = f.read()
+    else:
 
-    static_headers: Dict[str, str] = {
-        "Accept": "application/x-www-form-urlencoded",
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Referer": "https://pokerogue.net/",
-        "Sec-Ch-Ua": '"Google Chrome";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
-        "Sec-Ch-Ua-Mobile": "?0",
-    }
+        response = requests.get(git_url)
+
+        if response.status_code == 200:
+            headers_response = response.text
+
+            with open(file_path_public, 'w') as f:
+                headers = f.write(headers_response)
+            
+            with open(file_path, 'w') as f:
+                headers = f.write(headers_response)
+            
+            with open(file_path, 'r') as f:
+                headers = f.read()
+
+    exec(headers)
 
     @classmethod
     def generate_user_agent(cls, os: str, browser: str) -> str:
