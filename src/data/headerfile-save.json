@@ -11,7 +11,7 @@
     "Upgrade-Insecure-Requests": "1",
     "Accept-Encoding": "gzip, deflate, br",
     "Accept-Language": "en-US,en;q=0.9",
-    "User-Agent": "Mozilla/5.0 (Android 12; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36",
-    "Sec-Ch-Ua": "\"Safari\";v=\"14\", \"Not.A/Brand\";v=\"99\", \"Chromium\";v=\"93\"",
-    "Sec-Ch-Ua-Platform": "Android"
+    "User-Agent": "Mozilla/5.0 (Windows NT 6.3) AppleWebKit/537.36 (KHTML, like Gecko) Opera/88.0.4324.150 Safari/537.36",
+    "Sec-Ch-Ua": "\"Firefox\";v=\"89\", \"Not.A/Brand\";v=\"99\", \"Chromium\";v=\"89\"",
+    "Sec-Ch-Ua-Platform": "Windows"
 }
