@@ -1257,9 +1257,9 @@ class Rogue:
                 randIv: List[int] = random.sample(range(20, 30), 6)
 
                 trainer_data['dexData'][entry] = {
-                    'seenAttr': self.__MAX_BIG_INT,
+                    'seenAttr': random.randint(500, 5000),
                     'caughtAttr': self.__MAX_BIG_INT,
-                    'natureAttr': self.__MAX_BIG_INT,
+                    'natureAttr': self.nature_data.UNLOCK_ALL.value,
                     'seenCount': seen,
                     'caughtCount': caught,
                     'hatchedCount': hatched,
