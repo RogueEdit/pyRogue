@@ -1,9 +1,9 @@
 {
     "Accept": "application/x-www-form-urlencoded",
     "Content-Type": "application/x-www-form-urlencoded",
-    "Referer": "https://pokerogue.net/",
-    "Sec-Ch-Ua": "\"Google Chrome\";v=\"125\", \"Chromium\";v=\"125\", \"Not.A/Brand\";v=\"24\"",
+    "Referer": "https://github.com/pagefaultgames/pokerogue",
+    "Sec-Ch-Ua": "\"Google Chrome\";v=\"93\", \"Chromium\";v=\"93\", \"Not.A/Brand\";v=\"99\"",
     "Sec-Ch-Ua-Mobile": "?0",
-    "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36",
+    "User-Agent": "Mozilla/5.0 (iPad; CPU OS 15_0 like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) UC Browser/88.0.4324.150 Safari/537.36",
     "Sec-Ch-Ua-Platform": "iOS"
 }

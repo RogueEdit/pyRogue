@@ -4,27 +4,34 @@
         "Firefox",
         "Safari",
         "Edge",
-        "Opera"
+        "Opera",
+        "Brave",
+        "Vivaldi",
+        "UC Browser"
     ],
     "operating_systems": {
-        "Windows": ["Windows NT 10.0", "Windows NT 6.1"],
-        "Macintosh": ["Macintosh; Intel Mac OS X 10_15_7"],
-        "Linux": ["X11; Linux x86_64"],
-        "Android": ["Android 10; Mobile", "Android 9; Mobile"],
-        "iPhone": ["iPhone; CPU iPhone OS 14_0 like Mac OS X", "iPhone; CPU iPhone OS 13_0 like Mac OS X"]
+        "Windows": ["Windows NT 10.0", "Windows NT 6.3", "Windows NT 6.4", "Windows NT 6.5"],
+        "Macintosh": ["Macintosh; Intel Mac OS X 11_2_3", "Macintosh; Intel Mac OS X 11_3_1", "Macintosh; Intel Mac OS X 11_4_1"],
+        "Linux": ["X11; Ubuntu; Linux x86_64", "X11; Fedora; Linux x86_64", "X11; Arch; Linux x86_64"],
+        "Android": ["Android 11; Mobile", "Android 12; Mobile", "Android 13; Mobile"],
+        "iPhone": ["iPhone; CPU iPhone OS 15_0 like Mac OS X", "iPhone; CPU iPhone OS 15_1 like Mac OS X", "iPhone; CPU iPhone OS 15_2 like Mac OS X"],
+        "iPad": ["iPad; CPU OS 15_0 like Mac OS X", "iPad; CPU OS 15_1 like Mac OS X", "iPad; CPU OS 15_2 like Mac OS X"],
+        "Windows Phone": ["Windows Phone 11.0", "Windows Phone 12.0", "Windows Phone 13.0"]
     },
     "platforms": {
         "Windows": "Windows",
         "Macintosh": "macOS",
         "Linux": "Linux",
         "Android": "Android",
-        "iPhone": "iOS"
+        "iPhone": "iOS",
+        "iPad": "iOS",
+        "Windows Phone": "Windows Phone"
     },
     "static_headers": {
         "Accept": "application/x-www-form-urlencoded",
         "Content-Type": "application/x-www-form-urlencoded",
-        "Referer": "https://pokerogue.net/",
-        "Sec-Ch-Ua": "\"Google Chrome\";v=\"125\", \"Chromium\";v=\"125\", \"Not.A/Brand\";v=\"24\"",
+        "Referer": "https://github.com/pagefaultgames/pokerogue",
+        "Sec-Ch-Ua": "\"Google Chrome\";v=\"93\", \"Chromium\";v=\"93\", \"Not.A/Brand\";v=\"99\"",
         "Sec-Ch-Ua-Mobile": "?0"
     }
 }

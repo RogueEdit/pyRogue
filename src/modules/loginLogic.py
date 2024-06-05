@@ -39,7 +39,6 @@ def handle_error_response(response: requests.Response) -> dict:
         cFormatter.print(Color.BRIGHT_RED, 'Response 401 - Unauthorized: Authentication is required and has failed or has not yet been provided.', isLogging=True)
     elif response.status_code == 403:
         HeaderGenerator.handle_dynamic_header_data()
-        cFormatter.print(Color.CRITICAL, 'Response 403 - Forbidden: The client does not have access rights to the content.', isLogging=True)
     elif response.status_code == 404:
         cFormatter.print(Color.BRIGHT_RED, 'Response 404 - Not Found: The server can not find the requested resource.', isLogging=True)
     elif response.status_code == 405:
@@ -101,10 +100,10 @@ class HeaderGenerator:
 
     @classmethod
     def set_attributes(cls, headers: Dict[str, list]) -> None:
-        cls.operating_systems = headers.get("operating_systems", {})
-        cls.browsers = headers.get("browsers", [])
-        cls.static_headers = headers.get("static_headers", {})
-        cls.platforms = headers.get("platforms", {})
+        cls.operating_systems = headers.get('operating_systems', {})
+        cls.browsers = headers.get('browsers', [])
+        cls.static_headers = headers.get('static_headers', {})
+        cls.platforms = headers.get('platforms', {})
 
     @classmethod
     def save_headers(cls, headers: Dict[str, str]) -> None:
@@ -127,26 +126,24 @@ class HeaderGenerator:
 
         headers = cls.static_headers.copy()
         headers.update({
-            "User-Agent": user_agent,
-            "Sec-Ch-Ua-Platform": cls.platforms.get(device, ''),
+            'User-Agent': user_agent,
+            'Sec-Ch-Ua-Platform': cls.platforms.get(device, ''),
         })
 
         if auth_token:
-            headers["Authorization"] = auth_token
+            headers['Authorization'] = auth_token
 
         return headers
 
     @classmethod
     def read_403_count(cls) -> int:
         if not os.path.exists(cls.extra_file_path):
-            print("DEBUG: extra.json does not exist.")
             return 0
         try:
             with open(cls.extra_file_path, 'r') as f:
                 data = json.load(f)
                 return data.get('total_403_errors', 0)
         except json.JSONDecodeError as e:
-            print(f"DEBUG: JSONDecodeError while reading 403 count: {e}")
             return 0
 
     @classmethod
@@ -157,35 +154,32 @@ class HeaderGenerator:
                 with open(cls.extra_file_path, 'r') as f:
                     data = json.load(f)
             except json.JSONDecodeError as e:
-                print(f"DEBUG: JSONDecodeError while reading extra file: {e}")
+                print(f'DEBUG: JSONDecodeError while reading extra file: {e}')
         
         data['total_403_errors'] = count
         
         with open(cls.extra_file_path, 'w') as f:
             json.dump(data, f, indent=4)
-        print(f"DEBUG: Wrote total_403_errors={count} to extra.json")  # Debug print
 
     @classmethod
     def handle_dynamic_header_data(cls, force_fetch: bool = False) -> None:
         total_403_errors = cls.read_403_count()
-        print(f"DEBUG: total_403_errors={total_403_errors}")
 
         if force_fetch or total_403_errors >= 3:
             cls.retry_count = 3  # Set retry_count to 3 to force fetch
 
         cls.retry_count += 1
-        print(f"DEBUG: retry_count={cls.retry_count}")
 
         # Always delete the existing header file
         if os.path.exists(cls.headerfile):
             os.remove(cls.headerfile)
-            print("DEBUG: Removed headerfile")
 
         if cls.retry_count < 3:
+            cFormatter.print(Color.CRITICAL, 'Response 403 - Forbidden: The client does not have access rights to the content.', isLogging=True)
+            cFormatter.print(Color.INFO, 'Headers refetched restart the tool.', isLogging=True)
+            cFormatter.print(Color.BRIGHT_CYAN, f'Total number of 403 errors encountered: {total_403_errors}', isLogging=True)
             headers = cls.generate_headers()
             cls.save_headers(headers)
-            print("DEBUG: Headers regenerated and saved.")
-            
             # Write the current 403 count to extra.json
             total_403_errors += 1  # Increment the total 403 error count
             cls.write_403_count(total_403_errors)
@@ -197,20 +191,18 @@ class HeaderGenerator:
                     cls.set_attributes(headers_response)
                     headers = cls.generate_headers()
                     cls.save_headers(headers)
-                    print("DEBUG: Fetched new header data from remote source.")
                     cls.retry_count = 0  # Reset the counter
                     # Reset total_403_errors count in the JSON file after fetch
                     cls.write_403_count(0)
                 except json.JSONDecodeError as e:
-                    print(f"DEBUG: JSONDecodeError while decoding response content: {e}")
+                    print(f'DEBUG: JSONDecodeError while decoding response content: {e}')
             else:
-                print(f"DEBUG: Failed to fetch headers from remote source, status_code={response.status_code}")
+                print(f'DEBUG: Failed to fetch headers from remote source, status_code={response.status_code}')
 
         if force_fetch:
-            print("DEBUG: Headers refetched restart the tool.")
-            print(f"DEBUG: Total number of 403 errors encountered: {total_403_errors}")
+            cFormatter.print(Color.BRIGHT_GREEN, 'Header data new constructed. Restart the tool.', isLogging=True)
+            cFormatter.print(Color.BRIGHT_CYAN, f'Total number of 403 errors encountered reset.', isLogging=True)
 
-        print(f"DEBUG: Exiting handle_dynamic_header_data with total_403_errors={total_403_errors}")
 
 class loginLogic:
     """
@@ -246,12 +238,16 @@ class loginLogic:
         try:
             # Load headers, utilizing the saved header file if it exists
             headers = HeaderGenerator.load_headers()
-            headers = {'Authorization': 'Bearer invalid_token'}
+            
+            #faking 403
+            #headers = {'Authorization': 'Bearer invalid_token'}
 
             if not headers:
                 headers = HeaderGenerator.generate_headers()
             # Make the POST request with the generated headers
             response = self.session.post(self.LOGIN_URL, headers=headers, data=data)
+            cFormatter.print(Color.CYAN, f'Response URL: {response.request.url}', isLogging=True)
+            cFormatter.print(Color.CYAN, f'Response Headers: {response.request.headers}', isLogging=True)
             response.raise_for_status()
 
             # Process the response
