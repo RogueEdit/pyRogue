@@ -146,12 +146,13 @@ class HeaderGenerator:
                 with open(cls.extra_file_path, 'r') as f:
                     data = json.load(f)
             except json.JSONDecodeError as e:
-
+                print(f"DEBUG: JSONDecodeError while reading extra file: {e}")
+        
         data['total_403_errors'] = count
-
+        
         with open(cls.extra_file_path, 'w') as f:
             json.dump(data, f, indent=4)
-
+            
     @classmethod
     def handle_dynamic_header_data(cls, force_fetch: bool = False) -> None:
         total_403_errors = cls.read_403_count()
