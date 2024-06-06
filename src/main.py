@@ -2,7 +2,7 @@
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
-# Date of release: 05.06.2024 
+# Date of release: 06.06.2024 
 
 import getpass
 import requests
@@ -11,57 +11,65 @@ from modules.loginLogic import loginLogic, HeaderGenerator
 from modules.mainLogic import Rogue
 from colorama import Fore, Style, init
 from modules.seleniumLogic import SeleniumLogic
-
 from utilities.cFormatter import cFormatter, Color
-# cFormatter.print(Color.INFO, 'This is a test message', isLogging=True)
-# [CYAN]This is a test message[RESET]
-# cFormatter.print_separators(10, '-', Color.GREEN)
-# [GREEN]----------[RESET]
-
 from utilities.logger import CustomLogger
+import modules.config
+
+version = 'v0.1.7'
 
 init()
-
 logger = CustomLogger()
 
-if __name__ == '__main__':
+def main():
     """
-        Main script execution for user login and session initialization.
+    Main script execution for user login and session initialization.
 
-        This script prompts the user for a username and password, attempts to log in,
-        and if successful, initializes a PokeRogue session.
+    This script prompts the user for a username and password, attempts to log in,
+    and if successful, initializes a PokeRogue session.
 
-        Workflow:
-            1. Initializes a requests session.
-            2. Prompts the user for username and password.
-            3. Attempts to log in using the provided credentials.
-            4. If login is successful, prints a success message and breaks the loop.
-            5. If login fails, prints an error message and re-prompts the user.
-            6. Handles any exceptions that occur during the login process.
+    Workflow:
+        1. Ask the user if requests or selenium
+        2. Initializes either a requests session
+        2. or a Selenium session
+        3. Prompts the user for username and password.
+        4. Attempts to log in using the provided credentials.
+        5. If login is successful, prints a success message and breaks the loop.
+        6. If login fails, prints an error message and re-prompts the user.
+        7. Handles any exceptions that occur during the login process.
+        8. If we enocunter 403 Errors, we count up
+        9. If we receive 3 erros we rebuild headers
 
-        Usage:
-            Run the script directly to initiate the login process:
-            $ python script_name.py
+    Usage:
+        Run the script directly to initiate the login process:
+        $ python main.py
 
-        Modules:
-            - requests: For session handling.
-            - getpass: For securely obtaining the password.
-            - custom_logger: Custom logging functionality.
-            - login_logic: Handles the login logic.
-            - rogue: Initializes the Rogue session.
-            - c_formatter: Custom formatter for colored printing.
-            - color: Enum or module defining color codes.
+    Modules:
+        - requests: For session handling.
+        - getpass: For securely obtaining the password.
+        - customLogger: Custom logging functionality.
+        - loginLogic: Handles the login logic.
+        - seleniumLogic: Handles logging in with selenium
+        - rogue: Initializes the PokeRogue session.
+        - cFormatter: Custom formatter for colored printing and logging.
+        - color: Our own module defining color codes.
     """
     session = requests.Session()
     while True:
         print('')
-        cFormatter.print(Color.GREEN, '<pyRogue>')
-
-        cFormatter.print(Color.BRIGHT_MAGENTA, "1: Using requests. Unreliable but fast.")
-        cFormatter.print(Color.BRIGHT_MAGENTA, "2: Not yet implemented.")
-        cFormatter.print(Color.BRIGHT_MAGENTA, "3: Using selenium. Most reliable but slowest.")
-        loginChoice = int(input('Please choose a method of logging in: '))
-
+        cFormatter.print(Color.BRIGHT_GREEN, f'<pyRogue {modules.config.version}>')
+        cFormatter.print(Color.BRIGHT_GREEN, 'We create base-backups on every login and further backups everytime you start or up choose so manually.')
+        cFormatter.print(Color.BRIGHT_GREEN, 'In case of trouble, please refer to our GitHub. https://github.com/RogueEdit/onlineRogueEditor ')
+        cFormatter.print_separators(60, '-')
+        cFormatter.print(Color.DEBUG, 'When this programm encounters 403 Forbidden errors too often, it will rebuild header data.')
+        cFormatter.print(Color.BRIGHT_MAGENTA, '1: Using requests.')
+        cFormatter.print(Color.BRIGHT_MAGENTA, '2: Using own browser. Use when 1 doesnt work.')
+        
+        try:
+            loginChoice = int(input('Please choose a method of logging in: '))
+        except ValueError:
+            cFormatter.print(Color.CRITICAL, "Invalid choice. Please enter a number.")
+            continue
+        
         username = input('Username: ')
         password = getpass.getpass('Password (password is hidden): ')
 
@@ -75,9 +83,12 @@ if __name__ == '__main__':
             except Exception as e:
                 cFormatter.print(Color.CRITICAL, f'Something went wrong. {e}', isLogging=True)
         elif loginChoice == 2:
-            cFormatter.print("Not yet implemented.")
-        elif loginChoice == 3:
-            timeoutChoice = int(input('Estimate how long it will take to start your game (40+ recommended): '))
+            try:
+                timeoutChoice = int(input('Estimate how long it will take to start your game (40+ recommended): '))
+            except ValueError:
+                cFormatter.print(Color.CRITICAL, "Invalid choice. Please enter a number.")
+                continue
+
             selenium_logic = SeleniumLogic(username, password, timeoutChoice)
             session_id, token = selenium_logic.logic()
 
@@ -90,8 +101,6 @@ if __name__ == '__main__':
         else:
             cFormatter.print(Color.CRITICAL, "Invalid choice. Please choose a valid method.")
 
-
-            
     func = {
         '1': rogue.get_trainer_data,
         '2': rogue.get_gamesave_data,
@@ -120,7 +129,8 @@ if __name__ == '__main__':
         '25': rogue.print_natureSlot,
         '26': rogue.update_all,
         '27': rogue.print_help,
-        '28': HeaderGenerator.handle_dynamic_header_data
+        '28': HeaderGenerator.handle_dynamic_header_data,
+        '29': rogue.print_changes
     }
 
     title = '************************ PyRogue *************************'
@@ -163,10 +173,9 @@ if __name__ == '__main__':
         Fore.LIGHTYELLOW_EX + Style.BRIGHT + '-- You can always edit your trainer.json also yourself! --' + Style.RESET_ALL,
         f'26: >> Save data and upload to the Server{" " * 2}' + Fore.LIGHTYELLOW_EX + Style.BRIGHT +'(Use when done)' + Style.RESET_ALL,
         f'27: >> Print help and program information{" " * 17}',
-        f'28: >> Rebuild header data{" "*1} {formatted_header}',
+        f'27: >> Print changelogs{" " * 30}',
         f'{formatted_title}',
     ]
-
 
     while True:
         print('')
@@ -180,3 +189,6 @@ if __name__ == '__main__':
             quit()
         else:
             cFormatter.print(Color.INFO, 'Command not found.')
+
+if __name__ == '__main__':
+    main()

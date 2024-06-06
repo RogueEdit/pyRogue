@@ -1,11 +1,13 @@
 # pyRogue
 > **pyRogue** is a educational project. This is mostly to be done, if you have any ideas or problems please use the issue feature.
 
-[<img src="https://img.shields.io/badge/Windows-blue">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.1.5/pyRogue-v015-Windows.zip) <img src="https://img.shields.io/badge/d7c3c3673fdf08968cca37a20b5ff05a7545df7edc057a5284efee8867c0539c-blue"> [<img src="https://img.shields.io/badge/Virus%20Total-blue">](https://www.virustotal.com/gui/file/d7c3c3673fdf08968cca37a20b5ff05a7545df7edc057a5284efee8867c0539c?nocache=1) 
+[<img src="https://img.shields.io/badge/Windows-BuildinProgess-blue">]() <img src="https://img.shields.io/badge/d7c3c3673fdf08968cca37a20b5ff05a7545df7edc057a5284efee8867c0539c-blue"> [<img src="https://img.shields.io/badge/Virus%20Total-blue">]() 
 
-[<img src="https://img.shields.io/badge/Linux-Green">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.1.5/pyRogue-v015-Linux.zip) <img src="https://img.shields.io/badge/4066b4b8bfe6f687c9f78cfb637b14fe9a5ec39e3758f8df75951b139f8aec84-Green"> [<img src="https://img.shields.io/badge/Virus%20Total-Green">](https://www.virustotal.com/gui/file/4066b4b8bfe6f687c9f78cfb637b14fe9a5ec39e3758f8df75951b139f8aec84?nocache=1)
+[<img src="https://img.shields.io/badge/LinuxBuildInProgress-Green">]() <img src="https://img.shields.io/badge/4066b4b8bfe6f687c9f78cfb637b14fe9a5ec39e3758f8df75951b139f8aec84-Green"> [<img src="https://img.shields.io/badge/Virus%20Total-Green">]()
 
-[<img src="https://img.shields.io/badge/Mac-silver">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.1.5/pyRogue-v-015-MacIntel.zip) <img src="https://img.shields.io/badge/1ee0216cced15a5d86e38ef347c007641eb8aaa9405b7b2adbce8cb29cc4119e-silver"> [<img src="https://img.shields.io/badge/Virus%20Total-silver">](https://www.virustotal.com/gui/file/1ee0216cced15a5d86e38ef347c007641eb8aaa9405b7b2adbce8cb29cc4119e?nocache=1)
+[<img src="https://img.shields.io/badge/MacBuildInProgress-silver">]() <img src="https://img.shields.io/badge/1ee0216cced15a5d86e38ef347c007641eb8aaa9405b7b2adbce8cb29cc4119e-silver"> [<img src="https://img.shields.io/badge/Virus%20Total-silver">]()
+
+[<img src="https://img.shields.io/badge/Join%20our%20News-Discord!-8A2BE2">](https://discord.gg/AjYYudvX)
 
 ![Preview Image](.github/previews/main.png)
 ![Preview Image](.github/previews/tool.png)
@@ -19,6 +21,7 @@
 - [License](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#license)
 - [Features](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#editor-features)
 - [How to run from code](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#how-to-run-from-code)
+- [Regarding Bans and Limited Accounts](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#regarding-bans-and-limited-accounts)
 
 ## Important foreword
 [Feature & Bugboard aswell as Roadmap](https://github.com/orgs/RogueEdit/projects/7)
@@ -45,7 +48,7 @@ We will not use the tool 24/7 - this means we will not see when it breaks due to
   ![Preview Image](.github/previews/backup.png)
 
 - Will this get me banned?
-  - We dont know. 
+  - See [Regarding Bans and Limited Accounts](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#regarding-bans-and-limited-accounts)
 
 - Where can i donate?
   - We will not accept any money or any form of payment. If you want to help then only by contributing.
@@ -65,7 +68,7 @@ We will not use the tool 24/7 - this means we will not see when it breaks due to
 
 ## License
 
-- If you want to use the code in any manner feel free to do so but make sure you can see immediately its not the official Repo. If you wanna fork it we ask you to change the title in the readme.md -  but if you want to use it anywhere public, lets say replit and such or you wanna add onto this code you have to include all author-headers and in accordance with GPL you also need to keep the license and cannot change it but are free to do everything aslong as you keep the statement before true. We also prohibit you to make any money of it and we also never will.
+- If you want to use the code in any manner feel free to do so but make sure you can see immediately its not the official Repo. If you wanna fork it we ask you to change the title in the readme.md -  but if you want to use it anywhere public, lets say replit and such or you wanna add onto this code you have to include all author-headers and in accordance with GPL you also need to keep the license and cannot change it but are free to do everything aslong as you keep the statement before true and our headers. We also prohibit you to make any money of it and we also never will. TLDR; Keep the notice and do what you want even with advanced code but make sure it doesnt look like our program.
  
 ## Editor Features
 
@@ -144,5 +147,10 @@ We will not use the tool 24/7 - this means we will not see when it breaks due to
    - `python3 -m pip install -r requirements.txt`
  - Now you should be able to run main.py
    - `python3 main.py`
+
+## Regarding Bans and Limited Accounts
+https://www.reddit.com/r/pokerogue/comments/1d8hncf/cheats_and_exploits_post_followup_bannable/
+https://www.reddit.com/r/pokerogue/comments/1d8ldlw/a_cheating_and_account_deletionwipe_followup/
+
 
 <meta name="keywords" content="pokerogue, pokerogue save editor, pokerogue, rogueEditor, free, gacha, ticket, tickets, egg, eggs, shiny, save, edit, pokemon, unlimited, hack, hacks, cheat, cheats, trainer, table, pokedex, dex, wave, money, level, levels, iv, ivs, stat, stats, item, items, api, mod, mods, tool, tools, education, python">

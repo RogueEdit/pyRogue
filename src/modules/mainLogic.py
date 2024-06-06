@@ -2,7 +2,7 @@
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
-# Date of release: 05.06.2024 
+# Date of release: 06.06.2024 
 
 import requests
 import json
@@ -18,6 +18,7 @@ from time import sleep
 import datetime
 import re
 from modules.loginLogic import handle_error_response
+import modules.config
 
 from utilities.generator import Generator
 from utilities.enumLoader import EnumLoader
@@ -30,7 +31,7 @@ from prompt_toolkit.completion import WordCompleter
 
 from utilities.eggLogic import *
 
-limiter = Limiter(lockout_period=60, timestamp_file='./data/extra.json')
+limiter = Limiter(lockout_period=30, timestamp_file='./data/extra.json')
 logger = logging.getLogger(__name__)
 logging.basicConfig(level = logging.INFO)
 
@@ -116,19 +117,14 @@ class Rogue:
                     return
 
             trainer_data = self.get_trainer_data()
-            if trainer_data:
-                self.__write_data(trainer_data, 'trainer.json')
-            else:
-                cFormatter.print(Color.DEBUG, 'Failed to fetch trainer save data.')
-            cFormatter.print(Color.INFO, 'Sleeping 3 seconds to look more human before fetching saveslot.')
-            sleep(2)
+            cFormatter.print(Color.DEBUG, 'Sleeping 3 seconds to look more human before fetching saveslot-data.')
+            sleep(3)
             game_data = self.get_gamesave_data(slot)
-            if game_data:
-                self.__write_data(game_data, f'slot_{slot}.json')
-            else:
-                cFormatter.print(Color.DEBUG, f'Failed to fetch save-slot data for slot {slot}.')
 
-            self.create_backup()
+
+            if game_data and trainer_data:
+                self.create_backup()
+
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function __dump_data(): {e}', isLogging=True)
 
@@ -145,26 +141,28 @@ class Rogue:
             response = self.session.get(self.TRAINER_DATA_URL, headers=self.headers)
             response.raise_for_status()
             if response.content:  # Check if the response content is not empty
-                cFormatter.print(Color.GREEN, 'Succesfully fetched data.')
-                return response.json()
+                cFormatter.print(Color.GREEN, 'Successfully fetched data.')
+                data = response.json()
+                self.__write_data(data, 'trainer.json', False)
+                return data
             else:
                 return handle_error_response(response)
-
         except requests.RequestException as e:
             cFormatter.print(Color.DEBUG, f'Error fetching trainer data. Please restart the tool. \n {e}', isLogging=True)
 
     @limiter.lockout
     def get_gamesave_data(self, slot: int = 1):
-        cFormatter.print(Color.INFO, f'Fecthing data for Slot {slot}...')
+        cFormatter.print(Color.INFO, f'Fetching data for Slot {slot}...')
         try:
             response = self.session.get(f'{self.GAMESAVE_SLOT_URL}{slot-1}', headers=self.headers)
             response.raise_for_status()
             if response.content:  # Check if the response content is not empty
-                cFormatter.print(Color.GREEN, 'Succesfully fetched data.')
-                return response.json()
+                cFormatter.print(Color.GREEN, 'Successfully fetched data.')
+                data = response.json()
+                self.__write_data(data, f'slot_{slot}.json', False)
+                return data
             else:
                 return handle_error_response(response)
-
         except requests.RequestException as e:
             cFormatter.print(Color.CRITICAL, f'Error fetching save-slot data. Please restart the tool. \n {e}', isLogging=True)
 
@@ -247,12 +245,13 @@ class Rogue:
             url_ext = f'&trainerId={trainer_id}&secretId={trainer_secretId}'
 
             self.__update_trainer_data(trainer_data)
+            cFormatter.print(Color.DEBUG, 'Sleeping 3 seconds to look more human before saving saveslot-data.')
+            sleep(3)
             self.__update_gamesave_data(self.slot, game_data, url_ext)
-            sleep(2)
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function update_all(): {e}', isLogging=True)
 
-    def __write_data(self, data: Dict[str, any], filename: str) -> None:
+    def __write_data(self, data: Dict[str, any], filename: str, showSuccess: bool = True) -> None:
         """
         Write data to a JSON file.
 
@@ -269,9 +268,11 @@ class Rogue:
         try:
             with open(filename, 'w') as f:
                 json.dump(data, f, indent=4)
-                cFormatter.print(Color.BRIGHT_GREEN, 'Written to local data. Do not forget to apply to server when done!')
+                if showSuccess:
+                    cFormatter.print(Color.BRIGHT_GREEN, 'Written to local data. Do not forget to apply to server when done!')
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error .__writing_data(): {e}', isLogging=True)
+
 
     def __load_data(self, file_path: str) -> Dict[str, Any]:
             """"
@@ -293,7 +294,7 @@ class Rogue:
                 Exception: If any error occurs during the process.
             """
             try:
-                with open(file_path, "r") as f:
+                with open(file_path, 'r') as f:
                     return json.load(f)
             except Exception as e:
                 cFormatter.print(Color.CRITICAL, f'Error in function .__load_data(): {e}', isLogging=True)
@@ -701,7 +702,7 @@ class Rogue:
 
                 if command == 1:
                         pokemon_completer: WordCompleter = WordCompleter(self.pokemon_id_by_name.__members__.keys(), ignore_case=True)
-                        cFormatter.print(Color.INFO, 'Write the name of the pokemon, it will recomend for auto-completion.')
+                        cFormatter.print(Color.INFO, 'Write the name of the pokemon, it will recommend for auto-completion.')
                         dexId: str = prompt('Enter Pokemon (Name / ID): ', completer=pokemon_completer)
                         
                         try:
@@ -755,7 +756,7 @@ class Rogue:
                     self.print_natureSlot()
 
                     natureSlot_completer: WordCompleter = WordCompleter(self.natureSlot_data.__members__.keys(), ignore_case=True)
-                    cFormatter.print(Color.INFO, 'Write the name of the nature, it will recomend for auto-completion.')
+                    cFormatter.print(Color.INFO, 'Write the name of the nature, it will recommend for auto-completion.')
                     natureSlot: str = prompt('What nature would you like?: ', completer=natureSlot_completer)
 
                     natureSlot: int = int(self.natureSlot_data[natureSlot].value)
@@ -1339,9 +1340,25 @@ class Rogue:
         cFormatter.print(Color.INFO, 'You can always edit your json manually aswell.')
         cFormatter.print(Color.INFO, 'If you need assistance please refer to the programs GitHub page.')
         cFormatter.print(Color.INFO, 'https://github.com/RogueEdit/onlineRogueEditor/.')
-        cFormatter.print(Color.INFO, 'This is release version v0.1.5 - please include that in your issue or question report.')
+        cFormatter.print(Color.INFO, f'This is release version {modules.config.version} - please include that in your issue or question report.')
         cFormatter.print(Color.INFO, 'This version now also features a log file.')
         cFormatter.print(Color.INFO, 'We do not take responsibility if your accounts get flagged or banned, and')
         cFormatter.print(Color.INFO, 'you never know if there is a clone from this programm. If you are not sure please')
         cFormatter.print(Color.INFO, 'calculate the checksum of this binary and visit https://github.com/RogueEdit/onlineRogueEditor/')
         cFormatter.print(Color.INFO, 'to see the value it should have to know its original from source.')
+
+    def print_changes(self) -> None:
+        """
+        Print helpful information for the user.
+
+        This method prints various helpful messages for the user, including information
+        about manual JSON editing, assistance through the program's GitHub page, release
+        version details, and cautions about account safety and program authenticity.
+        """
+        cFormatter.print(Color.INFO, '- Rate limiting')
+        cFormatter.print(Color.INFO, '- Added delay and such to appear more natural to the server')
+        cFormatter.print(Color.INFO, '- New header generation')
+        cFormatter.print(Color.INFO, '- When headers fail more often we renew them from remote source (Hotfixes)')
+        cFormatter.print(Color.INFO, '- Added second login logic as fallback')
+        cFormatter.print(Color.INFO, '- Refined some logic and fixed some bugs')
+        cFormatter.print(Color.INFO, f'https://github.com/RogueEdit/onlineRogueEditor/ {modules.config.version}')
