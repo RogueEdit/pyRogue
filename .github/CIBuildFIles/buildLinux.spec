@@ -26,7 +26,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='pyRogue-v017-Linux.sh',
+    name='pyRogue-Linux.sh',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
