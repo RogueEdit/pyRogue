@@ -10,10 +10,11 @@ import os
 import random
 from colorama import init
 from typing import List, Dict
+from time import sleep
 
 from utilities.limiter import Limiter
 from utilities.cFormatter import cFormatter, Color
-limiter = Limiter(lockout_period=10, timestamp_file='./data/extra.json')
+limiter = Limiter(lockout_period=1, timestamp_file='./data/extra.json')
 init()
 
 def handle_error_response(response: requests.Response) -> dict:
@@ -39,7 +40,6 @@ def handle_error_response(response: requests.Response) -> dict:
         cFormatter.print(Color.BRIGHT_RED, 'Response 401 - Unauthorized: Authentication is required and has failed or has not yet been provided.', isLogging=True)
     elif response.status_code == 403:
         HeaderGenerator.handle_dynamic_header_data()
-        cFormatter.print(Color.CRITICAL, 'Response 403 - Forbidden: The client does not have access rights to the content.', isLogging=True)
     elif response.status_code == 404:
         cFormatter.print(Color.BRIGHT_RED, 'Response 404 - Not Found: The server can not find the requested resource.', isLogging=True)
     elif response.status_code == 405:
@@ -76,14 +76,30 @@ def handle_error_response(response: requests.Response) -> dict:
         cFormatter.print(Color.CRITICAL, 'Unexpected response received from the server.', isLogging=True)
 
 class HeaderGenerator:
+    retry_count = 0
     headerfile_save = './data/headerfile-save.json'
     headerfile_public = './data/headerfile-public.json'
     extra_file_path = './data/extra.json'
+    git_url = 'https://raw.githubusercontent.com/RogueEdit/onlineRogueEditor/headerfile/headerfile-public.json'
+    user_agents = []
+    static_headers = []
 
     @classmethod
     def set_attributes(cls, headers: Dict[str, list]) -> None:
         cls.user_agents = headers.get('user_agents', [])
         cls.static_headers = headers.get('static_headers', {})
+
+    @classmethod
+    def load_user_agents(cls) -> None:
+        """
+        Load user agents from headerfile-public.json and assign them to user_agents attribute.
+        """
+        try:
+            with open('./data/headerfile-public.json', 'r') as f:
+                data = json.load(f)
+                cls.user_agents = data.get('user_agents', [])
+        except Exception as e:
+            print(f"Failed to load user agents: {e}")
 
     @classmethod
     def load_headers(cls) -> Dict[str, str]:
@@ -125,23 +141,26 @@ class HeaderGenerator:
         Returns:
             Dict[str, str]: Generated headers.
         """
-        # Ensure user agents are loaded
-        if not hasattr(cls, 'user_agents') or not cls.user_agents:
-            headers = cls.load_headers()
-            if not headers:
-                raise ValueError("Failed to load user agents for header generation.")
-        else:
-            headers = {}
+        headers = {}
 
-        user_agent = random.choice(cls.user_agents)
-        headers.update(cls.static_headers)
-        headers.update({'User-Agent': user_agent})
+        try:
+            with open('./data/headerfile-public.json', 'r') as f:
+                data = json.load(f)
+                user_agents = data.get('user_agents', [])
+                static_headers = data.get('static_headers', {})  # Retrieve static headers from the JSON file
+                if not user_agents:
+                    raise ValueError("No user agents found in headerfile-public.json")
 
-        if auth_token:
-            headers['Authorization'] = f'Bearer {auth_token}'
+                # Use user_agents from file
+                user_agent = random.choice(user_agents)
+                headers.update(static_headers)  # Update headers with static headers
+                headers.update({'User-Agent': user_agent})  # Add the random user agent to headers
 
-        if not onlySetup:
-            cls.save_headers(headers)
+                if not onlySetup:
+                    cls.save_headers(headers)
+
+        except Exception as e:
+            print(f"Failed to generate headers: {e}")
 
         return headers
 
@@ -178,19 +197,40 @@ class HeaderGenerator:
         total_403_errors = cls.read_403_count()
 
         if force_fetch or total_403_errors >= 3:
-            cls.retry_count = 3
+            retry_count = 3  # Set retry_count to 3 to force fetch
+        else:
+            retry_count = getattr(cls, 'retry_count', 0) + 1  # Increment retry_count if it exists
 
-        while cls.retry_count < 3:
-            headers = cls.generate_headers()
-            cls.save_headers(headers)
-            total_403_errors += 1
-            cls.write_403_count(total_403_errors)
-            cls.retry_count += 1
+        # Always delete the existing header file
+        if os.path.exists(cls.headerfile_save):
             os.remove(cls.headerfile_save)
-            return
 
-        cls.write_403_count(0)
-        os.remove(cls.headerfile_save)
+        if retry_count < 3:
+            # Write the current 403 count to extra.json
+            total_403_errors += 1  # Increment the total 403 error count
+            cls.write_403_count(total_403_errors)
+            cFormatter.print(Color.CRITICAL, 'Response 403 - Forbidden: The client does not have access rights to the content.', isLogging=True)
+            cFormatter.print(Color.CRITICAL, f'Total number of 403 errors encountered: {total_403_errors}', isLogging=True)
+            cFormatter.print(Color.CRITICAL, f'Please retry {3 - total_403_errors} more times. Then we will try to rebuild header data...', isLogging=True)
+        else:
+            # Perform fetch from remote source
+            response = requests.get(cls.git_url)
+            if response.status_code == 200:
+                print("Fetched new seed")
+                try:
+                    headers_response = response.json()
+                    cls.set_attributes(headers_response)
+                    cls.retry_count = 0  # Reset the counter
+                    # Reset total_403_errors count in the JSON file after fetch
+                    cls.write_403_count(0)
+                except json.JSONDecodeError as e:
+                    print(f'DEBUG: JSONDecodeError while decoding response content: {e}')
+            else:
+                print(f'DEBUG: Failed to fetch headers from remote source, status_code={response.status_code}')
+
+        if force_fetch:
+            cFormatter.print(Color.BRIGHT_GREEN, 'Header data newly constructed. Restart the tool.', isLogging=True)
+            cFormatter.print(Color.BRIGHT_CYAN, f'Total number of 403 errors encountered reset.', isLogging=True)
 
 class loginLogic:
     LOGIN_URL = 'https://api.pokerogue.net/account/login'
@@ -206,9 +246,12 @@ class loginLogic:
     def login(self) -> bool:
         data = {'username': self.username, 'password': self.password}
         try:
-            headers = HeaderGenerator.load_headers()
+            headers = HeaderGenerator.generate_headers()
+            # Faking 403
+            # headers = {'Authorization': 'Bearer invalid_token'}
 
             response = self.session.post(self.LOGIN_URL, headers=headers, data=data)
+            sleep(3)
             response.raise_for_status()
 
             login_response = response.json()

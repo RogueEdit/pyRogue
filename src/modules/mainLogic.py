@@ -10,6 +10,7 @@ import random
 import os
 import shutil
 import brotli
+import time
 from typing import Dict, Any, Optional, List
 import logging
 from colorama import init, Fore, Style
@@ -90,20 +91,23 @@ class Rogue:
         
         self.__dump_data()
 
-    def _setup_headers(self) -> Dict[str, str]:
+    def _setup_headers(auth_token: str) -> Dict[str, str]:
         """
         Set up headers for HTTP requests.
+
+        Args:
+            auth_token (str): Authorization token for API access.
 
         Returns:
             Dict[str, str]: Generated headers.
         """
-        headers = {'Authorization': self.auth_token}
-
         # Load additional headers from headerfile-save.json
         additional_headers = HeaderGenerator.load_headers()
         if additional_headers:
-            headers.update(additional_headers)
+            HeaderGenerator.set_attributes(additional_headers)
 
+        headers = {'Authorization': f'{auth_token}'}
+        headers.update(HeaderGenerator.static_headers)
 
         return headers
 
@@ -127,7 +131,8 @@ class Rogue:
                 self.__write_data(trainer_data, 'trainer.json')
             else:
                 cFormatter.print(Color.DEBUG, 'Failed to fetch trainer save data.')
-
+            cFormatter.print(Color.INFO, 'Sleeping 3 seconds to look more human before fetching saveslot.')
+            sleep(2)
             game_data = self.get_gamesave_data(slot)
             if game_data:
                 self.__write_data(game_data, f'slot_{slot}.json')
@@ -254,7 +259,7 @@ class Rogue:
 
             self.__update_trainer_data(trainer_data)
             self.__update_gamesave_data(self.slot, game_data, url_ext)
-            sleep(5)
+            sleep(2)
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function update_all(): {e}', isLogging=True)
 

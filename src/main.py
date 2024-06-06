@@ -140,12 +140,23 @@ if __name__ == '__main__':
         Fore.LIGHTYELLOW_EX + Style.BRIGHT + '-- You can always edit your trainer.json also yourself! --' + Style.RESET_ALL,
         f'26: >> Save data and upload to the Server{" " * 2}' + Fore.LIGHTYELLOW_EX + Style.BRIGHT +'(Use when done)' + Style.RESET_ALL,
         f'27: >> Print help and program information{" " * 17}',
-        f'28: >> Getting errors? Regenerate some data{" " * 1}{formatted_header}',
+        f'28: >> Rebuild header data{" "*1} {formatted_header}',
         f'{formatted_title}',
     ]
 
 
     while True:
+        initial_page_url = 'https://example.com'
+
+        # Send a GET request to the URL
+        response = requests.get(initial_page_url)
+        
+        # Check if the request was successful (status code 200)
+        if response.status_code == 200:
+            print("Initial page loaded successfully.")
+            # Optionally, you can process the content of the page here
+            initial_page_content = response.text
+
         print('')
         for line in term:
             print(Fore.GREEN + '* ' + Style.RESET_ALL + line + Fore.GREEN + ' *' + Style.RESET_ALL)
