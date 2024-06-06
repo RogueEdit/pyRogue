@@ -444,11 +444,6 @@ class Rogue:
             if (passive < 1) or (passive > 2):
                 cFormatter.print(Color.INFO, 'Invalid input. Setting to NO.')
                 passive = 2
-
-            ability: int = int(input('Do you want to unlock all abilities? (1: Yes | 2: No): '))
-            if (ability < 1) or (ability > 2):
-                cFormatter.print(Color.INFO, 'Invalid input. Setting to NO.')
-                ability = 2
             
             ribbon: int = int(input('Do you want to unlock win-ribbons?: (1: Yes | 2: No): '))
             if (ribbon < 1) or (ribbon > 2):

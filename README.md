@@ -40,6 +40,10 @@ When you launch the tool and login it will create a trainer.json - this is your 
 
 We will not use the tool 24/7 - this means we will not see when it breaks due to changes on PokeRoGue's site. Please report on our discord or GitHub whenever you cannot finish any action.
 
+**IMPORTANT**
+When you encounter multiple 403 Forbiddens - it's usually not on us. Retry to a later point or contact us to rebuild a new header seed file. We programmed a hotfix method in for this case.
+
+
 ## FAQ
 
 - How do i revert my changes?
