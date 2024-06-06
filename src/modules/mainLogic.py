@@ -96,7 +96,7 @@ class Rogue:
             additional_headers = HeaderGenerator.load_headers()
             if additional_headers:
                 HeaderGenerator.set_attributes(additional_headers)
-            headers.update(HeaderGenerator.static_headers)
+            headers.update(additional_headers)
 
         return headers
     

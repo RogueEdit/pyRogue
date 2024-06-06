@@ -79,11 +79,11 @@ if __name__ == '__main__':
         elif loginChoice == 3:
             timeoutChoice = int(input('Estimate how long it will take to start your game (40+ recommended): '))
             selenium_logic = SeleniumLogic(username, password, timeoutChoice)
-            session_id, token, headers = selenium_logic.logic()
+            session_id, token = selenium_logic.logic()
 
-            if session_id and token and headers:
+            if session_id and token:
                 cFormatter.print(Color.INFO, f'Logged in as: {username.capitalize()}')
-                rogue = Rogue(session, token, session_id, headers=headers)
+                rogue = Rogue(session, token, session_id)
                 break
             else:
                 cFormatter.print(Color.CRITICAL, "Failed to retrieve necessary authentication data from Selenium.")
@@ -169,17 +169,6 @@ if __name__ == '__main__':
 
 
     while True:
-        initial_page_url = 'https://example.com'
-
-        # Send a GET request to the URL
-        response = requests.get(initial_page_url)
-        
-        # Check if the request was successful (status code 200)
-        if response.status_code == 200:
-            print("Initial page loaded successfully.")
-            # Optionally, you can process the content of the page here
-            initial_page_content = response.text
-
         print('')
         for line in term:
             print(Fore.GREEN + '* ' + Style.RESET_ALL + line + Fore.GREEN + ' *' + Style.RESET_ALL)

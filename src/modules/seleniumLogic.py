@@ -82,20 +82,9 @@ class SeleniumLogic:
                         if token:
                             break
 
-        self.selenium_headers = {}
-        for event in events:
-            if 'response' in event['params']:
-                response = event['params']['response']
-                if 'requestHeaders' in response:
-                    request_headers = response['requestHeaders']
-                    if 'headers' in request_headers:
-                        for header, value in request_headers['headers'].items():
-                            self.selenium_headers[header] = value
-
         print("Session ID:", session_id)
         print("Token:", token)
-        print("Headers:", self.selenium_headers)
 
         driver.quit()
 
-        return session_id, token, self.selenium_headers
+        return session_id, token
