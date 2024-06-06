@@ -14,7 +14,7 @@ from time import sleep
 
 from utilities.limiter import Limiter
 from utilities.cFormatter import cFormatter, Color
-limiter = Limiter(lockout_period=30, timestamp_file='./data/extra.json')
+limiter = Limiter(lockout_period=15, timestamp_file='./data/extra.json')
 init()
 
 def handle_error_response(response: requests.Response) -> Dict[str, str]:
@@ -168,15 +168,15 @@ class HeaderGenerator:
 
         Returns:
             Dict[str, str]: Generated headers.
-
-        Example:
-            >>> headers = HeaderGenerator.generate_headers()
-            >>> print(headers)
-            {'User-Agent': 'Mozilla/5.0', 'Content-Type': 'application/json'}
         """
         headers: Dict[str, str] = {}
 
-        # Check if headerfile-public.json exists and fetch if not
+        # Check if headerfile-save.json exists
+        if os.path.exists(cls.headerfile_save):
+            cFormatter.print(Color.DEBUG, f'{cls.headerfile_save} exists. Found already valid access headers.', isLogging=True)
+            return cls.load_headers()
+
+        # If headerfile-save.json does not exist, load headerfile-public.json and generate new headers
         if not os.path.exists(cls.headerfile_public):
             cFormatter.print(Color.WARNING, f'{cls.headerfile_public} not found. Fetching from {cls.git_url}.', isLogging=True)
             response = requests.get(cls.git_url)
@@ -192,8 +192,10 @@ class HeaderGenerator:
                 data = json.load(f)
                 user_agents = data.get('user_agents', [])
                 static_headers = data.get('static_headers', {})  # Retrieve static headers from the JSON file
+                cls.set_attributes(data)  # Set attributes using loaded data
+
                 if not user_agents:
-                    cFormatter.print(Color.INFO, 'No user agents found in headerfile-public.json')
+                    cFormatter.print(Color.INFO, 'No user agents found in headerfile-public.json', isLogging=True)
 
                 # Use user_agents from file
                 user_agent = random.choice(user_agents)

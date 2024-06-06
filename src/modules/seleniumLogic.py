@@ -7,11 +7,14 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from modules.mainLogic import Rogue
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 import json
 import time
-import requests
 from typing import Optional, Tuple, Dict, Any
+from modules.loginLogic import HeaderGenerator
+from utilities.logger import CustomLogger
 
 class SeleniumLogic:
     """
@@ -21,8 +24,6 @@ class SeleniumLogic:
         username (str): The username for login.
         password (str): The password for login.
         timeout (int): The timeout duration for the login process.
-        session (requests.Session): The requests session for handling HTTP requests.
-        selenium_headers (Dict): Headers used in the Selenium session.
     """
 
     def __init__(self, username: str, password: str, timeout: int) -> None:
@@ -37,8 +38,6 @@ class SeleniumLogic:
         self.timeout = timeout
         self.username = username
         self.password = password
-        self.session = requests.Session()
-        self.selenium_headers = {}
 
     def _process_browser_log_entry(self, entry: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -53,81 +52,88 @@ class SeleniumLogic:
         response = json.loads(entry['message'])['message']
         return response
 
-    def print_until_timeout(self) -> None:
+    def logic(self) -> Tuple[Optional[str], Optional[str], Optional[Dict[str, Any]]]:
         """
-        Prints a message repeatedly until the timeout duration is reached.
-        """
-        timeout_seconds = self.timeout
-        start_time = time.time()
-
-        while True:
-            current_time = time.time()
-            elapsed_time = current_time - start_time
-
-            if elapsed_time >= timeout_seconds:
-                break
-
-            print("Please do not log in manually now in the newly opened browser. Wait until the browser closes and do not touch anything.")
-            time.sleep(1)
-
-    def logic(self) -> Tuple[Optional[str], Optional[str]]:
-        """
-        Handles the login logic using Selenium and retrieves the session ID and token.
+        Handles the login logic using Selenium and retrieves the session ID, token, and headers.
 
         Returns:
-            Tuple[Optional[str], Optional[str]]: The session ID and token if available, otherwise None.
+            Tuple[Optional[str], Optional[str], Optional[Dict[str, Any]]]: The session ID, token, and headers if available, otherwise None.
         """
-        opts = webdriver.ChromeOptions()
-        opts.set_capability('goog:loggingPrefs', {'performance': 'ALL'})
-        opts.add_argument('--no-sandbox')
+        CustomLogger.deactivate_logging()
+        options = webdriver.ChromeOptions()
+        options.set_capability('goog:loggingPrefs', {'performance': 'ALL'})
 
-        driver = webdriver.Chrome(options=opts)
+        driver = webdriver.Chrome(options=options)
         url = "https://www.pokerogue.net/"
         driver.get(url)
 
-        self.print_until_timeout()
+        try:
+            # Wait for the username field to be visible and input the username
+            username_field = WebDriverWait(driver, self.timeout).until(
+                EC.visibility_of_element_located((By.CSS_SELECTOR, "input[type='text']"))
+            )
+            username_field.send_keys(self.username)
 
-        # Locate and fill the username and password fields
-        username_field = driver.find_element(By.CSS_SELECTOR, "input[type='text']")
-        password_field = driver.find_element(By.CSS_SELECTOR, "input[type='password']")
+            # Wait for the password field to be visible and input the password
+            password_field = WebDriverWait(driver, self.timeout).until(
+                EC.visibility_of_element_located((By.CSS_SELECTOR, "input[type='password']"))
+            )
+            password_field.send_keys(self.password)
+            password_field.send_keys(Keys.RETURN)
 
-        username_field.send_keys(self.username)
-        password_field.send_keys(self.password)
-        password_field.send_keys(Keys.RETURN)
+            print("Waiting for login data...")
+            start_time = time.time()
+            while True:
+                time.sleep(1)
+                browser_log = driver.get_log('performance')
+                events = [self._process_browser_log_entry(entry) for entry in browser_log]
 
-        time.sleep(10)  # Wait for the login to complete
+                session_id = None
+                token = None
+                headers = None
 
-        # Retrieve the browser log
-        browser_log = driver.get_log('performance')
-        events = [self._process_browser_log_entry(entry) for entry in browser_log]
+                for event in events:
+                    if 'response' in event['params']:
+                        response = event["params"]["response"]
+                        if 'url' in response:
+                            url = response['url']
+                            if 'clientSessionId' in url:
+                                session_id = url.split('clientSessionId=')[1]
+                    if 'method' in event and event['method'] == 'Network.requestWillBeSent':
+                        request = event['params']['request']
+                        if request['url'] == 'https://api.pokerogue.net/account/login':
+                            headers = request['headers']
+                    if 'method' in event and event['method'] == 'Network.responseReceived':
+                        response = event['params']['response']
+                        if response['url'] == 'https://api.pokerogue.net/account/login':
+                            request_id = event['params']['requestId']
+                            result = driver.execute_cdp_cmd('Network.getResponseBody', {'requestId': request_id})
+                            response_body = result.get('body', '')
+                            if response_body:
+                                token_data = json.loads(response_body)
+                                token = token_data.get('token')
 
-        session_id = None
-        for event in events:
-            if 'response' in event['params']:
-                response = event["params"]["response"]
-                if 'url' in response:
-                    url = response['url']
-                    if 'clientSessionId' in url:
-                        session_id = url.split('clientSessionId=')[1]
-                        break
+                if session_id and token and headers:
+                    break
 
-        token = None
-        for event in events:
-            if 'method' in event and event['method'] == 'Network.responseReceived':
-                response = event['params']['response']
-                if response['url'] == 'https://api.pokerogue.net/account/login':
-                    request_id = event['params']['requestId']
-                    result = driver.execute_cdp_cmd('Network.getResponseBody', {'requestId': request_id})
-                    response_body = result.get('body', '')
-                    if response_body:
-                        token_data = json.loads(response_body)
-                        token = token_data.get('token')
-                        if token:
-                            break
+                print("Still waiting for login data...")
 
+                elapsed_time = time.time() - start_time
+                if elapsed_time >= self.timeout:
+                    print("Timeout occurred.")
+                    break
+
+        except TimeoutException as e:
+            print(f"Timeout occurred: {e}")
+
+        finally:
+            HeaderGenerator.save_headers(headers=headers)
+            driver.quit()
+
+        CustomLogger.reactivate_logging()
         print("Session ID:", session_id)
         print("Token:", token)
+        print("Request Headers:", json.dumps(headers, indent=2))
 
-        driver.quit()
 
-        return session_id, token
+        return session_id, token, headers
