@@ -31,7 +31,7 @@ from prompt_toolkit.completion import WordCompleter
 
 from utilities.eggLogic import *
 
-limiter = Limiter(lockout_period=30, timestamp_file='./data/extra.json')
+limiter = Limiter(lockout_period=15, timestamp_file='./data/extra.json')
 logger = logging.getLogger(__name__)
 logging.basicConfig(level = logging.INFO)
 

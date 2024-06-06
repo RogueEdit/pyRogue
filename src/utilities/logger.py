@@ -17,6 +17,11 @@ if not os.path.exists(logs_directory):
     os.makedirs(logs_directory)
     print(f'Created logs directory: {logs_directory}')
 
+class CustomFilter(logging.Filter):
+    def filter(self, record):
+        # Exclude log messages containing "data={"value":"
+        return "data={\"value\":" not in record.getMessage()
+
 class CustomLogger:
     """
     A custom logger class that logs messages to a weekly log file.
@@ -31,6 +36,9 @@ class CustomLogger:
         fh.setLevel(logging.DEBUG)
         fh.setFormatter(formatter_file)
 
+        # Add custom filter to file handler
+        fh.addFilter(CustomFilter())
+
         # Add file handler to the root logger
         root_logger = logging.getLogger()
         root_logger.propagate = False
@@ -42,3 +50,23 @@ class CustomLogger:
         for handler in root_logger.handlers:
             if isinstance(handler, logging.StreamHandler):
                 root_logger.removeHandler(handler)
+    
+    @staticmethod
+    def deactivate_logging():
+        """
+        Temporarily deactivate logging.
+        """
+        root_logger = logging.getLogger()
+        for handler in root_logger.handlers:
+            if isinstance(handler, TimedRotatingFileHandler):
+                handler.setLevel(logging.NOTSET)
+
+    @staticmethod
+    def reactivate_logging():
+        """
+        Reactivate logging.
+        """
+        root_logger = logging.getLogger()
+        for handler in root_logger.handlers:
+            if isinstance(handler, TimedRotatingFileHandler):
+                handler.setLevel(logging.DEBUG)

@@ -15,7 +15,7 @@ from utilities.cFormatter import cFormatter, Color
 from utilities.logger import CustomLogger
 import modules.config
 
-version = 'v0.1.7'
+version = 'v0.1.8'
 
 init()
 logger = CustomLogger()
@@ -60,6 +60,10 @@ def main():
         cFormatter.print(Color.BRIGHT_GREEN, 'We create base-backups on every login and further backups everytime you start or up choose so manually.')
         cFormatter.print(Color.BRIGHT_GREEN, 'In case of trouble, please refer to our GitHub. https://github.com/RogueEdit/onlineRogueEditor ')
         cFormatter.print_separators(60, '-')
+        cFormatter.print(Color.DEBUG, 'We are very sorry for some 403\'s. If you now encounter 403 Errors with Option 1, use Option 2. ')
+        cFormatter.print(Color.DEBUG, 'Now use access-headers based on the browser session that opens. After this, you should be able to use')
+        cFormatter.print(Color.DEBUG, 'Option 1 aswell, but we fine tuned Option 2 so it does not need to wait forever. ')
+        cFormatter.print_separators(60, '-')
         cFormatter.print(Color.DEBUG, 'When this programm encounters 403 Forbidden errors too often, it will rebuild header data.')
         cFormatter.print(Color.BRIGHT_MAGENTA, '1: Using requests.')
         cFormatter.print(Color.BRIGHT_MAGENTA, '2: Using own browser. Use when 1 doesnt work.')
@@ -83,18 +87,12 @@ def main():
             except Exception as e:
                 cFormatter.print(Color.CRITICAL, f'Something went wrong. {e}', isLogging=True)
         elif loginChoice == 2:
-            try:
-                timeoutChoice = int(input('Estimate how long it will take to start your game (40+ recommended): '))
-            except ValueError:
-                cFormatter.print(Color.CRITICAL, "Invalid choice. Please enter a number.")
-                continue
+            selenium_logic = SeleniumLogic(username, password, 120)
+            session_id, token, headers = selenium_logic.logic()  # Unpack three values
 
-            selenium_logic = SeleniumLogic(username, password, timeoutChoice)
-            session_id, token = selenium_logic.logic()
-
-            if session_id and token:
+            if session_id and token and headers:
                 cFormatter.print(Color.INFO, f'Logged in as: {username.capitalize()}')
-                rogue = Rogue(session, token, session_id)
+                rogue = Rogue(session, auth_token=token, clientSessionId=session_id, headers=headers)
                 break
             else:
                 cFormatter.print(Color.CRITICAL, "Failed to retrieve necessary authentication data from Selenium.")
@@ -173,7 +171,7 @@ def main():
         Fore.LIGHTYELLOW_EX + Style.BRIGHT + '-- You can always edit your trainer.json also yourself! --' + Style.RESET_ALL,
         f'26: >> Save data and upload to the Server{" " * 2}' + Fore.LIGHTYELLOW_EX + Style.BRIGHT +'(Use when done)' + Style.RESET_ALL,
         f'27: >> Print help and program information{" " * 17}',
-        f'27: >> Print changelogs{" " * 30}',
+        f'27: >> Print changelogs{" " * 38}',
         f'{formatted_title}',
     ]
 
