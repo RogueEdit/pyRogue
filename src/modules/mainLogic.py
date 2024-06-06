@@ -2,7 +2,7 @@
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
-# Date of release: 05.06.2024 
+# Date of release: 06.06.2024 
 
 import requests
 import json
@@ -10,25 +10,31 @@ import random
 import os
 import shutil
 import brotli
-from typing import Dict, Any, Union, Optional, List
+import time
+from typing import Dict, Any, Optional, List
 import logging
-from utilities.headers import user_agents, header_languages
 from colorama import init, Fore, Style
 from time import sleep
 import datetime
-
 import re
+from modules.loginLogic import handle_error_response
+import modules.config
 
 from utilities.generator import Generator
 from utilities.enumLoader import EnumLoader
 from utilities.cFormatter import cFormatter, Color
+from utilities.limiter import Limiter
+from modules.loginLogic import HeaderGenerator
 
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 
 from utilities.eggLogic import *
+
+limiter = Limiter(lockout_period=30, timestamp_file='./data/extra.json')
 logger = logging.getLogger(__name__)
 logging.basicConfig(level = logging.INFO)
+
 
 class Rogue:
     """
@@ -44,33 +50,25 @@ class Rogue:
     GAMESAVE_SLOT_URL = 'https://api.pokerogue.net/savedata/get?datatype=1&slot='
     UPDATE_TRAINER_DATA_URL = 'https://api.pokerogue.net/savedata/update?datatype=0'
     UPDATE_GAMESAVE_SLOT_URL = 'https://api.pokerogue.net/savedata/update?datatype=1&slot='
+    UPDATE_ALL_URL = 'https://api.pokerogue.net/savedata/updateall'
 
-    def __init__(self, session: requests.Session, auth_token: str, clientSessionId: str) -> None:
-        """
-        Initialize a Rogue instance.
-
-        Args:
-            session (requests.Session): Session object to maintain HTTP connections.
-            auth_token (str): Authorization token for API access.
-            clientSessionId (str): Client session ID for authentication.
-        """
-
-        # Append needed data
+    def __init__(self, session: requests.Session, auth_token: str, clientSessionId: str = None, headers: dict = None) -> None:
+        self.slot = None
         self.session = session
         self.__MAX_BIG_INT = (2 ** 53) - 1
         self.auth_token = auth_token
         self.clientSessionId = clientSessionId
-        self.slot = None
-        self.headers = None
-        self.user_agents = user_agents
-        self.header_languages = header_languages
-        self._setup_headers()
+        self.seleniumHeader = headers
+        self.headers = self._setup_headers()
+        if not self.headers:
+            raise ValueError("Failed to load headers.")
 
+        # json generators
         self.generator = Generator()
         self.generator.generate()
-
         self.enum = EnumLoader()
         
+        # wordcomplete
         self.pokemon_id_by_name, self.biomes_by_id, self.moves_by_id, self.nature_data, self.vouchers_data, self.natureSlot_data = self.enum.convert_to_enums()
 
         try:
@@ -84,40 +82,25 @@ class Rogue:
         
         self.__dump_data()
 
-    def __handle_error_response(self, response: requests.Response) -> dict:
+    def _setup_headers(self) -> Dict[str, str]:
         """
-        Handle error responses from the server.
-
-        Args:
-            response (requests.Response): The HTTP response object.
+        Set up headers for HTTP requests.
 
         Returns:
-            dict: Empty dictionary.
+            Dict[str, str]: Generated headers.
         """
-        if response.status_code == 400:
-            cFormatter.print(Color.WARNING, 'Response 400 - Something went wrong.', isLogging=True)
-        elif response.status_code == 200:
-            cFormatter.print(Color.BRIGHT_GREEN, 'Response 200 - That seemed to have worked!', isLogging=True)
-            cFormatter.print(Color.BRIGHT_GREEN, 'If it doesnt apply ingame refresh without Cache or try a private tab!', isLogging=True)
+        headers = {'Authorization': f'{self.auth_token}'}
+
+        if self.seleniumHeader:
+            headers.update(self.seleniumHeader)
         else:
-            cFormatter.print(Color.CRITICAL, 'Unexpected response receiver from the server.', isLogging=True)
+            additional_headers = HeaderGenerator.load_headers()
+            if additional_headers:
+                HeaderGenerator.set_attributes(additional_headers)
+            headers.update(additional_headers)
 
-    def _setup_headers(self) -> None:
-        # Setup authorized headers, switching all data aswell to be more random
-        self.headers = {
-            'Authorization': self.auth_token,
-            'User-Agent': random.choice(self.user_agents),
-            'Accept': 'application/x-www-form-urlencoded',
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Accept-Language': random.choice(self.header_languages),
-            'Accept-Encoding': 'gzip, deflate, br, zstd',
-            'Referer': 'https://pokerogue.net/',
-            'content-encoding': 'br',
-            'Origin': 'https://pokerogue.net/',
-            'Connection': 'keep-alive',
-            'Sec-Fetch-Dest': 'empty'
-        }
-
+        return headers
+    
     def __dump_data(self, slot: int = 1) -> None:
         """
         Dump data from the API to local files.
@@ -134,21 +117,18 @@ class Rogue:
                     return
 
             trainer_data = self.get_trainer_data()
-            if trainer_data:
-                self.__write_data(trainer_data, 'trainer.json')
-            else:
-                cFormatter.print(Color.DEBUG, 'Failed to fetch trainer save data.')
-
+            cFormatter.print(Color.DEBUG, 'Sleeping 3 seconds to look more human before fetching saveslot-data.')
+            sleep(3)
             game_data = self.get_gamesave_data(slot)
-            if game_data:
-                self.__write_data(game_data, f'slot_{slot}.json')
-            else:
-                cFormatter.print(Color.DEBUG, f'Failed to fetch save-slot data for slot {slot}.')
 
-            self.create_backup()
+
+            if game_data and trainer_data:
+                self.create_backup()
+
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function __dump_data(): {e}', isLogging=True)
 
+    @limiter.lockout
     def get_trainer_data(self) -> dict:
         """
         Fetch trainer data from the API.
@@ -161,28 +141,32 @@ class Rogue:
             response = self.session.get(self.TRAINER_DATA_URL, headers=self.headers)
             response.raise_for_status()
             if response.content:  # Check if the response content is not empty
-                cFormatter.print(Color.GREEN, 'Succesfully fetched data.')
-                return response.json()
+                cFormatter.print(Color.GREEN, 'Successfully fetched data.')
+                data = response.json()
+                self.__write_data(data, 'trainer.json', False)
+                return data
             else:
-                return self.__handle_error_response(response)
-
+                return handle_error_response(response)
         except requests.RequestException as e:
             cFormatter.print(Color.DEBUG, f'Error fetching trainer data. Please restart the tool. \n {e}', isLogging=True)
 
+    @limiter.lockout
     def get_gamesave_data(self, slot: int = 1):
-        cFormatter.print(Color.INFO, f'Fecthing data for Slot {slot}...')
+        cFormatter.print(Color.INFO, f'Fetching data for Slot {slot}...')
         try:
             response = self.session.get(f'{self.GAMESAVE_SLOT_URL}{slot-1}', headers=self.headers)
             response.raise_for_status()
             if response.content:  # Check if the response content is not empty
-                cFormatter.print(Color.GREEN, 'Succesfully fetched data.')
-                return response.json()
+                cFormatter.print(Color.GREEN, 'Successfully fetched data.')
+                data = response.json()
+                self.__write_data(data, f'slot_{slot}.json', False)
+                return data
             else:
-                return self.__handle_error_response(response)
-
+                return handle_error_response(response)
         except requests.RequestException as e:
             cFormatter.print(Color.CRITICAL, f'Error fetching save-slot data. Please restart the tool. \n {e}', isLogging=True)
 
+    @limiter.lockout
     def __update_trainer_data(self, trainer_payload: dict) -> dict:
         """
         Update the trainer data on the server.
@@ -201,11 +185,12 @@ class Rogue:
                 cFormatter.print(Color.GREEN, 'Succesfully updated data on the sever.')
                 return response.json()
             else:
-                return self.__handle_error_response(response)
+                return handle_error_response(response)
             
         except requests.RequestException as e:
             cFormatter.print(Color.CRITICAL, f'Error updating trainer data. Please restart the tool. \n {e}', isLogging=True)
 
+    @limiter.lockout
     def __update_gamesave_data(self, slot: int, gamedata_payload: Dict[str, any], url_ext: str) -> Dict[str, any]:
         """
         Update the gamesave data on the server.
@@ -226,7 +211,7 @@ class Rogue:
             if response.content:  # Check if the response content is not empty
                 cFormatter.print(Color.GREEN, f'{response.json()} - That worked! Dont forget to clear your browser cache.')
             else:
-                return self.__handle_error_response(response)
+                return handle_error_response(response)
             
         except requests.RequestException as e:
             # This might be TypeErrors not sure since httpreponse might be invalid here
@@ -260,12 +245,13 @@ class Rogue:
             url_ext = f'&trainerId={trainer_id}&secretId={trainer_secretId}'
 
             self.__update_trainer_data(trainer_data)
+            cFormatter.print(Color.DEBUG, 'Sleeping 3 seconds to look more human before saving saveslot-data.')
+            sleep(3)
             self.__update_gamesave_data(self.slot, game_data, url_ext)
-            sleep(5)
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function update_all(): {e}', isLogging=True)
 
-    def __write_data(self, data: Dict[str, any], filename: str) -> None:
+    def __write_data(self, data: Dict[str, any], filename: str, showSuccess: bool = True) -> None:
         """
         Write data to a JSON file.
 
@@ -282,9 +268,11 @@ class Rogue:
         try:
             with open(filename, 'w') as f:
                 json.dump(data, f, indent=4)
-                cFormatter.print(Color.BRIGHT_GREEN, 'Written to local data. Do not forget to apply to server when done!')
+                if showSuccess:
+                    cFormatter.print(Color.BRIGHT_GREEN, 'Written to local data. Do not forget to apply to server when done!')
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error .__writing_data(): {e}', isLogging=True)
+
 
     def __load_data(self, file_path: str) -> Dict[str, Any]:
             """"
@@ -306,7 +294,7 @@ class Rogue:
                 Exception: If any error occurs during the process.
             """
             try:
-                with open(file_path, "r") as f:
+                with open(file_path, 'r') as f:
                     return json.load(f)
             except Exception as e:
                 cFormatter.print(Color.CRITICAL, f'Error in function .__load_data(): {e}', isLogging=True)
@@ -419,19 +407,33 @@ class Rogue:
         try:
             trainer_data = self.__load_data('trainer.json')
 
-            choice: int = int(input('Do you want to unlock all forms (Shiny Tier 3) as well? (1: Yes | 2: No): '))
+            choice = int(input('Do you want to unlock all forms of the pokemon? (All forms are Tier 3 shinies. 1: Yes | 2: No): '))
             if (choice < 1) or (choice > 2):
-                cFormatter.print(Color.INFO, 'Invalid input.')
-                return
-            elif choice == 2:
-                is_shiny: int = int(input('Do you want the starters to be shiny? (1: Yes | 2: No): '))
-                if (is_shiny < 1) or (is_shiny > 2):
-                    cFormatter.print(Color.INFO, 'Invalid input.')
-                    return
-                elif is_shiny == 1:
-                    shiny: int = 255
+                cFormatter.print(Color.INFO, f'Incorrect command. Setting to NO')
+                choice = 2
+            elif choice == 1:
+                caught_attr = self.__MAX_BIG_INT
+            else:
+                choice = int(input('Make the Pokemon shiny? (1: Yes, 2: No): '))
+
+                if (choice < 1) or (choice > 2):
+                    cFormatter.print(Color.INFO, 'Invalid choice. Setting to NO')
+                    choice = 2
+                elif choice == 2:
+                    caught_attr = 253
                 else:
-                    shiny: int = 253
+                    choice = int(input('What tier shiny do you want? (1: Tier 1, 2: Tier 2, 3: Tier 3, 4: All shinies): '))
+                    if (choice < 1) or (choice > 4):
+                        cFormatter.print(Color.INFO, 'Invalid choice.')
+                        return
+                    elif choice == 1:
+                        caught_attr = 159
+                    elif choice == 2:
+                        caught_attr = 191
+                    elif choice == 3:
+                        caught_attr = 223
+                    else:
+                        caught_attr = 255
             
             iv: int = int(input('Do you want the starters to have perfect IVs? (1: Yes | 2: No): '))
             if (iv < 1) or (iv > 2):
@@ -442,11 +444,6 @@ class Rogue:
             if (passive < 1) or (passive > 2):
                 cFormatter.print(Color.INFO, 'Invalid input. Setting to NO.')
                 passive = 2
-
-            ability: int = int(input('Do you want to unlock all abilities? (1: Yes | 2: No): '))
-            if (ability < 1) or (ability > 2):
-                cFormatter.print(Color.INFO, 'Invalid input. Setting to NO.')
-                ability = 2
             
             ribbon: int = int(input('Do you want to unlock win-ribbons?: (1: Yes | 2: No): '))
             if (ribbon < 1) or (ribbon > 2):
@@ -454,7 +451,7 @@ class Rogue:
                 ribbon = 2
 
             nature: int = int(input('Do you want to unlock all natures?: (1: Yes | 2: No): '))
-            if (ribbon < 1) or (ribbon > 2):
+            if (nature < 1) or (nature > 2):
                 cFormatter.print(Color.INFO, 'Invalid input. Setting to NO.')
                 nature = 2
 
@@ -463,11 +460,11 @@ class Rogue:
                 cFormatter.print(Color.INFO, 'Invalid input. Setting to 0.')
                 costReduce = 0
 
-            abilityAttr = int(input('Do you want to unlock abilites? (1: None | 2: All with hidden): '))
+            abilityAttr = int(input('Do you want to unlock all abilites? (1: Yes | 2: No): '))
             if (abilityAttr < 1) or (abilityAttr > 2):
                 cFormatter.print(Color.INFO, 'Invalid input. Setting to none.')
                 abilityAttr = 0
-            elif abilityAttr == 2:
+            elif abilityAttr == 1:
                 abilityAttr = 7
             else:
                 abilityAttr = 0
@@ -475,19 +472,20 @@ class Rogue:
             total_caught: int = 0
             total_seen: int = 0
             for entry in trainer_data['dexData'].keys():
-                caught: int = random.randint(150, 250)
-                seen: int = random.randint(150, 350)
+                caught: int = random.randint(100, 200)
+                seen: int = random.randint(300, 400)
+                hatched: int = random.randint(30, 50)
                 total_caught += caught
                 total_seen += seen
                 randIv: List[int] = random.sample(range(20, 30), 6)
 
                 trainer_data['dexData'][entry] = {
                     'seenAttr': 479,
-                    'caughtAttr': self.__MAX_BIG_INT if choice == 1 else shiny,
+                    'caughtAttr': self.__MAX_BIG_INT if choice == 1 else caught_attr,
                     'natureAttr': self.nature_data.UNLOCK_ALL.value if nature == 1 else None,
                     'seenCount': seen,
                     'caughtCount': caught,
-                    'hatchedCount': 0,
+                    'hatchedCount': hatched,
                     'ivs': randIv if iv == 2 else [31, 31, 31, 31, 31, 31]
                 }
                 trainer_data['starterData'][entry] = {
@@ -500,16 +498,6 @@ class Rogue:
                     'valueReduction': costReduce,
                     'classicWinCount': None if ribbon == 2 else 1,
                 }
-
-                
-                trainer_data['gameStats']['battles'] = total_caught + random.randint(1, total_caught)
-                trainer_data['gameStats']['pokemonCaught'] = total_caught
-                trainer_data['gameStats']['pokemonSeen'] = total_seen
-                trainer_data['gameStats']['shinyPokemonCaught'] = len(trainer_data['dexData']) * 2
-
-                if ribbon == 1:
-                    trainer_data['gameStats']['classicWinCount'] = 1
-
 
             self.__write_data(trainer_data, 'trainer.json')
         except Exception as e:
@@ -596,11 +584,11 @@ class Rogue:
                 cFormatter.print(Color.INFO, 'Invalid input. Setting to 0.')
                 costReduce = 0
 
-            abilityAttr = int(input('Do you want to unlock abilites? (1: None | 2: All with hidden): '))
+            abilityAttr = int(input('Do you want to unlock all abilites? (1: Yes, with hidden | 2: No): '))
             if (abilityAttr < 1) or (abilityAttr > 2):
                 cFormatter.print(Color.INFO, 'Invalid input. Setting to none.')
                 abilityAttr = 0
-            elif abilityAttr == 2:
+            elif abilityAttr == 1:
                 abilityAttr = 7
             else:
                 abilityAttr = 0
@@ -709,7 +697,7 @@ class Rogue:
 
                 if command == 1:
                         pokemon_completer: WordCompleter = WordCompleter(self.pokemon_id_by_name.__members__.keys(), ignore_case=True)
-                        cFormatter.print(Color.INFO, 'Write the name of the pokemon, it will recomend for auto-completion.')
+                        cFormatter.print(Color.INFO, 'Write the name of the pokemon, it will recommend for auto-completion.')
                         dexId: str = prompt('Enter Pokemon (Name / ID): ', completer=pokemon_completer)
                         
                         try:
@@ -763,7 +751,7 @@ class Rogue:
                     self.print_natureSlot()
 
                     natureSlot_completer: WordCompleter = WordCompleter(self.natureSlot_data.__members__.keys(), ignore_case=True)
-                    cFormatter.print(Color.INFO, 'Write the name of the nature, it will recomend for auto-completion.')
+                    cFormatter.print(Color.INFO, 'Write the name of the nature, it will recommend for auto-completion.')
                     natureSlot: str = prompt('What nature would you like?: ', completer=natureSlot_completer)
 
                     natureSlot: int = int(self.natureSlot_data[natureSlot].value)
@@ -1257,9 +1245,9 @@ class Rogue:
                 randIv: List[int] = random.sample(range(20, 30), 6)
 
                 trainer_data['dexData'][entry] = {
-                    'seenAttr': self.__MAX_BIG_INT,
+                    'seenAttr': random.randint(500, 5000),
                     'caughtAttr': self.__MAX_BIG_INT,
-                    'natureAttr': self.__MAX_BIG_INT,
+                    'natureAttr': self.nature_data.UNLOCK_ALL.value,
                     'seenCount': seen,
                     'caughtCount': caught,
                     'hatchedCount': hatched,
@@ -1268,7 +1256,7 @@ class Rogue:
 
             trainer_data['gameStats'] = {
                 'battles': total_caught + random.randint(1, total_caught),
-                'classicSessionsPlayed': random.randint(2500, 10000) // 10,
+                'classicSessionsPlayed': random.randint(2500, 10000),
                 'dailyRunSessionsPlayed': random.randint(2500, 10000),
                 'dailyRunSessionsWon': random.randint(50, 150),
                 'eggsPulled': random.randint(100, 300),
@@ -1278,7 +1266,7 @@ class Rogue:
                 'highestEndlessWave': random.randint(300, 1000),
                 'highestHeal': random.randint(10000, 12000),
                 'highestLevel': random.randint(3000, 8000),
-                'highestMoney': random.randint(1000000, 100000000),
+                'highestMoney': random.randint(1000000, 10000000),
                 'legendaryEggsPulled': random.randint(10, 50),
                 'legendaryPokemonCaught': random.randint(25, 100),
                 'legendaryPokemonHatched': random.randint(25, 100),
@@ -1294,8 +1282,8 @@ class Rogue:
                 'pokemonHatched': random.randint(2500, 10000),
                 'pokemonSeen': total_seen,
                 'rareEggsPulled': random.randint(150, 250),
-                'ribbonsOwned': total_seen,
-                'sessionsWon': random.randint(250, 1000),
+                'ribbonsOwned': random.randint(600, 1000),
+                'sessionsWon': random.randint(50, 100),
                 'shinyPokemonCaught': len(list(trainer_data['dexData'])) * 2,
                 'shinyPokemonHatched': random.randint(70, 150),
                 'shinyPokemonSeen': random.randint(50, 150),
@@ -1347,9 +1335,25 @@ class Rogue:
         cFormatter.print(Color.INFO, 'You can always edit your json manually aswell.')
         cFormatter.print(Color.INFO, 'If you need assistance please refer to the programs GitHub page.')
         cFormatter.print(Color.INFO, 'https://github.com/RogueEdit/onlineRogueEditor/.')
-        cFormatter.print(Color.INFO, 'This is release version v0.1.5 - please include that in your issue or question report.')
+        cFormatter.print(Color.INFO, f'This is release version {modules.config.version} - please include that in your issue or question report.')
         cFormatter.print(Color.INFO, 'This version now also features a log file.')
         cFormatter.print(Color.INFO, 'We do not take responsibility if your accounts get flagged or banned, and')
         cFormatter.print(Color.INFO, 'you never know if there is a clone from this programm. If you are not sure please')
         cFormatter.print(Color.INFO, 'calculate the checksum of this binary and visit https://github.com/RogueEdit/onlineRogueEditor/')
         cFormatter.print(Color.INFO, 'to see the value it should have to know its original from source.')
+
+    def print_changes(self) -> None:
+        """
+        Print helpful information for the user.
+
+        This method prints various helpful messages for the user, including information
+        about manual JSON editing, assistance through the program's GitHub page, release
+        version details, and cautions about account safety and program authenticity.
+        """
+        cFormatter.print(Color.INFO, '- Rate limiting')
+        cFormatter.print(Color.INFO, '- Added delay and such to appear more natural to the server')
+        cFormatter.print(Color.INFO, '- New header generation')
+        cFormatter.print(Color.INFO, '- When headers fail more often we renew them from remote source (Hotfixes)')
+        cFormatter.print(Color.INFO, '- Added second login logic as fallback')
+        cFormatter.print(Color.INFO, '- Refined some logic and fixed some bugs')
+        cFormatter.print(Color.INFO, f'https://github.com/RogueEdit/onlineRogueEditor/ {modules.config.version}')

@@ -1,16 +1,18 @@
 # pyRogue
 > **pyRogue** is a educational project. This is mostly to be done, if you have any ideas or problems please use the issue feature.
 
-[<img src="https://img.shields.io/badge/Windows-blue">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.1.5/pyRogue-v015-Windows.zip) <img src="https://img.shields.io/badge/d7c3c3673fdf08968cca37a20b5ff05a7545df7edc057a5284efee8867c0539c-blue"> [<img src="https://img.shields.io/badge/Virus%20Total-blue">](https://www.virustotal.com/gui/file/d7c3c3673fdf08968cca37a20b5ff05a7545df7edc057a5284efee8867c0539c?nocache=1) 
+[<img src="https://img.shields.io/badge/Windows-blue">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.1.7/pyRogue-Windows.zip) [<img src="https://img.shields.io/badge/Virus%20Total-blue">](https://www.virustotal.com/gui/file/276dec1526d5c49d1a21930384d19105c8f0221ad4f44754e1a640b7ed25f957?nocache=1) <img src="https://img.shields.io/badge/Checksum-276dec1526d5c49d1a21930384d19105c8f0221ad4f44754e1a640b7ed25f957-blue"> 
 
-[<img src="https://img.shields.io/badge/Linux-Green">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.1.5/pyRogue-v015-Linux.zip) <img src="https://img.shields.io/badge/4066b4b8bfe6f687c9f78cfb637b14fe9a5ec39e3758f8df75951b139f8aec84-Green"> [<img src="https://img.shields.io/badge/Virus%20Total-Green">](https://www.virustotal.com/gui/file/4066b4b8bfe6f687c9f78cfb637b14fe9a5ec39e3758f8df75951b139f8aec84?nocache=1)
+[<img src="https://img.shields.io/badge/Linux-Green">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.1.7/pyRogue-Linux.zip) [<img src="https://img.shields.io/badge/Virus%20Total-Green">](https://www.virustotal.com/gui/file/6e51af9985ea755e824236fe58fcc3bc938bb233babb5bee7f23731b836d8916?nocache=1) <img src="https://img.shields.io/badge/Checksum-6e51af9985ea755e824236fe58fcc3bc938bb233babb5bee7f23731b836d8916-Green"> 
 
-[<img src="https://img.shields.io/badge/Mac-silver">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.1.5/pyRogue-v-015-MacIntel.zip) <img src="https://img.shields.io/badge/1ee0216cced15a5d86e38ef347c007641eb8aaa9405b7b2adbce8cb29cc4119e-silver"> [<img src="https://img.shields.io/badge/Virus%20Total-silver">](https://www.virustotal.com/gui/file/1ee0216cced15a5d86e38ef347c007641eb8aaa9405b7b2adbce8cb29cc4119e?nocache=1)
+[<img src="https://img.shields.io/badge/Mac-silver">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.1.7/pyRogue-MacIntel.zip) [<img src="https://img.shields.io/badge/Virus%20Total-silver">](https://www.virustotal.com/gui/file/e6fea4986ccaf726df66516561b9bf3180d45118a7ec7a8d6b6c820d78d72add?nocache=1) <img src="https://img.shields.io/badge/Checksum-e6fea4986ccaf726df66516561b9bf3180d45118a7ec7a8d6b6c820d78d72add-silver"> 
+
 
 ![Preview Image](.github/previews/main.png)
 ![Preview Image](.github/previews/tool.png)
 
 [More examples](PREVIEW.md)
+[<img src="https://img.shields.io/badge/Join%20our%20News-Discord!-8A2BE2">](https://discord.gg/AjYYudvX)
 
 # List of content
 - [Foreword](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#important-foreword)
@@ -19,6 +21,7 @@
 - [License](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#license)
 - [Features](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#editor-features)
 - [How to run from code](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#how-to-run-from-code)
+- [Regarding Bans and Limited Accounts](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#regarding-bans-and-limited-accounts)
 
 ## Important foreword
 [Feature & Bugboard aswell as Roadmap](https://github.com/orgs/RogueEdit/projects/7)
@@ -37,6 +40,10 @@ When you launch the tool and login it will create a trainer.json - this is your 
 
 We will not use the tool 24/7 - this means we will not see when it breaks due to changes on PokeRoGue's site. Please report on our discord or GitHub whenever you cannot finish any action.
 
+**IMPORTANT**
+When you encounter multiple 403 Forbiddens - it's usually not on us. Retry to a later point or contact us to rebuild a new header seed file. We programmed a hotfix method in for this case.
+
+
 ## FAQ
 
 - How do i revert my changes?
@@ -45,7 +52,7 @@ We will not use the tool 24/7 - this means we will not see when it breaks due to
   ![Preview Image](.github/previews/backup.png)
 
 - Will this get me banned?
-  - We dont know. 
+  - See [Regarding Bans and Limited Accounts](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#regarding-bans-and-limited-accounts)
 
 - Where can i donate?
   - We will not accept any money or any form of payment. If you want to help then only by contributing.
@@ -65,7 +72,7 @@ We will not use the tool 24/7 - this means we will not see when it breaks due to
 
 ## License
 
-- If you want to use the code in any manner feel free to do so but make sure you can see immediately its not the official Repo. If you wanna fork it we ask you to change the title in the readme.md -  but if you want to use it anywhere public, lets say replit and such or you wanna add onto this code you have to include all author-headers and in accordance with GPL you also need to keep the license and cannot change it but are free to do everything aslong as you keep the statement before true. We also prohibit you to make any money of it and we also never will.
+- If you want to use the code in any manner feel free to do so but make sure you can see immediately its not the official Repo. If you wanna fork it we ask you to change the title in the readme.md -  but if you want to use it anywhere public, lets say replit and such or you wanna add onto this code you have to include all author-headers and in accordance with GPL you also need to keep the license and cannot change it but are free to do everything aslong as you keep the statement before true and our headers. We also prohibit you to make any money of it and we also never will. TLDR; Keep the notice and do what you want even with advanced code but make sure it doesnt look like our program.
  
 ## Editor Features
 
@@ -73,7 +80,13 @@ We will not use the tool 24/7 - this means we will not see when it breaks due to
 
 ![Preview Image](.github/previews/autocomplete.png)
 
+- When encountering multiple 403's can rebuild headers from remote source *NEW*
+- Extensive logging for easy debug
+- Two login logics to provide some fallbacks
+
 - When logging in it will automatically create backups for you.
+  - You can restore backups easily see preview above
+
 
 - Load data from server
   - This will fetch the trainer.json containing your account save data
@@ -144,5 +157,10 @@ We will not use the tool 24/7 - this means we will not see when it breaks due to
    - `python3 -m pip install -r requirements.txt`
  - Now you should be able to run main.py
    - `python3 main.py`
+
+## Regarding Bans and Limited Accounts
+https://www.reddit.com/r/pokerogue/comments/1d8hncf/cheats_and_exploits_post_followup_bannable/
+https://www.reddit.com/r/pokerogue/comments/1d8ldlw/a_cheating_and_account_deletionwipe_followup/
+
 
 <meta name="keywords" content="pokerogue, pokerogue save editor, pokerogue, rogueEditor, free, gacha, ticket, tickets, egg, eggs, shiny, save, edit, pokemon, unlimited, hack, hacks, cheat, cheats, trainer, table, pokedex, dex, wave, money, level, levels, iv, ivs, stat, stats, item, items, api, mod, mods, tool, tools, education, python">
