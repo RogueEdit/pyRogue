@@ -57,6 +57,8 @@ class Rogue:
             session (requests.Session): Session object to maintain HTTP connections.
             auth_token (str): Authorization token for API access.
             clientSessionId (str): Client session ID for authentication.
+            user_agents (List[str]): List of user-agent strings to choose from.
+            header_languages (List[str]): List of header languages to choose from.
         """
 
         # Append needed data
@@ -65,8 +67,9 @@ class Rogue:
         self.auth_token = auth_token
         self.clientSessionId = clientSessionId
         self.slot = None
-        self.headers = None
-        self.headers = HeaderGenerator.generate_headers(self.auth_token)
+        self.headers = self._setup_headers()
+        if not self.headers:
+            raise ValueError("Failed to load headers from headerfile-save.json.")
 
         # json generators
         self.generator = Generator()
@@ -86,6 +89,23 @@ class Rogue:
             cFormatter.print(Color.CRITICAL, f'Something on inital data generation failed. {e}', isLogging=True)
         
         self.__dump_data()
+
+    def _setup_headers(self) -> Dict[str, str]:
+        """
+        Set up headers for HTTP requests.
+
+        Returns:
+            Dict[str, str]: Generated headers.
+        """
+        headers = {'Authorization': self.auth_token}
+
+        # Load additional headers from headerfile-save.json
+        additional_headers = HeaderGenerator.load_headers()
+        if additional_headers:
+            headers.update(additional_headers)
+
+
+        return headers
 
     def __dump_data(self, slot: int = 1) -> None:
         """
@@ -134,7 +154,7 @@ class Rogue:
                 cFormatter.print(Color.GREEN, 'Succesfully fetched data.')
                 return response.json()
             else:
-                return (response)
+                return handle_error_response(response)
 
         except requests.RequestException as e:
             cFormatter.print(Color.DEBUG, f'Error fetching trainer data. Please restart the tool. \n {e}', isLogging=True)
@@ -170,7 +190,7 @@ class Rogue:
             response = self.session.post(self.UPDATE_TRAINER_DATA_URL, headers=self.headers, json=trainer_payload)
             response.raise_for_status()
             if response.content:  # Check if the response content is not empty
-                cFormatter.print(Color.GREEN, 'Succesfully updated trainer data on the sever.')
+                cFormatter.print(Color.GREEN, 'Succesfully updated data on the sever.')
                 return response.json()
             else:
                 return handle_error_response(response)
@@ -197,7 +217,7 @@ class Rogue:
                 f'{self.UPDATE_GAMESAVE_SLOT_URL}{slot - 1}{url_ext}', headers=self.headers, json=gamedata_payload)
             response.raise_for_status()
             if response.content:  # Check if the response content is not empty
-                cFormatter.print(Color.GREEN, f'Successfully updated gamesave-slot data on the server.')
+                cFormatter.print(Color.GREEN, f'{response.json()} - That worked! Dont forget to clear your browser cache.')
             else:
                 return handle_error_response(response)
             

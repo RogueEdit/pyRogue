@@ -76,7 +76,6 @@ def handle_error_response(response: requests.Response) -> dict:
         cFormatter.print(Color.CRITICAL, 'Unexpected response received from the server.', isLogging=True)
 
 class HeaderGenerator:
-    retry_count = 0
     headerfile_save = './data/headerfile-save.json'
     headerfile_public = './data/headerfile-public.json'
     extra_file_path = './data/extra.json'
@@ -88,11 +87,21 @@ class HeaderGenerator:
 
     @classmethod
     def load_headers(cls) -> Dict[str, str]:
+        """
+        Load headers from the headerfile-save.json file and append the auth_token.
+
+        Args:
+            auth_token (str): Authorization token to append to the headers.
+
+        Returns:
+            Dict[str, str]: Loaded headers with the auth_token appended.
+        """
         if os.path.exists(cls.headerfile_save):
             try:
                 with open(cls.headerfile_save, 'r') as f:
                     headers = json.load(f)
                     cls.set_attributes(headers)
+                    print(f"DEBUG: Headers loaded from {cls.headerfile_save}: {headers}")
                     return headers
             except Exception as e:
                 print(f"Error loading headers from {cls.headerfile_save}: {e}")
@@ -102,31 +111,40 @@ class HeaderGenerator:
     def save_headers(cls, headers: Dict[str, str]) -> None:
         with open(cls.headerfile_save, 'w') as f:
             json.dump(headers, f, indent=4)
+        print(f"DEBUG: Headers saved to {cls.headerfile_save}")
 
     @classmethod
-    def generate_headers(cls, auth_token: str = None) -> Dict[str, str]:
-        # Check if the headerfile_save already exists
-        if os.path.exists(cls.headerfile_save):
-            return cls.load_headers()
+    def generate_headers(cls, auth_token: str = None, onlySetup: bool = False) -> Dict[str, str]:
+        """
+        Generate headers for HTTP requests.
 
-        # Load user agents from the public header file if not already loaded
+        Args:
+            auth_token (str, optional): Authorization token. Defaults to None.
+            onlySetup (bool, optional): Whether to only set up headers without saving them. Defaults to False.
+
+        Returns:
+            Dict[str, str]: Generated headers.
+        """
+        # Ensure user agents are loaded
         if not hasattr(cls, 'user_agents') or not cls.user_agents:
-            with open(cls.headerfile_public, 'r') as f:
-                public_headers = json.load(f)
-                cls.set_attributes(public_headers)
-                if not cls.user_agents:
-                    raise ValueError("User agents are not loaded and are required for header generation.")
+            headers = cls.load_headers()
+            if not headers:
+                raise ValueError("Failed to load user agents for header generation.")
+        else:
+            headers = {}
 
-        headers = cls.static_headers.copy()
         user_agent = random.choice(cls.user_agents)
+        headers.update(cls.static_headers)
         headers.update({'User-Agent': user_agent})
 
         if auth_token:
-            headers['Authorization'] = f'{auth_token}'
+            headers['Authorization'] = f'Bearer {auth_token}'
 
-        cls.save_headers(headers)
+        if not onlySetup:
+            cls.save_headers(headers)
+
         return headers
-    
+
     @classmethod
     def read_403_count(cls) -> int:
         if not os.path.exists(cls.extra_file_path):
@@ -136,6 +154,7 @@ class HeaderGenerator:
                 data = json.load(f)
                 return data.get('total_403_errors', 0)
         except json.JSONDecodeError as e:
+            print(f'DEBUG: JSONDecodeError while reading extra file: {e}')
             return 0
 
     @classmethod
@@ -146,13 +165,14 @@ class HeaderGenerator:
                 with open(cls.extra_file_path, 'r') as f:
                     data = json.load(f)
             except json.JSONDecodeError as e:
-                print(f"DEBUG: JSONDecodeError while reading extra file: {e}")
-        
+                print(f'DEBUG: JSONDecodeError while reading extra file: {e}')
+                data = {}
+
         data['total_403_errors'] = count
-        
+
         with open(cls.extra_file_path, 'w') as f:
             json.dump(data, f, indent=4)
-            
+
     @classmethod
     def handle_dynamic_header_data(cls, force_fetch: bool = False) -> None:
         total_403_errors = cls.read_403_count()
@@ -188,10 +208,6 @@ class loginLogic:
         try:
             headers = HeaderGenerator.load_headers()
 
-            if not headers:
-                headers = HeaderGenerator.generate_headers()
-            
-
             response = self.session.post(self.LOGIN_URL, headers=headers, data=data)
             response.raise_for_status()
 
@@ -205,8 +221,6 @@ class loginLogic:
             status_code_color = Color.BRIGHT_GREEN if response.status_code == 200 else Color.BRIGHT_RED
             cFormatter.print(status_code_color, f'HTTP Status Code: {response.status_code}', isLogging=True)
             cFormatter.print(Color.CYAN, f'Response URL: {response.request.url}', isLogging=True)
-            cFormatter.print(Color.CYAN, f'Response Headers: {response.request.headers}', isLogging=True)
-
             # Filter and print response headers
             filtered_headers = {key: value for key, value in response.headers.items() if key != 'Report-To'}
             cFormatter.print(Color.CYAN, f'Response Headers: {filtered_headers}', isLogging=True)
