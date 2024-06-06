@@ -49,28 +49,18 @@ class Rogue:
     GAMESAVE_SLOT_URL = 'https://api.pokerogue.net/savedata/get?datatype=1&slot='
     UPDATE_TRAINER_DATA_URL = 'https://api.pokerogue.net/savedata/update?datatype=0'
     UPDATE_GAMESAVE_SLOT_URL = 'https://api.pokerogue.net/savedata/update?datatype=1&slot='
+    UPDATE_ALL_URL = 'https://api.pokerogue.net/savedata/updateall'
 
-    def __init__(self, session: requests.Session, auth_token: str, clientSessionId: str) -> None:
-        """
-        Initialize a Rogue instance.
-
-        Args:
-            session (requests.Session): Session object to maintain HTTP connections.
-            auth_token (str): Authorization token for API access.
-            clientSessionId (str): Client session ID for authentication.
-            user_agents (List[str]): List of user-agent strings to choose from.
-            header_languages (List[str]): List of header languages to choose from.
-        """
-
-        # Append needed data
+    def __init__(self, session: requests.Session, auth_token: str, clientSessionId: str = None, headers: dict = None) -> None:
+        self.slot = None
         self.session = session
         self.__MAX_BIG_INT = (2 ** 53) - 1
         self.auth_token = auth_token
         self.clientSessionId = clientSessionId
-        self.slot = None
+        self.seleniumHeader = headers
         self.headers = self._setup_headers()
         if not self.headers:
-            raise ValueError("Failed to load headers from headerfile-save.json.")
+            raise ValueError("Failed to load headers.")
 
         # json generators
         self.generator = Generator()
@@ -91,26 +81,25 @@ class Rogue:
         
         self.__dump_data()
 
-    def _setup_headers(auth_token: str) -> Dict[str, str]:
+    def _setup_headers(self) -> Dict[str, str]:
         """
         Set up headers for HTTP requests.
-
-        Args:
-            auth_token (str): Authorization token for API access.
 
         Returns:
             Dict[str, str]: Generated headers.
         """
-        # Load additional headers from headerfile-save.json
-        additional_headers = HeaderGenerator.load_headers()
-        if additional_headers:
-            HeaderGenerator.set_attributes(additional_headers)
+        headers = {'Authorization': f'{self.auth_token}'}
 
-        headers = {'Authorization': f'{auth_token}'}
-        headers.update(HeaderGenerator.static_headers)
+        if self.seleniumHeader:
+            headers.update(self.seleniumHeader)
+        else:
+            additional_headers = HeaderGenerator.load_headers()
+            if additional_headers:
+                HeaderGenerator.set_attributes(additional_headers)
+            headers.update(HeaderGenerator.static_headers)
 
         return headers
-
+    
     def __dump_data(self, slot: int = 1) -> None:
         """
         Dump data from the API to local files.

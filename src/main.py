@@ -10,6 +10,7 @@ import brotli
 from modules.loginLogic import loginLogic, HeaderGenerator
 from modules.mainLogic import Rogue
 from colorama import Fore, Style, init
+from modules.seleniumLogic import SeleniumLogic
 
 from utilities.cFormatter import cFormatter, Color
 # cFormatter.print(Color.INFO, 'This is a test message', isLogging=True)
@@ -55,19 +56,41 @@ if __name__ == '__main__':
     while True:
         print('')
         cFormatter.print(Color.GREEN, '<pyRogue>')
+
+        cFormatter.print(Color.BRIGHT_MAGENTA, "1: Using requests. Unreliable but fast.")
+        cFormatter.print(Color.BRIGHT_MAGENTA, "2: Not yet implemented.")
+        cFormatter.print(Color.BRIGHT_MAGENTA, "3: Using selenium. Most reliable but slowest.")
+        loginChoice = int(input('Please choose a method of logging in: '))
+
         username = input('Username: ')
         password = getpass.getpass('Password (password is hidden): ')
 
-        login = loginLogic(username, password)
+        if loginChoice == 1:
+            login = loginLogic(username, password)
+            try:
+                if login.login():
+                    cFormatter.print(Color.INFO, f'Logged in as: {username.capitalize()}')
+                    rogue = Rogue(session, login.token, login.session_id, headers={})
+                    break
+            except Exception as e:
+                cFormatter.print(Color.CRITICAL, f'Something went wrong. {e}', isLogging=True)
+        elif loginChoice == 2:
+            cFormatter.print("Not yet implemented.")
+        elif loginChoice == 3:
+            timeoutChoice = int(input('Estimate how long it will take to start your game (40+ recommended): '))
+            selenium_logic = SeleniumLogic(username, password, timeoutChoice)
+            session_id, token, headers = selenium_logic.logic()
 
-        try:
-            if login.login():
+            if session_id and token and headers:
                 cFormatter.print(Color.INFO, f'Logged in as: {username.capitalize()}')
-                rogue = Rogue(session, login.token, login.session_id)
-                
+                rogue = Rogue(session, token, session_id, headers=headers)
                 break
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Something went wrong. {e}', isLogging=True)
+            else:
+                cFormatter.print(Color.CRITICAL, "Failed to retrieve necessary authentication data from Selenium.")
+        else:
+            cFormatter.print(Color.CRITICAL, "Invalid choice. Please choose a valid method.")
+
+
             
     func = {
         '1': rogue.get_trainer_data,

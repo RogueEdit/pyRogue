@@ -99,7 +99,7 @@ class HeaderGenerator:
                 data = json.load(f)
                 cls.user_agents = data.get('user_agents', [])
         except Exception as e:
-            print(f"Failed to load user agents: {e}")
+            cFormatter.print(Color.CRITICAL, 'Failed to load user agents. {e}', isLogging=True)
 
     @classmethod
     def load_headers(cls) -> Dict[str, str]:
@@ -117,10 +117,10 @@ class HeaderGenerator:
                 with open(cls.headerfile_save, 'r') as f:
                     headers = json.load(f)
                     cls.set_attributes(headers)
-                    print(f"DEBUG: Headers loaded from {cls.headerfile_save}: {headers}")
+                    cFormatter.print(Color.DEBUG, f'Headers loaded from {cls.headerfile_save}: {headers}')
                     return headers
             except Exception as e:
-                print(f"Error loading headers from {cls.headerfile_save}: {e}")
+                cFormatter.print(Color.DEBUG, f'Headers loaded from {cls.headerfile_save}: {e}')
         return {}
 
     @classmethod
@@ -128,6 +128,7 @@ class HeaderGenerator:
         with open(cls.headerfile_save, 'w') as f:
             json.dump(headers, f, indent=4)
         print(f"DEBUG: Headers saved to {cls.headerfile_save}")
+        cFormatter.print(Color.INFO, f'Headers saved to {cls.headerfile_save}')
 
     @classmethod
     def generate_headers(cls, auth_token: str = None, onlySetup: bool = False) -> Dict[str, str]:
@@ -149,7 +150,7 @@ class HeaderGenerator:
                 user_agents = data.get('user_agents', [])
                 static_headers = data.get('static_headers', {})  # Retrieve static headers from the JSON file
                 if not user_agents:
-                    raise ValueError("No user agents found in headerfile-public.json")
+                    raise ValueError('No user agents found in headerfile-public.json')
 
                 # Use user_agents from file
                 user_agent = random.choice(user_agents)
@@ -160,7 +161,7 @@ class HeaderGenerator:
                     cls.save_headers(headers)
 
         except Exception as e:
-            print(f"Failed to generate headers: {e}")
+            cFormatter.print(Color.CRITICAL, f'Failed to genereate headers. {e}', isLogging=True)
 
         return headers
 
@@ -173,6 +174,7 @@ class HeaderGenerator:
                 data = json.load(f)
                 return data.get('total_403_errors', 0)
         except json.JSONDecodeError as e:
+            cFormatter.print(Color.CRITICAL, f'JSONDecodeError while reading extra.json {e}', isLogging=True)
             print(f'DEBUG: JSONDecodeError while reading extra file: {e}')
             return 0
 
@@ -213,20 +215,23 @@ class HeaderGenerator:
             cFormatter.print(Color.CRITICAL, f'Total number of 403 errors encountered: {total_403_errors}', isLogging=True)
             cFormatter.print(Color.CRITICAL, f'Please retry {3 - total_403_errors} more times. Then we will try to rebuild header data...', isLogging=True)
         else:
+            cFormatter.print(Color.CRITICAL, 'Response 403 - Forbidden: The client does not have access rights to the content.', isLogging=True)
+            cFormatter.print(Color.CRITICAL, 'We encountered this too often, refetching seeds.', isLogging=True)
             # Perform fetch from remote source
             response = requests.get(cls.git_url)
             if response.status_code == 200:
-                print("Fetched new seed")
+                cFormatter.print(Color.BRIGHT_GREEN, 'Fetched new header seeds.', isLogging=True)
                 try:
                     headers_response = response.json()
                     cls.set_attributes(headers_response)
                     cls.retry_count = 0  # Reset the counter
                     # Reset total_403_errors count in the JSON file after fetch
                     cls.write_403_count(0)
+                    cFormatter.print(Color.BRIGHT_GREEN, 'Hope the best this headers work to login!', isLogging=True)
                 except json.JSONDecodeError as e:
-                    print(f'DEBUG: JSONDecodeError while decoding response content: {e}')
+                    cFormatter.print(Color.BRIGHT_GREEN, f'JSON Decode Error {e}', isLogging=True)
             else:
-                print(f'DEBUG: Failed to fetch headers from remote source, status_code={response.status_code}')
+                cFormatter.print(Color.RED, 'Failed to fetch headers from source', isLogging=True)
 
         if force_fetch:
             cFormatter.print(Color.BRIGHT_GREEN, 'Header data newly constructed. Restart the tool.', isLogging=True)
