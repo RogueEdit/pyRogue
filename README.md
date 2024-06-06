@@ -1,18 +1,18 @@
 # pyRogue
 > **pyRogue** is a educational project. This is mostly to be done, if you have any ideas or problems please use the issue feature.
 
-[<img src="https://img.shields.io/badge/Windows-BuildinProgess-blue">]() <img src="https://img.shields.io/badge/d7c3c3673fdf08968cca37a20b5ff05a7545df7edc057a5284efee8867c0539c-blue"> [<img src="https://img.shields.io/badge/Virus%20Total-blue">]() 
+[<img src="https://img.shields.io/badge/Windows-blue">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.1.7/pyRogue-Windows.zip) [<img src="https://img.shields.io/badge/Virus%20Total-blue">](https://www.virustotal.com/gui/file/276dec1526d5c49d1a21930384d19105c8f0221ad4f44754e1a640b7ed25f957?nocache=1) <img src="https://img.shields.io/badge/Checksum-276dec1526d5c49d1a21930384d19105c8f0221ad4f44754e1a640b7ed25f957-blue"> 
 
-[<img src="https://img.shields.io/badge/LinuxBuildInProgress-Green">]() <img src="https://img.shields.io/badge/4066b4b8bfe6f687c9f78cfb637b14fe9a5ec39e3758f8df75951b139f8aec84-Green"> [<img src="https://img.shields.io/badge/Virus%20Total-Green">]()
+[<img src="https://img.shields.io/badge/Linux-Green">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.1.7/pyRogue-Linux.zip) [<img src="https://img.shields.io/badge/Virus%20Total-Green">](https://www.virustotal.com/gui/file/6e51af9985ea755e824236fe58fcc3bc938bb233babb5bee7f23731b836d8916?nocache=1) <img src="https://img.shields.io/badge/Checksum-6e51af9985ea755e824236fe58fcc3bc938bb233babb5bee7f23731b836d8916-Green"> 
 
-[<img src="https://img.shields.io/badge/MacBuildInProgress-silver">]() <img src="https://img.shields.io/badge/1ee0216cced15a5d86e38ef347c007641eb8aaa9405b7b2adbce8cb29cc4119e-silver"> [<img src="https://img.shields.io/badge/Virus%20Total-silver">]()
+[<img src="https://img.shields.io/badge/Mac-silver">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.1.7/pyRogue-MacIntel.zip) [<img src="https://img.shields.io/badge/Virus%20Total-silver">](https://www.virustotal.com/gui/file/e6fea4986ccaf726df66516561b9bf3180d45118a7ec7a8d6b6c820d78d72add?nocache=1) <img src="https://img.shields.io/badge/Checksum-e6fea4986ccaf726df66516561b9bf3180d45118a7ec7a8d6b6c820d78d72add-silver"> 
 
-[<img src="https://img.shields.io/badge/Join%20our%20News-Discord!-8A2BE2">](https://discord.gg/AjYYudvX)
 
 ![Preview Image](.github/previews/main.png)
 ![Preview Image](.github/previews/tool.png)
 
 [More examples](PREVIEW.md)
+[<img src="https://img.shields.io/badge/Join%20our%20News-Discord!-8A2BE2">](https://discord.gg/AjYYudvX)
 
 # List of content
 - [Foreword](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#important-foreword)
@@ -80,7 +80,13 @@ When you encounter multiple 403 Forbiddens - it's usually not on us. Retry to a 
 
 ![Preview Image](.github/previews/autocomplete.png)
 
+- When encountering multiple 403's can rebuild headers from remote source *NEW*
+- Extensive logging for easy debug
+- Two login logics to provide some fallbacks
+
 - When logging in it will automatically create backups for you.
+  - You can restore backups easily see preview above
+
 
 - Load data from server
   - This will fetch the trainer.json containing your account save data
