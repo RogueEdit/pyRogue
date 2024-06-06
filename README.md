@@ -1,5 +1,5 @@
 # pyRogue
-> **pyRogue** is a educational project. This is mostly to be done, if you have any ideas or problems please use the issue feature.
+> **pyRogue** is a educational project. 
 
 [<img src="https://img.shields.io/badge/Windows-blue">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.1.7.0/pyRogue-Windows.zip) [<img src="https://img.shields.io/badge/Virus%20Total-blue">](https://www.virustotal.com/gui/file/276dec1526d5c49d1a21930384d19105c8f0221ad4f44754e1a640b7ed25f957?nocache=1) <img src="https://img.shields.io/badge/Checksum-276dec1526d5c49d1a21930384d19105c8f0221ad4f44754e1a640b7ed25f957-blue"> 
 
