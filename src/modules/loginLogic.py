@@ -87,13 +87,6 @@ def handle_error_response(response: requests.Response) -> Dict[str, str]:
     return {}
 
 class HeaderGenerator:
-    static_headers: Dict[str, str] = {
-        "Accept": "application/x-www-form-urlencoded",
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Referer": "https://pokerogue.net/",
-        "Sec-Ch-Ua": '"Google Chrome";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
-        "Sec-Ch-Ua-Mobile": "?0",
-    }
 
     @classmethod
     def load_headers(cls) -> Dict[str, str]:
@@ -124,43 +117,35 @@ class HeaderGenerator:
             json.dump(headers, f, indent=4)
 
     @classmethod
-    def generate_headers(cls, auth_token: str = None, custom_headers: Optional[Dict[str, str]] = None) -> Dict[str, str]:
+    def generate_headers(cls) -> Dict[str, str]:
         """
         Generate randomized but valid HTTP headers including a User-Agent string.
 
-        Args:
-            auth_token (str, optional): Authentication token to include in the headers.
-            custom_headers (Dict[str, str], optional): Custom headers to use instead of generating new ones.
-
-        Returns:
-            Dict[str, str]: Generated or custom headers.
         """
-        user_agents = [
+        login_static_headers: Dict[str, str] = {
+            "Accept": "application/x-www-form-urlencoded",
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Referer": "https://pokerogue.net/",
+            "Sec-Ch-Ua": '"Google Chrome";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
+            "Sec-Ch-Ua-Mobile": "?0",
+        }
+
+        agents = [
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0",
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edge/91.0.864.48 Safari/537.36",
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36",
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:89.0) Gecko/20100101 Firefox/89.0",
-            # Add more user agent headers here...
-        ]
+            "Mozilla/5.0 (X11; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
+            "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:88.0) Gecko/20100101 Firefox/88.0",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_2_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Safari/605.1.15",
+            "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        ] 
 
-        if os.path.exists(headerfile_save):
-            headers = cls.load_headers()
-            if headers:
-                return headers
+        headers = {"User-Agent": random.choice(agents)}
+        headers.update(login_static_headers)
 
-        headers = cls.static_headers.copy()
-        headers.update({
-            "User-Agent": user_agents.random,
-        })
 
-        if auth_token:
-            headers["Authorization"] = auth_token
-
-        if custom_headers:
-            headers.update(custom_headers)
-
-        cls.save_headers(headers)
         return headers
     
 class loginLogic:

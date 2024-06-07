@@ -89,13 +89,35 @@ class Rogue:
         Returns:
             Dict[str, str]: Generated headers.
         """
-        headers = {'Authorization': f'{self.auth_token}'}
+        auth_static_headers: Dict[str, str] = {
+            "Accept": "application/json",
+            "Accept-Language": "it-IT,it;q=0.8,en-US;q=0.5,en;q=0.3",
+            "Accept-Encoding": "gzip, deflate, br, zstd",
+            "Referer": "https://pokerogue.net/",
+            "Content-Type": "application/json",
+            "content-encoding": "br",
+            "Origin": "https://pokerogue.net/",
+            "Connection": "keep-alive",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-site",
+            "Priority": "u=1"
+        }
 
-        if self.seleniumHeader:
-            headers.update(self.seleniumHeader)
-        else:
-            additional_headers = HeaderGenerator.load_headers()
-            headers.update(additional_headers)
+        auth_agents = [
+            "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:90.0) Gecko/20100101 Firefox/90.0",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_2_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1.1 Safari/605.1.15",
+            "Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0",
+            "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        ]
+
+        headers = {
+            "authorization": self.auth_token,
+            "User-Agent": random.choice(auth_agents),
+        }
+        headers.update(auth_static_headers)
 
         return headers
     
