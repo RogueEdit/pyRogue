@@ -12,6 +12,7 @@
 ![Preview Image](.github/previews/tool.png)
 
 [More examples](PREVIEW.md)
+
 [<img src="https://img.shields.io/badge/Join%20our%20News-Discord!-8A2BE2">](https://discord.gg/quGgNVNsFp)
 
 # List of content
@@ -24,7 +25,6 @@
 - [Regarding Bans and Limited Accounts](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#regarding-bans-and-limited-accounts)
 
 ## Important foreword
-[Feature & Bugboard aswell as Roadmap](https://github.com/orgs/RogueEdit/projects/7)
 
 We will not sent you any files or contact you about anything. You can see who contributed and everything regarding us will be only done on GitHub. We will not contact you in any matter or will send you files. There are scammers out there. Here you can read the full source code, compile it from scratch and such or download a VT-checked official release.
 
