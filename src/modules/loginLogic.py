@@ -116,65 +116,35 @@ class HeaderGenerator:
 
     @classmethod
     def generate_headers(cls, isAuthHeader: bool = False) -> Dict[str, str]:
-        """
-        Generate randomized but valid HTTP headers including a User-Agent string.
-        """
-        login_static_headers: Dict[str, str] = {
+        chrome_major_versions = list(range(110, 126))
+        sec_ch_ua_platform = ["Windows", "Macintosh", "X11"]
+        platforms = [
+            "Windows NT 10.0; Win64; x64",
+            "Windows NT 6.1; Win64; x64",
+            "Macintosh; Intel Mac OS X 10_15_7",
+            "Macintosh; Intel Mac OS X 11_2_3",
+            "X11; Linux x86_64",
+            "X11; Ubuntu; Linux x86_64",
+        ]
+
+        random_platform = random.choice(platforms)
+        random_sec_ch_ua_platform = random.choice(sec_ch_ua_platform)
+        random_chrome_major_version = random.choice(chrome_major_versions)
+
+        headers = {
             "Accept": "application/x-www-form-urlencoded",
             "Content-Type": "application/x-www-form-urlencoded",
+            "Origin": "https://pokerogue.net",
             "Referer": "https://pokerogue.net/",
-            "Sec-Ch-Ua": '"Google Chrome";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
+            "Sec-Ch-Ua": f'"Google Chrome";v="{random_chrome_major_version}", "Chromium";v="{random_chrome_major_version}", "Not.A/Brand";v="24"',
             "Sec-Ch-Ua-Mobile": "?0",
+            "Sec-Ch-Ua-Platform": f'"{random_sec_ch_ua_platform}"',
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-site",
+            "User-Agent": f"Mozilla/5.0 ({random_platform}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{random_chrome_major_version}.0.0.0 Safari/537.36",
         }
-
-        # Define lists of components for User-Agent strings
-        operating_systems = [
-            "Windows NT 10.0; Win64; x64",
-            "Macintosh; Intel Mac OS X 10_15_7",
-            "X11; Linux x86_64",
-            "Macintosh; Intel Mac OS X 10_15_6",
-            "Windows NT 10.0; WOW64",
-            "X11; Ubuntu; Linux x86_64",
-            "Windows NT 6.1; Win64; x64",
-            "Windows NT 6.3; Win64; x64",
-            "Macintosh; Intel Mac OS X 10_14_6",
-            "Macintosh; Intel Mac OS X 10_14_5",
-        ]
-
-        browsers = [
-            ("Chrome", "AppleWebKit/537.36 (KHTML, like Gecko)"),
-            ("Firefox", "Gecko/20100101"),
-            ("Safari", "AppleWebKit/605.1.15 (KHTML, like Gecko)"),
-            ("Edge", "AppleWebKit/537.36 (KHTML, like Gecko)"),
-        ]
-
-        browser_versions = {
-            "Chrome": ["91.0.4472.124", "92.0.4515.107", "93.0.4577.82", "94.0.4606.81", "90.0.4430.212"],
-            "Firefox": ["88.0", "89.0", "90.0", "91.0"],
-            "Safari": ["14.0.3", "14.1.1", "13.1.2", "12.1.1"],
-            "Edge": ["91.0.864.48", "92.0.902.55"]
-        }
-
-        # Function to generate a User-Agent string
-        def generate_user_agent():
-            os = random.choice(operating_systems)
-            browser, engine = random.choice(browsers)
-            version = random.choice(browser_versions[browser])
-            if browser == "Safari":
-                version = f"Version/{version}"
-            return f"Mozilla/5.0 ({os}) {engine} {browser}/{version} Safari/{engine.split('/')[1]}"
-
-        # Generate the User-Agent string
-        user_agent = generate_user_agent()
-        
-        if isAuthHeader:
-            return user_agent
-        else:
-            # Combine static headers with the generated User-Agent
-            headers = {"User-Agent": user_agent}
-            headers.update(login_static_headers)
-            
-            return headers
+        return headers
     
 class loginLogic:
     LOGIN_URL = 'https://api.pokerogue.net/account/login'
