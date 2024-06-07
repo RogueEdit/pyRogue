@@ -1,11 +1,11 @@
 # pyRogue
 > **pyRogue** is a educational project. 
 
-[<img src="https://img.shields.io/badge/Windows-blue">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.2/pyRogue-Windows.zip) [<img src="https://img.shields.io/badge/Virus%20Total-blue">](https://www.virustotal.com/gui/file/7f0ee2e7cb26f5bc7eda78469b6b475af6c877eef1ddaa129323a5f6cda81704?nocache=1) <img src="https://img.shields.io/badge/Checksum-7f0ee2e7cb26f5bc7eda78469b6b475af6c877eef1ddaa129323a5f6cda81704-blue"> 
+[<img src="https://img.shields.io/badge/Windows-blue">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.2/pyRogue-Windows.zip) [<img src="https://img.shields.io/badge/Virus%20Total-blue">](https://www.virustotal.com/gui/file/255c284f92b809c940ba02822ed1bbf4b8cec151f900c48b42bb5a696b0a35d3?nocache=1) <img src="https://img.shields.io/badge/Checksum-255c284f92b809c940ba02822ed1bbf4b8cec151f900c48b42bb5a696b0a35d3-blue"> 
 
-[<img src="https://img.shields.io/badge/Linux-Green">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.2/pyRogue-Linux.zip) [<img src="https://img.shields.io/badge/Virus%20Total-Green">](https://www.virustotal.com/gui/file/b87aad923ae83e7ad2da28ef7875ea0a7164327f005db872636094995af69707?nocache=1) <img src="https://img.shields.io/badge/Checksum-b87aad923ae83e7ad2da28ef7875ea0a7164327f005db872636094995af69707-Green"> 
+[<img src="https://img.shields.io/badge/Linux-Green">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.2/pyRogue-Linux.zip) [<img src="https://img.shields.io/badge/Virus%20Total-Green">](https://www.virustotal.com/gui/file/5fc7eddaad9ddb62f41a616f2c5cc19026cd8e00e7fe0630efaba10dde59b9e5?nocache=1) <img src="https://img.shields.io/badge/Checksum-b87aad923ae83e7ad2da28ef7875ea0a7164327f005db872636094995af69707-Green"> 
 
-[<img src="https://img.shields.io/badge/Mac-silver">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.2/pyRogue-MacIntel.zip) [<img src="https://img.shields.io/badge/Virus%20Total-silver">](https://www.virustotal.com/gui/file/85230a0ec52cc49d1856ca2ee6a3e09f6f1dfa665838f57d22cfb21048b116ac?nocache=1) <img src="https://img.shields.io/badge/Checksum-85230a0ec52cc49d1856ca2ee6a3e09f6f1dfa665838f57d22cfb21048b116ac-silver"> 
+[<img src="https://img.shields.io/badge/Mac-silver">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.2/pyRogue-MacIntel.zip) [<img src="https://img.shields.io/badge/Virus%20Total-silver">](https://www.virustotal.com/gui/file/b961ce1cc08f4072773305e776d994eed4e2d550f6d1a7860fd47e21e25d573b?nocache=1) <img src="https://img.shields.io/badge/Checksum-5fc7eddaad9ddb62f41a616f2c5cc19026cd8e00e7fe0630efaba10dde59b9e5-silver"> 
 
 
 ![Preview Image](.github/previews/main.png)
