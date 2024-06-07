@@ -58,7 +58,6 @@ class Rogue:
         self.__MAX_BIG_INT = (2 ** 53) - 1
         self.auth_token = auth_token
         self.clientSessionId = clientSessionId
-        self.seleniumHeader = headers
         self.headers = self._setup_headers()
         if not self.headers:
             raise ValueError("Failed to load headers.")
@@ -82,30 +81,48 @@ class Rogue:
         
         self.__dump_data()
 
+
     def _setup_headers(self) -> Dict[str, str]:
         """
-        Set up headers for HTTP requests.
+        Generates random headers for the session.
 
         Returns:
-            Dict[str, str]: Generated headers.
+            Dict[str, str]: The generated headers.
         """
+        chrome_major_versions = list(range(110, 126))
+        sec_ch_ua_platform = ["Windows", "Macintosh", "X11"]
+        platforms = [
+            "Windows NT 10.0; Win64; x64",
+            "Windows NT 6.1; Win64; x64",
+            "Macintosh; Intel Mac OS X 10_15_7",
+            "Macintosh; Intel Mac OS X 11_2_3",
+            "X11; Linux x86_64",
+            "X11; Ubuntu; Linux x86_64",
+        ]
+
+        random_platform = random.choice(platforms)
+        random_sec_ch_ua_platform = random.choice(sec_ch_ua_platform)
+        random_chrome_major_version = random.choice(chrome_major_versions)
+        headers = None
         headers = {
             "authorization": self.auth_token,
-            "User-Agent": HeaderGenerator.generate_headers(isAuthHeader=True),
             "Accept": "application/json",
+            "Content-Type": "application/json",
             "Accept-Language": "it-IT,it;q=0.8,en-US;q=0.5,en;q=0.3",
             "Accept-Encoding": "gzip, deflate, br, zstd",
-            "Referer": "https://pokerogue.net/",
-            "Content-Type": "application/json",
-            "content-encoding": "br",
-            "Origin": "https://pokerogue.net/",
             "Connection": "keep-alive",
+            "Origin": "https://pokerogue.net",
+            "Referer": "https://pokerogue.net/",
+            "Sec-Ch-Ua": f'"Google Chrome";v="{random_chrome_major_version}", "Chromium";v="{random_chrome_major_version}", "Not.A/Brand";v="24"',
+            "Sec-Ch-Ua-Mobile": "?0",
+            "Sec-Ch-Ua-Platform": f'"{random_sec_ch_ua_platform}"',
             "Sec-Fetch-Dest": "empty",
             "Sec-Fetch-Mode": "cors",
             "Sec-Fetch-Site": "same-site",
-            "Priority": "u=1"
+            "User-Agent": f"Mozilla/5.0 ({random_platform}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{random_chrome_major_version}.0.0.0 Safari/537.36",
         }
 
+        print(headers)
         return headers
     
     def __dump_data(self, slot: int = 1) -> None:
