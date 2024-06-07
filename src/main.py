@@ -127,7 +127,8 @@ def main():
         '25': rogue.print_natureSlot,
         '26': rogue.update_all,
         '27': rogue.print_help,
-        '28': rogue.print_changes
+        '28': rogue.print_changes,
+        '29': rogue.another_update_all
     }
 
     title = '************************ PyRogue *************************'
@@ -171,6 +172,7 @@ def main():
         f'26: >> Save data and upload to the Server{" " * 2}' + Fore.LIGHTYELLOW_EX + Style.BRIGHT +'(Use when done)' + Style.RESET_ALL,
         f'27: >> Print help and program information{" " * 17}',
         f'28: >> Print changelogs{" " * 38}',
+        '29: >> a new save method maybe that',
         f'{formatted_title}',
     ]
 

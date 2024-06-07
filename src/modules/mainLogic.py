@@ -186,7 +186,7 @@ class Rogue:
                 return handle_error_response(response)
             
         except requests.RequestException as e:
-            cFormatter.print(Color.CRITICAL, f'Error updating trainer data. Please restart the tool. \n {e}', isLogging=True)
+            cFormatter.print(Color.CRITICAL, f'{e} \n If thats a 403.. Doesnt look good for us. They added more security')
 
     @limiter.lockout
     def __update_gamesave_data(self, slot: int, gamedata_payload: Dict[str, any], url_ext: str) -> Dict[str, any]:
@@ -213,7 +213,7 @@ class Rogue:
             
         except requests.RequestException as e:
             # This might be TypeErrors not sure since httpreponse might be invalid here
-            cFormatter.print(Color.CRITICAL, f'Error updating trainer data. Please restart the tool. \n {e}', isLogging=True)
+            cFormatter.print(Color.CRITICAL, f'{e} \n If thats a 403.. Doesnt look good for us. They added more security')
             return 
         sleep(1)
 
@@ -394,6 +394,41 @@ class Rogue:
                     cFormatter.print(Color.WARNING, f'Invalid choice. Please enter a valid number.', isLogging=True)
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function restore_backup(): {e}', isLogging=True)
+
+    def another_update_all(self):
+        if self.seleniumHeader:
+                url = "https://api.pokerogue.net/savedata/updateall"
+
+                if "trainer.json" not in os.listdir():
+                    print("trainer.json file not found!")
+                    return
+                with open("trainer.json", "r") as f:
+                    trainer_data = json.load(f)
+                
+                slot = self.slot
+                if slot > 5 or slot < 1:
+                    print("Invalid slot number")
+                    return
+                filename = f"slot_{slot}.json"
+                if filename not in os.listdir():
+                    print(f"{filename} not found")
+                    return
+
+                with open(filename, "r") as f:
+                    game_data = json.load(f)
+                try:
+                    payload = {'clientSessionId': self.clientSessionId, 'session': game_data, "sessionSlotId": slot-1, 'system': trainer_data}
+                    response = self.session.post(url=url, headers=self.headers, json=payload)
+                    if response.status_code == 400:
+                            print("Please do not play Pokerogue while using this tool. Restart the tool!")
+                            return
+                    response.raise_for_status()
+                    print("Updated data Succesfully!")
+                    return
+                except requests.exceptions.RequestException as e:
+                        cFormatter.print(Color.CRITICAL, f'{e} \n If thats a 403.. Doesnt look good for us. They added more security')
+        else:
+            cFormatter.print(Color.RED, 'Only useable when logging with browser.')
 
     def unlock_all_starters(self) -> None:
         """
