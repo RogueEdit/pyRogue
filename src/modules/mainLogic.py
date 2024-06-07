@@ -89,7 +89,9 @@ class Rogue:
         Returns:
             Dict[str, str]: Generated headers.
         """
-        auth_static_headers: Dict[str, str] = {
+        headers = {
+            "authorization": self.auth_token,
+            "User-Agent": HeaderGenerator.generate_headers(isAuthHeader=True),
             "Accept": "application/json",
             "Accept-Language": "it-IT,it;q=0.8,en-US;q=0.5,en;q=0.3",
             "Accept-Encoding": "gzip, deflate, br, zstd",
@@ -103,21 +105,6 @@ class Rogue:
             "Sec-Fetch-Site": "same-site",
             "Priority": "u=1"
         }
-
-        auth_agents = [
-            "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:90.0) Gecko/20100101 Firefox/90.0",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_2_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1.1 Safari/605.1.15",
-            "Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0",
-            "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-        ]
-
-        headers = {
-            "authorization": self.auth_token,
-            "User-Agent": random.choice(auth_agents),
-        }
-        headers.update(auth_static_headers)
 
         return headers
     
@@ -208,7 +195,8 @@ class Rogue:
                 return handle_error_response(response)
             
         except requests.RequestException as e:
-            cFormatter.print(Color.CRITICAL, f'{e} \n If thats a 403.. Doesnt look good for us. They added more security')
+            cFormatter.print(Color.BRIGHT_RED, 'Response 403 - Forbidden. We have no authoriazion to acces the resource.', isLogging=True)
+            cFormatter.print(Color.BRIGHT_RED, 'Please report to our GitHub.', isLogging=True)
 
     @limiter.lockout
     def __update_gamesave_data(self, slot: int, gamedata_payload: Dict[str, any], url_ext: str) -> Dict[str, any]:
@@ -235,7 +223,8 @@ class Rogue:
             
         except requests.RequestException as e:
             # This might be TypeErrors not sure since httpreponse might be invalid here
-            cFormatter.print(Color.CRITICAL, f'{e} \n If thats a 403.. Doesnt look good for us. They added more security')
+            cFormatter.print(Color.BRIGHT_RED, 'Response 403 - Forbidden. We have no authoriazion to acces the resource.', isLogging=True)
+            cFormatter.print(Color.BRIGHT_RED, 'Please report to our GitHub.', isLogging=True)
             return 
         sleep(1)
 
@@ -448,7 +437,8 @@ class Rogue:
                     print("Updated data Succesfully!")
                     return
                 except requests.exceptions.RequestException as e:
-                        cFormatter.print(Color.CRITICAL, f'{e} \n If thats a 403.. Doesnt look good for us. They added more security')
+                        cFormatter.print(Color.BRIGHT_RED, 'Response 403 - Forbidden. We have no authoriazion to acces the resource.', isLogging=True)
+                        cFormatter.print(Color.BRIGHT_RED, 'Please report to our GitHub.', isLogging=True)
         else:
             cFormatter.print(Color.RED, 'Only useable when logging with browser.')
 

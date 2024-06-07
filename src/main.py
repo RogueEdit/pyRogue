@@ -34,8 +34,6 @@ def main():
         5. If login is successful, prints a success message and breaks the loop.
         6. If login fails, prints an error message and re-prompts the user.
         7. Handles any exceptions that occur during the login process.
-        8. If we enocunter 403 Errors, we count up
-        9. If we receive 3 erros we rebuild headers
 
     Usage:
         Run the script directly to initiate the login process:
@@ -58,11 +56,9 @@ def main():
         cFormatter.print(Color.BRIGHT_GREEN, 'We create base-backups on every login and further backups everytime you start or up choose so manually.')
         cFormatter.print(Color.BRIGHT_GREEN, 'In case of trouble, please refer to our GitHub. https://github.com/RogueEdit/onlineRogueEditor ')
         cFormatter.print_separators(60, '-')
-        cFormatter.print(Color.DEBUG, 'We are very sorry for some 403\'s. If you now encounter 403 Errors with Option 1, use Option 2. ')
-        cFormatter.print(Color.DEBUG, 'Now use access-headers based on the browser session that opens. After this, you should be able to use')
-        cFormatter.print(Color.DEBUG, 'Option 1 aswell, but we fine tuned Option 2 so it does not need to wait forever. ')
+        cFormatter.print(Color.CRITICAL, 'We hope to resolved some problems we had over the last days. Sorry for the inconvenience but it wasn\'t on us.')
+        cFormatter.print(Color.CRITICAL, 'We hope this will stay working for a while.')
         cFormatter.print_separators(60, '-')
-        cFormatter.print(Color.DEBUG, 'When this programm encounters 403 Forbidden errors too often, it will rebuild header data.')
         cFormatter.print(Color.BRIGHT_MAGENTA, '1: Using requests.')
         cFormatter.print(Color.BRIGHT_MAGENTA, '2: Using own browser. Use when 1 doesnt work.')
         
@@ -169,8 +165,7 @@ def main():
         Fore.LIGHTYELLOW_EX + Style.BRIGHT + '-- You can always edit your trainer.json also yourself! --' + Style.RESET_ALL,
         f'26: >> Save data and upload to the Server{" " * 2}' + Fore.LIGHTYELLOW_EX + Style.BRIGHT +'(Use when done)' + Style.RESET_ALL,
         f'27: >> Print help and program information{" " * 17}',
-        f'28: >> Print changelogs{" " * 38}',
-        '29: >> a new save method maybe that',
+        f'28: >> Print changelogs{" " * 35}',
         f'{formatted_title}',
     ]
 
