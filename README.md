@@ -1,6 +1,6 @@
 # pyRogue
 > **pyRogue** is a educational project.
-> We are well aware of 403's - but as stated this is educational and we don't want to play cat and mouse. If this persists, we need to find a better solution. It could be that we soon do not deliver builded exe's anymore and just run from source.
+> We are well aware of 403's - but as stated this is educational and we don't want to play cat and mouse. If this persists, we need to find a better solution. It could be that we have to also stop delivering build's.
 
 [<img src="https://img.shields.io/badge/Windows-blue">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.2/pyRogue-Windows.zip) [<img src="https://img.shields.io/badge/Virus%20Total-blue">](https://www.virustotal.com/gui/file/255c284f92b809c940ba02822ed1bbf4b8cec151f900c48b42bb5a696b0a35d3?nocache=1) <img src="https://img.shields.io/badge/Checksum-255c284f92b809c940ba02822ed1bbf4b8cec151f900c48b42bb5a696b0a35d3-blue"> 
 
