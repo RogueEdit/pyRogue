@@ -14,7 +14,7 @@ from time import sleep
 
 from utilities.limiter import Limiter
 from utilities.cFormatter import cFormatter, Color
-limiter = Limiter(lockout_period=2, timestamp_file='./data/extra.json')
+limiter = Limiter(lockout_period=30, timestamp_file='./data/extra.json')
 init()
 
 headerfile_save = './data/headerfile-save.json'
