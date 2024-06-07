@@ -95,8 +95,6 @@ class Rogue:
             headers.update(self.seleniumHeader)
         else:
             additional_headers = HeaderGenerator.load_headers()
-            if additional_headers:
-                HeaderGenerator.set_attributes(additional_headers)
             headers.update(additional_headers)
 
         return headers
