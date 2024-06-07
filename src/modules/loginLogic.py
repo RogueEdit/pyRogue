@@ -137,6 +137,15 @@ class HeaderGenerator:
         Returns:
             Dict[str, str]: Generated or custom headers.
         """
+        user_agents = [
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edge/91.0.864.48 Safari/537.36",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:89.0) Gecko/20100101 Firefox/89.0",
+            # Add more user agent headers here...
+        ]
+
         if os.path.exists(headerfile_save):
             headers = cls.load_headers()
             if headers:
@@ -144,8 +153,7 @@ class HeaderGenerator:
 
         headers = cls.static_headers.copy()
         headers.update({
-            "User-Agent": ua.random,
-            "Sec-Ch-Ua-Platform": "Windows",
+            "User-Agent": user_agents.random,
         })
 
         if auth_token:

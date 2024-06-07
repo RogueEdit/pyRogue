@@ -14,8 +14,6 @@ from modules.seleniumLogic import SeleniumLogic
 from utilities.cFormatter import cFormatter, Color
 from utilities.logger import CustomLogger
 import modules.config
-import fake_useragent
-uai = fake_useragent.UserAgent()
 
 init()
 logger = CustomLogger()
