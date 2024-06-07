@@ -45,7 +45,6 @@ class Limiter:
             current_time = time.time()
             if current_time - last_exec_time < self.lockout_period:
                 cFormatter.print(Color.RED, f'{func_name} is rate limited. You can only do this every {self.lockout_period} seconds!', isLogging=True)
-                cFormatter.print(Color.RED, f'This is rate limited to not spam pokerogue too much!')
                 return None
             else:
                 result = func(*args, **kwargs)

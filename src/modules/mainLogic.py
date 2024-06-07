@@ -31,7 +31,7 @@ from prompt_toolkit.completion import WordCompleter
 
 from utilities.eggLogic import *
 
-limiter = Limiter(lockout_period=15, timestamp_file='./data/extra.json')
+limiter = Limiter(lockout_period=30, timestamp_file='./data/extra.json')
 logger = logging.getLogger(__name__)
 logging.basicConfig(level = logging.INFO)
 
@@ -89,15 +89,22 @@ class Rogue:
         Returns:
             Dict[str, str]: Generated headers.
         """
-        headers = {'Authorization': f'{self.auth_token}'}
-
-        if self.seleniumHeader:
-            headers.update(self.seleniumHeader)
-        else:
-            additional_headers = HeaderGenerator.load_headers()
-            if additional_headers:
-                HeaderGenerator.set_attributes(additional_headers)
-            headers.update(additional_headers)
+        headers = {
+            "authorization": self.auth_token,
+            "User-Agent": HeaderGenerator.generate_headers(isAuthHeader=True),
+            "Accept": "application/json",
+            "Accept-Language": "it-IT,it;q=0.8,en-US;q=0.5,en;q=0.3",
+            "Accept-Encoding": "gzip, deflate, br, zstd",
+            "Referer": "https://pokerogue.net/",
+            "Content-Type": "application/json",
+            "content-encoding": "br",
+            "Origin": "https://pokerogue.net/",
+            "Connection": "keep-alive",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-site",
+            "Priority": "u=1"
+        }
 
         return headers
     
@@ -188,7 +195,8 @@ class Rogue:
                 return handle_error_response(response)
             
         except requests.RequestException as e:
-            cFormatter.print(Color.CRITICAL, f'Error updating trainer data. Please restart the tool. \n {e}', isLogging=True)
+            cFormatter.print(Color.BRIGHT_RED, 'Response 403 - Forbidden. We have no authoriazion to acces the resource.', isLogging=True)
+            cFormatter.print(Color.BRIGHT_RED, 'Please report to our GitHub.', isLogging=True)
 
     @limiter.lockout
     def __update_gamesave_data(self, slot: int, gamedata_payload: Dict[str, any], url_ext: str) -> Dict[str, any]:
@@ -215,7 +223,8 @@ class Rogue:
             
         except requests.RequestException as e:
             # This might be TypeErrors not sure since httpreponse might be invalid here
-            cFormatter.print(Color.CRITICAL, f'Error updating trainer data. Please restart the tool. \n {e}', isLogging=True)
+            cFormatter.print(Color.BRIGHT_RED, 'Response 403 - Forbidden. We have no authoriazion to acces the resource.', isLogging=True)
+            cFormatter.print(Color.BRIGHT_RED, 'Please report to our GitHub.', isLogging=True)
             return 
         sleep(1)
 
@@ -396,6 +405,42 @@ class Rogue:
                     cFormatter.print(Color.WARNING, f'Invalid choice. Please enter a valid number.', isLogging=True)
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function restore_backup(): {e}', isLogging=True)
+
+    def another_update_all(self):
+        if self.seleniumHeader:
+                url = "https://api.pokerogue.net/savedata/updateall"
+
+                if "trainer.json" not in os.listdir():
+                    print("trainer.json file not found!")
+                    return
+                with open("trainer.json", "r") as f:
+                    trainer_data = json.load(f)
+                
+                slot = self.slot
+                if slot > 5 or slot < 1:
+                    print("Invalid slot number")
+                    return
+                filename = f"slot_{slot}.json"
+                if filename not in os.listdir():
+                    print(f"{filename} not found")
+                    return
+
+                with open(filename, "r") as f:
+                    game_data = json.load(f)
+                try:
+                    payload = {'clientSessionId': self.clientSessionId, 'session': game_data, "sessionSlotId": slot-1, 'system': trainer_data}
+                    response = self.session.post(url=url, headers=self.headers, json=payload)
+                    if response.status_code == 400:
+                            print("Please do not play Pokerogue while using this tool. Restart the tool!")
+                            return
+                    response.raise_for_status()
+                    print("Updated data Succesfully!")
+                    return
+                except requests.exceptions.RequestException as e:
+                        cFormatter.print(Color.BRIGHT_RED, 'Response 403 - Forbidden. We have no authoriazion to acces the resource.', isLogging=True)
+                        cFormatter.print(Color.BRIGHT_RED, 'Please report to our GitHub.', isLogging=True)
+        else:
+            cFormatter.print(Color.RED, 'Only useable when logging with browser.')
 
     def unlock_all_starters(self) -> None:
         """

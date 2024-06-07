@@ -67,6 +67,10 @@ class SeleniumLogic:
         url = "https://www.pokerogue.net/"
         driver.get(url)
 
+        session_id = None
+        token = None
+        headers = None
+
         try:
             # Wait for the username field to be visible and input the username
             username_field = WebDriverWait(driver, self.timeout).until(
@@ -82,46 +86,32 @@ class SeleniumLogic:
             password_field.send_keys(Keys.RETURN)
 
             print("Waiting for login data...")
-            start_time = time.time()
-            while True:
-                time.sleep(1)
-                browser_log = driver.get_log('performance')
-                events = [self._process_browser_log_entry(entry) for entry in browser_log]
+            time.sleep(10)  # Fixed wait time
 
-                session_id = None
-                token = None
-                headers = None
+            # Process the browser log
+            browser_log = driver.get_log('performance')
+            events = [self._process_browser_log_entry(entry) for entry in browser_log]
 
-                for event in events:
-                    if 'response' in event['params']:
-                        response = event["params"]["response"]
-                        if 'url' in response:
-                            url = response['url']
-                            if 'clientSessionId' in url:
-                                session_id = url.split('clientSessionId=')[1]
-                    if 'method' in event and event['method'] == 'Network.requestWillBeSent':
-                        request = event['params']['request']
-                        if request['url'] == 'https://api.pokerogue.net/account/login':
-                            headers = request['headers']
-                    if 'method' in event and event['method'] == 'Network.responseReceived':
-                        response = event['params']['response']
-                        if response['url'] == 'https://api.pokerogue.net/account/login':
-                            request_id = event['params']['requestId']
-                            result = driver.execute_cdp_cmd('Network.getResponseBody', {'requestId': request_id})
-                            response_body = result.get('body', '')
-                            if response_body:
-                                token_data = json.loads(response_body)
-                                token = token_data.get('token')
-
-                if session_id and token and headers:
-                    break
-
-                print("Still waiting for login data...")
-
-                elapsed_time = time.time() - start_time
-                if elapsed_time >= self.timeout:
-                    print("Timeout occurred.")
-                    break
+            for event in events:
+                if 'response' in event['params']:
+                    response = event["params"]["response"]
+                    if 'url' in response:
+                        url = response['url']
+                        if 'clientSessionId' in url:
+                            session_id = url.split('clientSessionId=')[1]
+                if 'method' in event and event['method'] == 'Network.requestWillBeSent':
+                    request = event['params']['request']
+                    if request['url'] == 'https://api.pokerogue.net/account/login':
+                        headers = request['headers']
+                if 'method' in event and event['method'] == 'Network.responseReceived':
+                    response = event['params']['response']
+                    if response['url'] == 'https://api.pokerogue.net/account/login':
+                        request_id = event['params']['requestId']
+                        result = driver.execute_cdp_cmd('Network.getResponseBody', {'requestId': request_id})
+                        response_body = result.get('body', '')
+                        if response_body:
+                            token_data = json.loads(response_body)
+                            token = token_data.get('token')
 
         except TimeoutException as e:
             print(f"Timeout occurred: {e}")
@@ -131,9 +121,5 @@ class SeleniumLogic:
             driver.quit()
 
         CustomLogger.reactivate_logging()
-        print("Session ID:", session_id)
-        print("Token:", token)
-        print("Request Headers:", json.dumps(headers, indent=2))
-
 
         return session_id, token, headers
