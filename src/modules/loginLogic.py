@@ -11,8 +11,6 @@ import random
 from colorama import init
 from typing import List, Dict, Optional
 from time import sleep
-from fake_useragent import UserAgent
-ua = UserAgent()
 
 from utilities.limiter import Limiter
 from utilities.cFormatter import cFormatter, Color
