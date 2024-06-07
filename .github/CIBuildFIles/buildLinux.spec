@@ -7,18 +7,11 @@ added_files = [
     ('../../src/modules/*.py', 'modules')
 ]
 
-# Collect data files for fake_useragent
-fake_useragent_data_files = collect_data_files('fake_useragent')
-
-# Combine both data files lists
-combined_data_files = added_files + fake_useragent_data_files
-
-
 a = Analysis(
     ['../../src/main.py'],
     pathex=[],
     binaries=[],
-    datas=combined_data_files,
+    datas=added_files,
     hiddenimports=['_cffi_backend'],
     hookspath=[],
     hooksconfig={},
