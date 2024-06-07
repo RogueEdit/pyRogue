@@ -12,7 +12,7 @@
 ![Preview Image](.github/previews/tool.png)
 
 [More examples](PREVIEW.md)
-[<img src="https://img.shields.io/badge/Join%20our%20News-Discord!-8A2BE2">](https://discord.gg/AjYYudvX)
+[<img src="https://img.shields.io/badge/Join%20our%20News-Discord!-8A2BE2">](https://discord.gg/quGgNVNsFp)
 
 # List of content
 - [Foreword](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#important-foreword)
