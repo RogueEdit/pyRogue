@@ -82,9 +82,9 @@ class SeleniumLogic:
 
         # Set Browser options
         options = webdriver.ChromeOptions()
-        options.set_capability('goog:loggingPrefs', {'performance': 'ALL'})
+        options.set_capability('goog:loggingPrefs', {'performance': 'ALL'}) # All performance logs
         options.headless = True  # Make the browser headless
-        options.add_argument("--disable-blink-features=AutomationControlled")  # Avoid detection
+        options.add_argument("--disable-blink-features=AutomationControlled")  # Avoid detection of automated testsuite
 
         driver = webdriver.Chrome(options=options)
         url = "https://www.pokerogue.net/"

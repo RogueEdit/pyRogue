@@ -3,17 +3,18 @@
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
 # Date of release: 06.06.2024 
-
+import signal
 import getpass
 import requests
 import brotli
 from modules.loginLogic import loginLogic, HeaderGenerator
 from modules.mainLogic import Rogue
 from colorama import Fore, Style, init
-from modules.seleniumLogic import SeleniumLogic
+from modules.login.seleniumLogic import SeleniumLogic
 from utilities.cFormatter import cFormatter, Color
 from utilities.logger import CustomLogger
 import modules.config
+import atexit
 
 init()
 logger = CustomLogger()
@@ -44,7 +45,7 @@ def main():
         - getpass: For securely obtaining the password.
         - customLogger: Custom logging functionality.
         - loginLogic: Handles the login logic.
-        - seleniumLogic: Handles logging in with selenium
+        - login.seleniumLogic: Handles logging in with selenium
         - rogue: Initializes the PokeRogue session.
         - cFormatter: Custom formatter for colored printing and logging.
         - color: Our own module defining color codes.
@@ -121,9 +122,10 @@ def main():
         '23': rogue.print_vouchers,
         '24': rogue.print_natures,
         '25': rogue.print_natureSlot,
-        '26': rogue.another_update_all,
+        '26': rogue.update_all,
         '27': rogue.print_help,
         '28': rogue.print_changes,
+        '29': rogue.logout
     }
 
     title = '************************ PyRogue *************************'
@@ -170,18 +172,28 @@ def main():
         f'{formatted_title}',
     ]
 
-    while True:
-        print('')
-        for line in term:
-            print(Fore.GREEN + '* ' + Style.RESET_ALL + line + Fore.GREEN + ' *' + Style.RESET_ALL)
-        command = input('Command: ')
+    try:
+        while True:
+            print('')
+            for line in term:
+                print(Fore.GREEN + '* ' + Style.RESET_ALL + line + Fore.GREEN + ' *' + Style.RESET_ALL)
+            command = input('Command: ')
 
-        if command in func:
-            func[command]()
-        elif command == 'exit':
-            quit()
-        else:
-            cFormatter.print(Color.INFO, 'Command not found.')
+            if command in func:
+                func[command]()
+            elif command == 'exit':
+                quit()
+            else:
+                cFormatter.print(Color.INFO, 'Command not found.')
+    except KeyboardInterrupt:
+        print("Program interrupted by user.")
 
 if __name__ == '__main__':
     main()
+
+
+
+signal.signal(signal.SIGTERM, Rogue.logout)
+signal.signal(signal.SIGINT, Rogue.logout)  # Handles Ctrl+C
+signal.signal(signal.SIGQUIT, Rogue.logout) # Handles Ctrl+\
+atexit.register(Rogue.logout)

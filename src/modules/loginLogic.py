@@ -4,24 +4,20 @@
 # Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
 # Date of release: 06.06.2024 
 
-import json
 import requests
-import os
 import random
 from colorama import init
 from typing import List, Dict, Optional
 from time import sleep
-import re
 from utilities.limiter import Limiter
 from utilities.cFormatter import cFormatter, Color
-limiter = Limiter(lockout_period=120, timestamp_file='./data/extra.json')
 init()
 import fake_useragent
 from user_agents import parse
 import string
-ua = fake_useragent.UserAgent()
 
-headerfile_save = './data/headerfile-save.json'
+ua = fake_useragent.UserAgent()
+limiter = Limiter(lockout_period=15, timestamp_file='./data/extra.json')
 
 def handle_error_response(response: requests.Response) -> Dict[str, str]:
     """
@@ -51,7 +47,7 @@ def handle_error_response(response: requests.Response) -> Dict[str, str]:
     elif response.status_code == 401:
         cFormatter.print(Color.BRIGHT_RED, 'Response 401 - Unauthorized: Authentication is required and has failed or has not yet been provided.', isLogging=True)
     elif response.status_code == 403:
-        cFormatter.print(Color.BRIGHT_RED, 'Response 403 - Forbidden. We have no authoriazion to acces the resource.', isLogging=True)
+        cFormatter.print(Color.BRIGHT_RED, 'Response 403 - Forbidden. We have no authorization to access the resource.', isLogging=True)
     elif response.status_code == 404:
         cFormatter.print(Color.BRIGHT_RED, 'Response 404 - Not Found: The server can not find the requested resource.', isLogging=True)
     elif response.status_code == 405:
@@ -101,19 +97,29 @@ class HeaderGenerator:
         is_mobile = user_agent.is_mobile
 
         headers = {
-            "Accept": "application/x-www-form-urlencoded",
-            "Content-Type": "application/x-www-form-urlencoded",
-            "Origin": "https://pokerogue.net",
-            "Referer": "https://pokerogue.net/",
-            "Sec-CH-UA-Mobile": "?1" if is_mobile else "?0",
-            "Sec-Fetch-Dest": "empty",
-            "Sec-Fetch-Mode": "cors",
-            "Sec-Fetch-Site": "same-site",
-            "User-Agent": user_agent_string,
-            #"Sec-CH-UA": f'"{browser_family}";v="{browser_version}"',
-            #"Sec-CH-UA-Platform": os_family,
-            #"Sec-CH-UA-Platform-Version": os_version,
+        "Accept": "application/x-www-form-urlencoded",
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Origin": "https://pokerogue.net",
+        "Referer": "https://pokerogue.net/",
+        "Sec-CH-UA-Mobile": "?1" if is_mobile else "?0",
+        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "same-site",
+        "User-Agent": user_agent_string,
         }
+    
+        # Define the optional headers
+        optional_headers = {
+            "Sec-CH-UA": f'"{browser_family}";v="{browser_version}"',
+            "Sec-CH-UA-Platform": os_family,
+            "Sec-CH-UA-Platform-Version": os_version,
+        }
+
+        # Randomly decide to add some or all of the optional headers
+        for header, value in optional_headers.items():
+            if random.choice([True, False]):
+                headers[header] = value
+
         return headers
     
 class loginLogic:

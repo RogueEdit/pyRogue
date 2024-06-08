@@ -19,6 +19,7 @@ import datetime
 import re
 from modules.loginLogic import handle_error_response
 import modules.config
+import cloudscraper
 
 from utilities.generator import Generator
 from utilities.enumLoader import EnumLoader
@@ -30,10 +31,12 @@ from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 
 from utilities.eggLogic import *
-import string
+import signal
+import sys
+
 
 from user_agents import parse
-limiter = Limiter(lockout_period=120, timestamp_file='./data/extra.json')
+limiter = Limiter(lockout_period=60, timestamp_file='./data/extra.json')
 logger = logging.getLogger(__name__)
 logging.basicConfig(level = logging.INFO)
 
@@ -53,6 +56,7 @@ class Rogue:
     UPDATE_TRAINER_DATA_URL = 'https://api.pokerogue.net/savedata/update?datatype=0'
     UPDATE_GAMESAVE_SLOT_URL = 'https://api.pokerogue.net/savedata/update?datatype=1&slot='
     UPDATE_ALL_URL = 'https://api.pokerogue.net/savedata/updateall'
+    LOGOUT_URL = 'https://api.pokerogue.net/account/logout'
 
     def __init__(self, session: requests.Session, auth_token: str, clientSessionId: str = None, headers: dict = None) -> None:
         self.slot = None
@@ -63,6 +67,7 @@ class Rogue:
         self.headers = self._setup_headers()
         if not self.headers:
             raise ValueError("Failed to load headers.")
+        self.session = cloudscraper.create_scraper()
 
         # json generators
         self.generator = Generator()
@@ -114,7 +119,6 @@ class Rogue:
                     return
 
             trainer_data = self.get_trainer_data()
-            cFormatter.print(Color.DEBUG, 'Sleeping 3 seconds to look more human before fetching saveslot-data.')
             game_data = self.get_gamesave_data(slot)
 
 
@@ -184,8 +188,7 @@ class Rogue:
                 return handle_error_response(response)
             
         except requests.RequestException as e:
-            cFormatter.print(Color.BRIGHT_RED, 'Response 403 - Forbidden. We have no authoriazion to acces the resource.', isLogging=True)
-            cFormatter.print(Color.BRIGHT_RED, 'Please report to our GitHub.', isLogging=True)
+            handle_error_response(e)
 
     @limiter.lockout
     def __update_gamesave_data(self, slot: int, gamedata_payload: Dict[str, any], url_ext: str) -> Dict[str, any]:
@@ -200,6 +203,7 @@ class Rogue:
         Returns:
             Dict[str, any]: JSON response from the server.
         """
+        sleep(random.randint(3,10))
         try:
             cFormatter.print(Color.INFO, f'Updating gamesave data for slot {slot}...')
             response = self.session.post(
@@ -211,43 +215,14 @@ class Rogue:
                 return handle_error_response(response)
             
         except requests.RequestException as e:
-            # This might be TypeErrors not sure since httpreponse might be invalid here
-            cFormatter.print(Color.BRIGHT_RED, 'Response 403 - Forbidden. We have no authoriazion to acces the resource.', isLogging=True)
-            cFormatter.print(Color.BRIGHT_RED, 'Please report to our GitHub.', isLogging=True)
-            return 
-        sleep(1)
+            handle_error_response(e)
 
-    def update_all(self) -> None:
-        """
-        Update all data to the server.
-        """
-        try:
-            if self.slot is None or self.slot > 5 or self.slot < 1:
-                cFormatter.print(Color.RED, 'Invalid slot number chosen.')
-                return
-            
-            if 'trainer.json' not in os.listdir():
-                cFormatter.print(Color.RED, 'Your gamefile trainer.json (Your game data) file not found')
-                return
-            
-            trainer_data = self.__load_data('trainer.json')
-
-            filename = f'slot_{self.slot}.json'
-            if filename not in os.listdir():
-                cFormatter.print(Color.RED, f'{filename} not found')
-                return
-            
-            game_data = self.__load_data(filename)
-
-            trainer_id, trainer_secretId = trainer_data['trainerId'], trainer_data['secretId']
-            url_ext = f'&trainerId={trainer_id}&secretId={trainer_secretId}'
-
-            self.__update_trainer_data(trainer_data)
-            cFormatter.print(Color.DEBUG, 'Sleeping 3 seconds to look more human before saving saveslot-data.')
-            sleep(3)
-            self.__update_gamesave_data(self.slot, game_data, url_ext)
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function update_all(): {e}', isLogging=True)
+    def logout(self):
+        response = self.session.get(f'{self.LOGOUT_URL}', headers=self.headers)
+        response.raise_for_status()
+        if response.status_code == 200:
+                cFormatter.print(Color.GREEN, 'Changes applied succesfully. Logging out, terminating session..')
+        sys.exit(0)
 
     def __write_data(self, data: Dict[str, any], filename: str, showSuccess: bool = True) -> None:
         """
@@ -395,38 +370,40 @@ class Rogue:
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function restore_backup(): {e}', isLogging=True)
 
-    def another_update_all(self):
-        url = "https://api.pokerogue.net/savedata/updateall"
+    @limiter.lockout
+    def update_all(self):
+        url = 'https://api.pokerogue.net/savedata/updateall'
 
         if "trainer.json" not in os.listdir():
-            print("trainer.json file not found!")
+            print('trainer.json file not found!')
             return
-        with open("trainer.json", "r") as f:
+        with open('trainer.json', 'r') as f:
             trainer_data = json.load(f)
         
         slot = self.slot
         if slot > 5 or slot < 1:
-            print("Invalid slot number")
+            print('Invalid slot number')
             return
-        filename = f"slot_{slot}.json"
+        filename = f'slot_{slot}.json'
         if filename not in os.listdir():
-            print(f"{filename} not found")
+            print(f'{filename} not found')
             return
 
-        with open(filename, "r") as f:
+        with open(filename, 'r') as f:
             game_data = json.load(f)
         try:
+            sleep(random.randint(3,5))
             payload = {'clientSessionId': self.clientSessionId, 'session': game_data, "sessionSlotId": slot-1, 'system': trainer_data}
             response = self.session.post(url=url, headers=self.headers, json=payload)
             if response.status_code == 400:
-                    print("Please do not play Pokerogue while using this tool. Restart the tool!")
+                    cFormatter.print(Color.CRITICAL, 'Bad Request!')
                     return
             response.raise_for_status()
-            print("Updated data Succesfully!")
-            return
+            cFormatter.print(Color.CRITICAL, 'Updated data Succesfully!')
+            self.logout()
         except requests.exceptions.RequestException as e:
-                cFormatter.print(Color.BRIGHT_RED, 'Response 403 - Forbidden. We have no authoriazion to acces the resource.', isLogging=True)
-                cFormatter.print(Color.BRIGHT_RED, 'Please report to our GitHub.', isLogging=True)
+                handle_error_response(e)
+                self.logout()
 
     def unlock_all_starters(self) -> None:
         """
