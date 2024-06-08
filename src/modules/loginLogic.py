@@ -14,7 +14,7 @@ from time import sleep
 import re
 from utilities.limiter import Limiter
 from utilities.cFormatter import cFormatter, Color
-limiter = Limiter(lockout_period=30, timestamp_file='./data/extra.json')
+limiter = Limiter(lockout_period=120, timestamp_file='./data/extra.json')
 init()
 import fake_useragent
 from user_agents import parse
@@ -110,9 +110,9 @@ class HeaderGenerator:
             "Sec-Fetch-Mode": "cors",
             "Sec-Fetch-Site": "same-site",
             "User-Agent": user_agent_string,
-            "Sec-CH-UA": f'"{browser_family}";v="{browser_version}"',
-            "Sec-CH-UA-Platform": os_family,
-            "Sec-CH-UA-Platform-Version": os_version
+            #"Sec-CH-UA": f'"{browser_family}";v="{browser_version}"',
+            #"Sec-CH-UA-Platform": os_family,
+            #"Sec-CH-UA-Platform-Version": os_version,
         }
         return headers
     
@@ -166,9 +166,9 @@ class loginLogic:
             headers = HeaderGenerator.generate_headers()
             # Faking 403
             # headers = {'Authorization': 'Bearer invalid_token'}
-            cFormatter.print(Color.DEBUG, 'Adding delay to appear more natural to the server.')
+            cFormatter.print(Color.DEBUG, 'Adding delay to appear more natural to the server. Please stand by...')
             response = self.session.post(self.LOGIN_URL, headers=headers, data=data)
-            sleep(3)
+            sleep(random.randint(3,15))
             response.raise_for_status()
 
             login_response = response.json()

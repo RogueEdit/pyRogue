@@ -33,7 +33,7 @@ from utilities.eggLogic import *
 import string
 
 from user_agents import parse
-limiter = Limiter(lockout_period=30, timestamp_file='./data/extra.json')
+limiter = Limiter(lockout_period=120, timestamp_file='./data/extra.json')
 logger = logging.getLogger(__name__)
 logging.basicConfig(level = logging.INFO)
 
@@ -115,7 +115,6 @@ class Rogue:
 
             trainer_data = self.get_trainer_data()
             cFormatter.print(Color.DEBUG, 'Sleeping 3 seconds to look more human before fetching saveslot-data.')
-            sleep(3)
             game_data = self.get_gamesave_data(slot)
 
 
