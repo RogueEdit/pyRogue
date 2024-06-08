@@ -2,12 +2,8 @@
 > **pyRogue** is a educational project.
 > We are well aware of 403's and 404's. They changed some server related stuff so we need to have a look.
 
-[<img src="https://img.shields.io/badge/Windows-blue">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.2/pyRogue-Windows.zip) [<img src="https://img.shields.io/badge/Virus%20Total-blue">](https://www.virustotal.com/gui/file/255c284f92b809c940ba02822ed1bbf4b8cec151f900c48b42bb5a696b0a35d3?nocache=1) <img src="https://img.shields.io/badge/Checksum-255c284f92b809c940ba02822ed1bbf4b8cec151f900c48b42bb5a696b0a35d3-blue"> 
-
-[<img src="https://img.shields.io/badge/Linux-Green">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.2/pyRogue-Linux.zip) [<img src="https://img.shields.io/badge/Virus%20Total-Green">](https://www.virustotal.com/gui/file/5fc7eddaad9ddb62f41a616f2c5cc19026cd8e00e7fe0630efaba10dde59b9e5?nocache=1) <img src="https://img.shields.io/badge/Checksum-b87aad923ae83e7ad2da28ef7875ea0a7164327f005db872636094995af69707-Green"> 
-
-[<img src="https://img.shields.io/badge/Mac-silver">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.2/pyRogue-MacIntel.zip) [<img src="https://img.shields.io/badge/Virus%20Total-silver">](https://www.virustotal.com/gui/file/b961ce1cc08f4072773305e776d994eed4e2d550f6d1a7860fd47e21e25d573b?nocache=1) <img src="https://img.shields.io/badge/Checksum-5fc7eddaad9ddb62f41a616f2c5cc19026cd8e00e7fe0630efaba10dde59b9e5-silver"> 
-
+This build is working for the new API changes! Currently we cant provide builded binaries, you have to run from code. 
+[How to run from code](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#how-to-run-from-code)
 
 ![Preview Image](.github/previews/main.png)
 ![Preview Image](.github/previews/tool.png)
