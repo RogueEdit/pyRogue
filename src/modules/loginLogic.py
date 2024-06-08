@@ -11,11 +11,15 @@ import random
 from colorama import init
 from typing import List, Dict, Optional
 from time import sleep
-
+import re
 from utilities.limiter import Limiter
 from utilities.cFormatter import cFormatter, Color
 limiter = Limiter(lockout_period=30, timestamp_file='./data/extra.json')
 init()
+import fake_useragent
+from user_agents import parse
+import string
+ua = fake_useragent.UserAgent()
 
 headerfile_save = './data/headerfile-save.json'
 
@@ -85,64 +89,30 @@ def handle_error_response(response: requests.Response) -> Dict[str, str]:
     return {}
 
 class HeaderGenerator:
-
-    @classmethod
-    def load_headers(cls) -> Dict[str, str]:
-        """
-        Load headers from the headerfile-save.json file and assign attributes.
-
-        Returns:
-            Dict[str, str]: Loaded headers.
-        """
-        if os.path.exists(headerfile_save):
-            try:
-                with open(headerfile_save, 'r') as f:
-                    headers = json.load(f)
-                    return headers
-            except Exception as e:
-                print(f'Failed to load headers. {e}')
-        return {}
-
-    @classmethod
-    def save_headers(cls, headers: Dict[str, str]) -> None:
-        """
-        Save headers to headerfile-save.json.
-
-        Args:
-            headers (Dict[str, str]): Headers to save.
-        """
-        with open(headerfile_save, 'w') as f:
-            json.dump(headers, f, indent=4)
-
     @classmethod
     def generate_headers(cls, isAuthHeader: bool = False) -> Dict[str, str]:
-        chrome_major_versions = list(range(110, 126))
-        sec_ch_ua_platform = ["Windows", "Macintosh", "X11"]
-        platforms = [
-            "Windows NT 10.0; Win64; x64",
-            "Windows NT 6.1; Win64; x64",
-            "Macintosh; Intel Mac OS X 10_15_7",
-            "Macintosh; Intel Mac OS X 11_2_3",
-            "X11; Linux x86_64",
-            "X11; Ubuntu; Linux x86_64",
-        ]
+        user_agent_string = ua.random
+        user_agent = parse(user_agent_string)
 
-        random_platform = random.choice(platforms)
-        random_sec_ch_ua_platform = random.choice(sec_ch_ua_platform)
-        random_chrome_major_version = random.choice(chrome_major_versions)
+        browser_family = user_agent.browser.family
+        browser_version = user_agent.browser.version_string
+        os_family = user_agent.os.family
+        os_version = user_agent.os.version_string
+        is_mobile = user_agent.is_mobile
 
         headers = {
             "Accept": "application/x-www-form-urlencoded",
             "Content-Type": "application/x-www-form-urlencoded",
             "Origin": "https://pokerogue.net",
             "Referer": "https://pokerogue.net/",
-            "Sec-Ch-Ua": f'"Google Chrome";v="{random_chrome_major_version}", "Chromium";v="{random_chrome_major_version}", "Not.A/Brand";v="24"',
-            "Sec-Ch-Ua-Mobile": "?0",
-            "Sec-Ch-Ua-Platform": f'"{random_sec_ch_ua_platform}"',
+            "Sec-CH-UA-Mobile": "?1" if is_mobile else "?0",
             "Sec-Fetch-Dest": "empty",
             "Sec-Fetch-Mode": "cors",
             "Sec-Fetch-Site": "same-site",
-            "User-Agent": f"Mozilla/5.0 ({random_platform}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{random_chrome_major_version}.0.0.0 Safari/537.36",
+            "User-Agent": user_agent_string,
+            "Sec-CH-UA": f'"{browser_family}";v="{browser_version}"',
+            "Sec-CH-UA-Platform": os_family,
+            "Sec-CH-UA-Platform-Version": os_version
         }
         return headers
     
@@ -165,6 +135,17 @@ class loginLogic:
         self.token: Optional[str] = None
         self.session_id: Optional[str] = None
         self.session = requests.Session()
+
+
+    def calcSessionId(self):
+        characters = string.ascii_letters + string.digits
+        result = []
+        for _ in range(32):
+            random_index = random.randint(0, len(characters) - 1)
+            result.append(characters[random_index])
+
+        return "".join(result)
+
 
     @limiter.lockout
     def login(self) -> bool:
@@ -193,6 +174,8 @@ class loginLogic:
             login_response = response.json()
             self.token = login_response.get('token')
             cFormatter.print_separators(30, '-')
+            self.session_id = self.calcSessionId()
+            print(f"JKJKÖK: {self.session_id}")
             cFormatter.print(Color.GREEN, f'Login successful.')
             status_code_color = Color.BRIGHT_GREEN if response.status_code == 200 else Color.BRIGHT_RED
             cFormatter.print(status_code_color, f'HTTP Status Code: {response.status_code}', isLogging=True)

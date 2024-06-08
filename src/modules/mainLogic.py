@@ -30,7 +30,9 @@ from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 
 from utilities.eggLogic import *
+import string
 
+from user_agents import parse
 limiter = Limiter(lockout_period=30, timestamp_file='./data/extra.json')
 logger = logging.getLogger(__name__)
 logging.basicConfig(level = logging.INFO)
@@ -46,8 +48,8 @@ class Rogue:
         UPDATE_TRAINER_DATA_URL (str): The URL to update trainer data on the API.
         UPDATE_GAMESAVE_SLOT_URL (str): The base URL to update gamesave data for a specific slot on the API.
     """
-    TRAINER_DATA_URL = 'https://api.pokerogue.net/savedata/get?datatype=0'
-    GAMESAVE_SLOT_URL = 'https://api.pokerogue.net/savedata/get?datatype=1&slot='
+    TRAINER_DATA_URL = 'https://api.pokerogue.net/savedata/system?clientSessionId='
+    GAMESAVE_SLOT_URL = 'https://api.pokerogue.net/savedata/session?slot='
     UPDATE_TRAINER_DATA_URL = 'https://api.pokerogue.net/savedata/update?datatype=0'
     UPDATE_GAMESAVE_SLOT_URL = 'https://api.pokerogue.net/savedata/update?datatype=1&slot='
     UPDATE_ALL_URL = 'https://api.pokerogue.net/savedata/updateall'
@@ -81,48 +83,19 @@ class Rogue:
         
         self.__dump_data()
 
-
-    def _setup_headers(self) -> Dict[str, str]:
+    def _setup_headers(self, headers = None) -> Dict[str, str]:
         """
         Generates random headers for the session.
 
         Returns:
             Dict[str, str]: The generated headers.
         """
-        chrome_major_versions = list(range(110, 126))
-        sec_ch_ua_platform = ["Windows", "Macintosh", "X11"]
-        platforms = [
-            "Windows NT 10.0; Win64; x64",
-            "Windows NT 6.1; Win64; x64",
-            "Macintosh; Intel Mac OS X 10_15_7",
-            "Macintosh; Intel Mac OS X 11_2_3",
-            "X11; Linux x86_64",
-            "X11; Ubuntu; Linux x86_64",
-        ]
+        if not headers:
+            headers = HeaderGenerator.generate_headers()
+        headers["Accept"] = "application/json"
+        headers["Content-Type"] = "application/json"
+        headers["Authorization"] = self.auth_token
 
-        random_platform = random.choice(platforms)
-        random_sec_ch_ua_platform = random.choice(sec_ch_ua_platform)
-        random_chrome_major_version = random.choice(chrome_major_versions)
-        headers = None
-        headers = {
-            "authorization": self.auth_token,
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Accept-Language": "it-IT,it;q=0.8,en-US;q=0.5,en;q=0.3",
-            "Accept-Encoding": "gzip, deflate, br, zstd",
-            "Connection": "keep-alive",
-            "Origin": "https://pokerogue.net",
-            "Referer": "https://pokerogue.net/",
-            "Sec-Ch-Ua": f'"Google Chrome";v="{random_chrome_major_version}", "Chromium";v="{random_chrome_major_version}", "Not.A/Brand";v="24"',
-            "Sec-Ch-Ua-Mobile": "?0",
-            "Sec-Ch-Ua-Platform": f'"{random_sec_ch_ua_platform}"',
-            "Sec-Fetch-Dest": "empty",
-            "Sec-Fetch-Mode": "cors",
-            "Sec-Fetch-Site": "same-site",
-            "User-Agent": f"Mozilla/5.0 ({random_platform}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{random_chrome_major_version}.0.0.0 Safari/537.36",
-        }
-
-        print(headers)
         return headers
     
     def __dump_data(self, slot: int = 1) -> None:
@@ -162,7 +135,7 @@ class Rogue:
         """
         cFormatter.print(Color.INFO, 'Fetching trainer data...')
         try:
-            response = self.session.get(self.TRAINER_DATA_URL, headers=self.headers)
+            response = self.session.get(f'{self.TRAINER_DATA_URL}{self.clientSessionId}', headers=self.headers)
             response.raise_for_status()
             if response.content:  # Check if the response content is not empty
                 cFormatter.print(Color.GREEN, 'Successfully fetched data.')
@@ -178,7 +151,7 @@ class Rogue:
     def get_gamesave_data(self, slot: int = 1):
         cFormatter.print(Color.INFO, f'Fetching data for Slot {slot}...')
         try:
-            response = self.session.get(f'{self.GAMESAVE_SLOT_URL}{slot-1}', headers=self.headers)
+            response = self.session.get(f'{self.GAMESAVE_SLOT_URL}{slot-1}&clientSessionId={self.clientSessionId}', headers=self.headers)
             response.raise_for_status()
             if response.content:  # Check if the response content is not empty
                 cFormatter.print(Color.GREEN, 'Successfully fetched data.')
@@ -424,40 +397,37 @@ class Rogue:
             cFormatter.print(Color.CRITICAL, f'Error in function restore_backup(): {e}', isLogging=True)
 
     def another_update_all(self):
-        if self.seleniumHeader:
-                url = "https://api.pokerogue.net/savedata/updateall"
+        url = "https://api.pokerogue.net/savedata/updateall"
 
-                if "trainer.json" not in os.listdir():
-                    print("trainer.json file not found!")
-                    return
-                with open("trainer.json", "r") as f:
-                    trainer_data = json.load(f)
-                
-                slot = self.slot
-                if slot > 5 or slot < 1:
-                    print("Invalid slot number")
-                    return
-                filename = f"slot_{slot}.json"
-                if filename not in os.listdir():
-                    print(f"{filename} not found")
-                    return
+        if "trainer.json" not in os.listdir():
+            print("trainer.json file not found!")
+            return
+        with open("trainer.json", "r") as f:
+            trainer_data = json.load(f)
+        
+        slot = self.slot
+        if slot > 5 or slot < 1:
+            print("Invalid slot number")
+            return
+        filename = f"slot_{slot}.json"
+        if filename not in os.listdir():
+            print(f"{filename} not found")
+            return
 
-                with open(filename, "r") as f:
-                    game_data = json.load(f)
-                try:
-                    payload = {'clientSessionId': self.clientSessionId, 'session': game_data, "sessionSlotId": slot-1, 'system': trainer_data}
-                    response = self.session.post(url=url, headers=self.headers, json=payload)
-                    if response.status_code == 400:
-                            print("Please do not play Pokerogue while using this tool. Restart the tool!")
-                            return
-                    response.raise_for_status()
-                    print("Updated data Succesfully!")
+        with open(filename, "r") as f:
+            game_data = json.load(f)
+        try:
+            payload = {'clientSessionId': self.clientSessionId, 'session': game_data, "sessionSlotId": slot-1, 'system': trainer_data}
+            response = self.session.post(url=url, headers=self.headers, json=payload)
+            if response.status_code == 400:
+                    print("Please do not play Pokerogue while using this tool. Restart the tool!")
                     return
-                except requests.exceptions.RequestException as e:
-                        cFormatter.print(Color.BRIGHT_RED, 'Response 403 - Forbidden. We have no authoriazion to acces the resource.', isLogging=True)
-                        cFormatter.print(Color.BRIGHT_RED, 'Please report to our GitHub.', isLogging=True)
-        else:
-            cFormatter.print(Color.RED, 'Only useable when logging with browser.')
+            response.raise_for_status()
+            print("Updated data Succesfully!")
+            return
+        except requests.exceptions.RequestException as e:
+                cFormatter.print(Color.BRIGHT_RED, 'Response 403 - Forbidden. We have no authoriazion to acces the resource.', isLogging=True)
+                cFormatter.print(Color.BRIGHT_RED, 'Please report to our GitHub.', isLogging=True)
 
     def unlock_all_starters(self) -> None:
         """

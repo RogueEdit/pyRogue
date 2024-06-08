@@ -76,7 +76,8 @@ def main():
             try:
                 if login.login():
                     cFormatter.print(Color.INFO, f'Logged in as: {username.capitalize()}')
-                    rogue = Rogue(session, login.token, login.session_id, headers={})
+                    session.cookies.set("pokerogue_sessionId", login.session_id, domain="pokerogue.net")
+                    rogue = Rogue(session, login.token, login.session_id)
                     break
             except Exception as e:
                 cFormatter.print(Color.CRITICAL, f'Something went wrong. {e}', isLogging=True)
@@ -86,6 +87,7 @@ def main():
 
             if session_id and token and headers:
                 cFormatter.print(Color.INFO, f'Logged in as: {username.capitalize()}')
+                session.cookies.set("pokerogue_sessionId", session_id, domain="pokerogue.net")
                 rogue = Rogue(session, auth_token=token, clientSessionId=session_id, headers=headers)
                 break
             else:
@@ -119,10 +121,9 @@ def main():
         '23': rogue.print_vouchers,
         '24': rogue.print_natures,
         '25': rogue.print_natureSlot,
-        '26': rogue.update_all,
+        '26': rogue.another_update_all,
         '27': rogue.print_help,
         '28': rogue.print_changes,
-        '29': rogue.another_update_all
     }
 
     title = '************************ PyRogue *************************'
