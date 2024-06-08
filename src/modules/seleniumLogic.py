@@ -117,7 +117,6 @@ class SeleniumLogic:
             print(f"Timeout occurred: {e}")
 
         finally:
-            HeaderGenerator.save_headers(headers=headers)
             driver.quit()
 
         CustomLogger.reactivate_logging()
