@@ -1,7 +1,7 @@
 # pyRogue
 > **pyRogue** is a educational project.
-> ## Not Working. File removed for security reasons.
-
+> ## Not Working. Do not use.
+> 
 ![Preview Image](.github/previews/main.png)
 ![Preview Image](.github/previews/tool.png)
 
