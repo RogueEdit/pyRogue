@@ -4,8 +4,6 @@
 > 
 ![Preview Image](.github/previews/main.png)
 
-[<img src="https://img.shields.io/badge/Join%20our%20News-Discord!-8A2BE2">](https://discord.gg/quGgNVNsFp)
-
 # List of content
 - [Foreword](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#important-foreword)
 - [FAQ](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#faq)
