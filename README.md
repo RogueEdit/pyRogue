@@ -1,6 +1,7 @@
 # pyRogue
 > **pyRogue** is a educational project.
-> # Not Working. File removed for security reasons.
+> ## Not Working. File removed for security reasons.
+> ### Cloudflare Bot-Protection is heavily enforced now.
 
 [<img src="https://img.shields.io/badge/Windows-blue">](https://github.com/RogueEdit/onlineRogueEditor/releases/download/v0.1.5/pyRogue-v015-Windows.zip) <img src="https://img.shields.io/badge/d7c3c3673fdf08968cca37a20b5ff05a7545df7edc057a5284efee8867c0539c-blue"> [<img src="https://img.shields.io/badge/Virus%20Total-blue">](https://www.virustotal.com/gui/file/d7c3c3673fdf08968cca37a20b5ff05a7545df7edc057a5284efee8867c0539c?nocache=1) 
 
