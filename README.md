@@ -1,7 +1,6 @@
 # pyRogue
 > **pyRogue** is a educational project.
 > ## Not Working. File removed for security reasons.
-> ### Cloudflare Bot-Protection is heavily enforced now.
 
 ![Preview Image](.github/previews/main.png)
 ![Preview Image](.github/previews/tool.png)
