@@ -3,9 +3,6 @@
 > ## Not Working. Do not use.
 > 
 ![Preview Image](.github/previews/main.png)
-![Preview Image](.github/previews/tool.png)
-
-[More examples](PREVIEW.md)
 
 [<img src="https://img.shields.io/badge/Join%20our%20News-Discord!-8A2BE2">](https://discord.gg/quGgNVNsFp)
 
@@ -22,21 +19,9 @@
 
 We will not sent you any files or contact you about anything. You can see who contributed and everything regarding us will be only done on GitHub. We will not contact you in any matter or will send you files. There are scammers out there. Here you can read the full source code, compile it from scratch and such or download a VT-checked official release.
 
-The AntiVirus might label it as a virus. All the source code is available into the `src/` folder, everything is open readable. This is to be expected on some environments due the nature of such tools. AV's do not like doing static calls via consoles. But you can read every action and exception here in the code.
+Attention: When ever this tool detects you are trying to manipulate a daily seeded run it will abort. We only do this for educating us.
 
-Attention: When ever this tool detects you are trying to manipulate a daily seeded run it will abort.
-
-If there is any error or cancel of action IT WILL DO tell you!!
-
-If you are intending to use this Tool on a new account you have to atleast kill one pokemon and progress to stage 2. This ensures you will have some savedata that also can be manipulated.
-
-When you launch the tool and login it will create a trainer.json - this is your save-data and is very precious. Please make a copy of it just in case anything goes wrong. - We take no responsibility for your actions when using this script. 
-
-We will not use the tool 24/7 - this means we will not see when it breaks due to changes on PokeRoGue's site. Please report on our discord or GitHub whenever you cannot finish any action.
-
-**IMPORTANT**
-When you encounter multiple 403 Forbiddens - it's usually not on us. Retry to a later point or contact us to rebuild a new header seed file. We programmed a hotfix method in for this case.
-
+- We take no responsibility for your actions when using this tool.
 
 ## FAQ
 
