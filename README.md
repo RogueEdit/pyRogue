@@ -1,8 +1,10 @@
 # pyRogue
 > **pyRogue** is a educational project.
 > ## Not Working. Do not use.
-> 
+
 ![Preview Image](.github/previews/main.png)
+
+[Regarding Bans and Limited Accounts](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#regarding-bans-and-limited-accounts)
 
 # List of content
 - [Foreword](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#important-foreword)
