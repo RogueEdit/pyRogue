@@ -219,9 +219,6 @@ class Rogue:
 
     def logout(self):
         response = self.session.get(f'{self.LOGOUT_URL}', headers=self.headers)
-        response.raise_for_status()
-        if response.status_code == 200:
-                cFormatter.print(Color.GREEN, 'Changes applied succesfully. Logging out, terminating session..')
         sys.exit(0)
 
     def __write_data(self, data: Dict[str, any], filename: str, showSuccess: bool = True) -> None:

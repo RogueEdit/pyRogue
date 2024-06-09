@@ -174,7 +174,7 @@ class loginLogic:
             # headers = {'Authorization': 'Bearer invalid_token'}
             cFormatter.print(Color.DEBUG, 'Adding delay to appear more natural to the server. Please stand by...')
             response = self.session.post(self.LOGIN_URL, headers=headers, data=data)
-            sleep(random.randint(3,15))
+            sleep(random.randint(3,5))
             response.raise_for_status()
 
             login_response = response.json()
