@@ -24,6 +24,7 @@ from utilities.enumLoader import EnumLoader
 from utilities.cFormatter import cFormatter, Color
 from utilities.limiter import Limiter
 from modules.loginLogic import HeaderGenerator
+import requests
 
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
@@ -65,7 +66,6 @@ class Rogue:
         self.headers = self._setup_headers()
         if not self.headers:
             raise ValueError("Failed to load headers.")
-        self.session = cloudscraper.create_scraper()
 
         # json generators
         self.generator = Generator()
