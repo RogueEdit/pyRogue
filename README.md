@@ -1,6 +1,6 @@
 # pyRogue
 > **pyRogue** is a educational project.
-> We are well aware of 403's and 404's. They changed some server related stuff so we need to have a look.
+> # Not Working. Do not use.
 
 This build is working for the new API changes! Currently we cant provide builded binaries, you have to run from code. 
 [How to run from code](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#how-to-run-from-code)
