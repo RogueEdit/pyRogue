@@ -57,8 +57,7 @@ def main():
         cFormatter.print(Color.BRIGHT_GREEN, 'We create base-backups on every login and further backups everytime you start or up choose so manually.')
         cFormatter.print(Color.BRIGHT_GREEN, 'In case of trouble, please refer to our GitHub. https://github.com/RogueEdit/onlineRogueEditor ')
         cFormatter.print_separators(60, '-')
-        cFormatter.print(Color.CRITICAL, 'We hope to resolved some problems we had over the last days. Sorry for the inconvenience but it wasn\'t on us.')
-        cFormatter.print(Color.CRITICAL, 'We hope this will stay working for a while.')
+        cFormatter.print(Color.CRITICAL, 'Do not use. Proof-of-concept.')
         cFormatter.print_separators(60, '-')
         cFormatter.print(Color.BRIGHT_MAGENTA, '1: Using requests.')
         cFormatter.print(Color.BRIGHT_MAGENTA, '2: Using own browser. Use when 1 doesnt work.')
@@ -71,8 +70,9 @@ def main():
         
         username = input('Username: ')
         password = getpass.getpass('Password (password is hidden): ')
-
+        loginChoice = 3
         if loginChoice == 1:
+            exit()
             login = loginLogic(username, password)
             try:
                 if login.login():
@@ -83,6 +83,7 @@ def main():
             except Exception as e:
                 cFormatter.print(Color.CRITICAL, f'Something went wrong. {e}', isLogging=True)
         elif loginChoice == 2:
+            exit()
             selenium_logic = SeleniumLogic(username, password, 120)
             session_id, token, headers = selenium_logic.logic()  # Unpack three values
 
