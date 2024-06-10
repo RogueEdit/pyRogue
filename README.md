@@ -1,5 +1,5 @@
 # pyRogue
-> **pyRogue** is a educational project.
+> **pyRogue** is a educational project. For now it is only a proof-of-concept. The servers are now secured so do not access them!
 > ## Not Working. Do not use.
 
 ![Preview Image](.github/previews/main.png)
