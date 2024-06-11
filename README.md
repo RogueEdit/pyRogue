@@ -1,6 +1,6 @@
 # pyRogue
 > # **pyRogue** is a educational project. For now it is only a proof-of-concept. The servers are now secured so do not access them!
-> # Not Working. Do not use!
+> ## Truth be told, before the servers were not secured at all. Now those method of access is fingerprinted and denied access. We will not help bypassing such security mechanisms.
 
 ![Preview Image](.github/previews/main.png)
 
