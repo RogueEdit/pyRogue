@@ -11,12 +11,12 @@ from typing import List, Dict, Optional
 from time import sleep
 from utilities.limiter import Limiter
 from utilities.cFormatter import cFormatter, Color
-init()
 import pyuseragents
 from user_agents import parse
 import string
+init()
 
-limiter = Limiter(lockout_period=15, timestamp_file='./data/extra.json')
+limiter = Limiter(lockout_period=40, timestamp_file='./data/extra.json')
 
 def handle_error_response(response: requests.Response) -> Dict[str, str]:
     """
@@ -180,8 +180,7 @@ class loginLogic:
             self.token = login_response.get('token')
             cFormatter.print_separators(30, '-')
             self.session_id = self.calcSessionId()
-            print(f"JKJKÖK: {self.session_id}")
-            cFormatter.print(Color.GREEN, f'Login successful.')
+            cFormatter.print(Color.GREEN, 'Login successful.')
             status_code_color = Color.BRIGHT_GREEN if response.status_code == 200 else Color.BRIGHT_RED
             cFormatter.print(status_code_color, f'HTTP Status Code: {response.status_code}', isLogging=True)
             cFormatter.print(Color.CYAN, f'Response URL: {response.request.url}', isLogging=True)

@@ -287,7 +287,12 @@ class Generator:
             self.nature_names: List[str] = nature_names
         else:
             self.nature_names: List[str] = [nature.name for nature in Nature]  # Include all natures
-        self.nature_ids: List[int] = [2 ** i for i in range(1, len(self.nature_names) + 1)]  # Start with ID 2
+        self.nature_ids: List[int] = [2 ** i for i in range(1, len(self.nature_names) + 1)]
+
+        # Reduce the last ID by 2
+        if len(self.nature_ids) > 0:
+            self.nature_ids[-1] -= 2
+
         self.max_id: int = max(self.nature_ids)  # Calculate max ID
 
     def __nature_to_json(self) -> str:

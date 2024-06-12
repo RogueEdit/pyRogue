@@ -30,12 +30,11 @@ from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 
 from utilities.eggLogic import *
-import signal
 import sys
 
 
 from user_agents import parse
-limiter = Limiter(lockout_period=60, timestamp_file='./data/extra.json')
+limiter = Limiter(lockout_period=90, timestamp_file='./data/extra.json')
 logger = logging.getLogger(__name__)
 logging.basicConfig(level = logging.INFO)
 
