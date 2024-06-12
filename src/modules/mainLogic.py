@@ -14,11 +14,11 @@ from typing import Dict, Any, Optional, List
 import logging
 from colorama import init, Fore, Style
 from time import sleep
-import datetime
 import re
 from modules.loginLogic import handle_error_response
 import modules.config
-
+from datetime import datetime
+from requests.exceptions import SSLError, ConnectionError, Timeout, RequestException
 from utilities.generator import Generator
 from utilities.enumLoader import EnumLoader
 from utilities.cFormatter import cFormatter, Color
@@ -65,6 +65,9 @@ class Rogue:
         self.headers = self._setup_headers()
         if not self.headers:
             raise ValueError("Failed to load headers.")
+        
+        self.secretId = None
+        self.trainerId = None
 
         # json generators
         self.generator = Generator()
@@ -140,6 +143,8 @@ class Rogue:
             if response.content:  # Check if the response content is not empty
                 cFormatter.print(Color.GREEN, 'Successfully fetched data.')
                 data = response.json()
+                self.trainerId = data.get('trainerId')
+                self.secretId = data.get('secretId')
                 self.__write_data(data, 'trainer.json', False)
                 return data
             else:
@@ -162,57 +167,6 @@ class Rogue:
                 return handle_error_response(response)
         except requests.RequestException as e:
             cFormatter.print(Color.CRITICAL, f'Error fetching save-slot data. Please restart the tool. \n {e}', isLogging=True)
-
-    @limiter.lockout
-    def __update_trainer_data(self, trainer_payload: dict) -> dict:
-        """
-        Update the trainer data on the server.
-
-        Args:
-            trainer_payload (dict): The payload containing trainer data to update.
-
-        Returns:
-            dict: JSON response from the server.
-        """
-        try:
-            cFormatter.print(Color.INFO, 'Updating trainer data...')
-            response = self.session.post(self.UPDATE_TRAINER_DATA_URL, headers=self.headers, json=trainer_payload)
-            response.raise_for_status()
-            if response.content:  # Check if the response content is not empty
-                cFormatter.print(Color.GREEN, 'Succesfully updated data on the sever.')
-                return response.json()
-            else:
-                return handle_error_response(response)
-            
-        except requests.RequestException as e:
-            handle_error_response(e)
-
-    @limiter.lockout
-    def __update_gamesave_data(self, slot: int, gamedata_payload: Dict[str, any], url_ext: str) -> Dict[str, any]:
-        """
-        Update the gamesave data on the server.
-
-        Args:
-            slot (int): The slot number to update.
-            gamedata_payload (Dict[str, any]): The payload containing game save data to update.
-            url_ext (str): Additional URL parameters.
-
-        Returns:
-            Dict[str, any]: JSON response from the server.
-        """
-        sleep(random.randint(3,10))
-        try:
-            cFormatter.print(Color.INFO, f'Updating gamesave data for slot {slot}...')
-            response = self.session.post(
-                f'{self.UPDATE_GAMESAVE_SLOT_URL}{slot - 1}{url_ext}', headers=self.headers, json=gamedata_payload)
-            response.raise_for_status()
-            if response.content:  # Check if the response content is not empty
-                cFormatter.print(Color.GREEN, f'{response.json()} - That worked! Dont forget to clear your browser cache.')
-            else:
-                return handle_error_response(response)
-            
-        except requests.RequestException as e:
-            handle_error_response(e)
 
     def logout(self):
         response = self.session.get(f'{self.LOGOUT_URL}', headers=self.headers)
@@ -288,7 +242,7 @@ class Rogue:
                         data = json.load(f)
                     trainer_id = data.get('trainerId')
                     if trainer_id is not None:
-                        timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+                        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
                         base_filename = f'base_{trainer_id}.json'
                         base_filepath = os.path.join(backup_dir, base_filename)
                         
@@ -304,7 +258,7 @@ class Rogue:
 
     def restore_backup(self) -> None:
         """
-        Restore a backup of JSON files.
+        Restore a backup of JSON files and update the timestamp in trainer.json.
 
         Example:
             restore_backup()
@@ -321,32 +275,29 @@ class Rogue:
             backup_dir = './backup'
             files = os.listdir(backup_dir)
             
-            # Filtering and sorting files
-            base_files = sorted(f for f in files if re.match(r'base_\d+\.json', f))
+            # Filter and sort files that match trainerId
+            trainer_id_pattern = f'_{self.trainerId}_'
             backup_files = sorted(
-                (f for f in files if re.match(r'backup_\d+_\d{8}_\d{6}\.json', f)),
+                (f for f in files if re.match(rf'(base|backup){trainer_id_pattern}\d{{8}}_\d{{6}}\.json', f)),
                 key=lambda x: (re.findall(r'\d+', x)[0], re.findall(r'\d{8}_\d{6}', x)[0])
             )
             
-            all_files = base_files + backup_files
-            
-            if not all_files:
-                cFormatter.print(Color.INFO, 'No backup files found.')
+            if not backup_files:
+                cFormatter.print(Color.INFO, 'No backup files found for your trainer ID.')
                 return
             
             # Displaying sorted list with numbers
-            for idx, file in enumerate(all_files, 1):
+            for idx, file in enumerate(backup_files, 1):
                 sidenote = '        <- Created on first edit' if file.startswith('base_') else ''
                 cFormatter.print(Color.GREEN, f'{idx}{Style.RESET_ALL}: {file} {sidenote}')
 
             cFormatter.print_separators(31, '-', Color.WHITE)
-
             # Getting user's choice
             while True:
                 try:
                     choice = int(input('Enter the number of the file you want to restore: '))
-                    if 1 <= choice <= len(all_files):
-                        chosen_file = all_files[choice - 1]
+                    if 1 <= choice <= len(backup_files):
+                        chosen_file = backup_files[choice - 1]
                         chosen_filepath = os.path.join(backup_dir, chosen_file)
                         
                         # Determine the output filepath
@@ -355,7 +306,20 @@ class Rogue:
                         
                         # Copy the chosen file to the output filepath
                         shutil.copyfile(chosen_filepath, output_filepath)
-                        cFormatter.print(Color.INFO, f'Data restored.')
+                        
+                        # Read the restored file
+                        with open(output_filepath, 'r') as file:
+                            data = json.load(file)
+                        
+                        # Update the timestamp
+                        current_timestamp = int(datetime.now().timestamp() * 1000)  # Correct usage of datetime
+                        data['timestamp'] = current_timestamp
+                        
+                        # Write the updated data back to the file
+                        with open(output_filepath, 'w') as file:
+                            json.dump(data, file, indent=4)
+                        
+                        cFormatter.print(Color.INFO, f'Data restored and timestamp updated.')
                         break
                     else:
                         cFormatter.print(Color.WARNING, f'Invalid choice. Please enter a number within range.')
@@ -395,9 +359,14 @@ class Rogue:
             response.raise_for_status()
             cFormatter.print(Color.GREEN, 'Updated data Succesfully!')
             self.logout()
+        except SSLError as ssl_err:
+            cFormatter.print(Color.CRITICAL, f'SSL error occurred: {ssl_err}', isLogging=True)
+        except ConnectionError as conn_err:
+            cFormatter.print(Color.CRITICAL, f'Connection error occurred: {conn_err}', isLogging=True)
+        except Timeout as timeout_err:
+            cFormatter.print(Color.CRITICAL, f'Timeout error occurred: {timeout_err}', isLogging=True)
         except requests.exceptions.RequestException as e:
-                handle_error_response(e)
-                self.logout()
+            handle_error_response(e)
 
     def unlock_all_starters(self) -> None:
         """
