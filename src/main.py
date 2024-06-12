@@ -70,9 +70,7 @@ def main():
         
         username = input('Username: ')
         password = getpass.getpass('Password (password is hidden): ')
-        loginChoice = 3
         if loginChoice == 1:
-            exit()
             login = loginLogic(username, password)
             try:
                 if login.login():
@@ -83,7 +81,6 @@ def main():
             except Exception as e:
                 cFormatter.print(Color.CRITICAL, f'Something went wrong. {e}', isLogging=True)
         elif loginChoice == 2:
-            exit()
             selenium_logic = SeleniumLogic(username, password, 120)
             session_id, token, headers = selenium_logic.logic()  # Unpack three values
 

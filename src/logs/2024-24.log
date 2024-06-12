@@ -1,0 +1,22 @@
+2024-06-12 15:57:56,971 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 15:57:57,292 - DEBUG - https://api.pokerogue.net:443 "POST /account/login HTTP/1.1" 200 None
+2024-06-12 15:58:01,304 - INFO - HTTP Status Code: 200
+2024-06-12 15:58:01,305 - INFO - Response URL: https://api.pokerogue.net/account/login
+2024-06-12 15:58:01,306 - INFO - Response Headers: {'Date': 'Wed, 12 Jun 2024 13:57:57 GMT', 'Content-Type': 'application/json', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive', 'Access-Control-Allow-Headers': 'Authorization, Content-Type', 'Access-Control-Allow-Methods': 'OPTIONS, GET, POST', 'Access-Control-Allow-Origin': 'https://pokerogue.net', 'X-Pokemon': 'victini', 'CF-Cache-Status': 'DYNAMIC', 'NEL': '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}', 'Server': 'cloudflare', 'CF-RAY': '892a5a574dd58ef5-FRA', 'Content-Encoding': 'br', 'alt-svc': 'h3=":443"; ma=86400'}
+2024-06-12 15:58:03,003 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 15:58:03,302 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/system?clientSessionId=D4tH2Asd5pXjYK3T7VolSYKad3JIVsqr HTTP/1.1" 200 None
+2024-06-12 15:58:03,790 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/session?slot=0&clientSessionId=D4tH2Asd5pXjYK3T7VolSYKad3JIVsqr HTTP/1.1" 200 None
+2024-06-12 15:58:03,852 - INFO - Backup created.
+2024-06-12 15:58:08,456 - DEBUG - https://api.pokerogue.net:443 "POST /savedata/updateall HTTP/1.1" 200 0
+2024-06-12 15:58:08,595 - DEBUG - https://api.pokerogue.net:443 "GET /account/logout HTTP/1.1" 200 0
+2024-06-12 15:59:09,516 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 15:59:09,829 - DEBUG - https://api.pokerogue.net:443 "POST /account/login HTTP/1.1" 200 None
+2024-06-12 15:59:13,831 - INFO - HTTP Status Code: 200
+2024-06-12 15:59:13,831 - INFO - Response URL: https://api.pokerogue.net/account/login
+2024-06-12 15:59:13,831 - INFO - Response Headers: {'Date': 'Wed, 12 Jun 2024 13:59:09 GMT', 'Content-Type': 'application/json', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive', 'Access-Control-Allow-Headers': 'Authorization, Content-Type', 'Access-Control-Allow-Methods': 'OPTIONS, GET, POST', 'Access-Control-Allow-Origin': 'https://pokerogue.net', 'X-Pokemon': 'victini', 'CF-Cache-Status': 'DYNAMIC', 'NEL': '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}', 'Server': 'cloudflare', 'CF-RAY': '892a5c1c8cbbbbd3-FRA', 'Content-Encoding': 'br', 'alt-svc': 'h3=":443"; ma=86400'}
+2024-06-12 15:59:14,634 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 15:59:15,010 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/system?clientSessionId=dzxEVUiAOh7ISNzhnBBlf53VsXN2Ia1e HTTP/1.1" 200 None
+2024-06-12 15:59:15,381 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/session?slot=0&clientSessionId=dzxEVUiAOh7ISNzhnBBlf53VsXN2Ia1e HTTP/1.1" 200 None
+2024-06-12 15:59:15,407 - INFO - Backup created.
+2024-06-12 15:59:30,892 - DEBUG - https://api.pokerogue.net:443 "POST /savedata/updateall HTTP/1.1" 200 0
+2024-06-12 15:59:31,030 - DEBUG - https://api.pokerogue.net:443 "GET /account/logout HTTP/1.1" 200 0
