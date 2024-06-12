@@ -1,5 +1,5 @@
 # pyRogue
-> ## **pyRogue** is a educational project. Currently working.
+> ## **pyRogue** is a educational project. 
 
 ![Preview Image](.github/previews/main.png)
 
