@@ -7,7 +7,7 @@
 from utilities.cFormatter import cFormatter, Color
 import json
 
-from enum import Enum, auto
+from enum import Enum
 
 class EnumLoader:
     def __init__(self):

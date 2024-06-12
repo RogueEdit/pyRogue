@@ -259,7 +259,19 @@ class Vouchers(Enum):
         'LEON': 127,
         'GEETA': 128,
         'NEMONA': 129,
-        'KIERAN': 130
+        'KIERAN': 130,
+        'ROCKET_BOSS_GIOVANNI_1': 131,
+        'ROCKET_BOSS_GIOVANNI_2': 132,
+        'MAXIE': 133,
+        'MAXIE_2': 134,
+        'ARCHIE': 135,
+        'ARCHIE_2': 136,
+        'CYRUS': 137,
+        'CYRUS_2': 138,
+        'GHETSIS': 139,
+        'GHETSIS_2': 140,
+        'LYSANDRE': 141,
+        'LYSANDRE_2': 142
     }
 
 class Generator:
