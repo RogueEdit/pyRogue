@@ -12,11 +12,10 @@ from time import sleep
 from utilities.limiter import Limiter
 from utilities.cFormatter import cFormatter, Color
 init()
-import fake_useragent
+import pyuseragents
 from user_agents import parse
 import string
 
-ua = fake_useragent.UserAgent()
 limiter = Limiter(lockout_period=15, timestamp_file='./data/extra.json')
 
 def handle_error_response(response: requests.Response) -> Dict[str, str]:
@@ -87,7 +86,7 @@ def handle_error_response(response: requests.Response) -> Dict[str, str]:
 class HeaderGenerator:
     @classmethod
     def generate_headers(cls, isAuthHeader: bool = False) -> Dict[str, str]:
-        user_agent_string = ua.random
+        user_agent_string = pyuseragents.random()
         user_agent = parse(user_agent_string)
 
         browser_family = user_agent.browser.family

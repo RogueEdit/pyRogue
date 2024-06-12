@@ -57,8 +57,6 @@ def main():
         cFormatter.print(Color.BRIGHT_GREEN, 'We create base-backups on every login and further backups everytime you start or up choose so manually.')
         cFormatter.print(Color.BRIGHT_GREEN, 'In case of trouble, please refer to our GitHub. https://github.com/RogueEdit/onlineRogueEditor ')
         cFormatter.print_separators(60, '-')
-        cFormatter.print(Color.CRITICAL, 'Do not use. Proof-of-concept.')
-        cFormatter.print_separators(60, '-')
         cFormatter.print(Color.BRIGHT_MAGENTA, '1: Using requests.')
         cFormatter.print(Color.BRIGHT_MAGENTA, '2: Using own browser. Use when 1 doesnt work.')
         
