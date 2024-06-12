@@ -394,7 +394,7 @@ class Rogue:
                     cFormatter.print(Color.CRITICAL, 'Bad Request!')
                     return
             response.raise_for_status()
-            cFormatter.print(Color.CRITICAL, 'Updated data Succesfully!')
+            cFormatter.print(Color.GREEN, 'Updated data Succesfully!')
             self.logout()
         except requests.exceptions.RequestException as e:
                 handle_error_response(e)
