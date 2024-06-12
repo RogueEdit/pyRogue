@@ -1,5 +1,5 @@
 # pyRogue
-> ## **pyRogue** is a educational project. 
+> ## **pyRogue** is a educational project. <img src="https://img.shields.io/badge/Status-Working-green">
 
 ![Preview Image](.github/previews/main.png)
 
