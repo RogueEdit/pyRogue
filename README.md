@@ -40,7 +40,7 @@ Attention: When ever this tool detects you are trying to manipulate a daily seed
 
 ## How to use the tool
 
-- Step 1: Download the release according to your operating system
+- Step 1: Download the correct compiled up2date version
 - Step 2: Extract the archived data you downloaded
 - Step 3: Navigate into the compiled/ folder and launch `pyRogue-[yourOperatingSystem]`
 - Step 4: Enter your login data. Your password is in a hidden field. You are entering despite it doesnt look like it. Just login!
