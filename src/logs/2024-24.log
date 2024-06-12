@@ -130,3 +130,155 @@
 2024-06-12 20:18:48,528 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/system?clientSessionId=Nlh3bWyE8Ntxulv7pdsyEzpLm14KurMk HTTP/1.1" 200 None
 2024-06-12 20:18:49,017 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/session?slot=0&clientSessionId=Nlh3bWyE8Ntxulv7pdsyEzpLm14KurMk HTTP/1.1" 200 None
 2024-06-12 20:18:49,047 - INFO - Backup created.
+2024-06-12 21:25:48,308 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 21:25:48,655 - DEBUG - https://api.pokerogue.net:443 "POST /account/login HTTP/1.1" 200 None
+2024-06-12 21:25:53,656 - INFO - HTTP Status Code: 200
+2024-06-12 21:25:53,656 - INFO - Response URL: https://api.pokerogue.net/account/login
+2024-06-12 21:25:53,656 - INFO - Response Headers: {'Date': 'Wed, 12 Jun 2024 19:25:48 GMT', 'Content-Type': 'application/json', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive', 'Access-Control-Allow-Headers': 'Authorization, Content-Type', 'Access-Control-Allow-Methods': 'OPTIONS, GET, POST', 'Access-Control-Allow-Origin': 'https://pokerogue.net', 'X-Pokemon': 'victini', 'CF-Cache-Status': 'DYNAMIC', 'NEL': '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}', 'Server': 'cloudflare', 'CF-RAY': '892c3a98bd0f35df-FRA', 'Content-Encoding': 'br', 'alt-svc': 'h3=":443"; ma=86400'}
+2024-06-12 21:25:55,657 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 21:25:55,958 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/system?clientSessionId=vR91wX6iupm5CX6qwBfDF1WeoqAaXEYN HTTP/1.1" 200 None
+2024-06-12 21:25:56,438 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/session?slot=0&clientSessionId=vR91wX6iupm5CX6qwBfDF1WeoqAaXEYN HTTP/1.1" 200 None
+2024-06-12 21:25:56,461 - INFO - Backup created.
+2024-06-12 21:26:30,478 - CRITICAL - Error in function restore_backup(): module 'datetime' has no attribute 'now'
+2024-06-12 21:29:58,049 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 21:29:58,376 - DEBUG - https://api.pokerogue.net:443 "POST /account/login HTTP/1.1" 200 None
+2024-06-12 21:30:03,381 - INFO - HTTP Status Code: 200
+2024-06-12 21:30:03,382 - INFO - Response URL: https://api.pokerogue.net/account/login
+2024-06-12 21:30:03,383 - INFO - Response Headers: {'Date': 'Wed, 12 Jun 2024 19:29:58 GMT', 'Content-Type': 'application/json', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive', 'Access-Control-Allow-Headers': 'Authorization, Content-Type', 'Access-Control-Allow-Methods': 'OPTIONS, GET, POST', 'Access-Control-Allow-Origin': 'https://pokerogue.net', 'X-Pokemon': 'victini', 'CF-Cache-Status': 'DYNAMIC', 'NEL': '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}', 'Server': 'cloudflare', 'CF-RAY': '892c40b19f2171d7-FRA', 'Content-Encoding': 'br', 'alt-svc': 'h3=":443"; ma=86400'}
+2024-06-12 21:30:06,306 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 21:30:06,581 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/system?clientSessionId=U8dyJZDC0GlIzkfmQcpvyoG1qijr2DcC HTTP/1.1" 200 None
+2024-06-12 21:30:07,035 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/session?slot=0&clientSessionId=U8dyJZDC0GlIzkfmQcpvyoG1qijr2DcC HTTP/1.1" 200 None
+2024-06-12 21:30:07,082 - INFO - Backup created.
+2024-06-12 21:33:25,737 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 21:33:26,034 - DEBUG - https://api.pokerogue.net:443 "POST /account/login HTTP/1.1" 200 None
+2024-06-12 21:33:31,039 - INFO - HTTP Status Code: 200
+2024-06-12 21:33:31,040 - INFO - Response URL: https://api.pokerogue.net/account/login
+2024-06-12 21:33:31,041 - INFO - Response Headers: {'Date': 'Wed, 12 Jun 2024 19:33:25 GMT', 'Content-Type': 'application/json', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive', 'Access-Control-Allow-Headers': 'Authorization, Content-Type', 'Access-Control-Allow-Methods': 'OPTIONS, GET, POST', 'Access-Control-Allow-Origin': 'https://pokerogue.net', 'X-Pokemon': 'victini', 'CF-Cache-Status': 'DYNAMIC', 'NEL': '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}', 'Server': 'cloudflare', 'CF-RAY': '892c45c369e137eb-FRA', 'Content-Encoding': 'br', 'alt-svc': 'h3=":443"; ma=86400'}
+2024-06-12 21:33:32,745 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 21:33:33,042 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/system?clientSessionId=rDrwCQe94Ano1ndfk8IRa0qfSRArhilk HTTP/1.1" 200 None
+2024-06-12 21:33:33,508 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/session?slot=0&clientSessionId=rDrwCQe94Ano1ndfk8IRa0qfSRArhilk HTTP/1.1" 200 None
+2024-06-12 21:33:33,527 - CRITICAL - Error in function create_backup(): type object 'datetime.datetime' has no attribute 'datetime'
+2024-06-12 21:34:22,665 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 21:34:22,990 - DEBUG - https://api.pokerogue.net:443 "POST /account/login HTTP/1.1" 200 None
+2024-06-12 21:34:26,994 - INFO - HTTP Status Code: 200
+2024-06-12 21:34:26,996 - INFO - Response URL: https://api.pokerogue.net/account/login
+2024-06-12 21:34:26,997 - INFO - Response Headers: {'Date': 'Wed, 12 Jun 2024 19:34:22 GMT', 'Content-Type': 'application/json', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive', 'Access-Control-Allow-Headers': 'Authorization, Content-Type', 'Access-Control-Allow-Methods': 'OPTIONS, GET, POST', 'Access-Control-Allow-Origin': 'https://pokerogue.net', 'X-Pokemon': 'victini', 'CF-Cache-Status': 'DYNAMIC', 'NEL': '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}', 'Server': 'cloudflare', 'CF-RAY': '892c47276cc53624-FRA', 'Content-Encoding': 'br', 'alt-svc': 'h3=":443"; ma=86400'}
+2024-06-12 21:34:28,528 - ERROR - get_trainer_data is rate limited. You can only do this every 90 seconds!
+2024-06-12 21:34:28,529 - ERROR - get_gamesave_data is rate limited. You can only do this every 90 seconds!
+2024-06-12 21:34:50,080 - ERROR - get_trainer_data is rate limited. You can only do this every 90 seconds!
+2024-06-12 21:34:55,351 - CRITICAL - Error in function create_backup(): type object 'datetime.datetime' has no attribute 'datetime'
+2024-06-12 21:35:44,477 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 21:35:44,769 - DEBUG - https://api.pokerogue.net:443 "POST /account/login HTTP/1.1" 200 None
+2024-06-12 21:35:47,771 - INFO - HTTP Status Code: 200
+2024-06-12 21:35:47,772 - INFO - Response URL: https://api.pokerogue.net/account/login
+2024-06-12 21:35:47,772 - INFO - Response Headers: {'Date': 'Wed, 12 Jun 2024 19:35:44 GMT', 'Content-Type': 'application/json', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive', 'Access-Control-Allow-Headers': 'Authorization, Content-Type', 'Access-Control-Allow-Methods': 'OPTIONS, GET, POST', 'Access-Control-Allow-Origin': 'https://pokerogue.net', 'X-Pokemon': 'victini', 'CF-Cache-Status': 'DYNAMIC', 'NEL': '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}', 'Server': 'cloudflare', 'CF-RAY': '892c49269d808fef-FRA', 'Content-Encoding': 'br', 'alt-svc': 'h3=":443"; ma=86400'}
+2024-06-12 21:35:49,289 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 21:35:49,571 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/system?clientSessionId=gIQlIYcvN44xyWExHW6BnbfTyFAQtcKd HTTP/1.1" 200 None
+2024-06-12 21:35:50,030 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/session?slot=0&clientSessionId=gIQlIYcvN44xyWExHW6BnbfTyFAQtcKd HTTP/1.1" 200 None
+2024-06-12 21:35:50,061 - CRITICAL - Error in function create_backup(): type object 'datetime.datetime' has no attribute 'datetime'
+2024-06-12 21:37:21,540 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 21:37:21,838 - DEBUG - https://api.pokerogue.net:443 "POST /account/login HTTP/1.1" 200 None
+2024-06-12 21:37:24,841 - INFO - HTTP Status Code: 200
+2024-06-12 21:37:24,842 - INFO - Response URL: https://api.pokerogue.net/account/login
+2024-06-12 21:37:24,844 - INFO - Response Headers: {'Date': 'Wed, 12 Jun 2024 19:37:21 GMT', 'Content-Type': 'application/json', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive', 'Access-Control-Allow-Headers': 'Authorization, Content-Type', 'Access-Control-Allow-Methods': 'OPTIONS, GET, POST', 'Access-Control-Allow-Origin': 'https://pokerogue.net', 'X-Pokemon': 'victini', 'CF-Cache-Status': 'DYNAMIC', 'NEL': '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}', 'Server': 'cloudflare', 'CF-RAY': '892c4b852ca42c59-FRA', 'Content-Encoding': 'br', 'alt-svc': 'h3=":443"; ma=86400'}
+2024-06-12 21:37:26,178 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 21:37:26,477 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/system?clientSessionId=Fv5Bg1fjgvmUDvplTENWuZyHXGxefPyb HTTP/1.1" 200 None
+2024-06-12 21:37:33,153 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/session?slot=0&clientSessionId=Fv5Bg1fjgvmUDvplTENWuZyHXGxefPyb HTTP/1.1" 200 None
+2024-06-12 21:37:33,175 - INFO - Backup created.
+2024-06-12 21:39:01,421 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 21:39:01,754 - DEBUG - https://api.pokerogue.net:443 "POST /account/login HTTP/1.1" 200 None
+2024-06-12 21:39:06,759 - INFO - HTTP Status Code: 200
+2024-06-12 21:39:06,760 - INFO - Response URL: https://api.pokerogue.net/account/login
+2024-06-12 21:39:06,761 - INFO - Response Headers: {'Date': 'Wed, 12 Jun 2024 19:39:01 GMT', 'Content-Type': 'application/json', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive', 'Access-Control-Allow-Headers': 'Authorization, Content-Type', 'Access-Control-Allow-Methods': 'OPTIONS, GET, POST', 'Access-Control-Allow-Origin': 'https://pokerogue.net', 'X-Pokemon': 'victini', 'CF-Cache-Status': 'DYNAMIC', 'NEL': '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}', 'Server': 'cloudflare', 'CF-RAY': '892c4df5b8991d84-FRA', 'Content-Encoding': 'br', 'alt-svc': 'h3=":443"; ma=86400'}
+2024-06-12 21:39:08,473 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 21:39:08,926 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/system?clientSessionId=vMw59DokCrKmUgE543L5VcI7zhedcGty HTTP/1.1" 200 None
+2024-06-12 21:39:09,783 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/session?slot=0&clientSessionId=vMw59DokCrKmUgE543L5VcI7zhedcGty HTTP/1.1" 200 None
+2024-06-12 21:39:09,809 - INFO - Backup created.
+2024-06-12 21:40:01,481 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 21:40:01,793 - DEBUG - https://api.pokerogue.net:443 "POST /account/login HTTP/1.1" 200 None
+2024-06-12 21:40:05,796 - INFO - HTTP Status Code: 200
+2024-06-12 21:40:05,796 - INFO - Response URL: https://api.pokerogue.net/account/login
+2024-06-12 21:40:05,796 - INFO - Response Headers: {'Date': 'Wed, 12 Jun 2024 19:40:01 GMT', 'Content-Type': 'application/json', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive', 'Access-Control-Allow-Headers': 'Authorization, Content-Type', 'Access-Control-Allow-Methods': 'OPTIONS, GET, POST', 'Access-Control-Allow-Origin': 'https://pokerogue.net', 'X-Pokemon': 'victini', 'CF-Cache-Status': 'DYNAMIC', 'NEL': '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}', 'Server': 'cloudflare', 'CF-RAY': '892c4f6cdd675d3c-FRA', 'Content-Encoding': 'br', 'alt-svc': 'h3=":443"; ma=86400'}
+2024-06-12 21:40:07,360 - ERROR - get_trainer_data is rate limited. You can only do this every 90 seconds!
+2024-06-12 21:40:07,361 - ERROR - get_gamesave_data is rate limited. You can only do this every 90 seconds!
+2024-06-12 21:40:42,540 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 21:40:42,831 - DEBUG - https://api.pokerogue.net:443 "POST /account/login HTTP/1.1" 200 None
+2024-06-12 21:40:46,835 - INFO - HTTP Status Code: 200
+2024-06-12 21:40:46,836 - INFO - Response URL: https://api.pokerogue.net/account/login
+2024-06-12 21:40:46,837 - INFO - Response Headers: {'Date': 'Wed, 12 Jun 2024 19:40:42 GMT', 'Content-Type': 'application/json', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive', 'Access-Control-Allow-Headers': 'Authorization, Content-Type', 'Access-Control-Allow-Methods': 'OPTIONS, GET, POST', 'Access-Control-Allow-Origin': 'https://pokerogue.net', 'X-Pokemon': 'victini', 'CF-Cache-Status': 'DYNAMIC', 'NEL': '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}', 'Server': 'cloudflare', 'CF-RAY': '892c506d79d89b7c-FRA', 'Content-Encoding': 'br', 'alt-svc': 'h3=":443"; ma=86400'}
+2024-06-12 21:40:54,273 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 21:40:54,552 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/system?clientSessionId=gPXJwUtkLgJWxsSkkfySl45Gq6sH8eju HTTP/1.1" 200 None
+2024-06-12 21:40:55,010 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/session?slot=0&clientSessionId=gPXJwUtkLgJWxsSkkfySl45Gq6sH8eju HTTP/1.1" 200 None
+2024-06-12 21:40:55,035 - INFO - Backup created.
+2024-06-12 21:41:21,679 - ERROR - login is rate limited. You can only do this every 40 seconds!
+2024-06-12 21:41:32,468 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 21:41:32,670 - DEBUG - https://api.pokerogue.net:443 "POST /account/login HTTP/1.1" 500 17
+2024-06-12 21:41:37,672 - CRITICAL - Error 500 - Internal Server Error: The server has encountered a situation it does not know how to handle.
+2024-06-12 21:41:50,753 - ERROR - login is rate limited. You can only do this every 40 seconds!
+2024-06-12 21:43:47,829 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 21:43:48,118 - DEBUG - https://api.pokerogue.net:443 "POST /account/login HTTP/1.1" 200 None
+2024-06-12 21:43:51,122 - INFO - HTTP Status Code: 200
+2024-06-12 21:43:51,124 - INFO - Response URL: https://api.pokerogue.net/account/login
+2024-06-12 21:43:51,125 - INFO - Response Headers: {'Date': 'Wed, 12 Jun 2024 19:43:47 GMT', 'Content-Type': 'application/json', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive', 'Access-Control-Allow-Headers': 'Authorization, Content-Type', 'Access-Control-Allow-Methods': 'OPTIONS, GET, POST', 'Access-Control-Allow-Origin': 'https://pokerogue.net', 'X-Pokemon': 'victini', 'CF-Cache-Status': 'DYNAMIC', 'NEL': '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}', 'Server': 'cloudflare', 'CF-RAY': '892c54f3781abba9-FRA', 'Content-Encoding': 'br', 'alt-svc': 'h3=":443"; ma=86400'}
+2024-06-12 21:43:52,602 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 21:43:52,885 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/system?clientSessionId=x7uQ5x2Ub4LlD4ckLxIXFmJ7XkCalcGS HTTP/1.1" 200 None
+2024-06-12 21:43:53,340 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/session?slot=0&clientSessionId=x7uQ5x2Ub4LlD4ckLxIXFmJ7XkCalcGS HTTP/1.1" 200 None
+2024-06-12 21:43:53,372 - INFO - Backup created.
+2024-06-12 21:43:56,369 - CRITICAL - Error in function restore_backup(): list index out of range
+2024-06-12 21:44:26,735 - ERROR - login is rate limited. You can only do this every 40 seconds!
+2024-06-12 21:44:36,564 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 21:44:36,853 - DEBUG - https://api.pokerogue.net:443 "POST /account/login HTTP/1.1" 200 None
+2024-06-12 21:44:39,855 - INFO - HTTP Status Code: 200
+2024-06-12 21:44:39,855 - INFO - Response URL: https://api.pokerogue.net/account/login
+2024-06-12 21:44:39,855 - INFO - Response Headers: {'Date': 'Wed, 12 Jun 2024 19:44:36 GMT', 'Content-Type': 'application/json', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive', 'Access-Control-Allow-Headers': 'Authorization, Content-Type', 'Access-Control-Allow-Methods': 'OPTIONS, GET, POST', 'Access-Control-Allow-Origin': 'https://pokerogue.net', 'X-Pokemon': 'victini', 'CF-Cache-Status': 'DYNAMIC', 'NEL': '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}', 'Server': 'cloudflare', 'CF-RAY': '892c56244a428f3e-FRA', 'Content-Encoding': 'br', 'alt-svc': 'h3=":443"; ma=86400'}
+2024-06-12 21:44:41,336 - ERROR - get_trainer_data is rate limited. You can only do this every 90 seconds!
+2024-06-12 21:44:41,336 - ERROR - get_gamesave_data is rate limited. You can only do this every 90 seconds!
+2024-06-12 21:45:02,466 - ERROR - login is rate limited. You can only do this every 40 seconds!
+2024-06-12 21:45:43,469 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 21:45:43,766 - DEBUG - https://api.pokerogue.net:443 "POST /account/login HTTP/1.1" 200 None
+2024-06-12 21:45:47,769 - INFO - HTTP Status Code: 200
+2024-06-12 21:45:47,770 - INFO - Response URL: https://api.pokerogue.net/account/login
+2024-06-12 21:45:47,770 - INFO - Response Headers: {'Date': 'Wed, 12 Jun 2024 19:45:43 GMT', 'Content-Type': 'application/json', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive', 'Access-Control-Allow-Headers': 'Authorization, Content-Type', 'Access-Control-Allow-Methods': 'OPTIONS, GET, POST', 'Access-Control-Allow-Origin': 'https://pokerogue.net', 'X-Pokemon': 'victini', 'CF-Cache-Status': 'DYNAMIC', 'NEL': '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}', 'Server': 'cloudflare', 'CF-RAY': '892c57c64b4a39c4-FRA', 'Content-Encoding': 'br', 'alt-svc': 'h3=":443"; ma=86400'}
+2024-06-12 21:45:49,706 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 21:45:49,992 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/system?clientSessionId=687I7gKt9diN6vXlNqrsJo8duBUK7g5S HTTP/1.1" 200 None
+2024-06-12 21:45:50,449 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/session?slot=0&clientSessionId=687I7gKt9diN6vXlNqrsJo8duBUK7g5S HTTP/1.1" 200 None
+2024-06-12 21:45:50,510 - INFO - Backup created.
+2024-06-12 21:46:59,800 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 21:47:00,131 - DEBUG - https://api.pokerogue.net:443 "POST /account/login HTTP/1.1" 200 None
+2024-06-12 21:47:03,133 - INFO - HTTP Status Code: 200
+2024-06-12 21:47:03,134 - INFO - Response URL: https://api.pokerogue.net/account/login
+2024-06-12 21:47:03,134 - INFO - Response Headers: {'Date': 'Wed, 12 Jun 2024 19:46:59 GMT', 'Content-Type': 'application/json', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive', 'Access-Control-Allow-Headers': 'Authorization, Content-Type', 'Access-Control-Allow-Methods': 'OPTIONS, GET, POST', 'Access-Control-Allow-Origin': 'https://pokerogue.net', 'X-Pokemon': 'victini', 'CF-Cache-Status': 'DYNAMIC', 'NEL': '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}', 'Server': 'cloudflare', 'CF-RAY': '892c59a359c79295-FRA', 'Content-Encoding': 'br', 'alt-svc': 'h3=":443"; ma=86400'}
+2024-06-12 21:47:04,344 - ERROR - get_trainer_data is rate limited. You can only do this every 90 seconds!
+2024-06-12 21:47:04,345 - ERROR - get_gamesave_data is rate limited. You can only do this every 90 seconds!
+2024-06-12 21:49:57,412 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 21:49:57,831 - DEBUG - https://api.pokerogue.net:443 "POST /account/login HTTP/1.1" 200 None
+2024-06-12 21:50:02,832 - INFO - HTTP Status Code: 200
+2024-06-12 21:50:02,832 - INFO - Response URL: https://api.pokerogue.net/account/login
+2024-06-12 21:50:02,833 - INFO - Response Headers: {'Date': 'Wed, 12 Jun 2024 19:49:57 GMT', 'Content-Type': 'application/json', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive', 'Access-Control-Allow-Headers': 'Authorization, Content-Type', 'Access-Control-Allow-Methods': 'OPTIONS, GET, POST', 'Access-Control-Allow-Origin': 'https://pokerogue.net', 'X-Pokemon': 'victini', 'CF-Cache-Status': 'DYNAMIC', 'NEL': '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}', 'Server': 'cloudflare', 'CF-RAY': '892c5df99d2271b5-FRA', 'Content-Encoding': 'br', 'alt-svc': 'h3=":443"; ma=86400'}
+2024-06-12 21:50:05,178 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 21:50:05,458 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/system?clientSessionId=hgpCQdOjUwDYiIEIFVPvNsf7KUsS41RT HTTP/1.1" 200 None
+2024-06-12 21:50:05,911 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/session?slot=0&clientSessionId=hgpCQdOjUwDYiIEIFVPvNsf7KUsS41RT HTTP/1.1" 200 None
+2024-06-12 21:50:05,933 - INFO - Backup created.
+2024-06-12 21:50:10,680 - CRITICAL - Error in function restore_backup(): [WinError 3] Das System kann den angegebenen Pfad nicht finden: './backups'
+2024-06-12 21:51:44,243 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 21:51:44,537 - DEBUG - https://api.pokerogue.net:443 "POST /account/login HTTP/1.1" 200 None
+2024-06-12 21:51:48,542 - INFO - HTTP Status Code: 200
+2024-06-12 21:51:48,543 - INFO - Response URL: https://api.pokerogue.net/account/login
+2024-06-12 21:51:48,544 - INFO - Response Headers: {'Date': 'Wed, 12 Jun 2024 19:51:44 GMT', 'Content-Type': 'application/json', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive', 'Access-Control-Allow-Headers': 'Authorization, Content-Type', 'Access-Control-Allow-Methods': 'OPTIONS, GET, POST', 'Access-Control-Allow-Origin': 'https://pokerogue.net', 'X-Pokemon': 'victini', 'CF-Cache-Status': 'DYNAMIC', 'NEL': '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}', 'Server': 'cloudflare', 'CF-RAY': '892c60952ff7bbf1-FRA', 'Content-Encoding': 'br', 'alt-svc': 'h3=":443"; ma=86400'}
+2024-06-12 21:51:49,787 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 21:51:50,090 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/system?clientSessionId=8IL4nxQ1vnU2rIk67dxlhdp0LfaiAIc5 HTTP/1.1" 200 None
+2024-06-12 21:51:50,561 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/session?slot=0&clientSessionId=8IL4nxQ1vnU2rIk67dxlhdp0LfaiAIc5 HTTP/1.1" 200 None
+2024-06-12 21:51:50,583 - INFO - Backup created.
+2024-06-12 21:52:11,424 - DEBUG - https://api.pokerogue.net:443 "POST /savedata/updateall HTTP/1.1" 200 0
+2024-06-12 21:52:11,557 - DEBUG - https://api.pokerogue.net:443 "GET /account/logout HTTP/1.1" 200 0
+2024-06-12 21:57:43,363 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 21:57:43,830 - DEBUG - https://api.pokerogue.net:443 "POST /account/login HTTP/1.1" 200 None
+2024-06-12 21:57:47,832 - INFO - HTTP Status Code: 200
+2024-06-12 21:57:47,832 - INFO - Response URL: https://api.pokerogue.net/account/login
+2024-06-12 21:57:47,832 - INFO - Response Headers: {'Date': 'Wed, 12 Jun 2024 19:57:43 GMT', 'Content-Type': 'application/json', 'Transfer-Encoding': 'chunked', 'Connection': 'keep-alive', 'Access-Control-Allow-Headers': 'Authorization, Content-Type', 'Access-Control-Allow-Methods': 'OPTIONS, GET, POST', 'Access-Control-Allow-Origin': 'https://pokerogue.net', 'X-Pokemon': 'victini', 'CF-Cache-Status': 'DYNAMIC', 'NEL': '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}', 'Server': 'cloudflare', 'CF-RAY': '892c6959c8039767-FRA', 'Content-Encoding': 'br', 'alt-svc': 'h3=":443"; ma=86400'}
+2024-06-12 21:57:49,043 - DEBUG - Starting new HTTPS connection (1): api.pokerogue.net:443
+2024-06-12 21:57:49,326 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/system?clientSessionId=OR3F9p6mpqZsP0C0be9SWarRkzCLFvw1 HTTP/1.1" 200 None
+2024-06-12 21:57:49,776 - DEBUG - https://api.pokerogue.net:443 "GET /savedata/session?slot=0&clientSessionId=OR3F9p6mpqZsP0C0be9SWarRkzCLFvw1 HTTP/1.1" 200 None
+2024-06-12 21:57:49,810 - INFO - Backup created.
+2024-06-12 21:57:55,193 - DEBUG - https://api.pokerogue.net:443 "POST /savedata/updateall HTTP/1.1" 200 0
+2024-06-12 21:57:55,317 - DEBUG - https://api.pokerogue.net:443 "GET /account/logout HTTP/1.1" 200 0
