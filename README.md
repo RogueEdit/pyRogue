@@ -1,7 +1,6 @@
 # pyRogue
-> ## **pyRogue** is a educational project. For now it is only a proof-of-concept. The servers are now secured so do not access them!
-> ## Truth be told, before the servers were not secured at all. Now those method of access is fingerprinted and denied access. We will not help bypassing such security mechanisms.
-> ## You can check by our offlineEditor  to edit your offline saves to whatever extend you please (Currently reworking to add missing features and such)
+> ## **pyRogue** is a educational project. Currently working.
+
 ![Preview Image](.github/previews/main.png)
 
 [Regarding Bans and Limited Accounts](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#regarding-bans-and-limited-accounts)
