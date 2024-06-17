@@ -9,12 +9,12 @@
 [Regarding Bans and Limited Accounts - actions with this tool can cause you to be limited.](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#regarding-bans-and-limited-accounts)
 
 # List of content
-- [Foreword](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#important-foreword)
+- [Important Foreword](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#important-foreword)
 - [FAQ](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#faq)
 - [How to use](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#how-to-use-the-tool)
+- [How to run from code](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#how-to-run-from-code)
 - [License](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#license)
 - [Features](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#editor-features)
-- [How to run from code](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#how-to-run-from-code)
 - [Regarding Bans and Limited Accounts](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#regarding-bans-and-limited-accounts)
 
 ## Important foreword
@@ -43,10 +43,22 @@ Attention: When ever this tool detects you are trying to manipulate a daily seed
 - **Step 1:** Download the correct compiled up2date version
 - **Step 2:** Extract the archived data you downloaded
 - **Step 3:** Navigate into the compiled/ folder and launch `pyRogue-[yourOperatingSystem]`
+- **Step 3.5:** Log out of pokerouge, do not login or interfere while editing.
 - **Step 4:** Enter your login data. Your password is in a hidden field. You are entering despite it doesnt look like it. Just login!
-- **Step 5:** Use any actions directed by the tool
-- **Step 5.5:** You also can edit all your jsons manually and afterwards update to server
+- **Step 5:** Use any actions from the menu
+  - **Step 5.5:** You also can edit all your jsons manually and afterwards update to server
 - **Step 6:** Update all to server (yellow marked entry: Use when Done)
+
+## How to run from code
+- Install python
+- Download the source code
+- Extract the source code
+- Open a terminal, navigate into your `[extracted_folder]/src/`
+- Install all the requirements using python according to setup
+  - `python3 -m pip install -r requirements.txt`
+- Now you should be able to run main.py
+  - `python3 main.py`
+
 
 ## License
 
@@ -116,19 +128,9 @@ Attention: When ever this tool detects you are trying to manipulate a daily seed
 
 - Propper logging in case you need to troubleshoot
 
-## How to run from code
- - Install python
- - Download the source code
- - Extract the source code
- - Open a terminal, navigate into your `[extracted_folder]/src/`
- - Install all the requirements using python according to setup
-   - `python3 -m pip install -r requirements.txt`
- - Now you should be able to run main.py
-   - `python3 main.py`
-
 ## Regarding Bans and Limited Accounts
 https://www.reddit.com/r/pokerogue/comments/1d8hncf/cheats_and_exploits_post_followup_bannable/
-https://www.reddit.com/r/pokerogue/comments/1d8ldlw/a_cheating_and_account_deletionwipe_followup/
 
+https://www.reddit.com/r/pokerogue/comments/1d8ldlw/a_cheating_and_account_deletionwipe_followup/
 
 <meta name="keywords" content="pokerogue, pokerogue save editor, pokerogue, rogueEditor, free, gacha, ticket, tickets, egg, eggs, shiny, save, edit, pokemon, unlimited, hack, hacks, cheat, cheats, trainer, table, pokedex, dex, wave, money, level, levels, iv, ivs, stat, stats, item, items, api, mod, mods, tool, tools, education, python">
