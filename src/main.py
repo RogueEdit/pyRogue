@@ -30,7 +30,7 @@ def check_for_updates():
         :return: list of commits
         """
 
-        params = {'since': fixed_date_dt.isoformat()}
+        params = {'sha': "update-notifier-test", 'since': fixed_date_dt.isoformat()}
         response = requests.get(config.repo_url, params=params)
         response.raise_for_status()
         print(response)
