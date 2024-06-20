@@ -68,10 +68,11 @@
         "MONO_DARK",
         "MONO_FAIRY"
     ],
-    "get_trainer_data": 1718854891.6980908,
-    "get_gamesave_data": 1718854892.4007468,
+    "get_trainer_data": 1718922108.5420291,
+    "get_gamesave_data": 1718922109.2266998,
     "__update_trainer_data": 1717855414.5178077,
     "__update_gamesave_data": 1717855417.821903,
-    "login": 1718854883.8728197,
-    "total_403_errors": 1
+    "login": 1718922103.0446434,
+    "total_403_errors": 1,
+    "update_all": 1718906157.2911882
 }

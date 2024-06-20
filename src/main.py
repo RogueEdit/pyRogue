@@ -2,182 +2,246 @@
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
-# Date of release: 13.06.2024 
+# Date of release: 13.06.2024
+# Last Edited: 20.06.2024
+
+"""
+This script facilitates user login and session initialization for PokeRogue. It offers a menu-driven interface to 
+perform various account and game data actions after a successful login using either requests or Selenium.
+
+Features:
+- User login through requests or Selenium.
+- Various account and game data actions through a menu-driven interface.
+- Custom logging and colored console output.
+
+Modules:
+- getpass: For securely obtaining the password from the user.
+- requests: For handling HTTP sessions and requests.
+- brotli: (Imported but not directly used in this script).
+- loginLogic: Custom module for handling login logic using requests.
+- Rogue: Custom module for initializing and interacting with the PokeRogue session.
+- SeleniumLogic: Custom module for handling login using Selenium.
+- cFormatter: Custom formatter for colored printing and logging.
+- Color: Enumeration defining color codes for cFormatter.
+- CustomLogger: Custom logging functionality.
+- config: Custom module for configuration and update checking.
+- datetime, timedelta: For date and time operations.
+- colorama: For terminal text color formatting.
+"""
+
 import getpass
+# Securely obtains the password from the user without echoing.
+
 import requests
+# Handles HTTP sessions and requests for logging in and maintaining session state.
+
 import brotli  # noqa: F401
-from modules.loginLogic import loginLogic
-from modules.mainLogic import Rogue
+# Provides Brotli compression. Not directly used in this script but might be a dependency for other modules.
+
+from modules import requestsLogic, Rogue,  SeleniumLogic, config
+# requestLogic: Handles the login logic using requests.
+# Rogue: Initializes and interacts with the PokeRogue session.
+# SeleniumLogic: Handles login logic using Selenium for browser-based interactions.
+# Config: Provides configuration settings and update checking functionality.
+
 from colorama import Fore, Style, init
-from modules.login.seleniumLogic import SeleniumLogic
-from utilities.cFormatter import cFormatter, Color
-from utilities.logger import CustomLogger
-from modules import config
+# Fore, Style: Used for terminal text color formatting.
+# init: Initializes colorama for colored console output.
+
+from utilities import cFormatter, Color, CustomLogger
+# cFormatter: Custom formatter for colored printing and logging.
+# Color: Enumeration defining color codes for cFormatter.
+# Custom Logger: Provides custom logging functionality for the script.
+
+
 from datetime import datetime, timedelta
+# datetime, timedelta: For date and time operations, particularly for update checking.
 
 init()
+config.initialize_folders()
 logger = CustomLogger()
 
 def main():
     """
     Main script execution for user login and session initialization.
 
-    This script prompts the user for a username and password, attempts to log in,
-    and if successful, initializes a PokeRogue session.
+    This script facilitates user login and initializes a PokeRogue session using either
+    requests or Selenium for session handling.
 
     Workflow:
-        1. Ask the user if requests or selenium
-        2. Initializes either a requests session
-        2. or a Selenium session
-        3. Prompts the user for username and password.
-        4. Attempts to log in using the provided credentials.
-        5. If login is successful, prints a success message and breaks the loop.
-        6. If login fails, prints an error message and re-prompts the user.
-        7. Handles any exceptions that occur during the login process.
+        1. Ask the user to choose the login method (requests or Selenium).
+        2. Initialize a session based on the chosen method.
+        3. Prompt the user for a username and password.
+        4. Attempt to log in using the provided credentials.
+        5. If login is successful, print a success message and proceed.
+        6. If login fails, print an error message and re-prompt the user.
+        7. Handle any exceptions that occur during the login process.
+
+    :arguments:
+    None
+
+    :params:
+    None
 
     Usage:
         Run the script directly to initiate the login process:
         $ python main.py
 
+    Output examples:
+        - Success:
+            Logged in as: Username
+        - Failure:
+            Invalid choice. Please enter a number.
+            Something went wrong. [Error message]
+
     Modules:
         - requests: For session handling.
         - getpass: For securely obtaining the password.
-        - customLogger: Custom logging functionality.
-        - loginLogic: Handles the login logic.
-        - login.seleniumLogic: Handles logging in with selenium
-        - rogue: Initializes the PokeRogue session.
+        - brotli: (Imported but not directly used in this script).
+        - requestsLogic: Handles the login logic using requests.
+        - SeleniumLogic: Handles login using Selenium.
+        - Rogue: Initializes the PokeRogue session.
         - cFormatter: Custom formatter for colored printing and logging.
-        - color: Our own module defining color codes.
+        - Color: Module defining color codes for cFormatter.
+        - config: Module for configuration and update checking.
+        - datetime, timedelta: For date and time operations.
+        - colorama: For terminal text color formatting.
+        - CustomLogger: Custom logging functionality.
     """
-    session = requests.Session()
     while True:
-        config.check_for_updates(requests, datetime, timedelta, Style)      
-
+        # Check for updates
+        config.check_for_updates(requests, datetime, timedelta, Style)
+        # Print the welcome text
         config.initialize_text()
         
+        # Try loginChoice
         try:
             loginChoice = int(input('Please choose a method of logging in: '))
         except ValueError:
-            cFormatter.print(Color.CRITICAL, "Invalid choice. Please enter a number.")
+            cFormatter.print(Color.CRITICAL, 'Invalid choice. Please enter a number.')
             continue
+        except KeyboardInterrupt:
+            cFormatter.print(Color.DEBUG, '\nProgram interrupted by user.')
+            exit()
         
-        username = input('Username: ')
-        password = getpass.getpass('Password (password is hidden): ')
-        if loginChoice == 1:
-            login = loginLogic(username, password)
-            try:
-                if login.login():
-                    cFormatter.print(Color.INFO, f'Logged in as: {username.capitalize()}')
-                    session.cookies.set("pokerogue_sessionId", login.session_id, domain="pokerogue.net")
-                    rogue = Rogue(session, login.token, login.session_id)
-                    break
-            except Exception as e:
-                cFormatter.print(Color.CRITICAL, f'Something went wrong. {e}', isLogging=True)
-        elif loginChoice == 2:
-            selenium_logic = SeleniumLogic(username, password, 120)
-            session_id, token, driver = selenium_logic.logic()  # Unpack three values
+        # Try login
+        try:
+            username = input('Username: ')
+            password = getpass.getpass('Password (password is hidden): ')
 
-            if session_id and token and driver:
-                cFormatter.print(Color.INFO, f'Logged in as: {username.capitalize()}')
-                session.cookies.set("pokerogue_sessionId", session_id, domain="pokerogue.net")
-                rogue = Rogue(session, auth_token=token, clientSessionId=session_id, driver=driver)
-                break
+            session = requests.Session()
+            # When using requests
+            if loginChoice == 1:
+                login = requestsLogic(username, password)
+                try:
+                    if login.login():
+                        cFormatter.print(Color.INFO, f'Logged in as: {username.capitalize()}')
+                        session.cookies.set('pokerogue_sessionId', login.session_id, domain='pokerogue.net')
+                        rogue = Rogue(session, login.token, login.session_id)
+                        break
+                except Exception as e:
+                    cFormatter.print(Color.CRITICAL, f'Something went wrong. {e}', isLogging=True)
+
+            # When using browser
+            elif loginChoice in [2, 3]:
+                try:
+                    if loginChoice == 3:
+                        cFormatter.print(Color.INFO, 'Do not close your browser and do not browse in the game!')
+                        cFormatter.print(Color.INFO, 'Do not close your browser and do not browse in the game!')
+                        cFormatter.print(Color.INFO, 'Do not close your browser and do not browse in the game!')
+                    selenium_logic = SeleniumLogic(username, password, 120, useScripts=(loginChoice == 3))
+                    session_id, token, driver = selenium_logic.logic()
+
+                    if session_id and token and driver:
+                        cFormatter.print(Color.INFO, f'Logged in as: {username.capitalize()}')
+                        session.cookies.set('pokerogue_sessionId', session_id, domain='pokerogue.net')
+                        rogue = Rogue(session, auth_token=token, clientSessionId=session_id, driver=driver, useScripts=(loginChoice == 3))
+                        break
+                    else:
+                        cFormatter.print(Color.CRITICAL, 'Failed to retrieve necessary authentication data from Selenium.')
+                except Exception as e:
+                    cFormatter.print(Color.CRITICAL, f'Something went wrong. {e}', isLogging=True)
+
             else:
-                cFormatter.print(Color.CRITICAL, "Failed to retrieve necessary authentication data from Selenium.")
-        else:
-            cFormatter.print(Color.CRITICAL, "Invalid choice. Please choose a valid method.")
+                cFormatter.print(Color.CRITICAL, 'Invalid choice. Please choose a valid method.')
+        except KeyboardInterrupt:
+            cFormatter.print(Color.DEBUG, '\nProgram interrupted by user.')
+            exit()
 
-    func = {
-        '1': rogue.get_trainer_data,
-        '2': rogue.get_gamesave_data,
-        '3': rogue.edit_starter_separate,
-        '4': rogue.unlock_all_starters,
-        '5': rogue.add_ticket,
-        '6': rogue.edit_pokemon_party,
-        '7': rogue.unlock_all_achievements,
-        '8': rogue.unlock_all_gamemodes,
-        '9': rogue.edit_vouchers,
-        '10': rogue.add_candies,
-        '11': rogue.edit_money,
-        '12': rogue.edit_pokeballs,
-        '13': rogue.edit_biome,
-        '14': rogue.generate_eggs,
-        '15': rogue.edit_hatchWaves,
-        '16': rogue.edit_account_stats,
-        '17': rogue.unlock_all_features,
-        '18': rogue.create_backup,
-        '19': rogue.restore_backup,
-        '20': rogue.print_pokedex,
-        '21': rogue.print_biomes,
-        '22': rogue.print_moves,
-        '23': rogue.print_vouchers,
-        '24': rogue.print_natures,
-        '25': rogue.print_natureSlot,
-        '26': rogue.update_all,
-        '27': rogue.print_help,
-        '28': rogue.logout
-    }
+    # Define menu variables and our menu
+    useWhenDone = f'{Fore.LIGHTYELLOW_EX}(Use when Done)'
+    title = f'<pyRogue {config.version}>'
 
-    title = '************************ PyRogue *************************'
-    working_status = '(Working)'
-    broken_status = ' (Broken)'
-    header_status = '(Use when Broken)'
-
-    formatted_title = f'{Fore.GREEN}{Style.BRIGHT}{title}{Style.RESET_ALL}'
-    formatted_working_status = f'{Fore.GREEN}{Style.BRIGHT}{working_status}{Style.RESET_ALL}'
-    formatted_header = f'{Fore.RED}{Style.BRIGHT}{header_status}{Style.RESET_ALL}'
-
+    # See cFormatter.initialize_menu() for more information
     term = [
-        f'{formatted_title}',
-        f'1: Load Game-Data from server{" " * 20}{formatted_working_status}',
-        f'2: Load SaveSlot-Data from server{" " * 16}{formatted_working_status}',
-        f'3: Edit a starter{" " * 32}{formatted_working_status}',
-        f'4: Unlock all starters{" " * 27}{formatted_working_status}',
-        f'5: Edit your egg-tickets{" " * 25}{formatted_working_status}',
-        f'6: Edit CURRENT Pokemon Party{" " * 20}{formatted_working_status}',
-        f'7: Unlock all achievements{" " * 23}{formatted_working_status}',
-        f'8: Unlock all gamemodes{" " * 26}{formatted_working_status}',
-        f'9: Edit vouchers{" " * 33}{formatted_working_status}',
-        f'10: Add candies to a pokemon{" " * 21}{formatted_working_status}',
-        f'11: Edit money amount{" " * 28}{formatted_working_status}',
-        f'12: Edit pokeballs amount{" " * 24}{formatted_working_status}',
-        f'13: Edit biome{" " * 35}{formatted_working_status}',
-        f'14: Generate eggs{" " * 32}{formatted_working_status}',
-        f'15: Set your eggs to hatch{" " * 23}{formatted_working_status}',
-        f'16: Edit account stats{" " * 27}{formatted_working_status}',
-        f'17: Unlock Everything{" " * 28}{formatted_working_status}',
-        Fore.GREEN + Style.BRIGHT + '----------- Scroll up for response information -----------' + Style.RESET_ALL,
-        f'18: Create a backup{" " * 30}{formatted_working_status}',
-        f'19: Recover your backup{" " * 26}{formatted_working_status}',
-        f'20: Show all Pokemon ID{" " * 26}{formatted_working_status}',
-        f'21: Show all Biome IDs{" " * 27}{formatted_working_status}',
-        f'22: Show all Move IDs{" " * 28}{formatted_working_status}',
-        f'23: Show all Vouchers IDs{" " * 24}{formatted_working_status}',
-        f'24: Show all Natures IDs{" " * 25}{formatted_working_status}',
-        f'25: Show all NaturesSlot IDs{" " * 21}{formatted_working_status}',
-        Fore.LIGHTYELLOW_EX + Style.BRIGHT + '-- You can always edit your trainer.json also yourself! --' + Style.RESET_ALL,
-        f'26: >> Save data and upload to the Server{" " * 2}' + Fore.LIGHTYELLOW_EX + Style.BRIGHT +'(Use when done)' + Style.RESET_ALL,
-        f'27: >> Print help and program information{" " * 17}',
-        f'28: >> Logout{" " * 45}',
-        f'{formatted_title}',
+        (title, 'title'),
+        ('Account Actions', 'category'),
+        (('Create a backup', ''), rogue.create_backup),
+        (('Recover your backup', ''), rogue.restore_backup),
+        (('Load Game-Data from server', ''), rogue.get_trainer_data),
+        (('Load SaveSlot-Data from server', ''), rogue.get_gamesave_data),
+        (('Edit account stats', ''), rogue.edit_account_stats),
+
+        ('Trainer Data Actions', 'category'),
+        (('Edit a starter', ''), rogue.edit_starter_separate),
+        (('Edit your egg-tickets', ''), rogue.add_ticket),
+        (('Edit candies on a starter', ''), rogue.add_candies),
+        (('Edit Egg-hatch durations', ''), rogue.edit_hatchWaves),
+        (('Generate eggs', ''), rogue.generate_eggs),
+        (('Unlock all vouchers', ''), rogue.edit_vouchers),
+        (('Unlock all starters', ''), rogue.unlock_all_starters),
+        (('Unlock all achievements', ''), rogue.unlock_all_achievements),
+        (('Unlock all gamemodes', ''), rogue.unlock_all_gamemodes),
+        (('Unlock Everything', ''), rogue.unlock_all_features),
+
+        ('Session Data Actions', 'category'),
+        (('Edit CURRENT Pokemon Party', ''), rogue.edit_pokemon_party),
+        (('Edit money amount', ''), rogue.edit_money),
+        (('Edit pokeballs amount', ''), rogue.edit_pokeballs),
+        (('Edit current biome', ''), rogue.edit_biome),
+
+        ('Print game information', 'category'),
+        (('Show all Pokemon ID', ''), rogue.print_pokedex),
+        (('Show all Biome IDs', ''), rogue.print_biomes),
+        (('Show all Move IDs', ''), rogue.print_moves),
+        (('Show all Vouchers IDs', ''), rogue.print_vouchers),
+        (('Show all Natures IDs', ''), rogue.print_natures),
+        (('Show all NaturesSlot IDs', ''), rogue.print_natureSlot),
+
+        ('You can always edit your JSON manually as well!', 'helper'),
+        (('Save data and upload to the Server', useWhenDone), rogue.update_all),
+        (('Print help and program information', ''), config.print_help),
+        (('Logout', ''), rogue.logout),
+        (title, 'title'),
     ]
 
     try:
         while True:
             print('')
-            for line in term:
-                print(Fore.GREEN + '* ' + Style.RESET_ALL + line + Fore.GREEN + ' *' + Style.RESET_ALL)
-            command = input('Command: ')
+            # Retrieve valid choices linked to our functions
+            valid_choices = cFormatter.initialize_menu(term)
+            user_input = input('Command: ').strip().lower()
 
-            if command in func:
-                func[command]()
-            elif command == 'exit':
-                quit()
+            if user_input == 'exit':
+                raise KeyboardInterrupt
+            
+            # Handle triggering the chosen function
+            if user_input.isdigit():
+                choice_index = int(user_input)
+                for idx, func in valid_choices:
+                    if idx == choice_index:
+                        func()  # Call the associated function
+                        break
+                    elif idx == 'exit':
+                        KeyboardInterrupt()
+                else:
+                    cFormatter.print(Color.INFO, 'Invalid selection. Please choose a valid menu option.')
             else:
-                cFormatter.print(Color.INFO, 'Command not found.')
+                cFormatter.print(Color.INFO, 'Invalid input. Please enter a number.')
+
     except KeyboardInterrupt:
-        print("Program interrupted by user.")
+        cFormatter.print(Color.DEBUG, '\nProgram interrupted by user.')
+        exit()
 
 if __name__ == '__main__':
     main()
-
