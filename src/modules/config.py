@@ -6,13 +6,12 @@ version = 'v0.2.3'
 # GitHub repository details
 owner = 'rogueEdit'
 repo = 'onlineRogueEditor'
-branch = 'update-notifier-test'  # Specify the branch name here
-repo_url = f'https://github.com/{owner}/{repo}/tree/{branch}'
-release_date = '20.06.2024 5:00'
+repo_url = f'https://github.com/{owner}/{repo}/'
+release_date = '20.06.2024 3:58'
 
 
 
-def check_for_updates(requests, datetime, timedelta):
+def check_for_updates(requests, datetime, timedelta, Style):
     """
     Get the list of commits (titles and SHAs) since a given date on a specified branch.
 
@@ -60,7 +59,7 @@ def check_for_updates(requests, datetime, timedelta):
 
         # Construct GitHub API URL and parameters
         url = f'https://api.github.com/repos/{owner}/{repo}/commits'
-        params = {'sha': branch, 'since': check_date.isoformat()}
+        params = {'since': check_date.isoformat()}
 
         # Send GET request to GitHub API
         response = requests.get(url, params=params)
@@ -72,20 +71,25 @@ def check_for_updates(requests, datetime, timedelta):
         commit_list = [{'sha': commit['sha'], 'message': commit['commit']['message']} for commit in commits]
 
         if commit_list:
-            print(f"New commits found on branch '{branch}':")
+            cFormatter.print(Color.CRITICAL, "********* Outdated sourcecode found. New commits: *********", isLogging=True)
             for commit in commit_list:
-                print(f"- {commit['message']} ({commit['sha']})")
-            print(f"You can view the latest code here: {repo_url}")
-            input('It is highly recommended to update the source code.')
-        else:
-            print('No new commits on GitHub. No updates found.')
-
+                cFormatter.print(Color.WARNING, f"---- Commit Name: ({commit['message']})", isLogging=True)
+                cFormatter.print(Color.CYAN, f"------> with SHA ({commit['sha']})", isLogging=True)
+            cFormatter.print(Color.INFO, f"You can view the latest code here: {repo_url}")
+            cFormatter.print(Color.INFO, 'It is highly recommended to update the source code. Some things might not be working as expected.')
+            cFormatter.print_separators(60, '-', Color.CRITICAL)
     except ValueError as ve:
-        print(f"ValueError occurred: {ve}")
-        # Handle incorrect date format or other value errors gracefully
+        cFormatter.print(Color.CRITICAL, f"Couldn\'t resolve check_for_updates() - ValueError occurred: {ve}", isLogging=True)
     except requests.exceptions.RequestException as re:
-        print(f"RequestException occurred: {re}")
-        # Handle request exceptions (e.g., connection errors) gracefully
+        cFormatter.print(Color.CRITICAL, f"Couldn\'t resolve check_for_updates() - RequestException occurred: {re}", isLogging=True)
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
-        # Handle any unexpected exceptions to prevent crashing
+        cFormatter.print(Color.CRITICAL, f"Couldn\'t resolve check_for_updates() - An unexpected error occurred: {e}", isLogging=True)
+
+def initialize_text():
+    cFormatter.print(Color.BRIGHT_GREEN, f'<pyRogue {version}>')
+    cFormatter.print(Color.BRIGHT_GREEN, 'We create base-backups on every login and further backups everytime you start or up choose so manually.')
+    cFormatter.print(Color.BRIGHT_GREEN, f'In case of trouble, please refer to our GitHub. {repo_url}')
+    cFormatter.print_separators(60, '-')
+    cFormatter.print(Color.BRIGHT_MAGENTA, '1: Using requests.')
+    cFormatter.print(Color.BRIGHT_MAGENTA, '2: Using own browser. Use when 1 doesnt work.')
+

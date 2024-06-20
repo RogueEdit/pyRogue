@@ -38,8 +38,8 @@ def handle_error_response(response: requests.Response) -> Dict[str, str]:
         'Response 404 - Not Found: The server can not find the requested resource.'
     """
     if response.status_code == 200:
-        cFormatter.print(Color.BRIGHT_GREEN, 'Response 200 - That seemed to have worked!', isLogging=True)
-        cFormatter.print(Color.BRIGHT_GREEN, 'If it doesn\'t apply in-game, refresh without cache or try a private tab!', isLogging=True)
+        cFormatter.print(Color.BRIGHT_GREEN, 'Response 200 - That seemed to have worked!')
+        cFormatter.print(Color.BRIGHT_GREEN, 'If it doesn\'t apply in-game, refresh without cache or try a private tab!')
     elif response.status_code == 400:
         cFormatter.print(Color.WARNING, 'Response 400 - Bad Request: The server could not understand the request due to invalid syntax. This is usually related to wrong credentials.', isLogging=True)
         cFormatter.print(Color.WARNING, 'Please retry a couple times. It this persists report on GitHub (can happen 3-5 times)')

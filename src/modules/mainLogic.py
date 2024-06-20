@@ -34,7 +34,7 @@ import sys
 
 
 from user_agents import parse
-limiter = Limiter(lockout_period=90, timestamp_file='./data/extra.json')
+limiter = Limiter(lockout_period=40, timestamp_file='./data/extra.json')
 logger = logging.getLogger(__name__)
 logging.basicConfig(level = logging.INFO)
 
@@ -169,8 +169,13 @@ class Rogue:
             cFormatter.print(Color.CRITICAL, f'Error fetching save-slot data. Please restart the tool. \n {e}', isLogging=True)
 
     def logout(self):
-        response = self.session.get(f'{self.LOGOUT_URL}', headers=self.headers)
-        sys.exit(0)
+        cFormatter.print(Color.INFO, 'Terminating session, logging out.')
+        try:
+            self.session.get(f'{self.LOGOUT_URL}', headers=self.headers)
+            self.session.close()
+            sys.exit(0)
+        except Exception as e:
+            cFormatter.print(Color.WARNING, f'Error logging out. {e}')
 
     def __write_data(self, data: Dict[str, any], filename: str, showSuccess: bool = True) -> None:
         """

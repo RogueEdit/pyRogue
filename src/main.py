@@ -51,15 +51,9 @@ def main():
     """
     session = requests.Session()
     while True:
-        
-        config.check_for_updates(requests, datetime, timedelta)      
+        config.check_for_updates(requests, datetime, timedelta, Style)      
 
-        cFormatter.print(Color.BRIGHT_GREEN, f'<pyRogue {config.version}>')
-        cFormatter.print(Color.BRIGHT_GREEN, 'We create base-backups on every login and further backups everytime you start or up choose so manually.')
-        cFormatter.print(Color.BRIGHT_GREEN, f'In case of trouble, please refer to our GitHub. {config.repo_url}')
-        cFormatter.print_separators(60, '-')
-        cFormatter.print(Color.BRIGHT_MAGENTA, '1: Using requests.')
-        cFormatter.print(Color.BRIGHT_MAGENTA, '2: Using own browser. Use when 1 doesnt work.')
+        config.initialize_text()
         
         try:
             loginChoice = int(input('Please choose a method of logging in: '))
@@ -121,8 +115,7 @@ def main():
         '25': rogue.print_natureSlot,
         '26': rogue.update_all,
         '27': rogue.print_help,
-        '28': rogue.check_for_updates,
-        '29': rogue.logout
+        '28': rogue.logout
     }
 
     title = '************************ PyRogue *************************'
@@ -153,7 +146,7 @@ def main():
         f'15: Set your eggs to hatch{" " * 23}{formatted_working_status}',
         f'16: Edit account stats{" " * 27}{formatted_working_status}',
         f'17: Unlock Everything{" " * 28}{formatted_working_status}',
-        Fore.GREEN + Style.BRIGHT + '----------------------------------------------------------' + Style.RESET_ALL,
+        Fore.GREEN + Style.BRIGHT + '----------- Scroll up for response information -----------' + Style.RESET_ALL,
         f'18: Create a backup{" " * 30}{formatted_working_status}',
         f'19: Recover your backup{" " * 26}{formatted_working_status}',
         f'20: Show all Pokemon ID{" " * 26}{formatted_working_status}',
@@ -165,7 +158,7 @@ def main():
         Fore.LIGHTYELLOW_EX + Style.BRIGHT + '-- You can always edit your trainer.json also yourself! --' + Style.RESET_ALL,
         f'26: >> Save data and upload to the Server{" " * 2}' + Fore.LIGHTYELLOW_EX + Style.BRIGHT +'(Use when done)' + Style.RESET_ALL,
         f'27: >> Print help and program information{" " * 17}',
-        f'28: >> Print changelogs{" " * 35}',
+        f'28: >> Logout{" " * 45}',
         f'{formatted_title}',
     ]
 
