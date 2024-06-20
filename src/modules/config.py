@@ -16,12 +16,12 @@ def check_for_updates(requests, datetime, timedelta):
     """
     Get the list of commits (titles and SHAs) since a given date on a specified branch.
 
-    :param owner: Repository owner
-    :param repo: Repository name
-    :param branch: Branch name
-    :param since_date: datetime object representing the fixed date
-    :return: list of dictionaries containing commit SHA and commit message
+    :param requests: requests module for HTTP requests
+    :param datetime: datetime module for date/time handling
+    :param timedelta: timedelta module for timedelta calculations
     """
+    repo_url = f'https://github.com/{owner}/{repo}'  # Assuming you define these somewhere
+
     def convert_to_iso_format(date_string, timedelta):
         """
         Convert a date string from format 'dd.mm.yyyy HH:MM' to ISO 8601 format 'YYYY-MM-DDTHH:MM:SSZ' in UTC timezone.
@@ -33,8 +33,8 @@ def check_for_updates(requests, datetime, timedelta):
         date_format = '%d.%m.%Y %H:%M'
         try:
             dt = datetime.strptime(date_string, date_format)
-        except ValueError:
-            raise ValueError("Incorrect date format, should be 'dd.mm.yyyy HH:MM'")
+        except ValueError as e:
+            raise ValueError("Incorrect date format, should be 'dd.mm.yyyy HH:MM'") from e
 
         # Define the local timezone offset for Central European Time (CET)
         # During daylight saving time (CEST), the offset is UTC+2
@@ -53,23 +53,39 @@ def check_for_updates(requests, datetime, timedelta):
         iso_format = utc_dt.strftime('%Y-%m-%dT%H:%M:%SZ')
 
         return iso_format
-    # Convert fixed date to datetime object
-    check_date = datetime.fromisoformat(convert_to_iso_format(release_date, timedelta))
 
-    url = f'https://api.github.com/repos/{owner}/{repo}/commits'
-    params = {'sha': branch, 'since': check_date.isoformat()}
-    response = requests.get(url, params=params)
-    response.raise_for_status()
-    commits = response.json()
+    try:
+        # Convert fixed date to datetime object
+        check_date = datetime.fromisoformat(convert_to_iso_format(release_date, timedelta))
 
-    # Extract commit titles and SHAs
-    commit_list = [{'sha': commit['sha'], 'message': commit['commit']['message']} for commit in commits]
+        # Construct GitHub API URL and parameters
+        url = f'https://api.github.com/repos/{owner}/{repo}/commits'
+        params = {'sha': branch, 'since': check_date.isoformat()}
 
-    if commit_list:
-        print(f"New commits found on branch '{branch}':")
-        for commit in commit_list:
-            print(f"- {commit['message']} ({commit['sha']})")
-        print(f"You can view the latest code here: {repo_url}")
-        input('It is highly recommended to update the source code.')
-    else:
-        cFormatter.print(Color.GREEN, 'No new commits on GitHub. No updates found.')
+        # Send GET request to GitHub API
+        response = requests.get(url, params=params)
+        response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
+
+        commits = response.json()  # Parse JSON response
+
+        # Extract commit titles and SHAs
+        commit_list = [{'sha': commit['sha'], 'message': commit['commit']['message']} for commit in commits]
+
+        if commit_list:
+            print(f"New commits found on branch '{branch}':")
+            for commit in commit_list:
+                print(f"- {commit['message']} ({commit['sha']})")
+            print(f"You can view the latest code here: {repo_url}")
+            input('It is highly recommended to update the source code.')
+        else:
+            print('No new commits on GitHub. No updates found.')
+
+    except ValueError as ve:
+        print(f"ValueError occurred: {ve}")
+        # Handle incorrect date format or other value errors gracefully
+    except requests.exceptions.RequestException as re:
+        print(f"RequestException occurred: {re}")
+        # Handle request exceptions (e.g., connection errors) gracefully
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        # Handle any unexpected exceptions to prevent crashing
