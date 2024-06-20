@@ -8,32 +8,29 @@ import json
 import random
 import os
 import shutil
-import brotli
+import brotli  # noqa: F401
 import time
 from typing import Dict, Any, Optional, List
 import logging
-from colorama import init, Fore, Style
+from colorama import Style
 from time import sleep
 import re
-from modules.loginLogic import handle_error_response
-import modules.config
+from modules.loginLogic import handle_error_response, HeaderGenerator
 from datetime import datetime
-from requests.exceptions import SSLError, ConnectionError, Timeout, RequestException
+from requests.exceptions import SSLError, ConnectionError, Timeout
 from utilities.generator import Generator
 from utilities.enumLoader import EnumLoader
 from utilities.cFormatter import cFormatter, Color
 from utilities.limiter import Limiter
-from modules.loginLogic import HeaderGenerator
 import requests
 
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 
-from utilities.eggLogic import *
-import sys
+from utilities.eggLogic import *  # noqa: F403
+from sys import exit
 
 
-from user_agents import parse
 limiter = Limiter(lockout_period=40, timestamp_file='./data/extra.json')
 logger = logging.getLogger(__name__)
 logging.basicConfig(level = logging.INFO)
@@ -56,16 +53,18 @@ class Rogue:
     UPDATE_ALL_URL = 'https://api.pokerogue.net/savedata/updateall'
     LOGOUT_URL = 'https://api.pokerogue.net/account/logout'
 
-    def __init__(self, session: requests.Session, auth_token: str, clientSessionId: str = None, headers: dict = None) -> None:
+    def __init__(self, session: requests.Session, auth_token: str, clientSessionId: str = None, driver: dict = None, useScripts = None) -> None:
         self.slot = None
         self.session = session
         self.__MAX_BIG_INT = (2 ** 53) - 1
         self.auth_token = auth_token
         self.clientSessionId = clientSessionId
         self.headers = self._setup_headers()
-        if not self.headers:
-            raise ValueError("Failed to load headers.")
         
+        self.driver = None
+        if driver:
+            self.driver = driver
+
         self.secretId = None
         self.trainerId = None
 
@@ -73,6 +72,8 @@ class Rogue:
         self.generator = Generator()
         self.generator.generate()
         self.enum = EnumLoader()
+
+        self.useScripts = useScripts
         
         # wordcomplete
         self.pokemon_id_by_name, self.biomes_by_id, self.moves_by_id, self.nature_data, self.vouchers_data, self.natureSlot_data = self.enum.convert_to_enums()
@@ -87,6 +88,54 @@ class Rogue:
             cFormatter.print(Color.CRITICAL, f'Something on inital data generation failed. {e}', isLogging=True)
         
         self.__dump_data()
+
+    def _make_request(self, url, method='GET', data=None):
+        """
+        Makes an HTTP request using the Selenium WebDriver.
+
+        Args:
+            url (str): The URL to make the request to.
+            method (str): The HTTP method (default is 'GET').
+            data (dict, optional): The payload for POST requests.
+
+        Returns:
+            str: The response body.
+        """
+        # Properly escape and format method and URL
+        method = json.dumps(method)
+        url = json.dumps(url)
+
+        # Start constructing the script
+        script = f"""
+            var callback = arguments[0];
+            var xhr = new XMLHttpRequest();
+            xhr.open({method}, {url}, true);
+        """
+        # Add headers if any
+        if self.headers:
+            for key, value in self.headers.items():
+                key = json.dumps(key)
+                value = json.dumps(value)
+                script += f'xhr.setRequestHeader({key}, {value});'
+        
+        # Handle data if any
+        if data:
+            # Ensure the data is properly JSON-stringified
+            data = json.dumps(data)
+            script += f'xhr.send({data});'
+        else:
+            script += 'xhr.send();'
+
+        # Add the onreadystatechange function
+        script += """
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                    callback(xhr.responseText);
+                }
+            };
+        """
+        # Execute the script
+        return self.driver.execute_async_script(script)
 
     def _setup_headers(self, headers = None) -> Dict[str, str]:
         """
@@ -137,43 +186,80 @@ class Rogue:
             dict: Trainer data from the API.
         """
         cFormatter.print(Color.INFO, 'Fetching trainer data...')
-        try:
-            response = self.session.get(f'{self.TRAINER_DATA_URL}{self.clientSessionId}', headers=self.headers)
-            response.raise_for_status()
-            if response.content:  # Check if the response content is not empty
-                cFormatter.print(Color.GREEN, 'Successfully fetched data.')
-                data = response.json()
-                self.trainerId = data.get('trainerId')
-                self.secretId = data.get('secretId')
-                self.__write_data(data, 'trainer.json', False)
-                return data
-            else:
-                return handle_error_response(response)
-        except requests.RequestException as e:
-            cFormatter.print(Color.DEBUG, f'Error fetching trainer data. Please restart the tool. \n {e}', isLogging=True)
+        if self.useScripts:
+            try:
+                response = self._make_request(f'{self.TRAINER_DATA_URL}{self.clientSessionId}')
+                if response:
+                    try:
+                        data = json.loads(response)
+                        self.__write_data(data, 'trainer.json', False)
+                        cFormatter.print(Color.GREEN, 'Succesfully fetched trainer data.')
+                        return data
+                    except json.JSONDecodeError as e:
+                        cFormatter.print(Color.WARNING, f"Error decoding JSON: {e}", isLogging=True)
+                        cFormatter.print(Color.WARNING, f"Unexpected response format: {response}", isLogging=True)
+                else:
+                    cFormatter.print(Color.WARNING, "This request appeared to be empty.")
+            except Exception as e:
+                cFormatter.print(Color.CRITICAL, f"Error in function get_trainer_data(): {e}", isLogging=True)
+        else:
+            try:
+                response = self.session.get(f'{self.TRAINER_DATA_URL}{self.clientSessionId}', headers=self.headers)
+                response.raise_for_status()
+                if response.content:  # Check if the response content is not empty
+                    cFormatter.print(Color.GREEN, 'Successfully fetched data.')
+                    data = response.json()
+                    self.trainerId = data.get('trainerId')
+                    self.secretId = data.get('secretId')
+                    self.__write_data(data, 'trainer.json', False)
+                    return data
+                else:
+                    return handle_error_response(response)
+            except requests.RequestException as e:
+                cFormatter.print(Color.DEBUG, f'Error fetching trainer data. Please restart the tool. \n {e}', isLogging=True)
 
     @limiter.lockout
     def get_gamesave_data(self, slot: int = 1):
         cFormatter.print(Color.INFO, f'Fetching data for Slot {slot}...')
-        try:
-            response = self.session.get(f'{self.GAMESAVE_SLOT_URL}{slot-1}&clientSessionId={self.clientSessionId}', headers=self.headers)
-            response.raise_for_status()
-            if response.content:  # Check if the response content is not empty
-                cFormatter.print(Color.GREEN, 'Successfully fetched data.')
-                data = response.json()
-                self.__write_data(data, f'slot_{slot}.json', False)
-                return data
-            else:
-                return handle_error_response(response)
-        except requests.RequestException as e:
-            cFormatter.print(Color.CRITICAL, f'Error fetching save-slot data. Please restart the tool. \n {e}', isLogging=True)
+        if self.useScripts:
+            try:
+                response = self._make_request(f'{self.GAMESAVE_SLOT_URL}{slot-1}&clientSessionId={self.clientSessionId}')
+                if response:
+                    try:
+                        data = json.loads(response)
+                        self.__write_data(data, f'slot_{slot}.json', False)
+                        return data
+                    except json.JSONDecodeError as e:
+                        cFormatter.print(Color.WARNING, f"Error decoding JSON: {e}", isLogging=True)
+                        cFormatter.print(Color.WARNING, f"Unexpected response format: {response}", isLogging=True)
+                else:
+                    cFormatter.print(Color.WARNING, "This request appeared to be empty.")
+            except Exception as e:
+                cFormatter.print(Color.CRITICAL, f"Error in function get_trainer_data(): {e}", isLogging=True)
+        
+        else:
+            try:
+                response = self.session.get(f'{self.GAMESAVE_SLOT_URL}{slot-1}&clientSessionId={self.clientSessionId}', headers=self.headers)
+                response.raise_for_status()
+                if response.content:  # Check if the response content is not empty
+                    cFormatter.print(Color.GREEN, 'Successfully fetched data.')
+                    data = response.json()
+                    self.__write_data(data, f'slot_{slot}.json', False)
+                    return data
+                else:
+                    return handle_error_response(response)
+            except requests.RequestException as e:
+                cFormatter.print(Color.CRITICAL, f'Error fetching save-slot data. Please restart the tool. \n {e}', isLogging=True)
 
     def logout(self):
         cFormatter.print(Color.INFO, 'Terminating session, logging out.')
         try:
             self.session.get(f'{self.LOGOUT_URL}', headers=self.headers)
-            self.session.close()
-            sys.exit(0)
+            if not self.driver and not self.useScripts:
+                self.session.close()
+            if self.useScripts:
+                self.driver.quit()
+            exit(0)
         except Exception as e:
             cFormatter.print(Color.WARNING, f'Error logging out. {e}')
 
@@ -324,12 +410,12 @@ class Rogue:
                         with open(output_filepath, 'w') as file:
                             json.dump(data, file, indent=4)
                         
-                        cFormatter.print(Color.INFO, f'Data restored and timestamp updated.')
+                        cFormatter.print(Color.INFO, 'Data restored and timestamp updated.')
                         break
                     else:
-                        cFormatter.print(Color.WARNING, f'Invalid choice. Please enter a number within range.')
+                        cFormatter.print(Color.WARNING, 'Invalid choice. Please enter a number within range.')
                 except ValueError:
-                    cFormatter.print(Color.WARNING, f'Invalid choice. Please enter a valid number.', isLogging=True)
+                    cFormatter.print(Color.WARNING, 'Invalid choice. Please enter a valid number.', isLogging=True)
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function restore_backup(): {e}', isLogging=True)
 
@@ -338,18 +424,18 @@ class Rogue:
         url = 'https://api.pokerogue.net/savedata/updateall'
 
         if "trainer.json" not in os.listdir():
-            print('trainer.json file not found!')
+            cFormatter.print(Color.WARNING, 'trainer.json file not found!')
             return
         with open('trainer.json', 'r') as f:
             trainer_data = json.load(f)
         
         slot = self.slot
         if slot > 5 or slot < 1:
-            print('Invalid slot number')
+            cFormatter.print(Color.WARNING, 'Invalid slot number')
             return
         filename = f'slot_{slot}.json'
         if filename not in os.listdir():
-            print(f'{filename} not found')
+            cFormatter.print(Color.WARNING, f'{filename} not found')
             return
 
         with open(filename, 'r') as f:
@@ -357,13 +443,18 @@ class Rogue:
         try:
             sleep(random.randint(3,5))
             payload = {'clientSessionId': self.clientSessionId, 'session': game_data, "sessionSlotId": slot-1, 'system': trainer_data}
-            response = self.session.post(url=url, headers=self.headers, json=payload)
-            if response.status_code == 400:
-                    cFormatter.print(Color.CRITICAL, 'Bad Request!')
-                    return
-            response.raise_for_status()
-            cFormatter.print(Color.GREEN, 'Updated data Succesfully!')
-            self.logout()
+            if self.useScripts:
+                response = self._make_request(url, method='POST', data=json.dumps(payload))
+                cFormatter.print(Color.GREEN, "That seemed to work! Refresh without cache (STRG+F5)")
+                self.logout()
+            else:
+                response = self.session.post(url=url, headers=self.headers, json=payload)
+                if response.status_code == 400:
+                        cFormatter.print(Color.CRITICAL, 'Bad Request!')
+                        return
+                response.raise_for_status()
+                cFormatter.print(Color.GREEN, 'Updated data Succesfully!')
+                self.logout()
         except SSLError as ssl_err:
             cFormatter.print(Color.CRITICAL, f'SSL error occurred: {ssl_err}', isLogging=True)
         except ConnectionError as conn_err:
@@ -385,7 +476,7 @@ class Rogue:
 
             choice = int(input('Do you want to unlock all forms of the pokemon? (All forms are Tier 3 shinies. 1: Yes | 2: No): '))
             if (choice < 1) or (choice > 2):
-                cFormatter.print(Color.INFO, f'Incorrect command. Setting to NO')
+                cFormatter.print(Color.INFO, 'Incorrect command. Setting to NO')
                 choice = 2
             elif choice == 1:
                 caught_attr = self.__MAX_BIG_INT
@@ -613,19 +704,19 @@ class Rogue:
         try:
             trainer_data = self.__load_data('trainer.json')
 
-            c: int = int(input('How many common vouchers do you want: '))
+            common: int = int(input('How many common vouchers do you want: '))
 
-            r: int = int(input('How many rare vouchers do you want: '))
+            rare: int = int(input('How many rare vouchers do you want: '))
 
-            e: int = int(input('How many epic vouchers do you want: '))
+            epic: int = int(input('How many epic vouchers do you want: '))
 
-            l: int = int(input('How many legendary vouchers do you want: '))
+            legendary: int = int(input('How many legendary vouchers do you want: '))
 
             voucher_counts: dict[str, int] = {
-                '0': c,
-                '1': r,
-                '2': e,
-                '3': l
+                '0': common,
+                '1': rare,
+                '2': epic,
+                '3': legendary
             }
             trainer_data['voucherCounts'] = voucher_counts
 
@@ -663,7 +754,7 @@ class Rogue:
                     return
 
                 cFormatter.print_separators(65, '-', Color.WHITE)
-                cFormatter.print(Color.WHITE, f'\n'.join(options))
+                cFormatter.print(Color.WHITE, '\n'.join(options))
                 cFormatter.print_separators(65, '-', Color.WHITE)
 
                 command = int(input('Option: '))
@@ -1037,7 +1128,7 @@ class Rogue:
             
             if egg_len >= 75:
                 replace_or_add = input(
-                    f'You have max number of eggs, replace eggs? (0: Cancel, 1: Replace): '
+                    'You have max number of eggs, replace eggs? (0: Cancel, 1: Replace): '
                 )
                 if replace_or_add == '2':
                     replace_or_add = '1'
@@ -1086,7 +1177,7 @@ class Rogue:
                 input('After how many waves should they hatch? (0-100)(number): ')
             )
 
-            new_eggs = generate_eggs(tier, gacha_type, hatch_waves, count)
+            new_eggs = generate_eggs(tier, gacha_type, hatch_waves, count)  # noqa: F405
 
             if replace_or_add == '1':
                 trainer_data['eggs'] = new_eggs
@@ -1299,21 +1390,3 @@ class Rogue:
 
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function edit_hatchwaves(): {e}', isLogging=True)
-    
-    def print_help(self) -> None:
-        """
-        Print helpful information for the user.
-
-        This method prints various helpful messages for the user, including information
-        about manual JSON editing, assistance through the program's GitHub page, release
-        version details, and cautions about account safety and program authenticity.
-        """
-        cFormatter.print(Color.INFO, 'You can always edit your json manually aswell.')
-        cFormatter.print(Color.INFO, 'If you need assistance please refer to the programs GitHub page.')
-        cFormatter.print(Color.INFO, 'https://github.com/RogueEdit/onlineRogueEditor/.')
-        cFormatter.print(Color.INFO, f'This is release version {modules.config.version} - please include that in your issue or question report.')
-        cFormatter.print(Color.INFO, 'This version now also features a log file.')
-        cFormatter.print(Color.INFO, 'We do not take responsibility if your accounts get flagged or banned, and')
-        cFormatter.print(Color.INFO, 'you never know if there is a clone from this programm. If you are not sure please')
-        cFormatter.print(Color.INFO, 'calculate the checksum of this binary and visit https://github.com/RogueEdit/onlineRogueEditor/')
-        cFormatter.print(Color.INFO, 'to see the value it should have to know its original from source.')

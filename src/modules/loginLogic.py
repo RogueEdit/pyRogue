@@ -192,6 +192,6 @@ class loginLogic:
             cFormatter.print_separators(30, '-')
             return True
 
-        except requests.RequestException as e:
+        except requests.RequestException:
             handle_error_response(response)
             return False

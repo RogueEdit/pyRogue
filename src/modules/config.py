@@ -1,6 +1,6 @@
 from utilities.cFormatter import cFormatter, Color
 
-version = 'v0.2.3'
+version = 'v0.3'
 
 #Update Notifier
 # GitHub repository details
@@ -77,6 +77,8 @@ def check_for_updates(requests, datetime, timedelta, Style):
             cFormatter.print(Color.INFO, f"You can view the latest code here: {repo_url}")
             cFormatter.print(Color.INFO, 'It is highly recommended to update the source code. Some things might not be working as expected.')
             cFormatter.print_separators(60, '-', Color.CRITICAL)
+        else:
+            cFormatter.print(Color.GREEN, 'No updates found.')
     except ValueError as ve:
         cFormatter.print(Color.CRITICAL, f"Couldn\'t resolve check_for_updates() - ValueError occurred: {ve}", isLogging=True)
     except requests.exceptions.RequestException as re:
@@ -87,8 +89,26 @@ def check_for_updates(requests, datetime, timedelta, Style):
 def initialize_text():
     cFormatter.print(Color.BRIGHT_GREEN, f'<pyRogue {version}>')
     cFormatter.print(Color.BRIGHT_GREEN, 'We create base-backups on every login and further backups everytime you start or up choose so manually.')
-    cFormatter.print(Color.BRIGHT_GREEN, f'In case of trouble, please refer to our GitHub. {repo_url}')
+    cFormatter.print(Color.BRIGHT_GREEN, f'In case of trouble, please switch your Network (Hotspot, VPN etc). \nOtherwise please visit {repo_url} and report the issue.')
     cFormatter.print_separators(60, '-')
-    cFormatter.print(Color.BRIGHT_MAGENTA, '1: Using requests.')
-    cFormatter.print(Color.BRIGHT_MAGENTA, '2: Using own browser. Use when 1 doesnt work.')
+    cFormatter.print(Color.BRIGHT_MAGENTA, '1: Using no  browser with requests.   Reliability 5/10')
+    cFormatter.print(Color.BRIGHT_MAGENTA, '2: Using own browser with requests.   Reliability 7/10')
+    cFormatter.print(Color.BRIGHT_MAGENTA, '3: Using own browser with javascript. Reliability 9/10')
 
+def print_help(self) -> None:
+    """
+    Print helpful information for the user.
+
+    This method prints various helpful messages for the user, including information
+    about manual JSON editing, assistance through the program's GitHub page, release
+    version details, and cautions about account safety and program authenticity.
+    """
+    cFormatter.print(Color.INFO, 'You can always edit your json manually aswell.')
+    cFormatter.print(Color.INFO, 'If you need assistance please refer to the programs GitHub page.')
+    cFormatter.print(Color.INFO, 'https://github.com/RogueEdit/onlineRogueEditor/.')
+    cFormatter.print(Color.INFO, f'This is release version {version} - please include that in your issue or question report.')
+    cFormatter.print(Color.INFO, 'This version now also features a log file.')
+    cFormatter.print(Color.INFO, 'We do not take responsibility if your accounts get flagged or banned, and')
+    cFormatter.print(Color.INFO, 'you never know if there is a clone from this programm. If you are not sure please')
+    cFormatter.print(Color.INFO, 'calculate the checksum of this binary and visit https://github.com/RogueEdit/onlineRogueEditor/')
+    cFormatter.print(Color.INFO, 'to see the value it should have to know its original from source.')

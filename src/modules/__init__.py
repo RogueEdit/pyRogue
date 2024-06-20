@@ -1,4 +1,8 @@
-from .config import config
+from . import config
 from .loginLogic import loginLogic
 from .mainLogic import Rogue
-from .seleniumLogic
+from .seleniumLogic import SeleniumLogic
+
+__all__ = [
+    "config", "loginLogic", "Rogue", "SeleniumLogic"
+]

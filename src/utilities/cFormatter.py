@@ -1,20 +1,66 @@
+"""
 # Authors
-# Organization: https://github.com/rogueEdit/
-# Repository: https://github.com/rogueEdit/OnlineRogueEditor
-# Contributors: https://github.com/JulianStiebler/
-# Date of release: 06.06.2024 
-# Last edited: 20.06.2024 - https://github.com/JulianStiebler/
+Organization: https://github.com/rogueEdit/
+Repository: https://github.com/rogueEdit/OnlineRogueEditor
+Contributors: https://github.com/JulianStiebler/
+Date of release: 06.06.2024 
+Last edited: 20.06.2024 - https://github.com/JulianStiebler/
+
+This module provides a custom logging formatter and various utility functions for enhanced console output.
+It includes:
+- An enumeration for ANSI color codes to allow colored logging output.
+- A custom logging formatter (cFormatter) that supports colored console output and other formatting utilities.
+- Functions for printing colored text, separators, and formatted text lines.
+- A function for initializing and displaying a menu with numbered choices.
+    
+"""
 
 from colorama import Fore, Style
+# Provides ANSI escape sequences for colored terminal text.
+
 from enum import Enum
+# Allows the creation of enumerations, a set of symbolic names bound to unique, constant values.
+
 import logging
+# Provides a flexible framework for emitting log messages from Python programs.
+
 import shutil
+# Includes high-level file operations such as copying and removal.
+
 from typing import Optional
+# Provides support for type hints, enabling optional type checking.
+
 import re
+# Provides support for regular expressions, allowing pattern matching in strings.
 
 class Color(Enum):
     """
     Enum defining ANSI color codes for console output.
+    
+    Attributes:
+        > These also trigger the corresponding logging level.
+        CRITICAL (str): Bright red color for critical messages.
+        DEBUG (str): Bright blue color for debug messages.
+        ERROR (str): Red color for error messages.
+        WARNING (str): Yellow color for warning messages.
+        INFO (str): Bright light yellow color for informational messages.
+
+        BLACK (str): Black color.
+        RED (str): Red color.
+        GREEN (str): Green color.
+        YELLOW (str): Yellow color.
+        BLUE (str): Blue color.
+        MAGENTA (str): Magenta color.
+        CYAN (str): Cyan color.
+        WHITE (str): White color.
+        BRIGHT_BLACK (str): Bright black color.
+        BRIGHT_RED (str): Bright red color.
+        BRIGHT_GREEN (str): Bright green color.
+        BRIGHT_YELLOW (str): Bright yellow color.
+        BRIGHT_BLUE (str): Bright blue color.
+        BRIGHT_MAGENTA (str): Bright magenta color.
+        BRIGHT_CYAN (str): Bright cyan color.
+        BRIGHT_WHITE (str): Bright white color.
     """
     CRITICAL = Style.BRIGHT + Fore.RED
     DEBUG = Style.BRIGHT + Fore.BLUE
@@ -153,7 +199,7 @@ class cFormatter(logging.Formatter):
         total_length = len(stripped_line) + len(stripped_helper_text)
         
         if truncate and total_length > length:
-            truncated_length = length - len(stripped_helper_text) - 3  # 3 characters for "..."
+            truncated_length = length - len(stripped_line) - 3  # 3 characters for "..."
             line = line[:truncated_length] + '...'
             stripped_line = cFormatter.strip_color_codes(line)
             total_length = len(stripped_line) + len(stripped_helper_text)

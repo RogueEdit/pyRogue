@@ -1,8 +1,9 @@
 # Authors
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
-# Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
-# Date of release: 06.06.2024 
+# Contributors: https://github.com/JulianStiebler/
+# Date of release: 06.06.2024
+# Last Edited: 20.06.2024
 
 import os
 import json
@@ -17,6 +18,31 @@ class Limiter:
     Attributes:
         lockout_period (int): The lockout period in seconds.
         timestamp_file (str): The file path to store the timestamps.
+
+    :arguments:
+    - lockout_period (int): The lockout period in seconds.
+    - timestamp_file (str, optional): The file path to store the timestamps. Default is './data/extra.json'.
+
+    :params:
+    None
+
+    Usage:
+        Initialize the limiter and decorate functions to limit their execution frequency:
+        >>> limiter = Limiter(lockout_period=60)
+        >>> @limiter.lockout
+        >>> def my_function():
+        >>>     print("Function executed.")
+
+    Output examples:
+        - Prints a message if the function is called within the lockout period.
+        - Executes the function and updates the timestamp if called outside the lockout period.
+
+    Modules:
+        - os: Module for interacting with the operating system.
+        - json: Module for working with JSON data.
+        - time: Module for time-related functions.
+        - functools: Module for higher-order functions.
+        - utilities.cFormatter: Custom formatter for colored printing and logging.
     """
     
     def __init__(self, lockout_period: int, timestamp_file: str = './data/extra.json'):
@@ -32,11 +58,21 @@ class Limiter:
         """
         Decorator function to enforce the lockout mechanism on the decorated function.
 
-        Args:
-            func (function): The function to be decorated.
+        :arguments:
+        - func (function): The function to be decorated.
+
+        :params:
+        None
 
         Returns:
             function: The decorated function.
+
+        Usage:
+            Decorate a function with the lockout decorator to limit its execution frequency:
+            >>> limiter = Limiter(lockout_period=60)
+            >>> @limiter.lockout
+            >>> def my_function():
+            >>>     print("Function executed.")
         """
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -56,11 +92,18 @@ class Limiter:
         """
         Get the timestamp of the last execution of a function.
 
-        Args:
-            func_name (str): The name of the function.
+        :arguments:
+        - func_name (str): The name of the function.
+
+        :params:
+        None
 
         Returns:
             float: The timestamp of the last execution.
+
+        Usage:
+            Get the last execution time of a function:
+            >>> last_exec_time = limiter._get_last_exec_time('my_function')
         """
         with open(self.timestamp_file, 'r') as f:
             timestamps = json.load(f)
@@ -70,9 +113,16 @@ class Limiter:
         """
         Update the timestamp of the last execution of a function.
 
-        Args:
-            func_name (str): The name of the function.
-            timestamp (float): The timestamp of the last execution.
+        :arguments:
+        - func_name (str): The name of the function.
+        - timestamp (float): The timestamp of the last execution.
+
+        :params:
+        None
+
+        Usage:
+            Update the last execution time of a function:
+            >>> limiter._update_last_exec_time('my_function', time.time())
         """
         with open(self.timestamp_file, 'r+') as f:
             try:
