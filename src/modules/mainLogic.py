@@ -1312,19 +1312,3 @@ class Rogue:
         cFormatter.print(Color.INFO, 'you never know if there is a clone from this programm. If you are not sure please')
         cFormatter.print(Color.INFO, 'calculate the checksum of this binary and visit https://github.com/RogueEdit/onlineRogueEditor/')
         cFormatter.print(Color.INFO, 'to see the value it should have to know its original from source.')
-
-    def print_changes(self) -> None:
-        """
-        Print helpful information for the user.
-
-        This method prints various helpful messages for the user, including information
-        about manual JSON editing, assistance through the program's GitHub page, release
-        version details, and cautions about account safety and program authenticity.
-        """
-        cFormatter.print(Color.INFO, '- Rate limiting')
-        cFormatter.print(Color.INFO, '- Added delay and such to appear more natural to the server')
-        cFormatter.print(Color.INFO, '- New header generation')
-        cFormatter.print(Color.INFO, '- When headers fail more often we renew them from remote source (Hotfixes)')
-        cFormatter.print(Color.INFO, '- Added second login logic as fallback')
-        cFormatter.print(Color.INFO, '- Refined some logic and fixed some bugs')
-        cFormatter.print(Color.INFO, f'https://github.com/RogueEdit/onlineRogueEditor/ {modules.config.version}')

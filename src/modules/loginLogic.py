@@ -2,12 +2,12 @@
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
-# Date of release: 06.06.2024 
+# Date of release: 13.06.2024 
 
 import requests
 import random
 from colorama import init
-from typing import List, Dict, Optional
+from typing import Dict, Optional
 from time import sleep
 from utilities.limiter import Limiter
 from utilities.cFormatter import cFormatter, Color

@@ -2,22 +2,38 @@
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
-# Date of release: 06.06.2024 
-import signal
+# Date of release: 13.06.2024 
 import getpass
 import requests
-import brotli
-from modules.loginLogic import loginLogic, HeaderGenerator
+import brotli  # noqa: F401
+from modules.loginLogic import loginLogic
 from modules.mainLogic import Rogue
 from colorama import Fore, Style, init
 from modules.login.seleniumLogic import SeleniumLogic
 from utilities.cFormatter import cFormatter, Color
 from utilities.logger import CustomLogger
-import modules.config
-import atexit
+from modules import config
+from datetime import datetime
 
 init()
 logger = CustomLogger()
+
+fixed_date_dt = datetime.fromisoformat(config.code_age)
+
+def check_for_updates():
+        """
+        Get the list of commits since a given date.
+
+        :param owner: Repository owner
+        :param repo: Repository name
+        :param since_date: datetime object representing the fixed date
+        :return: list of commits
+        """
+
+        params = {'since': fixed_date_dt.isoformat()}
+        response = requests.get(config.repo_url, params=params)
+        response.raise_for_status()
+        print(response)
 
 def main():
     """
@@ -52,10 +68,13 @@ def main():
     """
     session = requests.Session()
     while True:
+        commits = check_for_updates()
+        if commits:
+            print(f"New commits found. You can view the latest code here: {config.repo_url}")
         print('')
-        cFormatter.print(Color.BRIGHT_GREEN, f'<pyRogue {modules.config.version}>')
+        cFormatter.print(Color.BRIGHT_GREEN, f'<pyRogue {config.version}>')
         cFormatter.print(Color.BRIGHT_GREEN, 'We create base-backups on every login and further backups everytime you start or up choose so manually.')
-        cFormatter.print(Color.BRIGHT_GREEN, 'In case of trouble, please refer to our GitHub. https://github.com/RogueEdit/onlineRogueEditor ')
+        cFormatter.print(Color.BRIGHT_GREEN, f'In case of trouble, please refer to our GitHub. {config.repo_url}')
         cFormatter.print_separators(60, '-')
         cFormatter.print(Color.BRIGHT_MAGENTA, '1: Using requests.')
         cFormatter.print(Color.BRIGHT_MAGENTA, '2: Using own browser. Use when 1 doesnt work.')
@@ -80,12 +99,12 @@ def main():
                 cFormatter.print(Color.CRITICAL, f'Something went wrong. {e}', isLogging=True)
         elif loginChoice == 2:
             selenium_logic = SeleniumLogic(username, password, 120)
-            session_id, token, headers = selenium_logic.logic()  # Unpack three values
+            session_id, token, driver = selenium_logic.logic()  # Unpack three values
 
-            if session_id and token and headers:
+            if session_id and token and driver:
                 cFormatter.print(Color.INFO, f'Logged in as: {username.capitalize()}')
                 session.cookies.set("pokerogue_sessionId", session_id, domain="pokerogue.net")
-                rogue = Rogue(session, auth_token=token, clientSessionId=session_id, headers=headers)
+                rogue = Rogue(session, auth_token=token, clientSessionId=session_id, driver=driver)
                 break
             else:
                 cFormatter.print(Color.CRITICAL, "Failed to retrieve necessary authentication data from Selenium.")
@@ -120,7 +139,7 @@ def main():
         '25': rogue.print_natureSlot,
         '26': rogue.update_all,
         '27': rogue.print_help,
-        '28': rogue.print_changes,
+        '28': rogue.check_for_updates,
         '29': rogue.logout
     }
 
@@ -187,9 +206,3 @@ def main():
 if __name__ == '__main__':
     main()
 
-
-
-signal.signal(signal.SIGTERM, Rogue.logout)
-signal.signal(signal.SIGINT, Rogue.logout)  # Handles Ctrl+C
-signal.signal(signal.SIGQUIT, Rogue.logout) # Handles Ctrl+\
-atexit.register(Rogue.logout)
