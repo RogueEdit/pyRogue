@@ -198,12 +198,12 @@ def initialize_folders() -> None:
     # Create the logs directory if it doesn't exist
     if not os.path.exists(logs_directory):
         os.makedirs(logs_directory)
-        print(f'Created logs directory: {logs_directory}')
+        cFormatter.print(Color.GREEN, f'Created logs directory: {logs_directory}')
     # Create the backups directory if it doesn't exist
     if not os.path.exists(backups_directory):
         os.makedirs(backups_directory)
-        print(f'Created backup directory: {backups_directory}')
+        cFormatter.print(Color.GREEN, f'Created backup directory: {backups_directory}')
     # Create the backups directory if it doesn't exist
     if not os.path.exists(data_directory):
         os.makedirs(backups_directory)
-        print(f'Created backup directory: {backups_directory}')
+        cFormatter.print(Color.GREEN, f'Created backup directory: {backups_directory}')
