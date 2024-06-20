@@ -1,22 +1,72 @@
-# Authors
-# Organization: https://github.com/rogueEdit/
-# Repository: https://github.com/rogueEdit/OnlineRogueEditor
-# Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
-# Date of release: 06.06.2024 
+"""
+This script provides a class 'Rogue' for interacting with the PokeRogue API to manage trainer and gamesave data.
+
+Functionality:
+- Fetches and updates trainer data and gamesave slots from the PokeRogue API.
+- Handles data dumping to local files and creates backups.
+- Implements HTTP requests and Selenium WebDriver for API interactions.
+
+Modules:
+- json: Provides support for parsing JSON data.
+- random: Generates random numbers, used for various utilities.
+- os: Provides functions for interacting with the operating system, used for file operations.
+- shutil: Offers high-level operations on files and directories, used for file management.
+- brotli: Compression library (unused in this script).
+- time: Provides time-related functions, used for timing operations.
+- typing: Supports type hints for Python code.
+- logging: Offers logging capabilities for tracking events and errors.
+- colorama.Style: Part of colorama library for terminal text styling.
+- re: Provides support for regular expressions, used for text matching.
+- datetime: Supports date and time manipulation.
+- requests: Simplifies making HTTP requests.
+- prompt_toolkit: Provides utilities for building interactive command line applications.
+
+Workflow:
+1. Initialize the 'Rogue' class with necessary parameters to interact with the PokeRogue API.
+2. Use methods to fetch and update trainer data and gamesave slots.
+3. Handle exceptions and errors during API interactions and local data operations.
+
+Usage Example:
+    # Initialize Rogue instance
+    session = requests.Session()
+    auth_token = "your_auth_token_here"
+    rogue_instance = Rogue(session=session, auth_token=auth_token, clientSessionId="your_session_id_here")
+
+    # Fetch trainer data
+    trainer_data = rogue_instance.get_trainer_data()
+
+    # Update gamesave slot
+    rogue_instance.update_gamesave_slot(slot=1, data={"key": "value"})
+
+Output Example:
+    - Successful fetching of trainer data.
+    - Error handling messages for failed API requests.
+
+Modules/Librarys used and for what purpose exactly in each function:
+- json: Parsing and serializing JSON data for API responses.
+- random: Generating random numbers for various utilities.
+- os: Interfacing with the operating system for file and directory operations.
+- shutil: Managing file operations such as copying and deleting files.
+- time: Handling timing operations and delays in script execution.
+- logging: Logging events and errors during script execution.
+- colorama.Style: Styling terminal output for improved readability.
+- re: Utilizing regular expressions for text processing and matching.
+- datetime: Manipulating dates and times for timestamping and scheduling operations.
+- requests: Making HTTP requests to interact with the PokeRogue API.
+- prompt_toolkit: Building interactive command-line interfaces for user interactions.
+"""
 
 import json
 import random
 import os
 import shutil
-import brotli  # noqa: F401
 import time
 from typing import Dict, Any, Optional, List
-import logging
-from colorama import Style
 from time import sleep
-import re
+import logging
 from datetime import datetime
 from requests.exceptions import SSLError, ConnectionError, Timeout
+
 from modules import handle_error_response, HeaderGenerator, config
 from utilities import Generator, EnumLoader, cFormatter, Color, Limiter
 import requests
@@ -27,10 +77,11 @@ from prompt_toolkit.completion import WordCompleter
 from utilities import eggLogic
 from sys import exit
 
+import re
 
 limiter = Limiter(lockout_period=40, timestamp_file='./data/extra.json')
 logger = logging.getLogger(__name__)
-logging.basicConfig(level = logging.INFO)
+logging.basicConfig(level=logging.INFO)
 
 
 class Rogue:
@@ -43,6 +94,7 @@ class Rogue:
         UPDATE_TRAINER_DATA_URL (str): The URL to update trainer data on the API.
         UPDATE_GAMESAVE_SLOT_URL (str): The base URL to update gamesave data for a specific slot on the API.
     """
+
     TRAINER_DATA_URL = 'https://api.pokerogue.net/savedata/system/get?clientSessionId='
     GAMESAVE_SLOT_URL = 'https://api.pokerogue.net/savedata/session/get?slot='
     UPDATE_TRAINER_DATA_URL = 'https://api.pokerogue.net/savedata/update?datatype=0'
@@ -50,31 +102,50 @@ class Rogue:
     UPDATE_ALL_URL = 'https://api.pokerogue.net/savedata/updateall'
     LOGOUT_URL = 'https://api.pokerogue.net/account/logout'
 
-    def __init__(self, session: requests.Session, auth_token: str, clientSessionId: str = None, driver: dict = None, useScripts = None) -> None:
+    def __init__(self, session: requests.Session, auth_token: str, clientSessionId: str = None, driver: dict = None, useScripts: Optional[bool] = None) -> None:
+        """
+        Initializes the Rogue class instance.
+
+        :args:
+            session (requests.Session): The requests session object for making HTTP requests.
+            auth_token (str): Authentication token for accessing the PokeRogue API.
+            clientSessionId (str, optional): Client session ID for API authentication.
+            driver (dict, optional): Selenium WebDriver dictionary object (default: None).
+            useScripts (bool, optional): Flag indicating whether to use custom scripts (default: None).
+
+        :params:
+            None
+
+        Usage Example:
+            session = requests.Session()
+            auth_token = "your_auth_token_here"
+            rogue_instance = Rogue(session=session, auth_token=auth_token, clientSessionId="your_session_id_here")
+
+        Output Example:
+            None
+
+        Modules/Librarys used and for what purpose exactly in each function:
+        - requests: Making HTTP requests to interact with the PokeRogue API.
+        """
         self.slot = None
         self.session = session
-        self.__MAX_BIG_INT = (2 ** 53) - 1
         self.auth_token = auth_token
         self.clientSessionId = clientSessionId
         self.headers = self._setup_headers()
         
-        self.driver = None
-        if driver:
-            self.driver = driver
+        self.driver = driver
         self.useScripts = useScripts
 
         self.secretId = None
         self.trainerId = None
 
-        # json generators
         self.generator = Generator()
         self.generator.generate()
         self.enum = EnumLoader()
 
         self.backup_dir = config.backups_directory
         self.data_dir = config.data_directory
-        
-        # wordcomplete
+
         self.pokemon_id_by_name, self.biomes_by_id, self.moves_by_id, self.nature_data, self.vouchers_data, self.natureSlot_data = self.enum.convert_to_enums()
 
         try:
@@ -88,44 +159,48 @@ class Rogue:
         
         self.__dump_data()
 
-    def _make_request(self, url, method='GET', data=None):
+    def _make_request(self, url: str, method: str = 'GET', data: Optional[Dict[str, Any]] = None) -> str:
         """
         Makes an HTTP request using the Selenium WebDriver.
 
-        Args:
+        :args:
             url (str): The URL to make the request to.
-            method (str): The HTTP method (default is 'GET').
+            method (str, optional): The HTTP method (default is 'GET').
             data (dict, optional): The payload for POST requests.
 
-        Returns:
-            str: The response body.
+        :params:
+            None
+
+        Usage Example:
+            response = self._make_request('https://api.pokerogue.net/savedata/system/get?clientSessionId=1234', method='GET')
+
+        Output Example:
+            'Successfully fetched data.'
+
+        Modules/Librarys used and for what purpose exactly in each function:
+        - requests: Making HTTP requests to interact with the PokeRogue API.
         """
-        # Properly escape and format method and URL
         method = json.dumps(method)
         url = json.dumps(url)
 
-        # Start constructing the script
         script = f"""
             var callback = arguments[0];
             var xhr = new XMLHttpRequest();
             xhr.open({method}, {url}, true);
         """
-        # Add headers if any
+
         if self.headers:
             for key, value in self.headers.items():
                 key = json.dumps(key)
                 value = json.dumps(value)
                 script += f'xhr.setRequestHeader({key}, {value});'
         
-        # Handle data if any
         if data:
-            # Ensure the data is properly JSON-stringified
             data = json.dumps(data)
             script += f'xhr.send({data});'
         else:
             script += 'xhr.send();'
 
-        # Add the onreadystatechange function
         script += """
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == 4) {
@@ -133,15 +208,28 @@ class Rogue:
                 }
             };
         """
-        # Execute the script
+
         return self.driver.execute_async_script(script)
 
-    def _setup_headers(self, headers = None) -> Dict[str, str]:
+    def _setup_headers(self, headers: Optional[Dict[str, str]] = None) -> Dict[str, str]:
         """
         Generates random headers for the session.
 
-        Returns:
-            Dict[str, str]: The generated headers.
+        :args:
+            None
+
+        :params:
+            headers (Dict[str, str], optional): Custom headers to include (default: None).
+
+        Usage Example:
+            headers = self._setup_headers()
+            print(headers)
+
+        Output Example:
+            {'Accept': 'application/json', 'Content-Type': 'application/json', 'Authorization': 'your_auth_token_here'}
+
+        Modules/Librarys used and for what purpose exactly in each function:
+        - HeaderGenerator: Generates headers for HTTP requests.
         """
         if not headers:
             headers = HeaderGenerator.generate_headers()
@@ -155,8 +243,30 @@ class Rogue:
         """
         Dump data from the API to local files.
 
-        Args:
-            slot (int): The slot number (1-5). Defaults to 1.
+        :args:
+            slot (int, optional): The slot number (1-5). Defaults to 1.
+
+        :params:
+            None
+
+        Usage Example:
+            self.__dump_data(slot=3)
+        Usage Example (continued):
+            self.__dump_data(slot=3)
+
+        Output Example:
+            Successful backup creation and local data dump.
+
+        Modules/Librarys used and for what purpose exactly in each function:
+        - EnumLoader: Loads and converts data into enums for structured storage and retrieval.
+        - config: Provides configuration settings, such as directories for backups and data storage.
+        - json: Handles JSON data operations for reading and writing local data files.
+        - cFormatter: Formats console output with colors and styles for better readability.
+        - Color: Defines color constants for styling console messages.
+
+        Exceptions:
+        - If the specified slot is out of range (1-5), an "Invalid input" message is printed.
+
         """
         try:
             if not self.slot:
@@ -168,7 +278,6 @@ class Rogue:
 
             trainer_data = self.get_trainer_data()
             game_data = self.get_gamesave_data(slot)
-
 
             if game_data and trainer_data:
                 self.create_backup()
@@ -183,6 +292,27 @@ class Rogue:
 
         Returns:
             dict: Trainer data from the API.
+
+        :args:
+            None
+
+        :params:
+            None
+
+        Usage Example:
+            trainer_data = self.get_trainer_data()
+            print(trainer_data)
+
+        Output Example:
+            {'trainerId': '1234', 'name': 'Ash Ketchum', ...}
+
+        Modules/Librarys used and for what purpose exactly in each function:
+        - requests: Makes HTTP requests to retrieve trainer data from the PokeRogue API.
+        - cFormatter: Formats console output with colors and styles for better readability.
+        - Color: Defines color constants for styling console messages.
+
+        Exceptions:
+        - Handles various errors, such as network issues or invalid responses, by printing debug information.
         """
         cFormatter.print(Color.INFO, 'Fetching trainer data...')
         if self.useScripts:
@@ -192,13 +322,13 @@ class Rogue:
                     try:
                         data = json.loads(response)
                         self.__write_data(data, 'trainer.json', False)
-                        cFormatter.print(Color.GREEN, 'Succesfully fetched trainer data.')
+                        cFormatter.print(Color.GREEN, 'Successfully fetched trainer data.')
                         return data
                     except json.JSONDecodeError as e:
                         cFormatter.print(Color.WARNING, f"Error decoding JSON: {e}", isLogging=True)
                         cFormatter.print(Color.WARNING, f"Unexpected response format: {response}", isLogging=True)
                 else:
-                    cFormatter.print(Color.WARNING, "This request appeared to be empty.")
+                    cFormatter.print(Color.WARNING, "The request appeared to be empty.")
             except Exception as e:
                 cFormatter.print(Color.CRITICAL, f"Error in function get_trainer_data(): {e}", isLogging=True)
         else:
@@ -206,7 +336,7 @@ class Rogue:
                 response = self.session.get(f'{self.TRAINER_DATA_URL}{self.clientSessionId}', headers=self.headers)
                 response.raise_for_status()
                 if response.content:  # Check if the response content is not empty
-                    cFormatter.print(Color.GREEN, 'Successfully fetched data.')
+                    cFormatter.print(Color.GREEN, 'Successfully fetched trainer data.')
                     data = response.json()
                     self.trainerId = data.get('trainerId')
                     self.secretId = data.get('secretId')
@@ -218,8 +348,33 @@ class Rogue:
                 cFormatter.print(Color.DEBUG, f'Error fetching trainer data. Please restart the tool. \n {e}', isLogging=True)
 
     @limiter.lockout
-    def get_gamesave_data(self, slot: int = 1):
+    def get_gamesave_data(self, slot: int = 1) -> Optional[Dict[str, Any]]:
+        """
+        Fetch gamesave data from the API for a specified slot.
+
+        Args:
+            slot (int, optional): The slot number (1-5). Defaults to 1.
+
+        Returns:
+            dict or None: Gamesave data retrieved from the API, or None if unsuccessful.
+
+        Example:
+            >>> rogue_instance.get_gamesave_data(2)
+            # Output:
+            # {
+            #   "slotId": 2,
+            #   "pokemonData": [...],
+            #   "itemData": [...],
+            #   ...
+            # }
+
+        Modules/Librarys used and for what purpose exactly in each function:
+            - requests: Used for making HTTP requests to the API to fetch gamesave data.
+            - cFormatter, Color: Used for formatting and printing colored output messages.
+            - handle_error_response: Used to handle and process error responses from API requests.
+        """
         cFormatter.print(Color.INFO, f'Fetching data for Slot {slot}...')
+        
         if self.useScripts:
             try:
                 response = self._make_request(f'{self.GAMESAVE_SLOT_URL}{slot-1}&clientSessionId={self.clientSessionId}')
@@ -231,11 +386,8 @@ class Rogue:
                     except json.JSONDecodeError as e:
                         cFormatter.print(Color.WARNING, f"Error decoding JSON: {e}", isLogging=True)
                         cFormatter.print(Color.WARNING, f"Unexpected response format: {response}", isLogging=True)
-                else:
-                    cFormatter.print(Color.WARNING, "This request appeared to be empty.")
             except Exception as e:
-                cFormatter.print(Color.CRITICAL, f"Error in function get_trainer_data(): {e}", isLogging=True)
-        
+                cFormatter.print(Color.CRITICAL, f"Error in function get_gamesave_data(): {e}", isLogging=True)
         else:
             try:
                 response = self.session.get(f'{self.GAMESAVE_SLOT_URL}{slot-1}&clientSessionId={self.clientSessionId}', headers=self.headers)
@@ -250,31 +402,61 @@ class Rogue:
             except requests.RequestException as e:
                 cFormatter.print(Color.CRITICAL, f'Error fetching save-slot data. Please restart the tool. \n {e}', isLogging=True)
 
-    def logout(self):
+    def logout(self) -> None:
+        """
+        Logout from the PokeRogue API session.
+
+        Logs out the current session and optionally closes resources like WebDriver.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        Example:
+            >>> rogue_instance.logout()
+            # Output:
+            # Terminating session, logging out.
+            # Session terminated successfully.
+
+        Modules/Librarys used and for what purpose exactly in each function:
+            - requests: Used for making HTTP requests to logout from the API.
+            - cFormatter, Color: Used for formatting and printing colored output messages.
+        """
         cFormatter.print(Color.INFO, 'Terminating session, logging out.')
+        
         try:
             self.session.get(f'{self.LOGOUT_URL}', headers=self.headers)
             if not self.driver and not self.useScripts:
                 self.session.close()
             if self.useScripts:
                 self.driver.quit()
+            cFormatter.print(Color.BRIGHT_GREEN, 'Session terminated successfully.')
             exit(0)
         except Exception as e:
             cFormatter.print(Color.WARNING, f'Error logging out. {e}')
 
-    def __write_data(self, data: Dict[str, any], filename: str, showSuccess: bool = True) -> None:
+    def __write_data(self, data: Dict[str, Any], filename: str, showSuccess: bool = True) -> None:
         """
         Write data to a JSON file.
 
         Args:
-            data (Dict[str, any]): The data to write.
+            data (Dict[str, Any]): The data to write.
             filename (str): The name of the file.
+            showSuccess (bool, optional): Flag to print success message. Defaults to True.
+
+        Returns:
+            None
 
         Example:
-            # Assuming data is a dictionary and filename is a string.
-            __write_data(data, 'trainer.json')
-            # Output: -> writes into trainer.json
+            >>> rogue_instance.__write_data(data, 'trainer.json')
+            # Output:
             # Written to local data. Do not forget to apply to server when done!
+
+        Modules/Librarys used and for what purpose exactly in each function:
+            - json: Used for serializing data into JSON format and writing to a file.
+            - cFormatter, Color: Used for formatting and printing colored output messages.
         """
         try:
             with open(filename, 'w') as f:
@@ -282,47 +464,64 @@ class Rogue:
                 if showSuccess:
                     cFormatter.print(Color.BRIGHT_GREEN, 'Written to local data. Do not forget to apply to server when done!')
         except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error .__writing_data(): {e}', isLogging=True)
-
+            cFormatter.print(Color.CRITICAL, f'Error in function __write_data(): {e}', isLogging=True)
 
     def __load_data(self, file_path: str) -> Dict[str, Any]:
-            """"
-            Load data from a specified file path.
+        """
+        Load data from a specified file path.
 
-            Args:
-                file_path (str): Path to the file to be loaded.
+        Args:
+            file_path (str): Path to the file to be loaded.
 
-            Returns:
-                dict: Loaded data.
+        Returns:
+            dict: Loaded data from the specified file.
 
-            Example:
-                # Assuming file_path is a valid file path.
-                __load_data('trainer.json')
-                # Output:
-                # Loaded data as a dictionary.
+        Example:
+            >>> rogue_instance.__load_data('trainer.json')
+            # Output:
+            # Loaded data as a dictionary.
 
-            Raises:
-                Exception: If any error occurs during the process.
-            """
-            try:
-                with open(file_path, 'r') as f:
-                    return json.load(f)
-            except Exception as e:
-                cFormatter.print(Color.CRITICAL, f'Error in function .__load_data(): {e}', isLogging=True)
+        Raises:
+            Exception: If any error occurs during the process.
+
+        Modules/Librarys used and for what purpose exactly in each function:
+            - json: Used for deserializing data from JSON format.
+            - cFormatter, Color: Used for formatting and printing colored output messages.
+        """
+        try:
+            with open(file_path, 'r') as f:
+                return json.load(f)
+        except Exception as e:
+            cFormatter.print(Color.CRITICAL, f'Error in function __load_data(): {e}', isLogging=True)
+
 
     def create_backup(self) -> None:
         """
         Create a backup of JSON files.
 
-        Example:
-            create_backup()
+        What it does:
+        - Creates a backup of all JSON files in the current directory to `config.backups_directory`.
+        - Uses a timestamped naming convention for backup files (`backup_{trainerid}_{timestamp}.json`).
+        - Prints 'Backup created.' upon successful backup completion.
+
+        :args: None
+        :params: None
+
+        Usage Example:
+            instance.create_backup()
+
+        Output Example:
             # Output: backup/backup_{trainerid}_{timestamp}.json
             # Backup created.
 
-        Raises:
-            Exception: If any error occurs during the process.
+        Modules/Librarys used and for what purpose exactly in each function:
+        - os: For directory creation and file handling operations.
+        - json: For loading JSON data from files.
+        - shutil: For copying files from the current directory to the backup directory.
+        - datetime: For generating timestamps for backup file names.
         """
-        backup_dir = config.backups_directory
+
+        backup_dir = 'backup'
         if not os.path.exists(backup_dir):
             os.makedirs(backup_dir)
         try:
@@ -335,53 +534,68 @@ class Rogue:
                         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
                         base_filename = f'base_{trainer_id}.json'
                         base_filepath = os.path.join(backup_dir, base_filename)
-                        
+
                         if os.path.exists(base_filepath):
                             backup_filename = f'backup_{trainer_id}_{timestamp}.json'
                             backup_filepath = os.path.join(backup_dir, backup_filename)
                             shutil.copy(file, backup_filepath)
                         else:
                             shutil.copy(file, base_filepath)
-                        cFormatter.print(Color.GREEN, 'Backup created.', isLogging=True)    
+                        print('Backup created.')
         except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function create_backup(): {e}', isLogging=True)
+            print(f'Error in function create_backup(): {e}')
 
     def restore_backup(self) -> None:
         """
         Restore a backup of JSON files and update the timestamp in trainer.json.
 
-        Example:
-            restore_backup()
+        What it does:
+        - Restores a selected backup file (`backup_{trainerid}_{timestamp}.json`) to `trainer.json`.
+        - Updates the timestamp in `trainer.json` with the current timestamp upon restoration.
+        - Displays a numbered list of available backup files matching the current trainer ID for selection.
+        - Prompts the user to choose a backup file to restore and handles user input validation.
+        - Prints 'Data restored.' upon successful restoration.
+
+        :args: None
+        :params: None
+
+        Usage Example:
+            instance.restore_backup()
+
+        Output Example:
             # Output:
             # 1: base_123.json         <- Created on first edit
             # 2: backup_123_20230101_121212.json
             # Enter the number of the file you want to restore: 2
             # Data restored.
 
-        Raises:
-            Exception: If any error occurs during the process.
+        Modules/Librarys used and for what purpose exactly in each function:
+        - os: For directory listing and file handling operations.
+        - re: For filtering and sorting backup files based on trainer ID patterns.
+        - shutil: For copying files from the backup directory to `trainer.json`.
+        - datetime: For generating timestamps and updating timestamps in `trainer.json`.
         """
+
         try:
-            backup_dir = config.backups_directory
+            backup_dir = 'backup'
             files = os.listdir(backup_dir)
-            
+
             # Filter and sort files that match trainerId
             trainer_id_pattern = f'_{self.trainerId}_'
             backup_files = sorted(
                 (f for f in files if re.match(rf'(base|backup){trainer_id_pattern}\d{{8}}_\d{{6}}\.json', f)),
                 key=lambda x: (re.findall(r'\d+', x)[0], re.findall(r'\d{8}_\d{6}', x)[0])
             )
-            
+
             if not backup_files:
-                cFormatter.print(Color.INFO, 'No backup files found for your trainer ID.')
+                print('No backup files found for your trainer ID.')
                 return
-            
+
             # Displaying sorted list with numbers
             for idx, file in enumerate(backup_files, 1):
                 sidenote = '        <- Created on first edit' if file.startswith('base_') else ''
-                cFormatter.print(Color.GREEN, f'{idx}{Style.RESET_ALL}: {file} {sidenote}')
+                print(f'{idx}: {file} {sidenote}')
 
-            cFormatter.print_separators(31, '-', Color.WHITE)
             # Getting user's choice
             while True:
                 try:
@@ -389,79 +603,102 @@ class Rogue:
                     if 1 <= choice <= len(backup_files):
                         chosen_file = backup_files[choice - 1]
                         chosen_filepath = os.path.join(backup_dir, chosen_file)
-                        
+
                         # Determine the output filepath
                         parent_dir = os.path.abspath(os.path.join(backup_dir, os.pardir))
                         output_filepath = os.path.join(parent_dir, './trainer.json')
-                        
+
                         # Copy the chosen file to the output filepath
                         shutil.copyfile(chosen_filepath, output_filepath)
-                        
+
                         # Read the restored file
                         with open(output_filepath, 'r') as file:
                             data = json.load(file)
-                        
+
                         # Update the timestamp
-                        current_timestamp = int(datetime.now().timestamp() * 1000)  # Correct usage of datetime
+                        current_timestamp = int(datetime.now().timestamp() * 1000)
                         data['timestamp'] = current_timestamp
-                        
+
                         # Write the updated data back to the file
                         with open(output_filepath, 'w') as file:
                             json.dump(data, file, indent=4)
-                        
-                        cFormatter.print(Color.INFO, 'Data restored and timestamp updated.')
+
+                        print('Data restored and timestamp updated.')
                         break
                     else:
-                        cFormatter.print(Color.WARNING, 'Invalid choice. Please enter a number within range.')
+                        print('Invalid choice. Please enter a number within range.')
                 except ValueError:
-                    cFormatter.print(Color.WARNING, 'Invalid choice. Please enter a valid number.', isLogging=True)
+                    print('Invalid choice. Please enter a valid number.')
         except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function restore_backup(): {e}', isLogging=True)
+            print(f'Error in function restore_backup(): {e}')
 
-    @limiter.lockout
-    def update_all(self):
-        url = 'https://api.pokerogue.net/savedata/updateall'
+    def update_all(self) -> None:
+        """
+        Update all data using the provided URL.
+
+        What it does:
+        - Uses `self.UPDATE_ALL_URL` to update data based on `trainer.json` and `slot_{slot}.json`.
+        - Checks for the existence of `trainer.json` and `slot_{slot}.json` files.
+        - Constructs a payload for the API request.
+        - Performs an HTTP request and handles responses based on `self.useScripts`.
+        - Prints specific success or error messages based on the response status.
+
+        :args: None
+        :params: None
+
+        Usage Example:
+            instance.update_all()
+
+        Modules/Librarys used and for what purpose exactly in each function:
+        - os: For checking file existence and handling file operations.
+        - json: For loading JSON data from `trainer.json` and `slot_{slot}.json`.
+        - random: For generating random sleep intervals.
+        - requests: For making HTTP requests to the provided URL.
+        """
+
+        url = self.UPDATE_ALL_URL
 
         if "trainer.json" not in os.listdir():
-            cFormatter.print(Color.WARNING, 'trainer.json file not found!')
+            print('trainer.json file not found!')
             return
         with open('trainer.json', 'r') as f:
             trainer_data = json.load(f)
-        
+
         slot = self.slot
         if slot > 5 or slot < 1:
-            cFormatter.print(Color.WARNING, 'Invalid slot number')
+            print('Invalid slot number')
             return
         filename = f'slot_{slot}.json'
         if filename not in os.listdir():
-            cFormatter.print(Color.WARNING, f'{filename} not found')
+            print(f'{filename} not found')
             return
 
         with open(filename, 'r') as f:
             game_data = json.load(f)
         try:
-            sleep(random.randint(3,5))
-            payload = {'clientSessionId': self.clientSessionId, 'session': game_data, "sessionSlotId": slot-1, 'system': trainer_data}
+            sleep(random.randint(3, 5))
+            payload = {'clientSessionId': self.clientSessionId, 'session': game_data, "sessionSlotId": slot - 1,
+                       'system': trainer_data}
             if self.useScripts:
                 response = self._make_request(url, method='POST', data=json.dumps(payload))
-                cFormatter.print(Color.GREEN, "That seemed to work! Refresh without cache (STRG+F5)")
+                print("That seemed to work! Refresh without cache (STRG+F5)")
                 self.logout()
             else:
                 response = self.session.post(url=url, headers=self.headers, json=payload)
                 if response.status_code == 400:
-                        cFormatter.print(Color.CRITICAL, 'Bad Request!')
-                        return
+                    print('Bad Request!')
+                    return
                 response.raise_for_status()
-                cFormatter.print(Color.GREEN, 'Updated data Succesfully!')
+                print('Updated data Successfully!')
                 self.logout()
         except SSLError as ssl_err:
-            cFormatter.print(Color.CRITICAL, f'SSL error occurred: {ssl_err}', isLogging=True)
+            print(f'SSL error occurred: {ssl_err}')
         except ConnectionError as conn_err:
-            cFormatter.print(Color.CRITICAL, f'Connection error occurred: {conn_err}', isLogging=True)
+            print(f'Connection error occurred: {conn_err}')
         except Timeout as timeout_err:
-            cFormatter.print(Color.CRITICAL, f'Timeout error occurred: {timeout_err}', isLogging=True)
+            print(f'Timeout error occurred: {timeout_err}')
         except requests.exceptions.RequestException as e:
-            handle_error_response(e)
+            print(f'Error occurred during request: {e}')
 
     def unlock_all_starters(self) -> None:
         """
