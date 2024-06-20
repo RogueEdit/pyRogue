@@ -19,7 +19,7 @@ trio==0.25.1
 trio-websocket==0.11.1
 typing_extensions==4.12.1
 ua-parser==0.18.0
-urllib3==2.2.1
+urllib3==2.2.2
 user-agents==2.2.0
 wcwidth==0.2.13
 wsproto==1.2.0
