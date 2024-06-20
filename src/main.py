@@ -48,19 +48,17 @@ from colorama import Fore, Style, init
 # Fore, Style: Used for terminal text color formatting.
 # init: Initializes colorama for colored console output.
 
-from utilities import cFormatter, Color
+from utilities import cFormatter, Color, CustomLogger
 # cFormatter: Custom formatter for colored printing and logging.
 # Color: Enumeration defining color codes for cFormatter.
-
-from utilities import CustomLogger
-# Provides custom logging functionality for the script.
+# Custom Logger: Provides custom logging functionality for the script.
 
 
 from datetime import datetime, timedelta
 # datetime, timedelta: For date and time operations, particularly for update checking.
 
-config.initialize_folders()
 init()
+config.initialize_folders()
 logger = CustomLogger()
 
 def main():

@@ -56,8 +56,7 @@ import requests
 import random
 from typing import Dict, Optional
 from time import sleep
-from utilities.limiter import Limiter
-from utilities.cFormatter import cFormatter, Color
+from utilities import Limiter, cFormatter, Color
 import pyuseragents
 from user_agents import parse
 import string

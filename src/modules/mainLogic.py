@@ -56,6 +56,9 @@ Modules/Librarys used and for what purpose exactly in each function:
 - prompt_toolkit: Building interactive command-line interfaces for user interactions.
 """
 
+from modules import handle_error_response, HeaderGenerator, config
+from utilities import Generator, EnumLoader, cFormatter, Color, Limiter, eggLogic
+
 import json
 import random
 import os
@@ -66,17 +69,10 @@ from time import sleep
 import logging
 from datetime import datetime
 from requests.exceptions import SSLError, ConnectionError, Timeout
-
-from modules import handle_error_response, HeaderGenerator, config
-from utilities import Generator, EnumLoader, cFormatter, Color, Limiter
 import requests
-
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
-
-from utilities import eggLogic
 from sys import exit
-
 import re
 
 limiter = Limiter(lockout_period=40, timestamp_file='./data/extra.json')

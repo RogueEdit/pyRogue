@@ -27,8 +27,7 @@ Workflow:
 import os
 from datetime import datetime, timedelta
 import requests
-from utilities.cFormatter import cFormatter, Color
-
+from utilities import cFormatter, Color
 version: str = 'v0.3'
 owner: str = 'rogueEdit'
 repo: str = 'onlineRogueEditor'
