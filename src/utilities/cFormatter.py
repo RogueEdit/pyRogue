@@ -1,11 +1,11 @@
-"""
 # Authors
-Organization: https://github.com/rogueEdit/
-Repository: https://github.com/rogueEdit/OnlineRogueEditor
-Contributors: https://github.com/JulianStiebler/
-Date of release: 06.06.2024 
-Last edited: 20.06.2024 - https://github.com/JulianStiebler/
+# Organization: https://github.com/rogueEdit/
+# Repository: https://github.com/rogueEdit/OnlineRogueEditor
+# Contributors: https://github.com/JulianStiebler/
+# Date of release: 06.06.2024 
+# Last edited: 20.06.2024 - https://github.com/JulianStiebler/
 
+"""
 This module provides a custom logging formatter and various utility functions for enhanced console output.
 It includes:
 - An enumeration for ANSI color codes to allow colored logging output.
@@ -13,25 +13,38 @@ It includes:
 - Functions for printing colored text, separators, and formatted text lines.
 - A function for initializing and displaying a menu with numbered choices.
     
+Modules:
+- colorama: Provides ANSI escape sequences for colored terminal text.
+- enum: Allows the creation of enumerations, a set of symbolic names bound to unique, constant values.
+- logging: Provides a flexible framework for emitting log messages from Python programs.
+- shutil: Includes high-level file operations such as copying and removal.
+- typing: Provides support for type hints, enabling optional type checking.
+- re: Provides support for regular expressions, allowing pattern matching in strings.
+
+Workflow:
+1. Define the Color enum for ANSI color codes.
+2. Define the cFormatter class for custom logging formatting.
+3. Implement static methods in cFormatter for printing colored text, separators, and formatted lines.
+4. Implement a method for initializing and displaying a menu with numbered choices.
 """
 
 from colorama import Fore, Style
-# Provides ANSI escape sequences for colored terminal text.
+# Provides ANSI escape sequences for colored terminal text, used for coloring console output.
 
 from enum import Enum
-# Allows the creation of enumerations, a set of symbolic names bound to unique, constant values.
+# Allows the creation of enumerations, used here for defining color codes.
 
 import logging
-# Provides a flexible framework for emitting log messages from Python programs.
+# Provides a flexible framework for emitting log messages, used for custom logging formatting.
 
 import shutil
-# Includes high-level file operations such as copying and removal.
+# Includes high-level file operations, used here for getting terminal width.
 
-from typing import Optional
-# Provides support for type hints, enabling optional type checking.
+from typing import Optional, List, Tuple, Union
+# Provides support for type hints, used for optional type checking and clarity.
 
 import re
-# Provides support for regular expressions, allowing pattern matching in strings.
+# Provides support for regular expressions, used for stripping ANSI color codes from text.
 
 class Color(Enum):
     """
@@ -114,6 +127,10 @@ class cFormatter(logging.Formatter):
         Example Output:
             [LIGHTYELLOW_EX]This is an informational message[RESET]
             [BLUE]This is a debug message[RESET]
+
+        Modules/Librarys used:
+        - logging: Used to log messages.
+        - colorama: Used to apply color to text.
         """
         logger = logging.getLogger('root')
         
@@ -148,6 +165,10 @@ class cFormatter(logging.Formatter):
         Example Output:
             [GREEN]----------[RESET]
             [GREEN]---------------------------------------------[RESET]
+
+        Modules/Librarys used:
+        - shutil: Used to get the terminal width.
+        - colorama: Used to apply color to text.
         """
         if num_separators is None:
             terminal_width = shutil.get_terminal_size().columns
@@ -167,6 +188,16 @@ class cFormatter(logging.Formatter):
             
         Returns:
             str: The text without ANSI color codes.
+            
+        Usage Example:
+            stripped_text = cFormatter.strip_color_codes('[GREEN]Text[RESET]')
+            print(stripped_text)
+            
+        Example Output:
+            Text
+
+        Modules/Librarys used:
+        - re: Used to strip ANSI color codes from text.
         """
         ansi_escape = re.compile(r'\x1b\[.*?m')
         return ansi_escape.sub('', text)
@@ -192,6 +223,9 @@ class cFormatter(logging.Formatter):
             
         Example Output:
             Main text-----------------------------------Helper text
+
+        Modules/Librarys used:
+        - re: Used to strip ANSI color codes from text.
         """
         stripped_line = cFormatter.strip_color_codes(line)
         stripped_helper_text = cFormatter.strip_color_codes(helper_text)
@@ -227,6 +261,9 @@ class cFormatter(logging.Formatter):
             
         Example Output:
             --------------Centered Text---------------
+
+        Modules/Librarys used:
+        - re: Used to strip ANSI color codes from text.
         """
         stripped_text = cFormatter.strip_color_codes(text)
         total_length = len(stripped_text)
@@ -241,15 +278,15 @@ class cFormatter(logging.Formatter):
         return f"{front_fill}{text}{back_fill}"
 
     @staticmethod
-    def initialize_menu(term: list) -> list:
+    def initialize_menu(term: List[Union[str, Tuple[str, str, Optional[str]], Tuple[str, callable]]]) -> List[Tuple[int, callable]]:
         """
         Initializes and prints a menu based on the provided term list.
         
         Args:
-            term (list): A list containing tuples and strings representing menu items.
+            term (List[Union[str, Tuple[str, str, Optional[str]], Tuple[str, callable]]]): A list containing tuples and strings representing menu items.
             
         Returns:
-            list: A list of tuples containing valid numbered choices and their associated functions.
+            List[Tuple[int, callable]]: A list of tuples containing valid numbered choices and their associated functions.
             
         Usage Example:
             term = [
@@ -268,6 +305,9 @@ class cFormatter(logging.Formatter):
             * ----------------------- Helper text ----------------------- *
             
             Returns [(1, function1), (2, function2)]
+
+        Modules/Librarys used:
+        - colorama: Used to apply color to text.
         """
         valid_choices = []
         actual_idx = 1

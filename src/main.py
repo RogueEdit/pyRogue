@@ -38,16 +38,15 @@ import requests
 import brotli  # noqa: F401
 # Provides Brotli compression. Not directly used in this script but might be a dependency for other modules.
 
-from modules import loginLogic, Rogue
-# loginLogic: Handles the login logic using requests.
+from modules import requestsLogic, Rogue,  SeleniumLogic, config
+# requestLogic: Handles the login logic using requests.
 # Rogue: Initializes and interacts with the PokeRogue session.
+# SeleniumLogic: Handles login logic using Selenium for browser-based interactions.
+# Config: Provides configuration settings and update checking functionality.
 
 from colorama import Fore, Style, init
 # Fore, Style: Used for terminal text color formatting.
 # init: Initializes colorama for colored console output.
-
-from modules import SeleniumLogic
-# Handles login logic using Selenium for browser-based interactions.
 
 from utilities import cFormatter, Color
 # cFormatter: Custom formatter for colored printing and logging.
@@ -56,8 +55,6 @@ from utilities import cFormatter, Color
 from utilities import CustomLogger
 # Provides custom logging functionality for the script.
 
-from modules import config
-# Provides configuration settings and update checking functionality.
 
 from datetime import datetime, timedelta
 # datetime, timedelta: For date and time operations, particularly for update checking.
@@ -103,7 +100,7 @@ def main():
         - requests: For session handling.
         - getpass: For securely obtaining the password.
         - brotli: (Imported but not directly used in this script).
-        - loginLogic: Handles the login logic using requests.
+        - requestsLogic: Handles the login logic using requests.
         - SeleniumLogic: Handles login using Selenium.
         - Rogue: Initializes the PokeRogue session.
         - cFormatter: Custom formatter for colored printing and logging.
@@ -137,7 +134,7 @@ def main():
             session = requests.Session()
             # When using requests
             if loginChoice == 1:
-                login = loginLogic(username, password)
+                login = requestsLogic(username, password)
                 try:
                     if login.login():
                         cFormatter.print(Color.INFO, f'Logged in as: {username.capitalize()}')

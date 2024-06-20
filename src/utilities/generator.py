@@ -1,24 +1,30 @@
 # Authors
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
-# Contributors: https://github.com/claudiunderthehood
+# Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler
 # Date of release: 06.06.2024
+# Last Edited: 20.06.2024
 
 """
-This script provides functionalities to generate various JSON files based on predefined enums and save them to disk.
-It includes the capability to handle nature names, biomes, vouchers, and more.
+This script provides a generator for creating JSON files from various enums representing natures, no passive Pokemon, biomes, vouchers, and nature slots. It includes functionality to save these JSON files to disk.
+
+Features:
+- Convert enum data to JSON strings.
+- Save JSON data to files.
+- Handle directories and file operations.
 
 Modules:
-- typing: Provides type hints.
+- typing: Provides type hints for function signatures and variable declarations.
 - enum: Provides support for enumerations, a set of symbolic names bound to unique, constant values.
-- json: Provides functionalities to work with JSON data.
-- os: Provides a way to interact with the operating system.
-- utilities: Custom module for colored printing and logging functionalities (cFormatter and Color).
+- json: Provides functionalities to work with JSON data for reading and writing.
+- os: Provides a way to interact with the operating system, particularly for file and directory operations.
+- utilities: Custom module for colored printing and logging functionalities.
 
 Workflow:
-1. Define enums for different categories such as Nature, Biome, Vouchers, etc.
+1. Define enums for various categories (natures, no passive, biomes, vouchers, nature slots).
 2. Initialize the Generator class with optional nature names.
-3. Use the Generator class to generate and save JSON files for different categories.
+3. Generate JSON strings from the enums.
+4. Save JSON data to files.
 """
 
 from typing import Optional, List
@@ -28,7 +34,7 @@ from enum import Enum, auto
 # Provides support for enumerations, a set of symbolic names bound to unique, constant values.
 
 import json
-# Provides functionalities to work with JSON data for reading and writing timestamps.
+# Provides functionalities to work with JSON data for reading and writing.
 
 import os
 # Provides a way to interact with the operating system, particularly for file and directory operations.
@@ -308,6 +314,9 @@ class Generator:
         Args:
             nature_names (Optional[List[str]]): Optional list of nature names as strings. If provided, it will be used to initialize
             self.nature_names. If not provided, all names from the Nature enum will be used.
+
+        Modules:
+            - typing: Provides type hints for function signatures and variable declarations.
         """
         if nature_names is not None:
             self.nature_names: List[str] = nature_names
@@ -336,6 +345,9 @@ class Generator:
                     ...
                 }
             }
+
+        Modules:
+            - json: Provides functionalities to work with JSON data for reading and writing.
         """
         nature_dict: dict = {name: id for name, id in zip(self.nature_names, self.nature_ids)}
         return json.dumps({'natures': nature_dict}, indent=4)
@@ -355,6 +367,9 @@ class Generator:
                     ...
                 }
             }
+
+        Modules:
+            - json: Provides functionalities to work with JSON data for reading and writing.
         """
         return json.dumps({'noPassive': NoPassive.NO_PASSIVE_DICT.value}, indent=4)
     
@@ -373,6 +388,9 @@ class Generator:
                     ...
                 }
             }
+
+        Modules:
+            - json: Provides functionalities to work with JSON data for reading and writing.
         """
         return json.dumps({'biomes': Biome.BIOMES_DICT.value}, indent=4)
     
@@ -391,6 +409,9 @@ class Generator:
                     ...
                 }
             }
+
+        Modules:
+            - json: Provides functionalities to work with JSON data for reading and writing.
         """
         return json.dumps({'vouchers': Vouchers.VOUCHERS_DICT.value}, indent=4)
     
@@ -409,6 +430,9 @@ class Generator:
                     ...
                 }
             }
+
+        Modules:
+            - json: Provides functionalities to work with JSON data for reading and writing.
         """
         return json.dumps({'natureSlot': NatureSlot.NATURE_SLOT.value}, indent=4)
     
@@ -422,6 +446,10 @@ class Generator:
 
         Example:
             __save_to_file('{"key": "value"}', 'example.json')
+
+        Modules:
+            - os: Provides a way to interact with the operating system, particularly for file and directory operations.
+            - utilities: Custom module for colored printing and logging functionalities.
         """
         try:
             directory: str = './data/'
@@ -440,6 +468,11 @@ class Generator:
         Example:
             generator = Generator()
             generator.generate()
+
+        Modules:
+            - json: Provides functionalities to work with JSON data for reading and writing.
+            - os: Provides a way to interact with the operating system, particularly for file and directory operations.
+            - utilities: Custom module for colored printing and logging functionalities.
         """
         try:
             nature_json: str = self.__nature_to_json()

@@ -77,6 +77,17 @@ class Limiter:
     """
     
     def __init__(self, lockout_period: int, timestamp_file: str = './data/extra.json'):
+        """
+        Initialize the Limiter object.
+
+        Args:
+            lockout_period (int): The lockout period in seconds.
+            timestamp_file (str, optional): The file path to store the timestamps. Default is './data/extra.json'.
+
+        Modules:
+            - os: Provides a way to interact with the operating system, particularly for file and directory operations.
+            - json: Provides functionalities to work with JSON data for reading and writing timestamps.
+        """
         self.lockout_period = lockout_period
         self.timestamp_file = timestamp_file
         if not os.path.exists(os.path.dirname(self.timestamp_file)):
@@ -89,11 +100,8 @@ class Limiter:
         """
         Decorator function to enforce the lockout mechanism on the decorated function.
 
-        :arguments:
-        - func (function): The function to be decorated.
-
-        :params:
-        None
+        Args:
+            func (function): The function to be decorated.
 
         Returns:
             function: The decorated function.
@@ -104,6 +112,11 @@ class Limiter:
             >>> @limiter.lockout
             >>> def my_function():
             >>>     print("Function executed.")
+
+        Modules:
+            - functools: Provides utilities for higher-order functions, particularly for creating decorators.
+            - time: Provides time-related functions, particularly for getting the current time.
+            - utilities.cFormatter: Custom formatter for colored printing and logging.
         """
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -123,11 +136,8 @@ class Limiter:
         """
         Get the timestamp of the last execution of a function.
 
-        :arguments:
-        - func_name (str): The name of the function.
-
-        :params:
-        None
+        Args:
+            func_name (str): The name of the function.
 
         Returns:
             float: The timestamp of the last execution.
@@ -135,6 +145,9 @@ class Limiter:
         Usage:
             Get the last execution time of a function:
             >>> last_exec_time = limiter._get_last_exec_time('my_function')
+
+        Modules:
+            - json: Provides functionalities to work with JSON data for reading and writing timestamps.
         """
         with open(self.timestamp_file, 'r') as f:
             timestamps = json.load(f)
@@ -144,16 +157,16 @@ class Limiter:
         """
         Update the timestamp of the last execution of a function.
 
-        :arguments:
-        - func_name (str): The name of the function.
-        - timestamp (float): The timestamp of the last execution.
-
-        :params:
-        None
+        Args:
+            func_name (str): The name of the function.
+            timestamp (float): The timestamp of the last execution.
 
         Usage:
             Update the last execution time of a function:
             >>> limiter._update_last_exec_time('my_function', time.time())
+
+        Modules:
+            - json: Provides functionalities to work with JSON data for reading and writing timestamps.
         """
         with open(self.timestamp_file, 'r+') as f:
             try:

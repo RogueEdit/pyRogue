@@ -61,6 +61,7 @@ class Rogue:
         self.driver = None
         if driver:
             self.driver = driver
+        self.useScripts = useScripts
 
         self.secretId = None
         self.trainerId = None
@@ -70,7 +71,6 @@ class Rogue:
         self.generator.generate()
         self.enum = EnumLoader()
 
-        self.useScripts = useScripts
         self.backup_dir = config.backups_directory
         self.data_dir = config.data_directory
         

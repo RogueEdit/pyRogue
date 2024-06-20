@@ -2,7 +2,61 @@
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
-# Date of release: 06.06.2024 
+# Date of release: 06.06.2024
+# Last Edited: 20.06.2024
+
+"""
+This script provides a Selenium-based login process for pyRogue, enabling automated login
+and retrieval of session ID, token, and headers from a specified website.
+
+Features:
+- Automates login using Selenium with username and password.
+- Retrieves session ID and authentication token from the logged responses.
+- Supports handling of browser performance logs to extract relevant data.
+
+Modules:
+- selenium.webdriver: Provides browser automation capabilities for interacting with web pages.
+- selenium.webdriver.common.by: Defines methods for locating elements in the web page.
+- selenium.webdriver.common.keys: Provides keys like RETURN for simulating user inputs.
+- selenium.webdriver.support.ui: Implements WebDriverWait for waiting until certain conditions are met.
+- selenium.webdriver.support.expected_conditions: Defines expected conditions for WebDriverWait.
+- selenium.common.exceptions: Handles exceptions that may occur during browser interactions.
+- json: Provides methods for parsing JSON data received from the web server.
+- time: Offers time-related functions, used here for adding a randomized wait time.
+- typing: Supports type hints for Python functions and variables.
+- utilities.CustomLogger: Handles custom logging settings to control log outputs.
+- random: Generates random integers for adding variability in the login process.
+
+Workflow:
+1. Initialize the SeleniumLogic instance with username, password, and optional timeout.
+2. Use the logic() method to perform automated login and retrieve session ID, token, and headers.
+3. Handle browser performance logs to extract necessary data for authentication.
+
+Usage Example:
+>>> selenium_logic = SeleniumLogic(username="your_username", password="your_password", timeout=120)
+>>> session_id, token, driver = selenium_logic.logic()
+>>> print(f"Session ID: {session_id}")
+>>> print(f"Token: {token}")
+>>> # driver can be further used for additional operations if needed
+
+Expected Output Example:
+>> Session ID: abc123clientSessionId
+>> Token: abc123token
+>> # Additional headers: {'Content-Type': 'application/json', 'User-Agent': '...'}
+
+Modules/Librarys used and for what purpose exactly in each function:
+- selenium.webdriver: Provides browser automation for logging in and interacting with web elements.
+- selenium.webdriver.common.by: Locates HTML elements on web pages for user interaction.
+- selenium.webdriver.common.keys: Sends special keys like RETURN to simulate user actions.
+- selenium.webdriver.support.ui: Implements WebDriverWait for synchronizing with page loads.
+- selenium.webdriver.support.expected_conditions: Defines conditions for WebDriverWait to wait until certain elements or states are achieved.
+- selenium.common.exceptions: Handles exceptions that may arise during the login process.
+- json: Parses JSON data received from API responses to extract tokens and session IDs.
+- time: Adds a randomized wait time to ensure elements are fully loaded before interaction.
+- typing: Provides type hints to specify the expected types of function arguments and return values.
+- utilities.CustomLogger: Manages logging settings to control the amount and format of log outputs.
+- random: Generates random integers to add variability in waiting times during the login process.
+"""
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -16,36 +70,18 @@ from typing import Optional, Tuple, Dict, Any
 from utilities import CustomLogger
 import random
 
-"""
-Usage Example:
-    # Initialize SeleniumLogic with username, password, and optional timeout
-    >>> selenium_logic = SeleniumLogic(username="your_username", password="your_password", timeout=120)
-
-    # Execute the login logic
-    >>> session_id, token, headers = selenium_logic.logic()
-
-    # Output the results
-    >> print(f"Session ID: {session_id}")
-    >> print(f"Token: {token}")
-    >> print(f"Headers: {headers}")
-
-Expected Output Example:
-    >> Session ID: abc123clientSessionId
-    >> Token: abc123token
-    >> Headers: {'Content-Type': 'application/json', 'User-Agent': '...'}
-"""
-
 class SeleniumLogic:
     """
     Handles the Selenium-based login process for pyRogue.
 
     Attributes:
-    >> username (str): The username for login.
-    >> password (str): The password for login.
-    >> timeout (int): The timeout duration for the login process.
+        username (str): The username for login.
+        password (str): The password for login.
+        timeout (int): The timeout duration for the login process.
+        useScripts (Optional[bool]): Specifies if additional scripts are used during login.
     """
 
-    def __init__(self, username: str, password: str, timeout: int = 120, useScripts = None) -> None:
+    def __init__(self, username: str, password: str, timeout: int = 120, useScripts: Optional[bool] = None) -> None:
         """
         Initializes the SeleniumLogic instance.
 
@@ -53,6 +89,7 @@ class SeleniumLogic:
             username (str): The username for login.
             password (str): The password for login.
             timeout (int): The timeout duration for the login process.
+            useScripts (Optional[bool]): Specifies if additional scripts are used during login.
         """
         self.timeout = timeout
         self.username = username
@@ -64,20 +101,21 @@ class SeleniumLogic:
         Processes a single browser log entry to extract the relevant response data.
 
         Args:
-        >> entry (Dict[str, Any]): A log entry from the browser.
+            entry (Dict[str, Any]): A log entry from the browser.
 
         Returns:
-        >> Dict[str, Any]: The processed response data.
+            Dict[str, Any]: The processed response data.
         """
         response = json.loads(entry['message'])['message']
         return response
 
-    def logic(self) -> Tuple[Optional[str], Optional[str], Optional[Dict[str, Any]]]:
+    def logic(self) -> Tuple[Optional[str], Optional[str], Optional[webdriver.Chrome]]:
         """
         Handles the login logic using Selenium and retrieves the session ID, token, and headers.
 
         Returns:
-        >> Tuple[Optional[str], Optional[str], Optional[Dict[str, Any]]]: The session ID, token, and headers if available, otherwise None.
+            Tuple[Optional[str], Optional[str], Optional[webdriver.Chrome]]: 
+                The session ID, token, and WebDriver instance if available, otherwise None.
         """
         # Deactivate logging because selenium clutters it extremely
         CustomLogger.deactivate_logging()
@@ -141,11 +179,9 @@ class SeleniumLogic:
                             token_data = json.loads(response_body)
                             token = token_data.get('token')
 
-        # When we go over a specified time
         except TimeoutException as e:
             print(f"Timeout occurred: {e}")
 
-        # When our try is done we finalize with closing the browser, reactivating logging
         finally:
             CustomLogger.reactivate_logging()
             # If we are not using login method 3 we should close the driver already
