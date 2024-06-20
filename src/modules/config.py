@@ -122,8 +122,8 @@ def check_for_updates(requests: requests, datetime: datetime, timedelta: timedel
         if commit_list:
             cFormatter.print(Color.CRITICAL, '********* Outdated source code found. New commits: *********')
             for commit in commit_list:
-                cFormatter.print(Color.WARNING, f'---- Commit Name: ({commit['message']})')
-                cFormatter.print(Color.CYAN, f'------> with SHA ({commit['sha']})')
+                cFormatter.print(Color.WARNING, f'---- Commit Name: ({commit["message"]})')
+                cFormatter.print(Color.CYAN, f'------> with SHA ({commit["sha"]})')
             cFormatter.print(Color.INFO, f'You can view the latest code here: {repo_url}')
             cFormatter.print(Color.INFO, 'It is highly recommended to update the source code. Some things might not be working as expected.')
             cFormatter.print_separators(60, '-', Color.CRITICAL)
