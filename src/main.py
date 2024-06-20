@@ -13,40 +13,10 @@ from modules.login.seleniumLogic import SeleniumLogic
 from utilities.cFormatter import cFormatter, Color
 from utilities.logger import CustomLogger
 from modules import config
-from datetime import datetime
+from datetime import datetime, timedelta
 
 init()
 logger = CustomLogger()
-
-# GitHub repository details
-owner = 'rogueEdit'
-repo = 'onlineRogueEditor'
-branch = 'update-notifier-test'  # Specify the branch name here
-fixed_date = '2024-06-20T04:30:00'  # ISO 8601 format
-repo_url = f'https://github.com/{owner}/{repo}/tree/{branch}'
-
-# Convert fixed date to datetime object
-fixed_date_dt = datetime.fromisoformat(fixed_date)
-
-def check_for_updates(owner, repo, branch, since_date):
-    """
-    Get the list of commits (titles and SHAs) since a given date on a specified branch.
-
-    :param owner: Repository owner
-    :param repo: Repository name
-    :param branch: Branch name
-    :param since_date: datetime object representing the fixed date
-    :return: list of dictionaries containing commit SHA and commit message
-    """
-    url = f'https://api.github.com/repos/{owner}/{repo}/commits'
-    params = {'sha': branch, 'since': since_date.isoformat()}
-    response = requests.get(url, params=params)
-    response.raise_for_status()
-    commits = response.json()
-
-    # Extract commit titles and SHAs
-    commit_list = [{'sha': commit['sha'], 'message': commit['commit']['message']} for commit in commits]
-    return commit_list
 
 def main():
     """
@@ -82,16 +52,7 @@ def main():
     session = requests.Session()
     while True:
         
-        commits = check_for_updates(owner, repo, branch, fixed_date_dt)
-
-        if commits:
-            print(f"New commits found on branch '{branch}':")
-            for commit in commits:
-                print(f"- {commit['message']} ({commit['sha']})")
-            print(f"You can view the latest code here: {repo_url}")
-        else:
-            print("Up to date Version.")
-
+        config.check_for_updates(requests, datetime, timedelta)      
 
         cFormatter.print(Color.BRIGHT_GREEN, f'<pyRogue {config.version}>')
         cFormatter.print(Color.BRIGHT_GREEN, 'We create base-backups on every login and further backups everytime you start or up choose so manually.')
