@@ -49,8 +49,8 @@ class Rogue:
         UPDATE_TRAINER_DATA_URL (str): The URL to update trainer data on the API.
         UPDATE_GAMESAVE_SLOT_URL (str): The base URL to update gamesave data for a specific slot on the API.
     """
-    TRAINER_DATA_URL = 'https://api.pokerogue.net/savedata/system?clientSessionId='
-    GAMESAVE_SLOT_URL = 'https://api.pokerogue.net/savedata/session?slot='
+    TRAINER_DATA_URL = 'https://api.pokerogue.net/savedata/system/get?clientSessionId='
+    GAMESAVE_SLOT_URL = 'https://api.pokerogue.net/savedata/session/get?slot='
     UPDATE_TRAINER_DATA_URL = 'https://api.pokerogue.net/savedata/update?datatype=0'
     UPDATE_GAMESAVE_SLOT_URL = 'https://api.pokerogue.net/savedata/update?datatype=1&slot='
     UPDATE_ALL_URL = 'https://api.pokerogue.net/savedata/updateall'
