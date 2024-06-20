@@ -7,16 +7,7 @@ version = 'v0.2.3'
 owner = 'rogueEdit'
 repo = 'onlineRogueEditor'
 repo_url = f'https://github.com/{owner}/{repo}/'
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-release_date = '20.06.2024 5:43'
-=======
 release_date = '20.06.2024 5:50'
->>>>>>> Stashed changes
-=======
-release_date = '20.06.2024 5:41'
->>>>>>> 62d032ba261a08d4b37eac07ea170fbdc7d1127b
-
 
 
 def check_for_updates(requests, datetime, timedelta, Style):
