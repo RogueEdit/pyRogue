@@ -2,13 +2,39 @@
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/claudiunderthehood
-# Date of release: 06.06.2024 
+# Date of release: 06.06.2024
+
+"""
+This script provides functionalities to generate various JSON files based on predefined enums and save them to disk.
+It includes the capability to handle nature names, biomes, vouchers, and more.
+
+Modules:
+- typing: Provides type hints.
+- enum: Provides support for enumerations, a set of symbolic names bound to unique, constant values.
+- json: Provides functionalities to work with JSON data.
+- os: Provides a way to interact with the operating system.
+- utilities: Custom module for colored printing and logging functionalities (cFormatter and Color).
+
+Workflow:
+1. Define enums for different categories such as Nature, Biome, Vouchers, etc.
+2. Initialize the Generator class with optional nature names.
+3. Use the Generator class to generate and save JSON files for different categories.
+"""
 
 from typing import Optional, List
+# Provides type hints for function signatures and variable declarations.
+
 from enum import Enum, auto
+# Provides support for enumerations, a set of symbolic names bound to unique, constant values.
+
 import json
+# Provides functionalities to work with JSON data for reading and writing timestamps.
+
 import os
+# Provides a way to interact with the operating system, particularly for file and directory operations.
+
 from utilities import cFormatter, Color
+# Custom module for colored printing and logging functionalities.
 
 class Nature(Enum):
     HARDY = auto()
@@ -130,7 +156,7 @@ class Biome(Enum):
 
 class Vouchers(Enum):
     VOUCHERS_DICT = {
-    'CLASSIC_VICTORY': 1,
+        'CLASSIC_VICTORY': 1,
         'BROCK': 2,
         'MISTY': 3,
         'LT_SURGE': 4,
@@ -297,32 +323,92 @@ class Generator:
 
     def __nature_to_json(self) -> str:
         """
-        Dumps to json the natures IDs.
+        Convert nature names and their IDs to a JSON string.
+
+        Returns:
+            str: JSON string containing nature names and their corresponding IDs.
+
+        Example:
+            {
+                "natures": {
+                    "HARDY": 2,
+                    "LONELY": 4,
+                    ...
+                }
+            }
         """
         nature_dict: dict = {name: id for name, id in zip(self.nature_names, self.nature_ids)}
         return json.dumps({'natures': nature_dict}, indent=4)
     
     def __generate_no_passive_json(self) -> str:
         """
-        Dumps to json the pokemon IDs without passive.
+        Convert no passive Pokemon IDs to a JSON string.
+
+        Returns:
+            str: JSON string containing Pokemon IDs without passive.
+
+        Example:
+            {
+                "noPassive": {
+                    "25": "25",
+                    "35": "35",
+                    ...
+                }
+            }
         """
         return json.dumps({'noPassive': NoPassive.NO_PASSIVE_DICT.value}, indent=4)
     
     def __generate_biomes_json(self) -> str:
         """
-        Dumps to json the biomes IDs.
+        Convert biome names and their IDs to a JSON string.
+
+        Returns:
+            str: JSON string containing biome names and their corresponding IDs.
+
+        Example:
+            {
+                "biomes": {
+                    "TOWN": "0",
+                    "PLAINS": "1",
+                    ...
+                }
+            }
         """
         return json.dumps({'biomes': Biome.BIOMES_DICT.value}, indent=4)
     
     def __generate_vouchers_json(self) -> str:
         """
-        Dumps to json the vouchers IDs.
+        Convert voucher names and their IDs to a JSON string.
+
+        Returns:
+            str: JSON string containing voucher names and their corresponding IDs.
+
+        Example:
+            {
+                "vouchers": {
+                    "CLASSIC_VICTORY": 1,
+                    "BROCK": 2,
+                    ...
+                }
+            }
         """
         return json.dumps({'vouchers': Vouchers.VOUCHERS_DICT.value}, indent=4)
     
     def __natureSlot_to_json(self) -> str:
         """
-        Dumps to json the nature slot IDs.
+        Convert nature slot names and their IDs to a JSON string.
+
+        Returns:
+            str: JSON string containing nature slot names and their corresponding IDs.
+
+        Example:
+            {
+                "natureSlot": {
+                    "HARDY": 0,
+                    "LONELY": 1,
+                    ...
+                }
+            }
         """
         return json.dumps({'natureSlot': NatureSlot.NATURE_SLOT.value}, indent=4)
     
@@ -333,6 +419,9 @@ class Generator:
         Args:
             data (str): The data to be saved.
             filename (str): The name of the file.
+
+        Example:
+            __save_to_file('{"key": "value"}', 'example.json')
         """
         try:
             directory: str = './data/'
@@ -346,7 +435,11 @@ class Generator:
     
     def generate(self) -> None:
         """
-        Generate various JSON files.
+        Generate and save various JSON files for natures, no passives, biomes, vouchers, and nature slots.
+
+        Example:
+            generator = Generator()
+            generator.generate()
         """
         try:
             nature_json: str = self.__nature_to_json()
@@ -364,4 +457,4 @@ class Generator:
             natureSlot: str = self.__natureSlot_to_json()
             self.__save_to_file(natureSlot, 'natureSlot.json')
         except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Generating data on initalizing startup failed. {e}', isLogging=True)
+            cFormatter.print(Color.CRITICAL, f'Generating data on initializing startup failed. {e}', isLogging=True)

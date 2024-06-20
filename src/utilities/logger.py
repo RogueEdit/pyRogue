@@ -21,10 +21,8 @@ Modules:
 - datetime: Module for manipulating dates and times.
 
 Workflow:
-1. Define the path to the logs directory in the current working directory.
-2. Create the logs directory if it doesn't exist.
-3. Initialize the custom logger with a weekly rotating file handler.
-4. Provide methods to deactivate and reactivate logging.
+1. Initialize the custom logger with a weekly rotating file handler.
+2. Provide methods to deactivate and reactivate logging.
 """
 from modules import config
 

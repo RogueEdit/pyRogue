@@ -7,6 +7,7 @@ from . import eggLogic
 
 
 __all__ = [
-    "cFormatter", "Color", "CustomLogger", "Vouchers", "Generator", "Nature", "NatureSlot", "NoPassive",
+    "cFormatter", "Color", "CustomLogger", "CustomFilter", 
+    "Vouchers", "Generator", "Nature", "NatureSlot", "NoPassive",
     "Limiter", "EnumLoader", "eggLogic"
 ]

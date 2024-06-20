@@ -15,13 +15,10 @@ import logging
 from colorama import Style
 from time import sleep
 import re
-from modules.loginLogic import handle_error_response, HeaderGenerator
 from datetime import datetime
 from requests.exceptions import SSLError, ConnectionError, Timeout
-from utilities import Generator
-from utilities import EnumLoader
-from utilities import cFormatter, Color
-from utilities import Limiter
+from modules import handle_error_response, HeaderGenerator, config
+from utilities import Generator, EnumLoader, cFormatter, Color, Limiter
 import requests
 
 from prompt_toolkit import prompt
@@ -74,15 +71,17 @@ class Rogue:
         self.enum = EnumLoader()
 
         self.useScripts = useScripts
+        self.backup_dir = config.backups_directory
+        self.data_dir = config.data_directory
         
         # wordcomplete
         self.pokemon_id_by_name, self.biomes_by_id, self.moves_by_id, self.nature_data, self.vouchers_data, self.natureSlot_data = self.enum.convert_to_enums()
 
         try:
-            with open('./data/extra.json') as f:
+            with open(f'{self.data_dir}/extra.json') as f:
                 self.extra_data = json.load(f)
             
-            with open('./data/passive.json') as f:
+            with open(f'{self.data_dir}/passive.json') as f:
                 self.passive_data = json.load(f)
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Something on inital data generation failed. {e}', isLogging=True)
@@ -323,7 +322,7 @@ class Rogue:
         Raises:
             Exception: If any error occurs during the process.
         """
-        backup_dir = './backup'
+        backup_dir = config.backups_directory
         if not os.path.exists(backup_dir):
             os.makedirs(backup_dir)
         try:
@@ -363,7 +362,7 @@ class Rogue:
             Exception: If any error occurs during the process.
         """
         try:
-            backup_dir = './backup'
+            backup_dir = config.backups_directory
             files = os.listdir(backup_dir)
             
             # Filter and sort files that match trainerId

@@ -5,6 +5,7 @@
 # Date of release: 06.06.2024 
 
 from utilities import cFormatter, Color
+from modules import config
 import json
 
 from enum import Enum
@@ -26,22 +27,22 @@ class EnumLoader:
         Load data from JSON files.
         """
         try:
-            with open('./data/pokemon.json') as f:
+            with open(f'{config.data_directory}/pokemon.json') as f:
                 self.pokemon_id_by_name = json.load(f)
 
-            with open('./data/biomes.json') as f:
+            with open(f'{config.data_directory}/biomes.json') as f:
                 self.biomes_by_id = json.load(f)
 
-            with open('./data/moves.json') as f:
+            with open(f'{config.data_directory}/moves.json') as f:
                 self.moves_by_id = json.load(f)
 
-            with open('./data/natures.json') as f:
+            with open(f'{config.data_directory}/natures.json') as f:
                 self.natures_data = json.load(f)
 
-            with open('./data/vouchers.json') as f:
+            with open(f'{config.data_directory}/vouchers.json') as f:
                 self.vouchers_data = json.load(f)
             
-            with open('./data/natureSlot.json') as f:
+            with open(f'{config.data_directory}/natureSlot.json') as f:
                 self.natureSlot_data = json.load(f)
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in enumLoader.__load_data(). {e}', isLogging=True)

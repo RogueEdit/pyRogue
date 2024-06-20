@@ -13,6 +13,7 @@ release_date = '20.06.2024 6:00'
 
 logs_directory = os.path.join(os.getcwd(), 'logs')
 backups_directory = os.path.join(os.getcwd(), 'backups')
+data_directory = os.path.join(os.getcwd(), 'data')
 
 def check_for_updates(requests, datetime, timedelta, Style):
     """
@@ -124,5 +125,9 @@ def initialize_folders() -> None:
         print(f'Created logs directory: {logs_directory}')
     # Create the backups directory if it doesn't exist
     if not os.path.exists(backups_directory):
+        os.makedirs(backups_directory)
+        print(f'Created backup directory: {backups_directory}')
+    # Create the backups directory if it doesn't exist
+    if not os.path.exists(data_directory):
         os.makedirs(backups_directory)
         print(f'Created backup directory: {backups_directory}')

@@ -5,11 +5,42 @@
 # Date of release: 06.06.2024
 # Last Edited: 20.06.2024
 
+"""
+This script provides a lockout mechanism to limit the frequency of function executions. It includes functionality to
+persistently store the last execution timestamps of functions and prevent re-execution within a specified lockout period.
+
+Features:
+- Limit function execution frequency with a lockout period.
+- Persistent storage of execution timestamps.
+- Colored output for log messages.
+
+Modules:
+- os: Module for interacting with the operating system.
+- json: Module for working with JSON data.
+- time: Module for time-related functions.
+- functools: Module for higher-order functions.
+- utilities.cFormatter: Custom formatter for colored printing and logging.
+
+Workflow:
+1. Initialize the Limiter class with a lockout period and optional timestamp file path.
+2. Decorate functions with the lockout decorator to enforce execution limits.
+3. Use the decorated functions as usual, with lockout limits applied.
+"""
+
 import os
+# Provides a way to interact with the operating system, particularly for file and directory operations.
+
 import json
+# Provides functionalities to work with JSON data for reading and writing timestamps.
+
 import time
+# Provides time-related functions, particularly for getting the current time.
+
 from functools import wraps
+# Provides utilities for higher-order functions, particularly for creating decorators.
+
 from utilities import cFormatter, Color
+# Custom module for colored printing and logging functionalities.
 
 class Limiter:
     """
