@@ -160,7 +160,7 @@ def main():
                         rogue = Rogue(session, auth_token=token, clientSessionId=session_id, driver=driver, useScripts=(loginChoice == 3))
                         break
                     else:
-                        cFormatter.print(Color.CRITICAL, "Failed to retrieve necessary authentication data from Selenium.")
+                        cFormatter.print(Color.CRITICAL, 'Failed to retrieve necessary authentication data from Selenium.')
                 except Exception as e:
                     cFormatter.print(Color.CRITICAL, f'Something went wrong. {e}', isLogging=True)
 
@@ -222,7 +222,7 @@ def main():
             print('')
             # Retrieve valid choices linked to our functions
             valid_choices = cFormatter.initialize_menu(term)
-            user_input = input("Command: ").strip().lower()
+            user_input = input('Command: ').strip().lower()
 
             if user_input == 'exit':
                 raise KeyboardInterrupt

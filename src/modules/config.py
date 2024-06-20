@@ -120,22 +120,22 @@ def check_for_updates(requests: requests, datetime: datetime, timedelta: timedel
         commit_list = [{'sha': commit['sha'], 'message': commit['commit']['message']} for commit in commits]
 
         if commit_list:
-            cFormatter.print(Color.CRITICAL, "********* Outdated source code found. New commits: *********")
+            cFormatter.print(Color.CRITICAL, '********* Outdated source code found. New commits: *********')
             for commit in commit_list:
-                cFormatter.print(Color.WARNING, f"---- Commit Name: ({commit['message']})")
-                cFormatter.print(Color.CYAN, f"------> with SHA ({commit['sha']})")
-            cFormatter.print(Color.INFO, f"You can view the latest code here: {repo_url}")
+                cFormatter.print(Color.WARNING, f'---- Commit Name: ({commit['message']})')
+                cFormatter.print(Color.CYAN, f'------> with SHA ({commit['sha']})')
+            cFormatter.print(Color.INFO, f'You can view the latest code here: {repo_url}')
             cFormatter.print(Color.INFO, 'It is highly recommended to update the source code. Some things might not be working as expected.')
             cFormatter.print_separators(60, '-', Color.CRITICAL)
         else:
             cFormatter.print(Color.GREEN, 'No updates found.')
 
     except ValueError as ve:
-        cFormatter.print(Color.CRITICAL, f"Couldn't resolve check_for_updates() - ValueError occurred: {ve}")
+        cFormatter.print(Color.CRITICAL, f'Couldn't resolve check_for_updates() - ValueError occurred: {ve}')
     except requests.exceptions.RequestException as re:
-        cFormatter.print(Color.CRITICAL, f"Couldn't resolve check_for_updates() - RequestException occurred: {re}")
+        cFormatter.print(Color.CRITICAL, f'Couldn't resolve check_for_updates() - RequestException occurred: {re}')
     except Exception as e:
-        cFormatter.print(Color.CRITICAL, f"Couldn't resolve check_for_updates() - An unexpected error occurred: {e}")
+        cFormatter.print(Color.CRITICAL, f'Couldn't resolve check_for_updates() - An unexpected error occurred: {e}')
 
 def initialize_text() -> None:
     """

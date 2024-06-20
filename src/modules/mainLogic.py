@@ -384,10 +384,10 @@ class Rogue:
                         self.__write_data(data, f'slot_{slot}.json', False)
                         return data
                     except json.JSONDecodeError as e:
-                        cFormatter.print(Color.WARNING, f"Error decoding JSON: {e}", isLogging=True)
-                        cFormatter.print(Color.WARNING, f"Unexpected response format: {response}", isLogging=True)
+                        cFormatter.print(Color.WARNING, f'Error decoding JSON: {e}', isLogging=True)
+                        cFormatter.print(Color.WARNING, f'Unexpected response format: {response}', isLogging=True)
             except Exception as e:
-                cFormatter.print(Color.CRITICAL, f"Error in function get_gamesave_data(): {e}", isLogging=True)
+                cFormatter.print(Color.CRITICAL, f'Error in function get_gamesave_data(): {e}', isLogging=True)
         else:
             try:
                 response = self.session.get(f'{self.GAMESAVE_SLOT_URL}{slot-1}&clientSessionId={self.clientSessionId}', headers=self.headers)
