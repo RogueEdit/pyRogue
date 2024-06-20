@@ -7,7 +7,7 @@ version = 'v0.2.3'
 owner = 'rogueEdit'
 repo = 'onlineRogueEditor'
 repo_url = f'https://github.com/{owner}/{repo}/'
-release_date = '20.06.2024 5:43'
+release_date = '20.06.2024 5:41'
 
 
 
