@@ -2,7 +2,7 @@
 src/modules/__pycache__/*
 src/utilities/__pycache__/*
 */__pycache__/*
-src/backup/*
+src/backups/*
 src/logs/*.log
 src/trainer.json
 src/slot_1.json

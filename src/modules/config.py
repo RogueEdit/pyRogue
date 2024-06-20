@@ -131,11 +131,11 @@ def check_for_updates(requests: requests, datetime: datetime, timedelta: timedel
             cFormatter.print(Color.GREEN, 'No updates found.')
 
     except ValueError as ve:
-        cFormatter.print(Color.CRITICAL, f'Couldn't resolve check_for_updates() - ValueError occurred: {ve}')
+        cFormatter.print(Color.CRITICAL, f'Couldnt resolve check_for_updates() - ValueError occurred: {ve}')
     except requests.exceptions.RequestException as re:
-        cFormatter.print(Color.CRITICAL, f'Couldn't resolve check_for_updates() - RequestException occurred: {re}')
+        cFormatter.print(Color.CRITICAL, f'Couldnt resolve check_for_updates() - RequestException occurred: {re}')
     except Exception as e:
-        cFormatter.print(Color.CRITICAL, f'Couldn't resolve check_for_updates() - An unexpected error occurred: {e}')
+        cFormatter.print(Color.CRITICAL, f'Couldnt resolve check_for_updates() - An unexpected error occurred: {e}')
 
 def initialize_text() -> None:
     """
