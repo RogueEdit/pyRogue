@@ -4,7 +4,7 @@
 # Contributors: https://github.com/claudiunderthehood
 # Date of release: 06.06.2024 
 
-from utilities.cFormatter import cFormatter, Color
+from utilities import cFormatter, Color
 import json
 
 from enum import Enum

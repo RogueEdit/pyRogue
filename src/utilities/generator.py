@@ -8,7 +8,7 @@ from typing import Optional, List
 from enum import Enum, auto
 import json
 import os
-from utilities.cFormatter import cFormatter, Color
+from utilities import cFormatter, Color
 
 class Nature(Enum):
     HARDY = auto()

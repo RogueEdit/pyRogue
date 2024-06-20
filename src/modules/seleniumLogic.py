@@ -13,7 +13,7 @@ from selenium.common.exceptions import TimeoutException
 import json
 import time
 from typing import Optional, Tuple, Dict, Any
-from utilities.logger import CustomLogger
+from utilities import CustomLogger
 import random
 
 """

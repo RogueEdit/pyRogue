@@ -49,11 +49,11 @@ from colorama import Fore, Style, init
 from modules import SeleniumLogic
 # Handles login logic using Selenium for browser-based interactions.
 
-from utilities.cFormatter import cFormatter, Color
+from utilities import cFormatter, Color
 # cFormatter: Custom formatter for colored printing and logging.
 # Color: Enumeration defining color codes for cFormatter.
 
-from utilities.logger import CustomLogger
+from utilities import CustomLogger
 # Provides custom logging functionality for the script.
 
 from modules import config
@@ -62,6 +62,7 @@ from modules import config
 from datetime import datetime, timedelta
 # datetime, timedelta: For date and time operations, particularly for update checking.
 
+config.initialize_folders()
 init()
 logger = CustomLogger()
 
@@ -112,7 +113,6 @@ def main():
         - colorama: For terminal text color formatting.
         - CustomLogger: Custom logging functionality.
     """
-    session = requests.Session()
     while True:
         # Check for updates
         config.check_for_updates(requests, datetime, timedelta, Style)
@@ -133,6 +133,8 @@ def main():
         try:
             username = input('Username: ')
             password = getpass.getpass('Password (password is hidden): ')
+
+            session = requests.Session()
             # When using requests
             if loginChoice == 1:
                 login = loginLogic(username, password)

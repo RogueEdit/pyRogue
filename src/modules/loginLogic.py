@@ -6,7 +6,6 @@
 
 import requests
 import random
-from colorama import init
 from typing import Dict, Optional
 from time import sleep
 from utilities.limiter import Limiter
@@ -14,9 +13,6 @@ from utilities.cFormatter import cFormatter, Color
 import pyuseragents
 from user_agents import parse
 import string
-init()
-
-limiter = Limiter(lockout_period=40, timestamp_file='./data/extra.json')
 
 def handle_error_response(response: requests.Response) -> Dict[str, str]:
     """
@@ -151,7 +147,7 @@ class loginLogic:
 
         return "".join(result)
 
-
+    limiter = Limiter(lockout_period=40, timestamp_file='./data/extra.json')
     @limiter.lockout
     def login(self) -> bool:
         """

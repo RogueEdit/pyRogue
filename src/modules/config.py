@@ -1,4 +1,5 @@
 from utilities.cFormatter import cFormatter, Color
+import os
 
 version = 'v0.3'
 
@@ -9,6 +10,9 @@ repo = 'onlineRogueEditor'
 repo_url = f'https://github.com/{owner}/{repo}/'
 release_date = '20.06.2024 6:00'
 
+
+logs_directory = os.path.join(os.getcwd(), 'logs')
+backups_directory = os.path.join(os.getcwd(), 'backups')
 
 def check_for_updates(requests, datetime, timedelta, Style):
     """
@@ -95,7 +99,7 @@ def initialize_text():
     cFormatter.print(Color.BRIGHT_MAGENTA, '2: Using own browser with requests.   Reliability 7/10')
     cFormatter.print(Color.BRIGHT_MAGENTA, '3: Using own browser with javascript. Reliability 9/10')
 
-def print_help(self) -> None:
+def print_help() -> None:
     """
     Print helpful information for the user.
 
@@ -112,3 +116,13 @@ def print_help(self) -> None:
     cFormatter.print(Color.INFO, 'you never know if there is a clone from this programm. If you are not sure please')
     cFormatter.print(Color.INFO, 'calculate the checksum of this binary and visit https://github.com/RogueEdit/onlineRogueEditor/')
     cFormatter.print(Color.INFO, 'to see the value it should have to know its original from source.')
+
+def initialize_folders() -> None:
+    # Create the logs directory if it doesn't exist
+    if not os.path.exists(logs_directory):
+        os.makedirs(logs_directory)
+        print(f'Created logs directory: {logs_directory}')
+    # Create the backups directory if it doesn't exist
+    if not os.path.exists(backups_directory):
+        os.makedirs(backups_directory)
+        print(f'Created backup directory: {backups_directory}')

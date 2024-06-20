@@ -9,7 +9,7 @@ import os
 import json
 import time
 from functools import wraps
-from utilities.cFormatter import cFormatter, Color
+from utilities import cFormatter, Color
 
 class Limiter:
     """

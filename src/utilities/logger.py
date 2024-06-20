@@ -2,32 +2,54 @@
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/JulianStiebler/
-# Date of release: 06.06.2024 
-# Last Edited. 20.06.2024
+# Date of release: 06.06.2024
+# Last Edited: 20.06.2024
+
+"""
+This script provides a custom logger that logs messages to a weekly rotating log file. It includes functionality to
+exclude specific log messages and to temporarily deactivate and reactivate logging.
+
+Features:
+- Weekly rotating log file creation.
+- Custom log message filtering.
+- Temporary deactivation and reactivation of logging.
+
+Modules:
+- logging: Python's built-in logging module.
+- os: Module for interacting with the operating system.
+- logging.handlers: Module for logging handler classes.
+- datetime: Module for manipulating dates and times.
+
+Workflow:
+1. Define the path to the logs directory in the current working directory.
+2. Create the logs directory if it doesn't exist.
+3. Initialize the custom logger with a weekly rotating file handler.
+4. Provide methods to deactivate and reactivate logging.
+"""
+from modules import config
 
 import logging
+# Provides logging capabilities for creating log messages and managing log levels.
+
 import os
+# Provides a way to interact with the operating system, particularly for file and directory operations.
+
 from logging.handlers import TimedRotatingFileHandler
+# Provides a logging handler that rotates log files at specified intervals (e.g., weekly).
+
 from datetime import datetime
-
-# Define the path to the logs directory in the current working directory
-logs_directory = os.path.join(os.getcwd(), 'logs')
-
-# Create the logs directory if it doesn't exist
-if not os.path.exists(logs_directory):
-    os.makedirs(logs_directory)
-    print(f'Created logs directory: {logs_directory}')
+# Provides date and time manipulation capabilities, particularly for timestamping log files.
 
 class CustomFilter(logging.Filter):
-    def filter(self, record):
-        """
-        Exclude log messages containing specific text.
+    """
+    Custom filter to exclude log messages containing specific text.
 
-        :param record: The log record to filter.
-        :type record: logging.LogRecord
-        :return: Whether the log record should be included.
-        :rtype: bool
-        """
+    :param record: The log record to filter.
+    :type record: logging.LogRecord
+    :return: Whether the log record should be included.
+    :rtype: bool
+    """
+    def filter(self, record):
         return "data={\"value\":" not in record.getMessage()
 
 class CustomLogger:
@@ -58,13 +80,16 @@ class CustomLogger:
         - Log messages filtered based on custom criteria.
 
     Modules:
-        - logging: Python's built-in logging module.
-        - os: Module for interacting with the operating system.
-        - logging.handlers: Module for logging handler classes.
-        - datetime: Module for manipulating dates and times.
+        - logging: Provides logging capabilities for creating log messages and managing log levels.
+        - os: Interacts with the operating system for file and directory operations.
+        - logging.handlers: Provides a handler that rotates log files at specified intervals.
+        - datetime: Manipulates dates and times for timestamping log files.
     """
     def __init__(self):
         # Create and configure file handler
+        # Define the path to the logs directory in the current working directory
+        logs_directory = config.logs_directory
+
         formatter_file = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 
         # Create file handler and set level to DEBUG for file output
@@ -87,7 +112,7 @@ class CustomLogger:
         for handler in root_logger.handlers:
             if isinstance(handler, logging.StreamHandler):
                 root_logger.removeHandler(handler)
-    
+
     @staticmethod
     def deactivate_logging():
         """
@@ -133,3 +158,6 @@ class CustomLogger:
         for handler in root_logger.handlers:
             if isinstance(handler, TimedRotatingFileHandler):
                 handler.setLevel(logging.DEBUG)
+
+if __name__ == '__main__':
+    logger = CustomLogger()

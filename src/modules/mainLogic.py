@@ -18,16 +18,16 @@ import re
 from modules.loginLogic import handle_error_response, HeaderGenerator
 from datetime import datetime
 from requests.exceptions import SSLError, ConnectionError, Timeout
-from utilities.generator import Generator
-from utilities.enumLoader import EnumLoader
-from utilities.cFormatter import cFormatter, Color
-from utilities.limiter import Limiter
+from utilities import Generator
+from utilities import EnumLoader
+from utilities import cFormatter, Color
+from utilities import Limiter
 import requests
 
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 
-from utilities.eggLogic import *  # noqa: F403
+from utilities import eggLogic
 from sys import exit
 
 
@@ -1177,7 +1177,7 @@ class Rogue:
                 input('After how many waves should they hatch? (0-100)(number): ')
             )
 
-            new_eggs = generate_eggs(tier, gacha_type, hatch_waves, count)  # noqa: F405
+            new_eggs = eggLogic.generate_eggs(tier, gacha_type, hatch_waves, count)  # noqa: F405
 
             if replace_or_add == '1':
                 trainer_data['eggs'] = new_eggs
