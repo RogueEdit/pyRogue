@@ -28,11 +28,11 @@ import os
 from datetime import datetime, timedelta
 import requests
 from utilities import cFormatter, Color
-version: str = 'v0.3'
+version: str = 'v0.3.1'
 owner: str = 'rogueEdit'
 repo: str = 'onlineRogueEditor'
 repo_url: str = f'https://github.com/{owner}/{repo}/'
-release_date: str = '21.06.2024 1:00'
+release_date: str = '21.06.2024 19:30'
 
 logs_directory: str = os.path.join(os.getcwd(), 'logs')
 backups_directory: str = os.path.join(os.getcwd(), 'backups')
@@ -153,7 +153,7 @@ def initialize_text() -> None:
     cFormatter.print(Color.BRIGHT_GREEN, 'In case of trouble, please switch your Network (Hotspot, VPN etc).')
     cFormatter.print(Color.BRIGHT_GREEN, f'Otherwise please visit {repo_url} and report the issue.')
     cFormatter.print_separators(60, '-')
-    cFormatter.print(Color.BRIGHT_MAGENTA, '1: Using no browser with requests.   Reliability 5/10')
+    cFormatter.print(Color.BRIGHT_MAGENTA, '1: Using no browser with requests.    Reliability 6/10')
     cFormatter.print(Color.BRIGHT_MAGENTA, '2: Using own browser with requests.   Reliability 7/10')
     cFormatter.print(Color.BRIGHT_MAGENTA, '3: Using own browser with JavaScript. Reliability 9/10')
 
@@ -206,3 +206,16 @@ def initialize_folders() -> None:
     if not os.path.exists(data_directory):
         os.makedirs(backups_directory)
         cFormatter.print(Color.GREEN, f'Created backup directory: {backups_directory}')
+
+def replace_middle_with_dots(username):
+    if len(username) < 3:  # If username length is less than 3, return as is (minimum 2 characters)
+        return username
+    
+    visible_chars = max(int(len(username) * 0.2), 1)  # Calculate how many characters to leave visible
+    start_visible = max(visible_chars // 2, 1)  # At least 1 character visible from the start
+    end_visible = visible_chars - start_visible  # Remaining visible characters from the end
+    
+    # Construct the masked username
+    masked_username = username[:start_visible] + '*' * (len(username) - start_visible - end_visible) + username[-end_visible:]
+    
+    return masked_username

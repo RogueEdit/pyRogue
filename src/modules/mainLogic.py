@@ -1,3 +1,9 @@
+# Authors
+# Organization: https://github.com/rogueEdit/
+# Repository: https://github.com/rogueEdit/OnlineRogueEditor
+# Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
+# Date of release: 13.06.2024 
+# Last Edited: 20.06.2024
 """
 This script provides a class 'Rogue' for interacting with the PokeRogue API to manage trainer and gamesave data.
 
@@ -74,10 +80,13 @@ from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 from sys import exit
 import re
+#import zstandard as zstd
 
 limiter = Limiter(lockout_period=40, timestamp_file='./data/extra.json')
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
+#global_compressor = zstd.ZstdCompressor()
+#global_decompressor = zstd.ZstdDecompressor()
 
 
 class Rogue:
@@ -154,6 +163,18 @@ class Rogue:
             cFormatter.print(Color.CRITICAL, f'Something on inital data generation failed. {e}', isLogging=True)
         
         self.__dump_data()
+
+    
+    """    
+    def __compress_zstd(data, encoding='utf-8'):
+            compressor = zstd.ZstdCompressor()
+            compressed_data = compressor.compress(data.encode(encoding))
+            return compressed_data
+
+    def __decompress_zstd(compressed_data, encoding='utf-8'):
+        decompressor = zstd.ZstdDecompressor()
+        decompressed_data = decompressor.decompress(compressed_data)
+        return decompressed_data.decode(encoding)"""
 
     def _make_request(self, url: str, method: str = 'GET', data: Optional[Dict[str, Any]] = None) -> str:
         """
@@ -281,6 +302,7 @@ class Rogue:
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function __dump_data(): {e}', isLogging=True)
 
+    # TODO: Simplify
     @limiter.lockout
     def get_trainer_data(self) -> dict:
         """
@@ -316,6 +338,9 @@ class Rogue:
                 response = self._make_request(f'{self.TRAINER_DATA_URL}{self.clientSessionId}')
                 if response:
                     try:
+                        # TODO: zstandart compression
+                        #decompressed_data = self.__decompress_zstd(response)
+                        #data = json.loads(decompressed_data)
                         data = json.loads(response)
                         self.__write_data(data, 'trainer.json', False)
                         cFormatter.print(Color.GREEN, 'Successfully fetched trainer data.')
@@ -343,6 +368,7 @@ class Rogue:
             except requests.RequestException as e:
                 cFormatter.print(Color.DEBUG, f'Error fetching trainer data. Please restart the tool. \n {e}', isLogging=True)
 
+    # TODO: Simplify
     @limiter.lockout
     def get_gamesave_data(self, slot: int = 1) -> Optional[Dict[str, Any]]:
         """
@@ -376,6 +402,9 @@ class Rogue:
                 response = self._make_request(f'{self.GAMESAVE_SLOT_URL}{slot-1}&clientSessionId={self.clientSessionId}')
                 if response:
                     try:
+                        # TODO: zstandart compression
+                        #decompressed_data = self.__decompress_zstd(response)
+                        #data = json.loads(decompressed_data)
                         data = json.loads(response)
                         self.__write_data(data, f'slot_{slot}.json', False)
                         return data
@@ -628,6 +657,8 @@ class Rogue:
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function restore_backup(): {e}', isLogging=True)
 
+    # TODO: Simplify
+    @limiter.lockout
     def update_all(self) -> None:
         """
         Update all data using the provided URL.
@@ -675,9 +706,13 @@ class Rogue:
             sleep(random.randint(3, 5))
             payload = {'clientSessionId': self.clientSessionId, 'session': game_data, "sessionSlotId": slot - 1,
                        'system': trainer_data}
+            
+            # TODO: zstandart compression
+            #raw_payload = {'clientSessionId': self.clientSessionId, 'session': game_data, "sessionSlotId": slot - 1, 'system': trainer_data}
+            #payload = self.__compress_zstd(payload)
             if self.useScripts:
                 response = self._make_request(url, method='POST', data=json.dumps(payload))
-                cFormatter.print("That seemed to work! Refresh without cache (STRG+F5)")
+                cFormatter.print(Color.GREEN, "That seemed to work! Refresh without cache (STRG+F5)")
                 self.logout()
             else:
                 response = self.session.post(url=url, headers=self.headers, json=payload)
@@ -1922,3 +1957,9 @@ class Rogue:
 
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function edit_hatchWaves(): {e}', isLogging=True)
+
+    def run_item_editor(self):
+        from modules import ModifierEditor
+        edit = ModifierEditor()
+        edit.user_menu(self.slot)
+        

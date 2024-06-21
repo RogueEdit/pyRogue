@@ -135,7 +135,7 @@ def main():
                 login = requestsLogic(username, password)
                 try:
                     if login.login():
-                        cFormatter.print(Color.INFO, f'Logged in as: {username.capitalize()}')
+                        cFormatter.print(Color.INFO, f'Logged in as: {config.replace_middle_with_dots(username)}')
                         session.cookies.set('pokerogue_sessionId', login.session_id, domain='pokerogue.net')
                         rogue = Rogue(session, login.token, login.session_id)
                         break
@@ -199,6 +199,7 @@ def main():
         (('Edit money amount', ''), rogue.edit_money),
         (('Edit pokeballs amount', ''), rogue.edit_pokeballs),
         (('Edit current biome', ''), rogue.edit_biome),
+        (('Edit Items', f'{Fore.GREEN + Style.BRIGHT}NEW{Style.RESET_ALL}'), rogue.run_item_editor),
 
         ('Print game information', 'category'),
         (('Show all Pokemon ID', ''), rogue.print_pokedex),
