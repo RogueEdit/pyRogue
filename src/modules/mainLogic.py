@@ -706,7 +706,7 @@ class Rogue:
             #payload = self.__compress_zstd(payload)
             if self.useScripts:
                 response = self._make_request(url, method='POST', data=json.dumps(payload))
-                cFormatter.print(Color.Green, "That seemed to work! Refresh without cache (STRG+F5)")
+                cFormatter.print(Color.GREEN, "That seemed to work! Refresh without cache (STRG+F5)")
                 self.logout()
             else:
                 response = self.session.post(url=url, headers=self.headers, json=payload)

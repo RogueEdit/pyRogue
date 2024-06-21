@@ -94,20 +94,17 @@ class ModifierEditor:
 
     @staticmethod
     def add_or_update_modifier(data, modifier, modifier_name, slot, sessionSlot):
-        """
-        Adds or updates a modifier in the data.
+        """Add or update a modifier in the data structure and save to JSON.
 
-        :param data: Data to be modified.
-        :type data: dict
-        :param modifier: Modifier to be added or updated.
-        :type modifier: dict
-        :param modifier_name: Name of the modifier.
-        :type modifier_name: str
-        :param slot: Slot number for the modifier.
-        :type slot: int
-        :param sessionSlot: Session slot number for saving the data.
-        :type sessionSlot: int
+        :param data: The data structure where modifiers are stored.
+        :param modifier: The modifier to add or update.
+        :param modifier_name: The name of the modifier.
+        :param slot: The slot where the modifier is applied (0-5).
+        :param sessionSlot: The session slot associated with the modifier.
         """
+        if 'modifiers' not in data or not isinstance(data['modifiers'], list):
+            data['modifiers'] = []
+
         def modifiers_match(existing_modifier, new_modifier):
             if existing_modifier['typeId'] != new_modifier['typeId']:
                 return False
@@ -119,12 +116,12 @@ class ModifierEditor:
             (m for m in data['modifiers'] if modifiers_match(m, modifier)),
             None
         )
-
+        
         if existing:
             existing['stackCount'] = modifier['stackCount']
         else:
             data['modifiers'].append(modifier)
-
+        
         ModifierEditor.save_json(data, f'slot_{sessionSlot}.json')
         cFormatter.print(Color.GREEN, f'Successfully added {modifier["stackCount"]} {modifier_name}.')
         cFormatter.print(Color.INFO, 'Some items are limited, hence why it didn\'t apply all you may wanted.')
@@ -239,10 +236,10 @@ class ModifierEditor:
         :type sessionSlot: int
         """
         modifier = {
-            "args": 1.5,
+            "args": [25],
             "className": "ExpRateModifier",
             "player": True,
-            "stackCount": 1 if stack > 1 else stack,
+            "stackCount": 99 if stack > 99 else stack,
             "typeId": "EXP_CHARM"
         }
         self.add_or_update_modifier(existing_data, modifier, "EXP Charm", slot, sessionSlot)
@@ -261,10 +258,10 @@ class ModifierEditor:
         :type sessionSlot: int
         """
         modifier = {
-            "args": 60,
+            "args": [60],
             "className": "ExpRateModifier",
             "player": True,
-            "stackCount": 1 if stack > 1 else stack,
+            "stackCount": 30 if stack > 30 else stack,
             "typeId": "SUPER_EXP_CHARM"
         }
         self.add_or_update_modifier(existing_data, modifier, "Super EXP Charm", slot, sessionSlot)
@@ -283,10 +280,10 @@ class ModifierEditor:
         :type sessionSlot: int
         """
         modifier = {
-            "args": 100,
+            "args": [100],
             "className": "ExpRateModifier",
             "player": True,
-            "stackCount": 1 if stack > 1 else stack,
+            "stackCount": 10 if stack > 10 else stack,
             "typeId": "GOLDEN_EXP_CHARM"
         }
         self.add_or_update_modifier(existing_data, modifier, "Golden EXP Charm", slot, sessionSlot)
@@ -308,7 +305,7 @@ class ModifierEditor:
             "args": 1.1,
             "className": "HealingRateModifier",
             "player": True,
-            "stackCount": 1 if stack > 1 else stack,
+            "stackCount": 5 if stack > 5 else stack,
             "typeId": "HEALING_CHARM"
         }
         self.add_or_update_modifier(existing_data, modifier, "Healing Booster Modifier", slot, sessionSlot)
@@ -354,7 +351,7 @@ class ModifierEditor:
             "args": [poke_id],
             "className": "MultiHitModifier",
             "player": True,
-            "stackCount": 1 if stack > 1 else stack,
+            "stackCount": 3 if stack > 3 else stack,
             "typeId": "MULTI_LENS"
         }
         self.add_or_update_modifier(existing_data, modifier, "Multi Lens", slot, sessionSlot)
@@ -422,7 +419,7 @@ class ModifierEditor:
             "args": [poke_id, 10],
             "className": "ItemStealModifier",
             "player": True,
-            "stackCount": 1 if stack > 1 else stack,
+            "stackCount": 5 if stack > 5 else stack,
             "typeId": "GRIP_CLAW"
         }
         self.add_or_update_modifier(existing_data, modifier, "Grip Claw", slot, sessionSlot)
@@ -445,7 +442,7 @@ class ModifierEditor:
             "args": [poke_id],
             "className": "MoneyRewardModifier",
             "player": True,
-            "stackCount": 1 if stack > 1 else stack,
+            "stackCount": 5 if stack > 5 else stack,
             "typeId": "GOLDEN_PUNCH"
         }
         self.add_or_update_modifier(existing_data, modifier, "Golden Punch", slot, sessionSlot)
@@ -467,7 +464,7 @@ class ModifierEditor:
             "args": None,
             "className": "ExpBalancerModifier",
             "player": True,
-            "stackCount": 1 if stack > 1 else stack,
+            "stackCount": 4 if stack > 4 else stack,
             "typeId": "EXP_BALANCE"
         }
         self.add_or_update_modifier(existing_data, modifier, "EXP Balancer", slot, sessionSlot)

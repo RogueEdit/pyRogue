@@ -8,3 +8,5 @@ src/trainer.json
 src/slot_1.json
 /src/tests/menuTest/__pycache__
 /src/backup
+.vs/*
+/src/.vs
