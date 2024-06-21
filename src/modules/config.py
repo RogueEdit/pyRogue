@@ -212,6 +212,6 @@ def replace_middle_with_dots(username):
     end_visible = visible_chars - start_visible  # Remaining visible characters from the end
     
     # Construct the masked username
-    masked_username = username[:start_visible] + '*' * (len(username) - start_visible - end_visible) + username[-end_visible:]
+    masked_username = username[:start_visible] + '*' * (len(username) - start_visible - end_visible)
     
     return masked_username
