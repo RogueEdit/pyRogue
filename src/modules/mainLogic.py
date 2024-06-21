@@ -74,13 +74,13 @@ from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 from sys import exit
 import re
-import zstandard as zstd
+#import zstandard as zstd
 
 limiter = Limiter(lockout_period=40, timestamp_file='./data/extra.json')
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
-global_compressor = zstd.ZstdCompressor()
-global_decompressor = zstd.ZstdDecompressor()
+#global_compressor = zstd.ZstdCompressor()
+#global_decompressor = zstd.ZstdDecompressor()
 
 
 class Rogue:
@@ -159,15 +159,16 @@ class Rogue:
         self.__dump_data()
 
     
+    """    
     def __compress_zstd(data, encoding='utf-8'):
-        compressor = zstd.ZstdCompressor()
-        compressed_data = compressor.compress(data.encode(encoding))
-        return compressed_data
+            compressor = zstd.ZstdCompressor()
+            compressed_data = compressor.compress(data.encode(encoding))
+            return compressed_data
 
     def __decompress_zstd(compressed_data, encoding='utf-8'):
         decompressor = zstd.ZstdDecompressor()
         decompressed_data = decompressor.decompress(compressed_data)
-        return decompressed_data.decode(encoding)
+        return decompressed_data.decode(encoding)"""
 
     def _make_request(self, url: str, method: str = 'GET', data: Optional[Dict[str, Any]] = None) -> str:
         """
@@ -705,7 +706,7 @@ class Rogue:
             #payload = self.__compress_zstd(payload)
             if self.useScripts:
                 response = self._make_request(url, method='POST', data=json.dumps(payload))
-                cFormatter.print("That seemed to work! Refresh without cache (STRG+F5)")
+                cFormatter.print(Color.Green, "That seemed to work! Refresh without cache (STRG+F5)")
                 self.logout()
             else:
                 response = self.session.post(url=url, headers=self.headers, json=payload)
@@ -1950,3 +1951,9 @@ class Rogue:
 
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function edit_hatchWaves(): {e}', isLogging=True)
+
+    def run_item_editor(self):
+        from modules import ModifierEditor
+        edit = ModifierEditor(self.slot)
+        edit.user_menu()
+        

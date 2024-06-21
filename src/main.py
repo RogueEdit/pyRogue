@@ -133,6 +133,7 @@ def main():
             # When using requests
             if loginChoice == 1:
                 login = requestsLogic(username, password)
+                username = config.replace_middle_with_dots(username)
                 try:
                     if login.login():
                         cFormatter.print(Color.INFO, f'Logged in as: {username.capitalize()}')
@@ -199,6 +200,7 @@ def main():
         (('Edit money amount', ''), rogue.edit_money),
         (('Edit pokeballs amount', ''), rogue.edit_pokeballs),
         (('Edit current biome', ''), rogue.edit_biome),
+        (('Edit Items', f'{Fore.GREEN + Style.BRIGHT}NEW{Style.RESET_ALL}'), rogue.run_item_editor),
 
         ('Print game information', 'category'),
         (('Show all Pokemon ID', ''), rogue.print_pokedex),

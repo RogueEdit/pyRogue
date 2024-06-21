@@ -206,3 +206,15 @@ def initialize_folders() -> None:
     if not os.path.exists(data_directory):
         os.makedirs(backups_directory)
         cFormatter.print(Color.GREEN, f'Created backup directory: {backups_directory}')
+
+def replace_middle_with_dots(username):
+    if len(username) < 4:  # If username length is less than 4, can't replace middle
+        return username
+    
+    mid_start = (len(username) - 3) // 2  # Calculate start of middle section
+    mid_end = mid_start + 3  # Calculate end of middle section
+    
+    # Construct the username with dots replacing the middle characters
+    masked_username = username[:mid_start] + '*/-' + username[mid_end:]
+    
+    return masked_username

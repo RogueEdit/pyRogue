@@ -7,3 +7,4 @@ src/logs/*.log
 src/trainer.json
 src/slot_1.json
 /src/tests/menuTest/__pycache__
+/src/backup

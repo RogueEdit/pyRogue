@@ -1,0 +1,765 @@
+{
+    "seed": "Q2arYa2vQ1ca15bHM58Y5EQM",
+    "playTime": 0,
+    "gameMode": 0,
+    "party": [
+        {
+            "abilityIndex": 0,
+            "boss": false,
+            "exp": 128,
+            "formIndex": 0,
+            "friendship": 50,
+            "fusionLuck": 0,
+            "gender": 0,
+            "hp": 21,
+            "id": 727928539,
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "level": 5,
+            "levelExp": 0,
+            "luck": 3,
+            "metBiome": -1,
+            "metLevel": 5,
+            "moveset": [
+                {
+                    "moveId": 33,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 45,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 22,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 202,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                }
+            ],
+            "nature": 0,
+            "natureOverride": -1,
+            "passive": true,
+            "pauseEvolutions": false,
+            "player": true,
+            "pokeball": 0,
+            "pokerus": false,
+            "shiny": true,
+            "species": 50,
+            "stats": [
+                21,
+                11,
+                11,
+                13,
+                13,
+                11
+            ],
+            "summonData": {
+                "ability": 0,
+                "abilitySuppressed": false,
+                "battleStats": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "disabledMove": 0,
+                "disabledTurns": 0,
+                "moveQueue": null,
+                "tags": null
+            },
+            "variant": 2
+        },
+        {
+            "abilityIndex": 0,
+            "boss": false,
+            "exp": 128,
+            "formIndex": 0,
+            "friendship": 50,
+            "fusionLuck": 0,
+            "gender": 0,
+            "hp": 20,
+            "id": 1174503285,
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "level": 5,
+            "levelExp": 0,
+            "luck": 3,
+            "metBiome": -1,
+            "metLevel": 5,
+            "moveset": [
+                {
+                    "moveId": 10,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 45,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 52,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 349,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                }
+            ],
+            "nature": 0,
+            "natureOverride": -1,
+            "passive": true,
+            "pauseEvolutions": false,
+            "player": true,
+            "pokeball": 0,
+            "pokerus": false,
+            "shiny": true,
+            "species": 4,
+            "stats": [
+                20,
+                11,
+                10,
+                12,
+                11,
+                13
+            ],
+            "summonData": {
+                "ability": 0,
+                "abilitySuppressed": false,
+                "battleStats": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "disabledMove": 0,
+                "disabledTurns": 0,
+                "moveQueue": null,
+                "tags": null
+            },
+            "variant": 2
+        },
+        {
+            "abilityIndex": 0,
+            "boss": false,
+            "exp": 128,
+            "formIndex": 0,
+            "friendship": 50,
+            "fusionLuck": 0,
+            "gender": 0,
+            "hp": 20,
+            "id": 4052727973,
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "level": 5,
+            "levelExp": 0,
+            "luck": 3,
+            "metBiome": -1,
+            "metLevel": 5,
+            "moveset": [
+                {
+                    "moveId": 33,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 39,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 55,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 58,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                }
+            ],
+            "nature": 0,
+            "natureOverride": -1,
+            "passive": true,
+            "pauseEvolutions": false,
+            "player": true,
+            "pokeball": 0,
+            "pokerus": false,
+            "shiny": true,
+            "species": 7,
+            "stats": [
+                20,
+                11,
+                13,
+                11,
+                12,
+                10
+            ],
+            "summonData": {
+                "ability": 0,
+                "abilitySuppressed": false,
+                "battleStats": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "disabledMove": 0,
+                "disabledTurns": 0,
+                "moveQueue": null,
+                "tags": null
+            },
+            "variant": 2
+        },
+        {
+            "abilityIndex": 0,
+            "boss": false,
+            "exp": 125,
+            "formIndex": 0,
+            "friendship": 50,
+            "fusionLuck": 0,
+            "gender": 0,
+            "hp": 21,
+            "id": 2165120634,
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "level": 5,
+            "levelExp": 0,
+            "luck": 3,
+            "metBiome": -1,
+            "metLevel": 5,
+            "moveset": [
+                {
+                    "moveId": 33,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 81,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 414,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 852,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                }
+            ],
+            "nature": 0,
+            "natureOverride": -1,
+            "passive": true,
+            "pauseEvolutions": false,
+            "player": true,
+            "pokeball": 0,
+            "pokerus": false,
+            "shiny": true,
+            "species": 10,
+            "stats": [
+                21,
+                9,
+                10,
+                8,
+                8,
+                11
+            ],
+            "summonData": {
+                "ability": 0,
+                "abilitySuppressed": false,
+                "battleStats": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "disabledMove": 0,
+                "disabledTurns": 0,
+                "moveQueue": null,
+                "tags": null
+            },
+            "variant": 2
+        },
+        {
+            "abilityIndex": 0,
+            "boss": false,
+            "exp": 125,
+            "formIndex": 0,
+            "friendship": 70,
+            "fusionLuck": 0,
+            "gender": 0,
+            "hp": 20,
+            "id": 3174525509,
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "level": 5,
+            "levelExp": 0,
+            "luck": 3,
+            "metBiome": -1,
+            "metLevel": 5,
+            "moveset": [
+                {
+                    "moveId": 40,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 81,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 529,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 14,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                }
+            ],
+            "nature": 0,
+            "natureOverride": -1,
+            "passive": true,
+            "pauseEvolutions": false,
+            "player": true,
+            "pokeball": 0,
+            "pokerus": false,
+            "shiny": true,
+            "species": 13,
+            "stats": [
+                20,
+                10,
+                9,
+                8,
+                8,
+                11
+            ],
+            "summonData": {
+                "ability": 0,
+                "abilitySuppressed": false,
+                "battleStats": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "disabledMove": 0,
+                "disabledTurns": 0,
+                "moveQueue": null,
+                "tags": null
+            },
+            "variant": 2
+        },
+        {
+            "abilityIndex": 0,
+            "boss": false,
+            "exp": 128,
+            "formIndex": 0,
+            "friendship": 70,
+            "fusionLuck": 0,
+            "gender": 0,
+            "hp": 20,
+            "id": 1221487628,
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "level": 5,
+            "levelExp": 0,
+            "luck": 3,
+            "metBiome": -1,
+            "metLevel": 5,
+            "moveset": [
+                {
+                    "moveId": 33,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 28,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 257,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 411,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                }
+            ],
+            "nature": 0,
+            "natureOverride": -1,
+            "passive": true,
+            "pauseEvolutions": false,
+            "player": true,
+            "pokeball": 0,
+            "pokerus": false,
+            "shiny": true,
+            "species": 16,
+            "stats": [
+                20,
+                11,
+                10,
+                10,
+                10,
+                12
+            ],
+            "summonData": {
+                "ability": 0,
+                "abilitySuppressed": false,
+                "battleStats": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "disabledMove": 0,
+                "disabledTurns": 0,
+                "moveQueue": null,
+                "tags": null
+            },
+            "variant": 2
+        }
+    ],
+    "enemyParty": [
+        {
+            "abilityIndex": 0,
+            "boss": false,
+            "exp": 8,
+            "formIndex": 0,
+            "friendship": 50,
+            "fusionLuck": 0,
+            "gender": 0,
+            "hp": 15,
+            "id": 3193445498,
+            "ivs": [
+                29,
+                19,
+                6,
+                16,
+                3,
+                15
+            ],
+            "level": 2,
+            "levelExp": 0,
+            "luck": 0,
+            "metBiome": 0,
+            "metLevel": 2,
+            "moveset": [
+                {
+                    "moveId": 1,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 310,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                }
+            ],
+            "nature": 8,
+            "natureOverride": -1,
+            "pauseEvolutions": false,
+            "player": false,
+            "pokeball": 0,
+            "pokerus": false,
+            "shiny": false,
+            "species": 293,
+            "stats": [
+                15,
+                7,
+                7,
+                6,
+                5,
+                6
+            ],
+            "summonData": {
+                "ability": 0,
+                "abilitySuppressed": false,
+                "battleStats": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "disabledMove": 0,
+                "disabledTurns": 0,
+                "moveQueue": null,
+                "tags": null
+            },
+            "variant": 0
+        }
+    ],
+    "modifiers": [
+        {
+            "args": null,
+            "className": "HiddenAbilityRateBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ABILITY_CHARM"
+        },
+        {
+            "args": null,
+            "className": "ShinyRateBoosterModifier",
+            "player": true,
+            "stackCount": 104,
+            "typeId": "SHINY_CHARM"
+        },
+        {
+            "args": [
+                25
+            ],
+            "className": "ExpBoosterModifier",
+            "player": true,
+            "stackCount": 150,
+            "typeId": "EXP_CHARM"
+        },
+        {
+            "args": [
+                60
+            ],
+            "className": "ExpBoosterModifier",
+            "player": true,
+            "stackCount": 130,
+            "typeId": "SUPER_EXP_CHARM"
+        },
+        {
+            "args": [
+                100
+            ],
+            "className": "ExpBoosterModifier",
+            "player": true,
+            "stackCount": 110,
+            "typeId": "GOLDEN_EXP_CHARM"
+        },
+        {
+            "args": [
+                1.1
+            ],
+            "className": "HealingBoosterModifier",
+            "player": true,
+            "stackCount": 105,
+            "typeId": "HEALING_CHARM"
+        },
+        {
+            "args": [
+                1174503285
+            ],
+            "className": "TurnHeldItemTransferModifier",
+            "player": true,
+            "stackCount": 150,
+            "typeId": "MINI_BLACK_HOLE"
+        },
+        {
+            "args": [
+                1174503285
+            ],
+            "className": "PokemonMultiHitModifier",
+            "player": true,
+            "stackCount": 150,
+            "typeId": "MULTI_LENS"
+        },
+        {
+            "args": [
+                1174503285
+            ],
+            "className": "PokemonInstantReviveModifier",
+            "player": true,
+            "stackCount": 150,
+            "typeId": "REVIVER_SEED"
+        },
+        {
+            "args": null,
+            "className": "LockModifierTiersModifier",
+            "player": true,
+            "stackCount": 101,
+            "typeId": "LOCK_CAPSULE"
+        },
+        {
+            "args": [
+                1174503285,
+                "10"
+            ],
+            "className": "ContactHeldItemTransferChanceModifier",
+            "player": true,
+            "stackCount": 150,
+            "typeId": "GRIP_CLAW"
+        },
+        {
+            "args": [
+                1174503285
+            ],
+            "className": "DamageMoneyRewardModifier",
+            "player": true,
+            "stackCount": 150,
+            "typeId": "GOLDEN_PUNCH"
+        },
+        {
+            "args": null,
+            "className": "ExpBalanceModifier",
+            "player": true,
+            "stackCount": 104,
+            "typeId": "EXP_BALANCE"
+        },
+        {
+            "args": null,
+            "className": "LevelIncrementBoosterModifier",
+            "player": true,
+            "stackCount": 150,
+            "typeId": "CANDY_JAR"
+        },
+        {
+            "args": null,
+            "className": "MoneyMultiplierModifier",
+            "player": true,
+            "stackCount": 105,
+            "typeId": "AMULET_COIN"
+        },
+        {
+            "args": null,
+            "className": "PreserveBerryModifier",
+            "player": true,
+            "stackCount": 150,
+            "typeId": "BERRY_POUCH"
+        },
+        {
+            "args": [
+                1174503285
+            ],
+            "className": "HitHealModifier",
+            "player": false,
+            "stackCount": 109,
+            "typeId": "SHELL_BELL"
+        },
+        {
+            "args": [
+                1174503285
+            ],
+            "className": "PokemonNatureWeightModifier",
+            "player": false,
+            "stackCount": 150,
+            "typeId": "SOUL_DEW"
+        }
+    ],
+    "enemyModifiers": null,
+    "arena": {
+        "biome": 40,
+        "tags": null
+    },
+    "pokeballCounts": {
+        "0": 5,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0
+    },
+    "money": 1000,
+    "score": 0,
+    "victoryCount": 0,
+    "faintCount": 0,
+    "reviveCount": 0,
+    "waveIndex": 1,
+    "battleType": 0,
+    "trainer": null,
+    "gameVersion": "1.0.4",
+    "timestamp": 1717150008860,
+    "challenges": null
+}

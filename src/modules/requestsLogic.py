@@ -296,6 +296,7 @@ class requestsLogic:
         try:
             headers = HeaderGenerator.generate_headers()
             cFormatter.print(Color.DEBUG, 'Adding delay to appear more natural to the server. Please stand by...')
+            cFormatter.print(Color.DEBUG, '(If it takes longer than 5 Seconds its not on us.)')
             response = self.session.post(self.LOGIN_URL, headers=headers, data=data)
             sleep(random.randint(3, 5))
             response.raise_for_status()
@@ -306,7 +307,7 @@ class requestsLogic:
             self.session_id = self.calcSessionId()
             cFormatter.print(Color.GREEN, 'Login successful.')
             status_code_color = Color.BRIGHT_GREEN if response.status_code == 200 else Color.BRIGHT_RED
-            cFormatter.print(status_code_color, f'HTTP Status Code: {response.status_code}', isLogging=True)
+            cFormatter.print(status_code_color, f'HTTP Status Code: {response.status_code}')
             cFormatter.print(Color.CYAN, f'Response URL: {response.request.url}', isLogging=True)
             filtered_headers = {key: value for key, value in response.headers.items() if key != 'Report-To'}
             cFormatter.print(Color.CYAN, f'Response Headers: {filtered_headers}', isLogging=True)
