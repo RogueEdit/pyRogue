@@ -192,8 +192,8 @@ class ModifierEditor:
         :type sessionSlot: int
         """
         modifier = {
-            "className": "HiddenAbilityRateBoosterModifier",
             "args": None,
+            "className": "HiddenAbilityRateBoosterModifier",
             "player": True,
             "stackCount": 10 if stack > 10 else stack,
             "typeId": "ABILITY_CHARM"
