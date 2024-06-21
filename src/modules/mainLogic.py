@@ -1954,6 +1954,6 @@ class Rogue:
 
     def run_item_editor(self):
         from modules import ModifierEditor
-        edit = ModifierEditor(self.slot)
-        edit.user_menu()
+        edit = ModifierEditor()
+        edit.user_menu(self.slot)
         

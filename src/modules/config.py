@@ -28,7 +28,7 @@ import os
 from datetime import datetime, timedelta
 import requests
 from utilities import cFormatter, Color
-version: str = 'v0.3'
+version: str = 'v0.3.1'
 owner: str = 'rogueEdit'
 repo: str = 'onlineRogueEditor'
 repo_url: str = f'https://github.com/{owner}/{repo}/'
@@ -153,7 +153,7 @@ def initialize_text() -> None:
     cFormatter.print(Color.BRIGHT_GREEN, 'In case of trouble, please switch your Network (Hotspot, VPN etc).')
     cFormatter.print(Color.BRIGHT_GREEN, f'Otherwise please visit {repo_url} and report the issue.')
     cFormatter.print_separators(60, '-')
-    cFormatter.print(Color.BRIGHT_MAGENTA, '1: Using no browser with requests.   Reliability 5/10')
+    cFormatter.print(Color.BRIGHT_MAGENTA, '1: Using no browser with requests.    Reliability 6/10')
     cFormatter.print(Color.BRIGHT_MAGENTA, '2: Using own browser with requests.   Reliability 7/10')
     cFormatter.print(Color.BRIGHT_MAGENTA, '3: Using own browser with JavaScript. Reliability 9/10')
 
