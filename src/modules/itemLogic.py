@@ -242,7 +242,7 @@ class ModifierEditor:
         """
         modifier = {
             "args": [25],
-            "className": "ExpRateModifier",
+            "className": "ExpBoosterModifier",
             "player": True,
             "stackCount": 99 if stack > 99 else stack,
             "typeId": "EXP_CHARM"
@@ -264,7 +264,7 @@ class ModifierEditor:
         """
         modifier = {
             "args": [60],
-            "className": "ExpRateModifier",
+            "className": "ExpBoosterModifier",
             "player": True,
             "stackCount": 30 if stack > 30 else stack,
             "typeId": "SUPER_EXP_CHARM"
@@ -286,7 +286,7 @@ class ModifierEditor:
         """
         modifier = {
             "args": [100],
-            "className": "ExpRateModifier",
+            "className": "ExpBoosterModifier",
             "player": True,
             "stackCount": 10 if stack > 10 else stack,
             "typeId": "GOLDEN_EXP_CHARM"
@@ -308,7 +308,7 @@ class ModifierEditor:
         """
         modifier = {
             "args": 1.1,
-            "className": "HealingRateModifier",
+            "className": "HealingBoosterModifier",
             "player": True,
             "stackCount": 5 if stack > 5 else stack,
             "typeId": "HEALING_CHARM"
@@ -331,7 +331,7 @@ class ModifierEditor:
         poke_id = existing_data['party'][slot]['id']
         modifier = {
             "args": [poke_id],
-            "className": "ItemStealModifier",
+            "className": "TurnHeldItemTransferModifier",
             "player": True,
             "stackCount": 1 if stack > 1 else stack,
             "typeId": "MINI_BLACK_HOLE"
@@ -354,7 +354,7 @@ class ModifierEditor:
         poke_id = existing_data['party'][slot]['id']
         modifier = {
             "args": [poke_id],
-            "className": "MultiHitModifier",
+            "className": "PokemonMultiHitModifier",
             "player": True,
             "stackCount": 3 if stack > 3 else stack,
             "typeId": "MULTI_LENS"
@@ -377,7 +377,7 @@ class ModifierEditor:
         poke_id = existing_data['party'][slot]['id']
         modifier = {
             "args": [poke_id],
-            "className": "ReviveModifier",
+            "className": "PokemonInstantReviveModifier",
             "player": True,
             "stackCount": 1 if stack > 1 else stack,
             "typeId": "REVIVER_SEED"
@@ -399,7 +399,7 @@ class ModifierEditor:
         """
         modifier = {
             "args": None,
-            "className": "LockModifier",
+            "className": "LockModifierTiersModifier",
             "player": True,
             "stackCount": 1 if stack > 1 else stack,
             "typeId": "LOCK_CAPSULE"
@@ -422,7 +422,7 @@ class ModifierEditor:
         poke_id = existing_data['party'][slot]['id']
         modifier = {
             "args": [poke_id, 10],
-            "className": "ItemStealModifier",
+            "className": "ContactHeldItemTransferChanceModifier",
             "player": True,
             "stackCount": 5 if stack > 5 else stack,
             "typeId": "GRIP_CLAW"
@@ -445,7 +445,7 @@ class ModifierEditor:
         poke_id = existing_data['party'][slot]['id']
         modifier = {
             "args": [poke_id],
-            "className": "MoneyRewardModifier",
+            "className": "DamageMoneyRewardModifier",
             "player": True,
             "stackCount": 5 if stack > 5 else stack,
             "typeId": "GOLDEN_PUNCH"
@@ -489,7 +489,7 @@ class ModifierEditor:
         """
         modifier = {
             "args": None,
-            "className": "LevelIncrementModifier",
+            "className": "LevelIncrementBoosterModifier",
             "player": True,
             "stackCount": 99 if stack > 99 else stack,
             "typeId": "CANDY_JAR"
@@ -533,7 +533,7 @@ class ModifierEditor:
         """
         modifier = {
             "args": None,
-            "className": "BerryPreserveModifier",
+            "className": "PreserveBerryModifier",
             "player": True,
             "stackCount": 3 if stack > 3 else stack,
             "typeId": "BERRY_POUCH"
@@ -579,7 +579,7 @@ class ModifierEditor:
         poke_id = existing_data['party'][slot]['id']
         modifier = {
             "args": [poke_id],
-            "className": "NatureWeightModifier",
+            "className": "PokemonNatureWeightModifier",
             "player": True,
             "stackCount": 10 if stack > 10 else stack,
             "typeId": "SOUL_DEW"
