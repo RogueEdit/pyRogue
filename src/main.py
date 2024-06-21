@@ -133,10 +133,9 @@ def main():
             # When using requests
             if loginChoice == 1:
                 login = requestsLogic(username, password)
-                username = config.replace_middle_with_dots(username)
                 try:
                     if login.login():
-                        cFormatter.print(Color.INFO, f'Logged in as: {username.capitalize()}')
+                        cFormatter.print(Color.INFO, f'Logged in as: {config.replace_middle_with_dots(username)}')
                         session.cookies.set('pokerogue_sessionId', login.session_id, domain='pokerogue.net')
                         rogue = Rogue(session, login.token, login.session_id)
                         break

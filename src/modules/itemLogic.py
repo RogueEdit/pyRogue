@@ -145,6 +145,11 @@ class ModifierEditor:
                     choice_index = int(user_input)
                     for idx, func in valid_choices:
                         if idx == choice_index:
+
+                            if existing_data['gameMode'] == 3:
+                                cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot edit this property on Daily Runs.')
+                                break
+
                             function_name = func.__name__
                             if function_name == 'print_modifiers':
                                 self.print_modifiers(existing_data)
