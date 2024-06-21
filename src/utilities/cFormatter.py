@@ -267,13 +267,15 @@ class cFormatter(logging.Formatter):
         """
         stripped_text = cFormatter.strip_color_codes(text)
         total_length = len(stripped_text)
-        
         if total_length >= length:
             return text[:length]
         
         fill_length = length - total_length
         front_fill = fill_char * (fill_length // 2)
         back_fill = fill_char * (fill_length - (fill_length // 2))
+        if fill_char == '>':
+            back_fill = '<' * (fill_length - (fill_length // 2))
+        
         
         return f"{front_fill}{text}{back_fill}"
 
