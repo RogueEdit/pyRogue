@@ -1,3 +1,10 @@
+# Authors
+# Organization: https://github.com/rogueEdit/
+# Repository: https://github.com/rogueEdit/OnlineRogueEditor
+# Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
+# Date of release: 13.06.2024 
+# Last Edited: 21.06.2024
+
 import json
 from utilities import cFormatter, Color
 from colorama import Fore, Style

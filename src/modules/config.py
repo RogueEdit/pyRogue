@@ -32,7 +32,7 @@ version: str = 'v0.3.1'
 owner: str = 'rogueEdit'
 repo: str = 'onlineRogueEditor'
 repo_url: str = f'https://github.com/{owner}/{repo}/'
-release_date: str = '21.06.2024 1:00'
+release_date: str = '21.06.2024 19:30'
 
 logs_directory: str = os.path.join(os.getcwd(), 'logs')
 backups_directory: str = os.path.join(os.getcwd(), 'backups')
