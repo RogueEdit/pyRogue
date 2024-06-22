@@ -9,7 +9,7 @@
 
 import os
 import json
-from typing import Any, List, Optional, Dict
+from typing import Any, List, Optional
 
 # Define the Modifier class
 class Modifier:
@@ -17,7 +17,7 @@ class Modifier:
         self.args = self._sanitize_values(args)
         self.className = className
         self.player = player
-        self.stackCount = stackCount
+        self.stackCount = 1  # Always set stackCount to 1
         self.typeId = typeId
         self.typePregenArgs = self._sanitize_values(typePregenArgs)
 
@@ -79,6 +79,15 @@ def save_extracted_modifiers(modifiers: List[Modifier], output_file: str):
     with open(output_file, 'w') as file:
         json.dump(data, file, indent=4)
 
+# Custom sorting key function
+def sorting_key(item: tuple) -> tuple:
+    name, _ = item
+    if any(char.isdigit() for char in name):
+        parts = name.rsplit('_', 1)
+        if parts[-1].isdigit():
+            return (parts[0], int(parts[-1]))
+    return (name, 0)
+
 # Function to generate converted_.py with modifiers in Python code format
 def generate_converted_py(modifiers: List[Modifier], output_file: str):
     unique_modifiers = {}
@@ -98,7 +107,7 @@ def generate_converted_py(modifiers: List[Modifier], output_file: str):
                 unique_name += "".join(str(arg) for arg in typePregenArgs if arg is not None)
             sorted_modifiers.append((unique_name, modifier))
 
-    sorted_modifiers.sort(key=lambda x: x[0])
+    sorted_modifiers.sort(key=sorting_key)
 
     with open(output_file, 'w') as file:
         file.write("# This file contains converted modifiers\n")

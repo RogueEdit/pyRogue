@@ -370,7 +370,6 @@ class Rogue:
                 cFormatter.print(Color.DEBUG, f'Error fetching trainer data. Please restart the tool. \n {e}', isLogging=True)
 
     # TODO: Simplify
-    @limiter.lockout
     def get_gamesave_data(self, slot: int = 1) -> Optional[Dict[str, Any]]:
         """
         Fetch gamesave data from the API for a specified slot.
@@ -419,7 +418,7 @@ class Rogue:
                 response = self.session.get(f'{self.GAMESAVE_SLOT_URL}{slot-1}&clientSessionId={self.clientSessionId}', headers=self.headers)
                 response.raise_for_status()
                 if response.content:  # Check if the response content is not empty
-                    cFormatter.print(Color.GREEN, 'Successfully fetched data.')
+                    cFormatter.print(Color.GREEN, f'Successfully fetched data for slot {self.slot}.')
                     data = response.json()
                     self.__write_data(data, f'slot_{slot}.json', False)
                     return data
@@ -1964,3 +1963,12 @@ class Rogue:
         edit = ModifierEditor()
         edit.user_menu(self.slot)
         
+    def change_save_slot(self):
+        try:
+            newSlot = int(input('Which save-slot you want to change to?: '))
+            self.slot = newSlot
+            self.get_gamesave_data(newSlot)  # Assuming this method fetches and prints data
+            return
+        except ValueError:
+            print("Invalid input. Please enter a valid slot number.")
+        return  # Ensure the function returns control to the main menu

@@ -3,7 +3,7 @@
         "args": null,
         "className": "ExpShareModifier",
         "player": true,
-        "stackCount": 5,
+        "stackCount": 1,
         "typeId": "EXP_SHARE"
     },
     {
@@ -12,7 +12,7 @@
         ],
         "className": "ExpBoosterModifier",
         "player": true,
-        "stackCount": 25,
+        "stackCount": 1,
         "typeId": "SUPER_EXP_CHARM"
     },
     {
@@ -21,7 +21,7 @@
         ],
         "className": "ExpBoosterModifier",
         "player": true,
-        "stackCount": 68,
+        "stackCount": 1,
         "typeId": "EXP_CHARM"
     },
     {
@@ -31,7 +31,7 @@
         ],
         "className": "PokemonBaseStatModifier",
         "player": true,
-        "stackCount": 28,
+        "stackCount": 1,
         "typeId": "BASE_STAT_BOOSTER",
         "typePregenArgs": [
             2
@@ -41,7 +41,7 @@
         "args": null,
         "className": "ExtraModifierModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "GOLDEN_POKEBALL"
     },
     {
@@ -51,7 +51,7 @@
         ],
         "className": "PokemonBaseStatModifier",
         "player": true,
-        "stackCount": 31,
+        "stackCount": 1,
         "typeId": "BASE_STAT_BOOSTER",
         "typePregenArgs": [
             5
@@ -64,7 +64,7 @@
         ],
         "className": "PokemonBaseStatModifier",
         "player": true,
-        "stackCount": 2,
+        "stackCount": 1,
         "typeId": "BASE_STAT_BOOSTER",
         "typePregenArgs": [
             1
@@ -77,7 +77,7 @@
         ],
         "className": "PokemonBaseStatModifier",
         "player": true,
-        "stackCount": 31,
+        "stackCount": 1,
         "typeId": "BASE_STAT_BOOSTER",
         "typePregenArgs": [
             0
@@ -97,7 +97,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 2,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             10
@@ -107,14 +107,14 @@
         "args": null,
         "className": "ExpBalanceModifier",
         "player": true,
-        "stackCount": 4,
+        "stackCount": 1,
         "typeId": "EXP_BALANCE"
     },
     {
         "args": null,
         "className": "MoneyMultiplierModifier",
         "player": true,
-        "stackCount": 5,
+        "stackCount": 1,
         "typeId": "AMULET_COIN"
     },
     {
@@ -131,7 +131,7 @@
         ],
         "className": "PokemonBaseStatModifier",
         "player": true,
-        "stackCount": 26,
+        "stackCount": 1,
         "typeId": "BASE_STAT_BOOSTER",
         "typePregenArgs": [
             3
@@ -144,7 +144,7 @@
         ],
         "className": "PokemonBaseStatModifier",
         "player": true,
-        "stackCount": 2,
+        "stackCount": 1,
         "typeId": "BASE_STAT_BOOSTER",
         "typePregenArgs": [
             4
@@ -180,7 +180,7 @@
         "args": null,
         "className": "LevelIncrementBoosterModifier",
         "player": true,
-        "stackCount": 19,
+        "stackCount": 1,
         "typeId": "CANDY_JAR"
     },
     {
@@ -189,7 +189,7 @@
         ],
         "className": "PokemonNatureWeightModifier",
         "player": true,
-        "stackCount": 10,
+        "stackCount": 1,
         "typeId": "SOUL_DEW"
     },
     {
@@ -198,7 +198,7 @@
         ],
         "className": "DamageMoneyRewardModifier",
         "player": true,
-        "stackCount": 5,
+        "stackCount": 1,
         "typeId": "GOLDEN_PUNCH"
     },
     {
@@ -208,7 +208,7 @@
         ],
         "className": "PokemonBaseStatModifier",
         "player": true,
-        "stackCount": 4,
+        "stackCount": 1,
         "typeId": "BASE_STAT_BOOSTER",
         "typePregenArgs": [
             1
@@ -242,7 +242,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 2,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             10
@@ -254,7 +254,7 @@
         ],
         "className": "FlinchChanceModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "KINGS_ROCK"
     },
     {
@@ -264,7 +264,7 @@
         ],
         "className": "ContactHeldItemTransferChanceModifier",
         "player": true,
-        "stackCount": 5,
+        "stackCount": 1,
         "typeId": "GRIP_CLAW"
     },
     {
@@ -274,7 +274,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 2,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             10
@@ -284,7 +284,7 @@
         "args": null,
         "className": "PreserveBerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY_POUCH"
     },
     {
@@ -294,7 +294,7 @@
         ],
         "className": "PokemonBaseStatModifier",
         "player": true,
-        "stackCount": 24,
+        "stackCount": 1,
         "typeId": "BASE_STAT_BOOSTER",
         "typePregenArgs": [
             4
@@ -306,7 +306,7 @@
         ],
         "className": "SurviveDamageModifier",
         "player": true,
-        "stackCount": 5,
+        "stackCount": 1,
         "typeId": "FOCUS_BAND"
     },
     {
@@ -316,7 +316,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 2,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             1
@@ -329,7 +329,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 2,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             2
@@ -342,7 +342,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             4
@@ -355,7 +355,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             5
@@ -368,7 +368,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             6
@@ -381,7 +381,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 2,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             1
@@ -394,7 +394,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             4
@@ -406,7 +406,7 @@
         ],
         "className": "HealingBoosterModifier",
         "player": true,
-        "stackCount": 5,
+        "stackCount": 1,
         "typeId": "HEALING_CHARM"
     },
     {
@@ -416,7 +416,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             5
@@ -429,7 +429,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             8
@@ -442,7 +442,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 2,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             0
@@ -455,7 +455,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             5
@@ -468,7 +468,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             6
@@ -480,7 +480,7 @@
         ],
         "className": "HitHealModifier",
         "player": true,
-        "stackCount": 4,
+        "stackCount": 1,
         "typeId": "SHELL_BELL"
     },
     {
@@ -490,7 +490,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             9
@@ -529,7 +529,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             4
@@ -542,7 +542,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             3
@@ -555,7 +555,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             8
@@ -568,7 +568,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             7
@@ -581,7 +581,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             7
@@ -591,7 +591,7 @@
         "args": null,
         "className": "IvScannerModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "IV_SCANNER"
     },
     {
@@ -601,7 +601,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 2,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             10
@@ -614,7 +614,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             3
@@ -627,7 +627,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 2,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             2
@@ -639,7 +639,7 @@
         ],
         "className": "PokemonMultiHitModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "MULTI_LENS"
     },
     {
@@ -662,7 +662,7 @@
         ],
         "className": "PokemonBaseStatModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BASE_STAT_BOOSTER",
         "typePregenArgs": [
             3
@@ -714,7 +714,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 2,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             10
@@ -727,7 +727,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             4
@@ -740,7 +740,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             6
@@ -753,7 +753,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 2,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             1
@@ -766,7 +766,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             3
@@ -779,7 +779,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             9
@@ -792,7 +792,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 2,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             0
@@ -805,7 +805,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             7
@@ -818,7 +818,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 2,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             2
@@ -831,7 +831,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             5
@@ -844,7 +844,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             8
@@ -857,7 +857,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 2,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             2
@@ -870,7 +870,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 2,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             1
@@ -883,7 +883,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             5
@@ -896,7 +896,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 2,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             10
@@ -909,7 +909,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 2,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             0
@@ -922,7 +922,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             8
@@ -934,7 +934,7 @@
         ],
         "className": "TurnHealModifier",
         "player": true,
-        "stackCount": 4,
+        "stackCount": 1,
         "typeId": "LEFTOVERS"
     },
     {
@@ -944,7 +944,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             5
@@ -957,7 +957,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             4
@@ -969,7 +969,7 @@
         ],
         "className": "BypassSpeedChanceModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "QUICK_CLAW"
     },
     {
@@ -979,7 +979,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             3
@@ -992,7 +992,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             7
@@ -1005,7 +1005,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             8
@@ -1018,7 +1018,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             4
@@ -1030,7 +1030,7 @@
         ],
         "className": "PokemonFriendshipBoosterModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "SOOTHE_BELL"
     },
     {
@@ -1040,7 +1040,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 2,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             2
@@ -1053,7 +1053,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             9
@@ -1063,7 +1063,7 @@
         "args": null,
         "className": "HiddenAbilityRateBoosterModifier",
         "player": true,
-        "stackCount": 4,
+        "stackCount": 1,
         "typeId": "ABILITY_CHARM"
     },
     {
@@ -1073,7 +1073,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             6
@@ -1086,7 +1086,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             3
@@ -1099,7 +1099,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             8
@@ -1112,7 +1112,7 @@
         ],
         "className": "PokemonMoveAccuracyBoosterModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "WIDE_LENS"
     },
     {
@@ -1122,7 +1122,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             3
@@ -1132,7 +1132,7 @@
         "args": null,
         "className": "ShinyRateBoosterModifier",
         "player": true,
-        "stackCount": 4,
+        "stackCount": 1,
         "typeId": "SHINY_CHARM"
     },
     {
@@ -1151,7 +1151,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 2,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             0
@@ -1164,7 +1164,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             9
@@ -1177,7 +1177,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             9
@@ -1191,7 +1191,7 @@
         ],
         "className": "AttackTypeBoosterModifier",
         "player": true,
-        "stackCount": 12,
+        "stackCount": 1,
         "typeId": "ATTACK_TYPE_BOOSTER",
         "typePregenArgs": [
             14
@@ -1204,7 +1204,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             9
@@ -1217,7 +1217,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             6
@@ -1231,7 +1231,7 @@
         ],
         "className": "AttackTypeBoosterModifier",
         "player": true,
-        "stackCount": 13,
+        "stackCount": 1,
         "typeId": "ATTACK_TYPE_BOOSTER",
         "typePregenArgs": [
             9
@@ -1245,7 +1245,7 @@
         ],
         "className": "AttackTypeBoosterModifier",
         "player": true,
-        "stackCount": 7,
+        "stackCount": 1,
         "typeId": "ATTACK_TYPE_BOOSTER",
         "typePregenArgs": [
             3
@@ -1258,7 +1258,7 @@
         ],
         "className": "PokemonExpBoosterModifier",
         "player": true,
-        "stackCount": 99,
+        "stackCount": 1,
         "typeId": "LUCKY_EGG"
     },
     {
@@ -1269,7 +1269,7 @@
         ],
         "className": "AttackTypeBoosterModifier",
         "player": true,
-        "stackCount": 12,
+        "stackCount": 1,
         "typeId": "ATTACK_TYPE_BOOSTER",
         "typePregenArgs": [
             6
@@ -1283,7 +1283,7 @@
         ],
         "className": "AttackTypeBoosterModifier",
         "player": true,
-        "stackCount": 21,
+        "stackCount": 1,
         "typeId": "ATTACK_TYPE_BOOSTER",
         "typePregenArgs": [
             13
@@ -1296,7 +1296,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 2,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             2
@@ -1310,7 +1310,7 @@
         ],
         "className": "AttackTypeBoosterModifier",
         "player": true,
-        "stackCount": 5,
+        "stackCount": 1,
         "typeId": "ATTACK_TYPE_BOOSTER",
         "typePregenArgs": [
             17
@@ -1323,7 +1323,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             6
@@ -1336,7 +1336,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 2,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             0
@@ -1349,7 +1349,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             7
@@ -1362,7 +1362,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 2,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             1
@@ -1375,7 +1375,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 2,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             0
@@ -1389,7 +1389,7 @@
         ],
         "className": "AttackTypeBoosterModifier",
         "player": true,
-        "stackCount": 16,
+        "stackCount": 1,
         "typeId": "ATTACK_TYPE_BOOSTER",
         "typePregenArgs": [
             5
@@ -1412,7 +1412,7 @@
         ],
         "className": "AttackTypeBoosterModifier",
         "player": true,
-        "stackCount": 14,
+        "stackCount": 1,
         "typeId": "ATTACK_TYPE_BOOSTER",
         "typePregenArgs": [
             7
@@ -1425,7 +1425,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 3,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             7
@@ -1438,7 +1438,7 @@
         ],
         "className": "BerryModifier",
         "player": true,
-        "stackCount": 2,
+        "stackCount": 1,
         "typeId": "BERRY",
         "typePregenArgs": [
             1
@@ -1451,7 +1451,7 @@
         ],
         "className": "PokemonExpBoosterModifier",
         "player": true,
-        "stackCount": 19,
+        "stackCount": 1,
         "typeId": "GOLDEN_EGG"
     },
     {
@@ -1462,7 +1462,7 @@
         ],
         "className": "AttackTypeBoosterModifier",
         "player": true,
-        "stackCount": 26,
+        "stackCount": 1,
         "typeId": "ATTACK_TYPE_BOOSTER",
         "typePregenArgs": [
             16
@@ -1476,7 +1476,7 @@
         ],
         "className": "AttackTypeBoosterModifier",
         "player": true,
-        "stackCount": 18,
+        "stackCount": 1,
         "typeId": "ATTACK_TYPE_BOOSTER",
         "typePregenArgs": [
             4
@@ -1490,7 +1490,7 @@
         ],
         "className": "AttackTypeBoosterModifier",
         "player": true,
-        "stackCount": 15,
+        "stackCount": 1,
         "typeId": "ATTACK_TYPE_BOOSTER",
         "typePregenArgs": [
             12
@@ -1504,7 +1504,7 @@
         ],
         "className": "AttackTypeBoosterModifier",
         "player": true,
-        "stackCount": 64,
+        "stackCount": 1,
         "typeId": "ATTACK_TYPE_BOOSTER",
         "typePregenArgs": [
             0
@@ -1518,7 +1518,7 @@
         ],
         "className": "AttackTypeBoosterModifier",
         "player": true,
-        "stackCount": 16,
+        "stackCount": 1,
         "typeId": "ATTACK_TYPE_BOOSTER",
         "typePregenArgs": [
             8
@@ -1532,7 +1532,7 @@
         ],
         "className": "AttackTypeBoosterModifier",
         "player": true,
-        "stackCount": 18,
+        "stackCount": 1,
         "typeId": "ATTACK_TYPE_BOOSTER",
         "typePregenArgs": [
             15
@@ -1546,7 +1546,7 @@
         ],
         "className": "AttackTypeBoosterModifier",
         "player": true,
-        "stackCount": 18,
+        "stackCount": 1,
         "typeId": "ATTACK_TYPE_BOOSTER",
         "typePregenArgs": [
             2
@@ -1560,7 +1560,7 @@
         ],
         "className": "AttackTypeBoosterModifier",
         "player": true,
-        "stackCount": 25,
+        "stackCount": 1,
         "typeId": "ATTACK_TYPE_BOOSTER",
         "typePregenArgs": [
             10
@@ -1573,7 +1573,7 @@
         ],
         "className": "PokemonExpBoosterModifier",
         "player": true,
-        "stackCount": 15,
+        "stackCount": 1,
         "typeId": "LUCKY_EGG"
     },
     {
@@ -1584,7 +1584,7 @@
         ],
         "className": "AttackTypeBoosterModifier",
         "player": true,
-        "stackCount": 28,
+        "stackCount": 1,
         "typeId": "ATTACK_TYPE_BOOSTER",
         "typePregenArgs": [
             11
@@ -1598,7 +1598,7 @@
         ],
         "className": "AttackTypeBoosterModifier",
         "player": true,
-        "stackCount": 27,
+        "stackCount": 1,
         "typeId": "ATTACK_TYPE_BOOSTER",
         "typePregenArgs": [
             1

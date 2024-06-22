@@ -28,7 +28,8 @@ import os
 from datetime import datetime, timedelta
 import requests
 from utilities import cFormatter, Color
-version: str = 'v0.3.1'
+version: str = 'v0.3.2'
+title: str = f'<(^.^(< pyRogue {version} >)^.^)>'
 owner: str = 'rogueEdit'
 repo: str = 'onlineRogueEditor'
 repo_url: str = f'https://github.com/{owner}/{repo}/'

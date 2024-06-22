@@ -10,3 +10,4 @@ src/slot_1.json
 /src/backup
 .vs/*
 /src/.vs
+src/modules/dev/slot_2.json

@@ -60,6 +60,8 @@ from datetime import datetime, timedelta
 init()
 config.initialize_folders()
 logger = CustomLogger()
+config.check_for_updates(requests, datetime, timedelta, Style)
+config.initialize_text()
 
 def main():
     """
@@ -108,18 +110,17 @@ def main():
         - colorama: For terminal text color formatting.
         - CustomLogger: Custom logging functionality.
     """
+
     while True:
         # Check for updates
-        config.check_for_updates(requests, datetime, timedelta, Style)
         # Print the welcome text
-        config.initialize_text()
         
         # Try loginChoice
         try:
             loginChoice = int(input('Please choose a method of logging in: '))
-        except ValueError:
-            cFormatter.print(Color.CRITICAL, 'Invalid choice. Please enter a number.')
-            continue
+            if int(loginChoice) not in [1, 2, 3]:
+                cFormatter.print(Color.DEBUG, 'Please choose a valid option.')
+                continue
         except KeyboardInterrupt:
             cFormatter.print(Color.DEBUG, '\nProgram interrupted by user.')
             exit()
@@ -170,7 +171,7 @@ def main():
 
     # Define menu variables and our menu
     useWhenDone = f'{Fore.LIGHTYELLOW_EX}(Use when Done)'
-    title = f'<pyRogue {config.version}>'
+    title = f'{config.title}>'
 
     # See cFormatter.initialize_menu() for more information
     term = [
@@ -179,7 +180,7 @@ def main():
         (('Create a backup', ''), rogue.create_backup),
         (('Recover your backup', ''), rogue.restore_backup),
         (('Load Game-Data from server', ''), rogue.get_trainer_data),
-        (('Load SaveSlot-Data from server', ''), rogue.get_gamesave_data),
+        (('Change save-slot to edit', ''), rogue.change_save_slot),
         (('Edit account stats', ''), rogue.edit_account_stats),
 
         ('Trainer Data Actions', 'category'),
@@ -217,24 +218,22 @@ def main():
     ]
 
     try:
+
         while True:
-            print('')
-            # Retrieve valid choices linked to our functions
             valid_choices = cFormatter.initialize_menu(term)
             user_input = input('Command: ').strip().lower()
 
             if user_input == 'exit':
                 raise KeyboardInterrupt
             
-            # Handle triggering the chosen function
             if user_input.isdigit():
                 choice_index = int(user_input)
                 for idx, func in valid_choices:
                     if idx == choice_index:
-                        func()  # Call the associated function
+                        func()
                         break
                     elif idx == 'exit':
-                        KeyboardInterrupt()
+                        raise KeyboardInterrupt
                 else:
                     cFormatter.print(Color.INFO, 'Invalid selection. Please choose a valid menu option.')
             else:
@@ -243,6 +242,5 @@ def main():
     except KeyboardInterrupt:
         cFormatter.print(Color.DEBUG, '\nProgram interrupted by user.')
         exit()
-
 if __name__ == '__main__':
     main()
