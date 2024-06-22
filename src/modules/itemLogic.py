@@ -14,6 +14,7 @@ from enum import Enum
 from dataclasses import dataclass, field, asdict
 from typing import Any, List, Optional
 from modules.config import version
+from collections import defaultdict
 
 @dataclass
 class Modifier:
@@ -123,8 +124,8 @@ class ModifierType(Enum):
     LUCKY_EGG = Modifier(args=[None, None], className='PokemonExpBoosterModifier', player=True, stackCount=1, typeId='LUCKY_EGG', description='Increases the holder\'s gain of EXP. Points by 40%.', customName='Lucky Egg', customType='OtherHoldable', maxStack='99')
     GOLDEN_EGG = Modifier(args=[None, None], className='PokemonExpBoosterModifier', player=True, stackCount=1, typeId='GOLDEN_EGG', description='Increases the holder\'s gain of EXP. Points by 100%. ', customName='Golden Pokbeall', customType='OtherHoldable', maxStack='99')
     # Dangerous Items
-    TOXIC_ORB = Modifier(args=[None], className='TurnStatusEffectModifier', player=True, stackCount=1, typeId='TOXIC_ORB', description='Badly poisons its holder at the end of the turn if they do not have a status condition already', customName='Other Holdable', customType='Orb', maxStack='1')
-    FIRE_ORB = Modifier(args=[None], className='TurnStatusEffectModifier', player=True, stackCount=1, typeId='FIRE_ORB', description='Burns its holder at the end of the turn if they do not have a status condition already.', customName='Other Holdable', customType='Orb', maxStack='1')
+    TOXIC_ORB = Modifier(args=[None], className='TurnStatusEffectModifier', player=True, stackCount=1, typeId='TOXIC_ORB', description='Badly poisons its holder at the end of the turn if they do not have a status condition already', customName='Toxic Orb', customType='Orb', maxStack='1')
+    FIRE_ORB = Modifier(args=[None], className='TurnStatusEffectModifier', player=True, stackCount=1, typeId='FIRE_ORB', description='Burns its holder at the end of the turn if they do not have a status condition already.', customName='Fire Orb', customType='Orb', maxStack='1')
 
     
 
@@ -135,50 +136,45 @@ class ModifierEditor:
     def create_menu_items(self):
         menu_items = [(f'{version}', 'title')]
 
-        # Add Stat booster chunk of modifiers
-        menu_items.append(('StatBooster', 'category'))
-        menu_items.extend(self.create_menu_items_chunk(0, 18)) #StatBooster modifiers here
+        # Group the modifiers by customType
+        modifiers_by_type = defaultdict(list)
+        for modifier in ModifierType:
+            modifiers_by_type[modifier.value.customType].append(modifier)
 
-        # Add vitamin chunk of modifiers
-        menu_items.append(('Vitamin', 'category'))
-        menu_items.extend(self.create_menu_items_chunk(18, 24)) #Vitamins modifiers here
+        # Define the order of categories
+        category_order = [
+            'StatBooster',
+            'Vitamin',
+            'XItem',
+            'Berry',
+            'PassiveBoost',
+            'OtherHoldable',
+            'Orb'  # Assuming Orb as 'Danger' type based on your examples
+        ]
 
-        # Add x-attack chunk of modifiers
-        menu_items.append(('XItem', 'category'))
-        menu_items.extend(self.create_menu_items_chunk(24, 31)) #XAttack modifiers here
-
-        # Add  berry chunk of modifiers
-        menu_items.append(('Berrys', 'category'))
-        menu_items.extend(self.create_menu_items_chunk(31, 43)) #Berry modifiers here
-
-        # Add other holdable modifiers
-        menu_items.append(('Passive Boosts', 'category'))
-        menu_items.extend(self.create_menu_items_chunk(43, 58)) #PassiveBoost modifiers here
-
-        # Add other holdable modifiers
-        menu_items.append(('Other holdables', 'category'))
-        menu_items.extend(self.create_menu_items_chunk(58, 77)) #OtherHoldables modifiers here
-
-        # Add dangerous modifiers 
-        menu_items.append(('Dangeours Orbs', 'category'))
-        menu_items.extend(self.create_menu_items_chunk(77, 79)) #DangerousOtherHoldables
+        # Dynamically create menu items based on the customType categories
+        for category in category_order:
+            if category in modifiers_by_type:
+                menu_items.append((category, 'category'))
+                menu_items.extend(self.create_menu_items_chunk(modifiers_by_type[category]))
 
         # Add closing part
         menu_items.append(("pyRogue Item Editor", 'category'))
         menu_items.append((("Give all Modifiers", "Give All"), self.do_all_modifiers))
         menu_items.append((('Return to Main Menu', f'{Fore.LIGHTYELLOW_EX}Use when done'), self.end))
         menu_items.append(("You can save these changes in the Main Menu", 'title'))
+        
         return menu_items
 
-    def create_menu_items_chunk(self, start_index, end_index):
+    def create_menu_items_chunk(self, modifiers):
         chunk = []
-        for idx, mod_type in enumerate(list(ModifierType)[start_index:end_index]):
+        for mod_type in modifiers:
             # Extracting the ModifierType name
             mod_name = mod_type.name
             modifier = mod_type.value
             # Combining typeId with typePregenArgs if present
             type_info = modifier.typeId
-            if modifier.typePregenArgs:
+            if hasattr(modifier, 'typePregenArgs') and modifier.typePregenArgs:
                 type_info += f" ({', '.join(map(str, modifier.typePregenArgs))})"
             # Appending to chunk
             chunk.append(((mod_name, type_info), mod_type))
@@ -265,21 +261,24 @@ class ModifierEditor:
                         chosen_item(sessionSlot)
                 else:
                     selected_modifier = chosen_item
+                    cFormatter.print(Color.DEBUG, f'Item Description: {selected_modifier.value.description}')
+                    cFormatter.print(Color.DEBUG, f'Max Stacks: {selected_modifier.value.maxStacks}')
                     party_num = int(input('Select the party slot of the Pokémon you want to edit (0-5): '))
                     if party_num < 0 or party_num > 5:
                         cFormatter.print(Color.ERROR, "Invalid party slot, please try again.")
-                        continue
-
+                    
                     stacks_raw = self.ensure_modifiers_block(existing_data, selected_modifier.value.typeId)
                     if stacks_raw:
-                        stack_count = int(input(f"You already have {stacks_raw} of {selected_modifier.value.typeId}. Set it to: "))
+                        stack_count = int(input(f"You already have {stacks_raw} of {selected_modifier.value.customName}. Set new value too: "))
                     else:
-                        stack_count = int(input(f'How many {selected_modifier.value.typeId} do you want?: '))
+                        stack_count = int(input(f'How many {selected_modifier.value.customName} do you want?: '))
 
                     self.add_or_update_modifier(existing_data, selected_modifier, stack_count, party_num, sessionSlot)
 
             except ValueError:
                 cFormatter.print(Color.ERROR, "Invalid input, please enter a number.")
+            except KeyboardInterrupt:
+                break
 
     def do_all_modifiers(self, sessionSlot):
         try:
