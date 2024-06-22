@@ -1,3 +1,10 @@
+# Authors
+# Organization: https://github.com/rogueEdit/
+# Repository: https://github.com/rogueEdit/OnlineRogueEditor
+# Contributors: https://github.com/JulianStiebler/
+# Date of release: 13.06.2024 
+# Last Edited: 20.06.2024
+
 import json
 from utilities import cFormatter, Color
 from colorama import Fore, Style
@@ -46,7 +53,7 @@ class ModifierEditor:
         for mod_type in ModifierType:
             mod_name = mod_type.value.className.replace(' ', '')  # Ensure no spaces in className
             menu_items.append(((mod_name, mod_type.value.typeId), mod_type))
-            
+
         menu_items.append(("pyRogue Item Editor", 'category'))
         menu_items.append((("Apply All Modifiers", "Give All"), self.do_all_modifiers))
         menu_items.append((('Return to Main Menu', f'{Fore.LIGHTYELLOW_EX}Use when done'), self.end))
