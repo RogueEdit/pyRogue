@@ -262,7 +262,7 @@ class ModifierEditor:
                 else:
                     selected_modifier = chosen_item
                     cFormatter.print(Color.DEBUG, f'Item Description: {selected_modifier.value.description}')
-                    cFormatter.print(Color.DEBUG, f'Max Stacks: {selected_modifier.value.maxStacks}')
+                    cFormatter.print(Color.DEBUG, f'Max Stacks: {selected_modifier.value.maxStack}')
                     party_num = int(input('Select the party slot of the Pokémon you want to edit (0-5): '))
                     if party_num < 0 or party_num > 5:
                         cFormatter.print(Color.ERROR, "Invalid party slot, please try again.")
@@ -278,7 +278,7 @@ class ModifierEditor:
             except ValueError:
                 cFormatter.print(Color.ERROR, "Invalid input, please enter a number.")
             except KeyboardInterrupt:
-                break
+                return
 
     def do_all_modifiers(self, sessionSlot):
         try:
