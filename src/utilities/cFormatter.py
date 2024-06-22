@@ -280,7 +280,7 @@ class cFormatter(logging.Formatter):
         return f"{front_fill}{text}{back_fill}"
 
     @staticmethod
-    def initialize_menu(term: List[Union[str, Tuple[str, str, Optional[str]], Tuple[str, callable]]]) -> List[Tuple[int, callable]]:
+    def initialize_menu(term: List[Union[str, Tuple[str, str, Optional[str]], Tuple[str, callable]]], length: Optional[int] = 55) -> List[Tuple[int, callable]]:
         """
         Initializes and prints a menu based on the provided term list.
         
@@ -316,19 +316,19 @@ class cFormatter(logging.Formatter):
         for item in term:
             if isinstance(item, tuple):
                 if item[1] == 'helper':
-                    print(Fore.GREEN + '* ' + cFormatter.center_text(f' {item[0]} ', 55, '-') + f' {Fore.GREEN}*' + Style.RESET_ALL)
+                    print(Fore.GREEN + '* ' + cFormatter.center_text(f' {item[0]} ', length, '-') + f' {Fore.GREEN}*' + Style.RESET_ALL)
                 elif item[1] == 'title':
-                    print(Fore.GREEN + '* ' + cFormatter.center_text(f' {item[0]} ', 55, '*') + f' {Fore.GREEN}*' + Style.RESET_ALL)
+                    print(Fore.GREEN + '* ' + cFormatter.center_text(f' {item[0]} ', length, '*') + f' {Fore.GREEN}*' + Style.RESET_ALL)
                 elif item[1] == 'category':
-                    print(Fore.LIGHTYELLOW_EX + '* ' + cFormatter.center_text(f' {item[0]} ', 55, '>') + f' {Fore.GREEN}*' + Style.RESET_ALL)
+                    print(Fore.LIGHTYELLOW_EX + '* ' + cFormatter.center_text(f' {item[0]} ', length, '>') + f' {Fore.GREEN}*' + Style.RESET_ALL)
                 else:
                     text, func = item
                     line = f'{actual_idx}: {text[0]}'
-                    formatted_line = cFormatter.line_fill(line, text[1], 55, ' ', True)
+                    formatted_line = cFormatter.line_fill(line, text[1], length, ' ', True)
                     print(Fore.GREEN + '* ' + formatted_line + f' {Fore.GREEN}*' + Style.RESET_ALL)
                     valid_choices.append((actual_idx, func))
                     actual_idx += 1
             else:
-                print(Fore.YELLOW + '* ' + cFormatter.center_text(item, 55, '*') + ' *' + Style.RESET_ALL)
+                print(Fore.YELLOW + '* ' + cFormatter.center_text(item, length, '*') + ' *' + Style.RESET_ALL)
         
         return valid_choices
