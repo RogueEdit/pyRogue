@@ -46,7 +46,7 @@ class ModifierType(Enum):
     SILK_SCARF = Modifier(args=[None, 0, 20], className='AttackTypeBoosterModifier', player=True, stackCount=1, typeId='ATTACK_TYPE_BOOSTER', typePregenArgs=[0], description='Boosts NORMAL types.', customName='Silk Scarf', customType='StatBooster', maxStack='99')                           
     BLACK_BELT = Modifier(args=[None, 1, 20], className='AttackTypeBoosterModifier', player=True, stackCount=1, typeId='ATTACK_TYPE_BOOSTER', typePregenArgs=[1], description='Boosts FIGHT types.', customName='Black Belt', customType='StatBooster', maxStack='99', shortDescription='Test')
     SHARP_BEAK = Modifier(args=[None, 2, 20], className='AttackTypeBoosterModifier', player=True, stackCount=1, typeId='ATTACK_TYPE_BOOSTER', typePregenArgs=[2], description='Boosts FLYING types.', customName='Sharp Beak', customType='StatBooster', maxStack='99')
-    POISON_BARB = Modifier(args=[None, 3, 20], className='AttackTypeBoosterModifier', player=True, stackCount=1, typeId='ATTACK_TYPE_BOOSTER', typePregenArgs=[3], description='Boosts POISON types.', customName='Poison Barb', customType='StatBooster', maxStack='')
+    POISON_BARB = Modifier(args=[None, 3, 20], className='AttackTypeBoosterModifier', player=True, stackCount=1, typeId='ATTACK_TYPE_BOOSTER', typePregenArgs=[3], description='Boosts POISON types.', customName='Poison Barb', customType='StatBooster', maxStack='99')
     SOFT_SAND = Modifier(args=[None, 4, 20], className='AttackTypeBoosterModifier', player=True, stackCount=1, typeId='ATTACK_TYPE_BOOSTER', typePregenArgs=[4], description='Boosts GROUND types.', customName='Soft Sand', customType='StatBooster', maxStack='99')
     HARD_STONE = Modifier(args=[None, 5, 20], className='AttackTypeBoosterModifier', player=True, stackCount=1, typeId='ATTACK_TYPE_BOOSTER', typePregenArgs=[5], description='Boosts ROCK types.', customName='Hard Stone', customType='StatBooster', maxStack='99')
     SILVER_POWDER = Modifier(args=[None, 6, 20], className='AttackTypeBoosterModifier', player=True, stackCount=1, typeId='ATTACK_TYPE_BOOSTER', typePregenArgs=[6], description='Boosts BUG types.', customName='Silver Powder', customType='StatBooster', maxStack='99')
@@ -69,13 +69,13 @@ class ModifierType(Enum):
     ZINC = Modifier(args=[None, 4], className='PokemonBaseStatModifier', player=True, stackCount=1, typeId='BASE_STAT_BOOSTER', typePregenArgs=[4], description='Increases Special Defense.', customName='Zinc', customType='Vitamin', maxStack='20')
     CARBOS = Modifier(args=[None, 5], className='PokemonBaseStatModifier', player=True, stackCount=1, typeId='BASE_STAT_BOOSTER', typePregenArgs=[5], description='Increases Speed.', customName='Carbos', customType='Vitamin', maxStack='20')
     #X Attack
-    X_ATTACK = Modifier(args=[0, 5], className='TempBattleStatBoosterModifier', player=True, stackCount=1, typeId='TEMP_STAT_BOOSTER', typePregenArgs=[0], description='Increases Attack', customName='X Attack', customType='XItem', maxStack='')
-    X_DEFENSE = Modifier(args=[1, 5], className='TempBattleStatBoosterModifier', player=True, stackCount=1, typeId='TEMP_STAT_BOOSTER', typePregenArgs=[1], description='Increases Defense', customName='X Defense', customType='XItem', maxStack='')
-    X_SP_ATK = Modifier(args=[2, 5], className='TempBattleStatBoosterModifier', player=True, stackCount=1, typeId='TEMP_STAT_BOOSTER', typePregenArgs=[2], description='Increases Special Attack', customName='X Special Attack', customType='XItem', maxStack='')
-    X_SP_DEF = Modifier(args=[3, 5], className='TempBattleStatBoosterModifier', player=True, stackCount=1, typeId='TEMP_STAT_BOOSTER', typePregenArgs=[3], description='Increases Special Defense', customName='X Special Defense', customType='XItem', maxStack='')
-    X_SPEED = Modifier(args=[4, 5], className='TempBattleStatBoosterModifier', player=True, stackCount=1, typeId='TEMP_STAT_BOOSTER', typePregenArgs=[4], description='Increases Speed', customName='X Speed', customType='XItem', maxStack='')
-    X_ACCURACY = Modifier(args=[5, 5], className='TempBattleStatBoosterModifier', player=True, stackCount=1, typeId='TEMP_STAT_BOOSTER', typePregenArgs=[5], description='Increases Accuracy', customName='X Accuracy', customType='XItem', maxStack='')
-    X_DIRE_HIT = Modifier(args=[6, 5], className='TempBattleStatBoosterModifier', player=True, stackCount=1, typeId='TEMP_STAT_BOOSTER', typePregenArgs=[6], description='Increases Critical%', customName='X Dire Hit', customType='XItem', maxStack='')
+    X_ATTACK = Modifier(args=[0, 5], className='TempBattleStatBoosterModifier', player=True, stackCount=1, typeId='TEMP_STAT_BOOSTER', typePregenArgs=[0], description='Increases Attack', customName='X Attack', customType='XItem', maxStack='99')
+    X_DEFENSE = Modifier(args=[1, 5], className='TempBattleStatBoosterModifier', player=True, stackCount=1, typeId='TEMP_STAT_BOOSTER', typePregenArgs=[1], description='Increases Defense', customName='X Defense', customType='XItem', maxStack='99')
+    X_SP_ATK = Modifier(args=[2, 5], className='TempBattleStatBoosterModifier', player=True, stackCount=1, typeId='TEMP_STAT_BOOSTER', typePregenArgs=[2], description='Increases Special Attack', customName='X Special Attack', customType='XItem', maxStack='99')
+    X_SP_DEF = Modifier(args=[3, 5], className='TempBattleStatBoosterModifier', player=True, stackCount=1, typeId='TEMP_STAT_BOOSTER', typePregenArgs=[3], description='Increases Special Defense', customName='X Special Defense', customType='XItem', maxStack='99')
+    X_SPEED = Modifier(args=[4, 5], className='TempBattleStatBoosterModifier', player=True, stackCount=1, typeId='TEMP_STAT_BOOSTER', typePregenArgs=[4], description='Increases Speed', customName='X Speed', customType='XItem', maxStack='99')
+    X_ACCURACY = Modifier(args=[5, 5], className='TempBattleStatBoosterModifier', player=True, stackCount=1, typeId='TEMP_STAT_BOOSTER', typePregenArgs=[5], description='Increases Accuracy', customName='X Accuracy', customType='XItem', maxStack='99')
+    X_DIRE_HIT = Modifier(args=[6, 5], className='TempBattleStatBoosterModifier', player=True, stackCount=1, typeId='TEMP_STAT_BOOSTER', typePregenArgs=[6], description='Increases Critical%', customName='X Dire Hit', customType='XItem', maxStack='99')
     # Berrys
     APICOT_BERRY = Modifier(args=[None, 6], className='BerryModifier', player=True, stackCount=1, typeId='BERRY', typePregenArgs=[6], shortDescription='+SP Def when below 25% HP', description='Raises Sp. Def if HP is below 25%.', customName='Apicot Berry', customType='Berry', maxStack='3')
     ENIGMA_BERRY = Modifier(args=[None, 2], className='BerryModifier', player=True, stackCount=1, typeId='BERRY', typePregenArgs=[2], shortDescription='Heals 25% when critical hit', description='Restores 25% HP if hit by a super effective move.', customName='Enigma Berry', customType='Berry', maxStack='2')
@@ -101,11 +101,11 @@ class ModifierType(Enum):
     GOLDEN_EXP_CHARM = Modifier(args=[None], className='ExpBoosterModifier', player=True, stackCount=1, typeId='GOLDEN_EXP_CHARM', shortDescription='+100% EXP Gain', description='Increases gain of EXP. Points by 100%. ', customName='Golden EXP Charm', customType='PassiveBoost', maxStack='10')
     SHINY_CHARM = Modifier(args=None, className='ShinyRateBoosterModifier', player=True, stackCount=1, typeId='SHINY_CHARM', shortDescription='Increase shiny encounter %', description='Dramatically increases the chance of a wild Pokémon being Shiny.', customName='Shiny Charm', customType='PassiveBoost', maxStack='4')
     ABILITY_CHARM = Modifier(args=None, className='HiddenAbilityRateBoosterModifier', player=True, stackCount=1, typeId='ABILITY_CHARM', shortDescription='Wild pokemon hidden ability chance increased', description='Dramatically increases the chance of a wild Pokémon having a Hidden Ability.', customName='Ability Charm', customType='PassiveBoost', maxStack='3')                                                    
-    IV_SCANNER = Modifier(args=None, className='IvScannerModifier', player=True, stackCount=1, typeId='IV_SCANNER', shortDescription='Scan enemy IVs', description='Allows scanning the IVs of wild Pokémon. 2 IVs are revealed per stack. The best IVs are shown first.', customName='', customType='PassiveBoost', maxStack='1')
+    IV_SCANNER = Modifier(args=None, className='IvScannerModifier', player=True, stackCount=1, typeId='IV_SCANNER', shortDescription='Scan enemy IVs', description='Allows scanning the IVs of wild Pokémon. 2 IVs are revealed per stack. The best IVs are shown first.', customName='IV Scanner', customType='PassiveBoost', maxStack='1')
     MEGA_BRACELET = Modifier(args=None, className='MegaEvolutionAccessModifier', player=True, stackCount=1, typeId='MEGA_BRACELET', description='Mega Stones become available.', customName='Mega Bracelet', customType='PassiveBoost', maxStack='1')
     DYNAMAX_BAND = Modifier(args=None, className='GigantamaxAccessModifier', player=True, stackCount=1, typeId='DYNAMAX_BAND', description='Max Mushrooms become available.', customName='Dynamax Band', customType='PassiveBoost', maxStack='1')
     TERA_ORB = Modifier(args=None, className='TerastallizeAccessModifier', player=True, stackCount=1, typeId='TERA_ORB', description='Tera Shards become available.', customName='Tera Orb', customType='PassiveBoost', maxStack='3')
-    HEALING_CHARM = Modifier(args=[1.1], className='HealingBoosterModifier', player=True, stackCount=1, typeId='HEALING_CHARM', shortDescription='HP restoring moves heal 10% more', description='Increases the effectiveness of HP restoring moves and items by 10% (excludes Revives).', customName='IV Scanner', customType='PassiveBoost', maxStack='5')
+    HEALING_CHARM = Modifier(args=[1.1], className='HealingBoosterModifier', player=True, stackCount=1, typeId='HEALING_CHARM', shortDescription='HP restoring moves heal 10% more', description='Increases the effectiveness of HP restoring moves and items by 10% (excludes Revives).', customName='Healing Charm', customType='PassiveBoost', maxStack='5')
     # Other holdables
     REVIVER_SEED = Modifier(args=[None], className='PokemonInstantReviveModifier', player=True, stackCount=1, typeId='REVIVER_SEED', description='Revives the holder for 1/2 HP upon fainting.', customName='Reviver Seed', customType='OtherHoldable', maxStack='1')
     GOLDEN_PUNCH = Modifier(args=[None], className='DamageMoneyRewardModifier', player=True, stackCount=1, typeId='GOLDEN_PUNCH', description='Grants 50% of damage inflicted as money.', customName='Golden Punch', customType='OtherHoldable', maxStack='5')
@@ -123,7 +123,8 @@ class ModifierType(Enum):
     MINI_BLACK_HOLE = Modifier(args=[None], className='TurnHeldItemTransferModifier', player=True, stackCount=1, typeId='MINI_BLACK_HOLE', shortDescription='Steal one item each turn from enemy', description='Every turn, the holder acquires one held item from the foe.', customName='Mini Black Hole', customType='OtherHoldable', maxStack='1')
     LUCKY_EGG = Modifier(args=[None, None], className='PokemonExpBoosterModifier', player=True, stackCount=1, typeId='LUCKY_EGG', shortDescription='+40% EXP Gain', description='Increases the holder\'s gain of EXP. Points by 40%.', customName='Lucky Egg', customType='OtherHoldable', maxStack='99')
     GOLDEN_EGG = Modifier(args=[None, None], className='PokemonExpBoosterModifier', player=True, stackCount=1, typeId='GOLDEN_EGG', shortDescription='+100% EXP Gain', description='Increases the holder\'s gain of EXP. Points by 100%. ', customName='Golden Pokbeall', customType='OtherHoldable', maxStack='99')
-    FORM_CHANGE_ITEM0 = Modifier(args=[None, 0, True], className='PokemonFormChangeItemModifier', player=True, stackCount=1, typeId='FORM_CHANGE_ITEM', typePregenArgs=[0], description='Causes certain Pokémon to change form.', customName='FormChangeItem', customType='OtherHoldable', maxStack='1')
+    #FORM_CHANGE_ITEM0 = Modifier(args=[None, 0, True], className='PokemonFormChangeItemModifier', player=True, stackCount=1, typeId='FORM_CHANGE_ITEM', typePregenArgs=[0], description='Causes certain Pokémon to change form.', customName='FormChangeItem', customType='OtherHoldable', maxStack='1')
+    # the form change exists from 0-70... 
     # Dangerous Items
     TOXIC_ORB = Modifier(args=[None], className='TurnStatusEffectModifier', player=True, stackCount=1, typeId='TOXIC_ORB', shortDescription='Poison your pokemon', description='Badly poisons its holder at the end of the turn if they do not have a status condition already', customName='Toxic Orb', customType='Danger', maxStack='1')
     FIRE_ORB = Modifier(args=[None], className='TurnStatusEffectModifier', player=True, stackCount=1, typeId='FIRE_ORB', shortDescription='Burn your pokemon', description='Burns its holder at the end of the turn if they do not have a status condition already.', customName='Fire Orb', customType='Danger', maxStack='1')
@@ -178,7 +179,6 @@ class ModifierEditor:
         for mod_type in modifiers:
             # Extracting the ModifierType name
             modifier = mod_type.value
-            mod_name = modifier.customName
             mod_description = modifier.shortDescription if modifier.shortDescription else modifier.description
             """
                 # Combining typeId with typePregenArgs if present
@@ -187,7 +187,7 @@ class ModifierEditor:
                     type_info += f" ({', '.join(map(str, modifier.typePregenArgs))})"
                 # Appending to chunk
             """
-            chunk.append(((mod_name, mod_description), mod_type))
+            chunk.append(((modifier.customName, f'{mod_description} - (Max. {modifier.maxStack})'), mod_type))
         return chunk
 
     @staticmethod
@@ -259,7 +259,7 @@ class ModifierEditor:
                 break
             try:
                 print('')
-                valid_choices = cFormatter.initialize_menu(self.menu_items, length=65)
+                valid_choices = cFormatter.initialize_menu(self.menu_items, length=75)
                 if self.notify_message:
                     if self.notify_message[1] == 'success':
                         cFormatter.print(Color.GREEN, f'{self.notify_message[0]}')
@@ -324,7 +324,9 @@ class ModifierEditor:
         try:
             party_num = int(input('Select the party slot of the Pokémon you want to edit (0-5): '))
             if party_num < 0 or party_num > 5:
-                cFormatter.print(Color.ERROR, "Invalid party slot, please try again.")
+                message = 'Invalid party slot, please try again.'
+                cFormatter.print(Color.ERROR, message)
+                self.notify_message = (message, 'error')
                 return
 
             stack_count = int(input('Enter the stack count for the modifiers: '))
