@@ -1,10 +1,3 @@
-# Authors
-# Organization: https://github.com/rogueEdit/
-# Repository: https://github.com/rogueEdit/OnlineRogueEditor
-# Contributors: https://github.com/JulianStiebler/
-# Date of release: 13.06.2024 
-# Last Edited: 20.06.2024
-
 import json
 from utilities import cFormatter, Color
 from colorama import Fore, Style
@@ -51,18 +44,25 @@ class ModifierEditor:
     def create_menu_items(self):
         menu_items = [("\npyRogue Item Editor", 'title')]
         for mod_type in ModifierType:
-            mod_name = mod_type.value.className.replace(' ', '')  # Ensure no spaces in className
-            menu_items.append(((mod_name, mod_type.value.typeId), mod_type))
-
+            mod_name = self.format_modifier_name(mod_type.name)
+            type_id_with_args = self.format_type_id(mod_type.value.typeId, mod_type.value.typePregenArgs)
+            menu_items.append(((mod_name, type_id_with_args), mod_type))
+        menu_items.append((("Apply All Modifiers", ""),  self.do_all_modifiers))
         menu_items.append(("pyRogue Item Editor", 'category'))
-        menu_items.append((("Apply All Modifiers", "Give All"), self.do_all_modifiers))
-        menu_items.append((('Return to Main Menu', f'{Fore.LIGHTYELLOW_EX}Use when done'), self.end))
+        menu_items.append(("Return to Menu", f"{Fore.LIGHTYELLOW_EX}When done use this then save{Style.RESET_ALL}", self.end))
         menu_items.append(("pyRogue Item Editor", 'title'))
         return menu_items
+
 
     @staticmethod
     def format_modifier_name(name):
         return ' '.join([word.capitalize() for word in name.split('_')])
+
+    @staticmethod
+    def format_type_id(type_id, type_pregen_args):
+        if type_pregen_args:
+            return f"{type_id} ({', '.join(map(str, type_pregen_args))})"
+        return type_id
 
     @staticmethod
     def load_json(file_path):
@@ -75,11 +75,11 @@ class ModifierEditor:
             json.dump(data, file, indent=4)
 
     @staticmethod
-    def ensure_modifiers_block(data, type_id):
+    def ensure_modifiers_block(data, type_id, type_pregen_args):
         if 'modifiers' not in data or not isinstance(data['modifiers'], list):
             data['modifiers'] = []
         for modifier in data['modifiers']:
-            if modifier.get('typeId') == type_id:
+            if modifier.get('typeId') == type_id and modifier.get('typePregenArgs') == type_pregen_args:
                 return modifier.get('stackCount', 0)
         return None
 
@@ -88,7 +88,7 @@ class ModifierEditor:
         modifier.stackCount = stack
 
         # Handle args with poke_id
-        poke_id = data['party'][slot]['id']
+        poke_id = data['party'][slot]['id'] if 'party' in data and len(data['party']) > slot else None
         if modifier.args:
             modifier.args = [poke_id if arg is None else arg for arg in modifier.args]
 
@@ -99,6 +99,8 @@ class ModifierEditor:
             if existing_modifier['typeId'] != new_modifier['typeId']:
                 return False
             if existing_modifier.get('args') != new_modifier['args']:
+                return False
+            if existing_modifier.get('typePregenArgs') != new_modifier['typePregenArgs']:
                 return False
             return True
 
@@ -116,7 +118,6 @@ class ModifierEditor:
         cFormatter.print(Color.GREEN, f'Successfully added {modifier.stackCount} {modifier.typeId}.')
 
     def user_menu(self, sessionSlot):
-
         while True:
             try:
                 print('')
@@ -140,7 +141,7 @@ class ModifierEditor:
                         continue
 
                     existing_data = self.load_json(f'slot_{sessionSlot}.json')
-                    stacks_raw = self.ensure_modifiers_block(existing_data, selected_modifier.value.typeId)
+                    stacks_raw = self.ensure_modifiers_block(existing_data, selected_modifier.value.typeId, selected_modifier.value.typePregenArgs)
                     if stacks_raw:
                         stack_count = int(input(f"You already have {stacks_raw} of {selected_modifier.value.typeId}. Set it to: "))
                     else:
