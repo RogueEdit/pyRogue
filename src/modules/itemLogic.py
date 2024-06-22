@@ -9,7 +9,7 @@
 
 import json
 from utilities import cFormatter, Color
-from colorama import Fore
+from colorama import Fore, Style
 from enum import Enum
 from dataclasses import dataclass, field, asdict
 from typing import Any, List, Optional
@@ -132,6 +132,7 @@ class ModifierType(Enum):
 class ModifierEditor:
     def __init__(self):
         self.menu_items = self.create_menu_items()
+        self.notify_message = None
 
     def create_menu_items(self):
         menu_items = [(f'{version}', 'title')]
@@ -162,7 +163,9 @@ class ModifierEditor:
         menu_items.append(("pyRogue Item Editor", 'category'))
         menu_items.append((("Give all Modifiers", "Give All"), self.do_all_modifiers))
         menu_items.append((('Return to Main Menu', f'{Fore.LIGHTYELLOW_EX}Use when done'), self.end))
-        menu_items.append(("You can save these changes in the Main Menu", 'title'))
+        menu_items.append(('You can also STRG+C to return to the Main Menu', 'category'))
+        menu_items.append(('You can save these changes in the Main Menu', 'category'))
+        menu_items.append(('Enter any command to see what it does', 'category'))
         
         return menu_items
 
@@ -195,11 +198,13 @@ class ModifierEditor:
             json.dump(data, file, indent=4)
 
     @staticmethod
-    def ensure_modifiers_block(data, type_id):
+    def ensure_modifiers_block(data, type_id, type_pregen_args, poke_id):
         if 'modifiers' not in data or not isinstance(data['modifiers'], list):
             data['modifiers'] = []
         for modifier in data['modifiers']:
-            if modifier.get('typeId') == type_id:
+            if (modifier.get('typeId') == type_id and 
+                modifier.get('typePregenArgs') == type_pregen_args and
+                modifier.get('args') and modifier['args'][0] == poke_id):
                 return modifier.get('stackCount', 0)
         return None
 
@@ -244,6 +249,9 @@ class ModifierEditor:
             try:
                 print('')
                 valid_choices = cFormatter.initialize_menu(self.menu_items)
+                if self.notify_message:
+                    cFormatter.print(Color.INFO, self.notify_message)
+                    self.notify_message = None  # Reset the error message after displaying
                 choice = int(input("Select an option by number: ").strip())
                 selected_item = next((item for item in valid_choices if item[0] == choice), None)
 
@@ -261,17 +269,33 @@ class ModifierEditor:
                         chosen_item(sessionSlot)
                 else:
                     selected_modifier = chosen_item
-                    cFormatter.print(Color.DEBUG, f'Item Description: {selected_modifier.value.description}')
-                    cFormatter.print(Color.DEBUG, f'Max Stacks: {selected_modifier.value.maxStack}')
-                    party_num = int(input('Select the party slot of the Pokémon you want to edit (0-5): '))
-                    if party_num < 0 or party_num > 5:
-                        cFormatter.print(Color.ERROR, "Invalid party slot, please try again.")
+                    cFormatter.print(Color.DEBUG, 'You can always go back to the menu by typing anything not 0-5.')
+                    cFormatter.print(Color.DEBUG, f'Item Description: {Style.RESET_ALL}{selected_modifier.value.description}')
+                    cFormatter.print(Color.DEBUG, f'Max Stacks: {Style.RESET_ALL}{selected_modifier.value.maxStack}')
                     
-                    stacks_raw = self.ensure_modifiers_block(existing_data, selected_modifier.value.typeId)
-                    if stacks_raw:
-                        stack_count = int(input(f"You already have {stacks_raw} of {selected_modifier.value.customName}. Set new value too: "))
-                    else:
-                        stack_count = int(input(f'How many {selected_modifier.value.customName} do you want?: '))
+                    party_num_input = input('Select the party slot of the Pokémon you want to edit (0-5): ')
+                    try:
+                        party_num = int(party_num_input)
+                        if party_num < 0 or party_num > 5:
+                            raise ValueError
+                    except ValueError:
+                        cFormatter.print(Color.DEBUG, "Returning to the menu...")
+                        continue
+                    
+                    poke_id = existing_data['party'][party_num]['id']
+                    
+                    stacks_raw = self.ensure_modifiers_block(existing_data, selected_modifier.value.typeId, selected_modifier.value.typePregenArgs, poke_id)
+                    
+                    while True:
+                        if stacks_raw is not None:
+                            stack_count_input = input(f"You already have {stacks_raw} of {selected_modifier.value.customName}. Set new value to: ")
+                        else:
+                            stack_count_input = input(f'How many {selected_modifier.value.customName} do you want? or enter any invalid input to retry: ')
+                        try:
+                            stack_count = int(stack_count_input)
+                            break
+                        except ValueError:
+                            cFormatter.print(Color.ERROR, "Invalid input. Please enter a valid number.")
 
                     self.add_or_update_modifier(existing_data, selected_modifier, stack_count, party_num, sessionSlot)
 
@@ -279,6 +303,8 @@ class ModifierEditor:
                 cFormatter.print(Color.ERROR, "Invalid input, please enter a number.")
             except KeyboardInterrupt:
                 return
+            finally:
+                self.notify_message = 'Succesfully added modifier.'
 
     def do_all_modifiers(self, sessionSlot):
         try:
@@ -294,7 +320,8 @@ class ModifierEditor:
                     self.add_or_update_modifier(existing_data, mod_type, stack_count, party_num, sessionSlot)
             except Exception as e:
                 cFormatter.print(Color.WARNING, f'Something unexpected happened. {e}', isLogging=True)
-
+            finally:
+                self.notify_message = 'Succesfully added all modifiers.'
         except ValueError:
             cFormatter.print(Color.ERROR, "Invalid input, please enter a number.")
 
