@@ -104,7 +104,27 @@ class ModifierEditor:
 
     def create_menu_items(self):
         menu_items = [(f"\n{version}", 'title')]
-        for mod_type in ModifierType:
+
+        # Add first chunk of modifiers
+        menu_items.extend(self.create_menu_items_chunk(0, 15))
+        menu_items.append(("Next set of modifiers", 'intermediate'))
+
+        # Add second chunk of modifiers
+        menu_items.extend(self.create_menu_items_chunk(15, 30))
+        menu_items.append(("Next set of modifiers", 'intermediate'))
+
+        # Add third chunk of modifiers (if any)
+        menu_items.extend(self.create_menu_items_chunk(30, len(ModifierType)))
+
+        menu_items.append(("pyRogue Item Editor", 'category'))
+        menu_items.append((("Give all Modifiers", "Give All"), self.do_all_modifiers))
+        menu_items.append((('Return to Main Menu', f'{Fore.LIGHTYELLOW_EX}Use when done'), self.end))
+        menu_items.append(("You can save these changes in the Main Menu", 'title'))
+        return menu_items
+
+    def create_menu_items_chunk(self, start_index, end_index):
+        chunk = []
+        for idx, mod_type in enumerate(list(ModifierType)[start_index:end_index]):
             # Extracting the ModifierType name
             mod_name = mod_type.name
             modifier = mod_type.value
@@ -112,14 +132,9 @@ class ModifierEditor:
             type_info = modifier.typeId
             if modifier.typePregenArgs:
                 type_info += f" ({', '.join(map(str, modifier.typePregenArgs))})"
-            # Appending to menu_items
-            menu_items.append(((mod_name, type_info), mod_type))
-
-        menu_items.append(("pyRogue Item Editor", 'category'))
-        menu_items.append((("Give all Modifiers", "Give All"), self.do_all_modifiers))
-        menu_items.append((('Return to Main Menu', f'{Fore.LIGHTYELLOW_EX}Use when done'), self.end))
-        menu_items.append(("You can save these changed in the Main Menu", 'title'))
-        return menu_items
+            # Appending to chunk
+            chunk.append(((mod_name, type_info), mod_type))
+        return chunk
 
     @staticmethod
     def format_modifier_name(name):
