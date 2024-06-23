@@ -5,6 +5,7 @@
 # Date of release: 13.06.2024
 # Last Edited: 20.06.2024
 
+
 """
 This script facilitates user login and session initialization for PokeRogue. It offers a menu-driven interface to 
 perform various account and game data actions after a successful login using either requests or Selenium.
@@ -65,9 +66,6 @@ config.initialize_text()
 
 def main():
     while True:
-        # Check for updates
-        # Print the welcome text
-        
         # Try loginChoice
         try:
             loginChoice = input('Please choose a method of logging in: ')
