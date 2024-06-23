@@ -320,7 +320,7 @@ class cFormatter(logging.Formatter):
                 elif item[1] == 'title':
                     print(Fore.GREEN + '* ' + cFormatter.center_text(f' {item[0]} ', length, '*') + f' {Fore.GREEN}*' + Style.RESET_ALL)
                 elif item[1] == 'category':
-                    print(Fore.GREEN + '* ' + cFormatter.center_text(f' {item[0]} ', length, '>') + f' {Fore.GREEN}*' + Style.RESET_ALL)
+                    print(Fore.LIGHTYELLOW_EX + '* ' + cFormatter.center_text(f' {item[0]} ', length, '>') + ' *' + Style.RESET_ALL)
                 else:
                     text, func = item
                     line = f'{actual_idx}: {text[0]}'
