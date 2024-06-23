@@ -215,42 +215,56 @@ class ModifierEditor:
                 return modifier.get('stackCount', 0)
         return None
 
-    def add_or_update_modifier(self, data, modifier_type: ModifierType, stack, slot, sessionSlot):
+    def add_or_update_modifier(self, data, modifier_type: ModifierType, stack, poke_id, sessionSlot):
         try:
             modifier = modifier_type.value
             modifier.stackCount = stack
 
             # Handle args with poke_id
-            poke_id = data['party'][slot]['id']
             if modifier.args:
                 modifier.args = [poke_id if arg is None else arg for arg in modifier.args]
 
             if 'modifiers' not in data or not isinstance(data['modifiers'], list):
                 data['modifiers'] = []
 
-            def modifiers_match(existing_modifier, new_modifier):
+            def modifiers_match(existing_modifier, new_modifier, poke_id):
                 if existing_modifier['typeId'] != new_modifier['typeId']:
                     return False
-                if existing_modifier.get('args') != new_modifier['args']:
+                if existing_modifier.get('args') and existing_modifier['args'][0] != poke_id:
+                    return False
+                if existing_modifier.get('typePregenArgs') != new_modifier.get('typePregenArgs'):
+                    return False
+                if existing_modifier.get('className') != new_modifier.get('className'):
+                    return False
+                if existing_modifier.get('player') != new_modifier.get('player'):
                     return False
                 return True
 
             existing = next(
-                (m for m in data['modifiers'] if modifiers_match(m, asdict(modifier))),
+                (m for m in data['modifiers'] if modifiers_match(m, asdict(modifier), poke_id)),
                 None
             )
 
             if existing:
                 existing['stackCount'] = modifier.stackCount
+                if poke_id is not None:
+                    cFormatter.print(Color.GREEN, f'Successfully updated {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot} for Pokémon ID {poke_id}.')
+                else:
+                    cFormatter.print(Color.GREEN, f'Successfully updated {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot}.')
             else:
                 data['modifiers'].append(modifier.to_json())
+                if poke_id is not None:
+                    cFormatter.print(Color.GREEN, f'Successfully written {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot} for Pokémon ID {poke_id}.')
+                else:
+                    cFormatter.print(Color.GREEN, f'Successfully written {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot}.')
 
             self.save_json(data, f'slot_{sessionSlot}.json')
-            cFormatter.print(Color.GREEN, f'Successfully written {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot}.')
-            self.notify_message = (f'Successfully added modifier {modifier.customName}', 'success')
+            self.notify_message = (f'Successfully added or updated modifier {modifier.typeId}', 'success')
         except Exception as e:
-            self.notify_message = (f'Something went wrong. \n {e}', 'success')
-            cFormatter.print(Color.INFO, f'Something went wrong. \n {e}', 'warning')
+            self.notify_message = (f'Something went wrong. \n {e}', 'error')
+            cFormatter.print(Color.INFO, f'Something went wrong. \n {e}', 'error')
+
+
 
     def user_menu(self, sessionSlot):
         existing_data = self.load_json(f'slot_{sessionSlot}.json')
@@ -313,7 +327,7 @@ class ModifierEditor:
                         except ValueError:
                             cFormatter.print(Color.ERROR, "Invalid input. Please enter a valid number.")
 
-                    self.add_or_update_modifier(existing_data, selected_modifier, stack_count, party_num, sessionSlot)
+                    self.add_or_update_modifier(existing_data, selected_modifier, stack_count, poke_id, sessionSlot)
 
             except ValueError:
                 cFormatter.print(Color.ERROR, "Invalid input, please enter a number.")
@@ -331,16 +345,17 @@ class ModifierEditor:
 
             stack_count = int(input('Enter the stack count for the modifiers: '))
             existing_data = self.load_json(f'slot_{sessionSlot}.json')
+            poke_id = existing_data['party'][party_num]['id']
             try:
                 for mod_type in ModifierType:
                     if mod_type.value.customType == 'Danger':
                         continue  # Skip modifiers with customType 'Danger'
-                    self.add_or_update_modifier(existing_data, mod_type, stack_count, party_num, sessionSlot)
+                    self.add_or_update_modifier(existing_data, mod_type, stack_count, poke_id, sessionSlot)
             except Exception as e:
                 self.notify_message = f'Something unexpected happened. {e}'
                 cFormatter.print(Color.WARNING, f'Something unexpected happened. {e}', isLogging=True)
             finally:
-                self.notify_message = ('Successfully added all modifiers except Danger type.', 'success')
+                self.notify_message = ('Successfully added all modifiers except annoying ones.', 'success')
         except ValueError:
             cFormatter.print(Color.ERROR, "Invalid input, please enter a number.")
 

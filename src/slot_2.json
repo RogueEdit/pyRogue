@@ -1,0 +1,3829 @@
+{
+    "seed": "APg0RMNAKDNcXAFChmpplG05",
+    "playTime": 0,
+    "gameMode": 0,
+    "party": [
+        {
+            "abilityIndex": 0,
+            "boss": false,
+            "exp": 128,
+            "formIndex": 0,
+            "friendship": 50,
+            "fusionLuck": 3,
+            "gender": 0,
+            "hp": 21,
+            "id": 2683642839,
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "level": 5,
+            "levelExp": 0,
+            "luck": 3,
+            "metBiome": -1,
+            "metLevel": 5,
+            "moveset": [
+                {
+                    "moveId": 33,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 45,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 22,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 202,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                }
+            ],
+            "nature": 0,
+            "natureOverride": -1,
+            "passive": true,
+            "pauseEvolutions": false,
+            "player": true,
+            "pokeball": 0,
+            "pokerus": false,
+            "shiny": true,
+            "species": 1,
+            "stats": [
+                21,
+                11,
+                11,
+                13,
+                13,
+                11
+            ],
+            "summonData": {
+                "abilitiesApplied": null,
+                "ability": 0,
+                "abilitySuppressed": false,
+                "battleStats": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "disabledMove": 0,
+                "disabledTurns": 0,
+                "moveQueue": null,
+                "tags": null,
+                "types": null
+            },
+            "variant": 2
+        },
+        {
+            "abilityIndex": 0,
+            "boss": false,
+            "exp": 125,
+            "formIndex": 0,
+            "friendship": 50,
+            "fusionLuck": 3,
+            "gender": 0,
+            "hp": 20,
+            "id": 2526146697,
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "level": 5,
+            "levelExp": 0,
+            "luck": 3,
+            "metBiome": -1,
+            "metLevel": 5,
+            "moveset": [
+                {
+                    "moveId": 39,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 45,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 84,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 98,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                }
+            ],
+            "nature": 0,
+            "natureOverride": -1,
+            "pauseEvolutions": false,
+            "player": true,
+            "pokeball": 0,
+            "pokerus": false,
+            "shiny": true,
+            "species": 25,
+            "stats": [
+                20,
+                12,
+                10,
+                11,
+                11,
+                15
+            ],
+            "summonData": {
+                "abilitiesApplied": null,
+                "ability": 0,
+                "abilitySuppressed": false,
+                "battleStats": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "disabledMove": 0,
+                "disabledTurns": 0,
+                "moveQueue": null,
+                "tags": null,
+                "types": null
+            },
+            "variant": 2
+        },
+        {
+            "abilityIndex": 0,
+            "boss": false,
+            "exp": 125,
+            "formIndex": 0,
+            "friendship": 70,
+            "fusionLuck": 3,
+            "gender": 0,
+            "hp": 20,
+            "id": 1617731799,
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "level": 5,
+            "levelExp": 0,
+            "luck": 3,
+            "metBiome": -1,
+            "metLevel": 5,
+            "moveset": [
+                {
+                    "moveId": 10,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 141,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 532,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 152,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                }
+            ],
+            "nature": 0,
+            "natureOverride": -1,
+            "passive": true,
+            "pauseEvolutions": false,
+            "player": true,
+            "pokeball": 0,
+            "pokerus": false,
+            "shiny": true,
+            "species": 46,
+            "stats": [
+                20,
+                13,
+                12,
+                11,
+                12,
+                9
+            ],
+            "summonData": {
+                "abilitiesApplied": null,
+                "ability": 0,
+                "abilitySuppressed": false,
+                "battleStats": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "disabledMove": 0,
+                "disabledTurns": 0,
+                "moveQueue": null,
+                "tags": null,
+                "types": null
+            },
+            "variant": 2
+        },
+        {
+            "abilityIndex": 0,
+            "boss": false,
+            "exp": 128,
+            "formIndex": 0,
+            "friendship": 50,
+            "fusionLuck": 3,
+            "gender": 0,
+            "hp": 23,
+            "id": 941734393,
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "level": 5,
+            "levelExp": 0,
+            "luck": 3,
+            "metBiome": -1,
+            "metLevel": 5,
+            "moveset": [
+                {
+                    "moveId": 43,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 67,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 116,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 899,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                }
+            ],
+            "nature": 0,
+            "natureOverride": -1,
+            "passive": true,
+            "pauseEvolutions": false,
+            "player": true,
+            "pokeball": 0,
+            "pokerus": false,
+            "shiny": true,
+            "species": 66,
+            "stats": [
+                23,
+                14,
+                11,
+                10,
+                10,
+                10
+            ],
+            "summonData": {
+                "abilitiesApplied": null,
+                "ability": 0,
+                "abilitySuppressed": false,
+                "battleStats": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "disabledMove": 0,
+                "disabledTurns": 0,
+                "moveQueue": null,
+                "tags": null,
+                "types": null
+            },
+            "variant": 2
+        },
+        {
+            "abilityIndex": 0,
+            "boss": false,
+            "exp": 125,
+            "formIndex": 0,
+            "friendship": 70,
+            "fusionLuck": 3,
+            "gender": 0,
+            "hp": 23,
+            "id": 2888030714,
+            "ivs": [
+                31,
+                31,
+                31,
+                31,
+                31,
+                31
+            ],
+            "level": 5,
+            "levelExp": 0,
+            "luck": 3,
+            "metBiome": -1,
+            "metLevel": 5,
+            "moveset": [
+                {
+                    "moveId": 29,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 45,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 573,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 733,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                }
+            ],
+            "nature": 0,
+            "natureOverride": -1,
+            "passive": true,
+            "pauseEvolutions": false,
+            "player": true,
+            "pokeball": 0,
+            "pokerus": false,
+            "shiny": true,
+            "species": 86,
+            "stats": [
+                23,
+                11,
+                12,
+                11,
+                13,
+                11
+            ],
+            "summonData": {
+                "abilitiesApplied": null,
+                "ability": 0,
+                "abilitySuppressed": false,
+                "battleStats": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "disabledMove": 0,
+                "disabledTurns": 0,
+                "moveQueue": null,
+                "tags": null,
+                "types": null
+            },
+            "variant": 2
+        }
+    ],
+    "enemyParty": [
+        {
+            "abilityIndex": 0,
+            "boss": false,
+            "exp": 8,
+            "formIndex": 0,
+            "friendship": 70,
+            "fusionLuck": 0,
+            "gender": 1,
+            "hp": 13,
+            "id": 596783307,
+            "ivs": [
+                17,
+                19,
+                4,
+                6,
+                12,
+                26
+            ],
+            "level": 2,
+            "levelExp": 0,
+            "luck": 0,
+            "metBiome": 0,
+            "metLevel": 2,
+            "moveset": [
+                {
+                    "moveId": 64,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                },
+                {
+                    "moveId": 45,
+                    "ppUp": 0,
+                    "ppUsed": 0,
+                    "virtual": false
+                }
+            ],
+            "nature": 18,
+            "natureOverride": -1,
+            "pauseEvolutions": false,
+            "player": false,
+            "pokeball": 0,
+            "pokerus": false,
+            "shiny": false,
+            "species": 276,
+            "stats": [
+                13,
+                7,
+                6,
+                6,
+                6,
+                8
+            ],
+            "summonData": {
+                "abilitiesApplied": null,
+                "ability": 0,
+                "abilitySuppressed": false,
+                "battleStats": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "disabledMove": 0,
+                "disabledTurns": 0,
+                "moveQueue": null,
+                "tags": null,
+                "types": null
+            },
+            "variant": 0
+        }
+    ],
+    "modifiers": [
+        {
+            "args": [
+                2683642839,
+                0,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                0
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                1,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                1
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                2,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                2
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                3,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                3
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                4,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                4
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                5,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                5
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                6,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                6
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                7,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                7
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                8,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                8
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                9,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                9
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                10,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                10
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                11,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                11
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                12,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                12
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                13,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                13
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                14,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                14
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                15,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                15
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                16,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                16
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                17,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                17
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                0
+            ],
+            "className": "PokemonBaseStatModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "BASE_STAT_BOOSTER",
+            "typePregenArgs": [
+                0
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                1
+            ],
+            "className": "PokemonBaseStatModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "BASE_STAT_BOOSTER",
+            "typePregenArgs": [
+                1
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                2
+            ],
+            "className": "PokemonBaseStatModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "BASE_STAT_BOOSTER",
+            "typePregenArgs": [
+                2
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                3
+            ],
+            "className": "PokemonBaseStatModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "BASE_STAT_BOOSTER",
+            "typePregenArgs": [
+                3
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                4
+            ],
+            "className": "PokemonBaseStatModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "BASE_STAT_BOOSTER",
+            "typePregenArgs": [
+                4
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                5
+            ],
+            "className": "PokemonBaseStatModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "BASE_STAT_BOOSTER",
+            "typePregenArgs": [
+                5
+            ]
+        },
+        {
+            "args": [
+                0,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 20,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                0
+            ]
+        },
+        {
+            "args": [
+                1,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 20,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                1
+            ]
+        },
+        {
+            "args": [
+                2,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 20,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                2
+            ]
+        },
+        {
+            "args": [
+                3,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 20,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                3
+            ]
+        },
+        {
+            "args": [
+                4,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 20,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                4
+            ]
+        },
+        {
+            "args": [
+                5,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 20,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                5
+            ]
+        },
+        {
+            "args": [
+                6,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 20,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                6
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                6
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                6
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                2
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 2,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                2
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                4
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                4
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                8
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                8
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                3
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                3
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                10
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 2,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                10
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                1
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 2,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                1
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                5
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                5
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                7
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                7
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                0
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 2,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                0
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                9
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                9
+            ]
+        },
+        {
+            "args": null,
+            "className": "PreserveBerryModifier",
+            "player": true,
+            "stackCount": 1,
+            "typeId": "BERRY_POUCH",
+            "typePregenArgs": null
+        },
+        {
+            "args": null,
+            "className": "ExtraModifierModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "GOLDEN_POKEBALL",
+            "typePregenArgs": null
+        },
+        {
+            "args": null,
+            "className": "MoneyMultiplierModifier",
+            "player": true,
+            "stackCount": 5,
+            "typeId": "AMULET_COIN",
+            "typePregenArgs": null
+        },
+        {
+            "args": null,
+            "className": "LockModifierTiersModifier",
+            "player": true,
+            "stackCount": 1,
+            "typeId": "LOCK_CAPSULE",
+            "typePregenArgs": null
+        },
+        {
+            "args": null,
+            "className": "LevelIncrementBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "CANDY_JAR",
+            "typePregenArgs": null
+        },
+        {
+            "args": null,
+            "className": "ExpShareModifier",
+            "player": true,
+            "stackCount": 5,
+            "typeId": "EXP_SHARE",
+            "typePregenArgs": null
+        },
+        {
+            "args": null,
+            "className": "ExpBalanceModifier",
+            "player": true,
+            "stackCount": 4,
+            "typeId": "EXP_BALANCE",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                25
+            ],
+            "className": "ExpBoosterModifier",
+            "player": true,
+            "stackCount": 20,
+            "typeId": "EXP_CHARM",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "ExpBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "SUPER_EXP_CHARM",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "ExpBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "GOLDEN_EXP_CHARM",
+            "typePregenArgs": null
+        },
+        {
+            "args": null,
+            "className": "ShinyRateBoosterModifier",
+            "player": true,
+            "stackCount": 4,
+            "typeId": "SHINY_CHARM",
+            "typePregenArgs": null
+        },
+        {
+            "args": null,
+            "className": "HiddenAbilityRateBoosterModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "ABILITY_CHARM",
+            "typePregenArgs": null
+        },
+        {
+            "args": null,
+            "className": "IvScannerModifier",
+            "player": true,
+            "stackCount": 20,
+            "typeId": "IV_SCANNER",
+            "typePregenArgs": null
+        },
+        {
+            "args": null,
+            "className": "MegaEvolutionAccessModifier",
+            "player": true,
+            "stackCount": 1,
+            "typeId": "MEGA_BRACELET",
+            "typePregenArgs": null
+        },
+        {
+            "args": null,
+            "className": "GigantamaxAccessModifier",
+            "player": true,
+            "stackCount": 1,
+            "typeId": "DYNAMAX_BAND",
+            "typePregenArgs": null
+        },
+        {
+            "args": null,
+            "className": "TerastallizeAccessModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "TERA_ORB",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                1.1
+            ],
+            "className": "HealingBoosterModifier",
+            "player": true,
+            "stackCount": 20,
+            "typeId": "HEALING_CHARM",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "PokemonInstantReviveModifier",
+            "player": true,
+            "stackCount": 1,
+            "typeId": "REVIVER_SEED",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "DamageMoneyRewardModifier",
+            "player": true,
+            "stackCount": 5,
+            "typeId": "GOLDEN_PUNCH",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839,
+                5
+            ],
+            "className": "PokemonMoveAccuracyBoosterModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "WIDE_LENS",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "SwitchEffectTransferModifier",
+            "player": true,
+            "stackCount": 1,
+            "typeId": "BATON",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "SurviveDamageModifier",
+            "player": true,
+            "stackCount": 4,
+            "typeId": "FOCUS_BAND",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839,
+                10
+            ],
+            "className": "ContactHeldItemTransferChanceModifier",
+            "player": true,
+            "stackCount": 5,
+            "typeId": "GRIP_CLAW",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "BypassSpeedChanceModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "QUICK_CLAW",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "FlinchChanceModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "KINGS_ROCK",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "TurnHealModifier",
+            "player": true,
+            "stackCount": 4,
+            "typeId": "LEFTOVERS",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "HitHealModifier",
+            "player": true,
+            "stackCount": 4,
+            "typeId": "SHELL_BELL",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "PokemonFriendshipBoosterModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "SOOTHE_BELL",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "PokemonNatureWeightModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "SOUL_DEW",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "PokemonMultiHitModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "MULTI_LENS",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "TurnHeldItemTransferModifier",
+            "player": true,
+            "stackCount": 1,
+            "typeId": "MINI_BLACK_HOLE",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839,
+                2683642839
+            ],
+            "className": "PokemonExpBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "LUCKY_EGG",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839,
+                2683642839
+            ],
+            "className": "PokemonExpBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "GOLDEN_EGG",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                0,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                0
+            ]
+        },
+        {
+            "args": [
+                1,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                1
+            ]
+        },
+        {
+            "args": [
+                2,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                2
+            ]
+        },
+        {
+            "args": [
+                3,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                3
+            ]
+        },
+        {
+            "args": [
+                4,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                4
+            ]
+        },
+        {
+            "args": [
+                5,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                5
+            ]
+        },
+        {
+            "args": [
+                6,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                6
+            ]
+        },
+        {
+            "args": [
+                25
+            ],
+            "className": "ExpBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "EXP_CHARM",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                1.1
+            ],
+            "className": "HealingBoosterModifier",
+            "player": true,
+            "stackCount": 5,
+            "typeId": "HEALING_CHARM",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839,
+                0,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                0
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                1,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                1
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                2,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                2
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                3,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                3
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                4,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                4
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                5,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                5
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                6,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                6
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                7,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                7
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                8,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                8
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                9,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                9
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                10,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                10
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                11,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                11
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                12,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                12
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                13,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                13
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                14,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                14
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                15,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                15
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                16,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                16
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                17,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                17
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                0
+            ],
+            "className": "PokemonBaseStatModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "BASE_STAT_BOOSTER",
+            "typePregenArgs": [
+                0
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                1
+            ],
+            "className": "PokemonBaseStatModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "BASE_STAT_BOOSTER",
+            "typePregenArgs": [
+                1
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                2
+            ],
+            "className": "PokemonBaseStatModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "BASE_STAT_BOOSTER",
+            "typePregenArgs": [
+                2
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                3
+            ],
+            "className": "PokemonBaseStatModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "BASE_STAT_BOOSTER",
+            "typePregenArgs": [
+                3
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                4
+            ],
+            "className": "PokemonBaseStatModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "BASE_STAT_BOOSTER",
+            "typePregenArgs": [
+                4
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                5
+            ],
+            "className": "PokemonBaseStatModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "BASE_STAT_BOOSTER",
+            "typePregenArgs": [
+                5
+            ]
+        },
+        {
+            "args": [
+                0,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                0
+            ]
+        },
+        {
+            "args": [
+                1,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                1
+            ]
+        },
+        {
+            "args": [
+                2,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                2
+            ]
+        },
+        {
+            "args": [
+                3,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                3
+            ]
+        },
+        {
+            "args": [
+                4,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                4
+            ]
+        },
+        {
+            "args": [
+                5,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                5
+            ]
+        },
+        {
+            "args": [
+                6,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                6
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                6
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                6
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                2
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 2,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                2
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                4
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                4
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                8
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                8
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                3
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                3
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                10
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 2,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                10
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                1
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 2,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                1
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                5
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                5
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                7
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                7
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                0
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 2,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                0
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                9
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                9
+            ]
+        },
+        {
+            "args": [
+                25
+            ],
+            "className": "ExpBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "EXP_CHARM",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                60
+            ],
+            "className": "ExpBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "SUPER_EXP_CHARM",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                100
+            ],
+            "className": "ExpBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "GOLDEN_EXP_CHARM",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                1.1
+            ],
+            "className": "HealingBoosterModifier",
+            "player": true,
+            "stackCount": 5,
+            "typeId": "HEALING_CHARM",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "PokemonInstantReviveModifier",
+            "player": true,
+            "stackCount": 1,
+            "typeId": "REVIVER_SEED",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "DamageMoneyRewardModifier",
+            "player": true,
+            "stackCount": 5,
+            "typeId": "GOLDEN_PUNCH",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839,
+                5
+            ],
+            "className": "PokemonMoveAccuracyBoosterModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "WIDE_LENS",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "SwitchEffectTransferModifier",
+            "player": true,
+            "stackCount": 1,
+            "typeId": "BATON",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "SurviveDamageModifier",
+            "player": true,
+            "stackCount": 4,
+            "typeId": "FOCUS_BAND",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839,
+                10
+            ],
+            "className": "ContactHeldItemTransferChanceModifier",
+            "player": true,
+            "stackCount": 5,
+            "typeId": "GRIP_CLAW",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "BypassSpeedChanceModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "QUICK_CLAW",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "FlinchChanceModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "KINGS_ROCK",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "TurnHealModifier",
+            "player": true,
+            "stackCount": 4,
+            "typeId": "LEFTOVERS",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "HitHealModifier",
+            "player": true,
+            "stackCount": 4,
+            "typeId": "SHELL_BELL",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "PokemonFriendshipBoosterModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "SOOTHE_BELL",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "PokemonNatureWeightModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "SOUL_DEW",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "PokemonMultiHitModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "MULTI_LENS",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "TurnHeldItemTransferModifier",
+            "player": true,
+            "stackCount": 1,
+            "typeId": "MINI_BLACK_HOLE",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839,
+                40
+            ],
+            "className": "PokemonExpBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "LUCKY_EGG",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839,
+                100
+            ],
+            "className": "PokemonExpBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "GOLDEN_EGG",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839,
+                0,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                0
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                1,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                1
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                2,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                2
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                3,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                3
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                4,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                4
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                5,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                5
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                6,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                6
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                7,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                7
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                8,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                8
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                9,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                9
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                10,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                10
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                11,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                11
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                12,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                12
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                13,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                13
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                14,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                14
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                15,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                15
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                16,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                16
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                17,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                17
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                0
+            ],
+            "className": "PokemonBaseStatModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "BASE_STAT_BOOSTER",
+            "typePregenArgs": [
+                0
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                1
+            ],
+            "className": "PokemonBaseStatModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "BASE_STAT_BOOSTER",
+            "typePregenArgs": [
+                1
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                2
+            ],
+            "className": "PokemonBaseStatModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "BASE_STAT_BOOSTER",
+            "typePregenArgs": [
+                2
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                3
+            ],
+            "className": "PokemonBaseStatModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "BASE_STAT_BOOSTER",
+            "typePregenArgs": [
+                3
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                4
+            ],
+            "className": "PokemonBaseStatModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "BASE_STAT_BOOSTER",
+            "typePregenArgs": [
+                4
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                5
+            ],
+            "className": "PokemonBaseStatModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "BASE_STAT_BOOSTER",
+            "typePregenArgs": [
+                5
+            ]
+        },
+        {
+            "args": [
+                0,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                0
+            ]
+        },
+        {
+            "args": [
+                1,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                1
+            ]
+        },
+        {
+            "args": [
+                2,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                2
+            ]
+        },
+        {
+            "args": [
+                3,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                3
+            ]
+        },
+        {
+            "args": [
+                4,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                4
+            ]
+        },
+        {
+            "args": [
+                5,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                5
+            ]
+        },
+        {
+            "args": [
+                6,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                6
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                6
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                6
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                2
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 2,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                2
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                4
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                4
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                8
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                8
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                3
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                3
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                10
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 2,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                10
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                1
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 2,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                1
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                5
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                5
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                7
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                7
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                0
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 2,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                0
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                9
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                9
+            ]
+        },
+        {
+            "args": [
+                25
+            ],
+            "className": "ExpBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "EXP_CHARM",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                60
+            ],
+            "className": "ExpBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "SUPER_EXP_CHARM",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                100
+            ],
+            "className": "ExpBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "GOLDEN_EXP_CHARM",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                1.1
+            ],
+            "className": "HealingBoosterModifier",
+            "player": true,
+            "stackCount": 5,
+            "typeId": "HEALING_CHARM",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "PokemonInstantReviveModifier",
+            "player": true,
+            "stackCount": 1,
+            "typeId": "REVIVER_SEED",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "DamageMoneyRewardModifier",
+            "player": true,
+            "stackCount": 5,
+            "typeId": "GOLDEN_PUNCH",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839,
+                5
+            ],
+            "className": "PokemonMoveAccuracyBoosterModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "WIDE_LENS",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "SwitchEffectTransferModifier",
+            "player": true,
+            "stackCount": 1,
+            "typeId": "BATON",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "SurviveDamageModifier",
+            "player": true,
+            "stackCount": 4,
+            "typeId": "FOCUS_BAND",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839,
+                10
+            ],
+            "className": "ContactHeldItemTransferChanceModifier",
+            "player": true,
+            "stackCount": 5,
+            "typeId": "GRIP_CLAW",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "BypassSpeedChanceModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "QUICK_CLAW",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "FlinchChanceModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "KINGS_ROCK",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "TurnHealModifier",
+            "player": true,
+            "stackCount": 4,
+            "typeId": "LEFTOVERS",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "HitHealModifier",
+            "player": true,
+            "stackCount": 4,
+            "typeId": "SHELL_BELL",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "PokemonFriendshipBoosterModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "SOOTHE_BELL",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "PokemonNatureWeightModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "SOUL_DEW",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "PokemonMultiHitModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "MULTI_LENS",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "TurnHeldItemTransferModifier",
+            "player": true,
+            "stackCount": 1,
+            "typeId": "MINI_BLACK_HOLE",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839,
+                40
+            ],
+            "className": "PokemonExpBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "LUCKY_EGG",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839,
+                100
+            ],
+            "className": "PokemonExpBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "GOLDEN_EGG",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839,
+                0,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                0
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                1,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                1
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                2,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                2
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                3,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                3
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                4,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                4
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                5,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                5
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                6,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                6
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                7,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                7
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                8,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                8
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                9,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                9
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                10,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                10
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                11,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                11
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                12,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                12
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                13,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                13
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                14,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                14
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                15,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                15
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                16,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                16
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                17,
+                20
+            ],
+            "className": "AttackTypeBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "ATTACK_TYPE_BOOSTER",
+            "typePregenArgs": [
+                17
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                0
+            ],
+            "className": "PokemonBaseStatModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "BASE_STAT_BOOSTER",
+            "typePregenArgs": [
+                0
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                1
+            ],
+            "className": "PokemonBaseStatModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "BASE_STAT_BOOSTER",
+            "typePregenArgs": [
+                1
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                2
+            ],
+            "className": "PokemonBaseStatModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "BASE_STAT_BOOSTER",
+            "typePregenArgs": [
+                2
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                3
+            ],
+            "className": "PokemonBaseStatModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "BASE_STAT_BOOSTER",
+            "typePregenArgs": [
+                3
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                4
+            ],
+            "className": "PokemonBaseStatModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "BASE_STAT_BOOSTER",
+            "typePregenArgs": [
+                4
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                5
+            ],
+            "className": "PokemonBaseStatModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "BASE_STAT_BOOSTER",
+            "typePregenArgs": [
+                5
+            ]
+        },
+        {
+            "args": [
+                0,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                0
+            ]
+        },
+        {
+            "args": [
+                1,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                1
+            ]
+        },
+        {
+            "args": [
+                2,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                2
+            ]
+        },
+        {
+            "args": [
+                3,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                3
+            ]
+        },
+        {
+            "args": [
+                4,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                4
+            ]
+        },
+        {
+            "args": [
+                5,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                5
+            ]
+        },
+        {
+            "args": [
+                6,
+                5
+            ],
+            "className": "TempBattleStatBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "TEMP_STAT_BOOSTER",
+            "typePregenArgs": [
+                6
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                6
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                6
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                2
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 2,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                2
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                4
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                4
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                8
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                8
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                3
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                3
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                10
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 2,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                10
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                1
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 2,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                1
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                5
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                5
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                7
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                7
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                0
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 2,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                0
+            ]
+        },
+        {
+            "args": [
+                2683642839,
+                9
+            ],
+            "className": "BerryModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "BERRY",
+            "typePregenArgs": [
+                9
+            ]
+        },
+        {
+            "args": [
+                25
+            ],
+            "className": "ExpBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "EXP_CHARM",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                60
+            ],
+            "className": "ExpBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "SUPER_EXP_CHARM",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                100
+            ],
+            "className": "ExpBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "GOLDEN_EXP_CHARM",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                1.1
+            ],
+            "className": "HealingBoosterModifier",
+            "player": true,
+            "stackCount": 5,
+            "typeId": "HEALING_CHARM",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "PokemonInstantReviveModifier",
+            "player": true,
+            "stackCount": 1,
+            "typeId": "REVIVER_SEED",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "DamageMoneyRewardModifier",
+            "player": true,
+            "stackCount": 5,
+            "typeId": "GOLDEN_PUNCH",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839,
+                5
+            ],
+            "className": "PokemonMoveAccuracyBoosterModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "WIDE_LENS",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "SwitchEffectTransferModifier",
+            "player": true,
+            "stackCount": 1,
+            "typeId": "BATON",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "SurviveDamageModifier",
+            "player": true,
+            "stackCount": 4,
+            "typeId": "FOCUS_BAND",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839,
+                10
+            ],
+            "className": "ContactHeldItemTransferChanceModifier",
+            "player": true,
+            "stackCount": 5,
+            "typeId": "GRIP_CLAW",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "BypassSpeedChanceModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "QUICK_CLAW",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "FlinchChanceModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "KINGS_ROCK",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "TurnHealModifier",
+            "player": true,
+            "stackCount": 4,
+            "typeId": "LEFTOVERS",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "HitHealModifier",
+            "player": true,
+            "stackCount": 4,
+            "typeId": "SHELL_BELL",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "PokemonFriendshipBoosterModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "SOOTHE_BELL",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "PokemonNatureWeightModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "SOUL_DEW",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "PokemonMultiHitModifier",
+            "player": true,
+            "stackCount": 3,
+            "typeId": "MULTI_LENS",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839
+            ],
+            "className": "TurnHeldItemTransferModifier",
+            "player": true,
+            "stackCount": 1,
+            "typeId": "MINI_BLACK_HOLE",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839,
+                40
+            ],
+            "className": "PokemonExpBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "LUCKY_EGG",
+            "typePregenArgs": null
+        },
+        {
+            "args": [
+                2683642839,
+                100
+            ],
+            "className": "PokemonExpBoosterModifier",
+            "player": true,
+            "stackCount": 10,
+            "typeId": "GOLDEN_EGG",
+            "typePregenArgs": null
+        }
+    ],
+    "enemyModifiers": null,
+    "arena": {
+        "biome": 0,
+        "tags": null
+    },
+    "pokeballCounts": {
+        "0": 5,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0
+    },
+    "money": 1000,
+    "score": 0,
+    "victoryCount": 0,
+    "faintCount": 0,
+    "reviveCount": 0,
+    "waveIndex": 1,
+    "battleType": 0,
+    "trainer": null,
+    "gameVersion": "1.0.4",
+    "timestamp": 1719095165452,
+    "challenges": null
+}
