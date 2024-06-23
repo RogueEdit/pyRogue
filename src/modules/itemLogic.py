@@ -88,7 +88,7 @@ class ModifierType(Enum):
     SALAC_BERRY = Modifier(args=[None, 7], className='BerryModifier', player=True, stackCount=1, typeId='BERRY', typePregenArgs=[7], description='Raises Speed if HP is below 25%.', customName='Salac Berry', customType='Berry', maxStack='3')
     SITRUS_BERRY = Modifier(args=[None, 0], className='BerryModifier', player=True, stackCount=1, typeId='BERRY', typePregenArgs=[0], description='Restores 25% HP if HP is below 50%.', customName='Sitrus Berry', customType='Berry', maxStack='2') 
     STARF_BERRY = Modifier(args=[None, 9], className='BerryModifier', player=True, stackCount=1, typeId='BERRY', typePregenArgs=[9], description='+Random stat if HP is below 25%.', customName='Starf Berry', customType='Berry', maxStack='3')
-    BERRY_POUCH = Modifier(args=None, className='PreserveBerryModifier', player=True, stackCount=1, typeId='BERRY_POUCH', description='33% chance used berry to not be used.', customName='Berry Pouch', customType='Berry', maxStack='')
+    BERRY_POUCH = Modifier(args=None, className='PreserveBerryModifier', player=True, stackCount=1, typeId='BERRY_POUCH', description='33% chance used berry to not be used.', customName='Berry Pouch', customType='Berry', maxStack='1')
     # Passive Boosts
     GOLDEN_POKEBALL = Modifier(args=None, className='ExtraModifierModifier', player=True, stackCount=1, typeId='GOLDEN_POKEBALL', shortDescription='One more shop item', description='Adds 1 extra item option at the end of every battle.', customName='Golden Pokeball', customType='PassiveBoost', maxStack='3')
     AMULET_COIN = Modifier(args=None, className='MoneyMultiplierModifier', player=True, stackCount=1, typeId='AMULET_COIN', shortDescription='+20% Money from all sources', description='Increases money rewards from all sources by 20%.', customName='Amulet Coin', customType='PassiveBoost', maxStack='5')                                                                 
@@ -97,8 +97,8 @@ class ModifierType(Enum):
     EXP_SHARE = Modifier(args=None, className='ExpShareModifier', player=True, stackCount=1, typeId='EXP_SHARE', shortDescription='Share +20% XP with all', description='Non-participants receive 20% of a single participant\'s EXP. Points.', customName='EXP Share', customType='PassiveBoost', maxStack='5')
     EXP_BALANCE = Modifier(args=None, className='ExpBalanceModifier', player=True, stackCount=1, typeId='EXP_BALANCE', shortDescription='Weakest mon gets more XP', description='Balances 20% of your total earned exp towards the lowest leveled party member(s).', customName='EXP Balance', customType='PassiveBoost', maxStack='4')
     EXP_CHARM = Modifier(args=[25], className='ExpBoosterModifier', player=True, stackCount=1, typeId='EXP_CHARM', shortDescription='+25% EXP Gain', description='Increases gain of EXP. Points by 25%.', customName='EXP Charm', customType='PassiveBoost', maxStack='99')
-    SUPER_EXP_CHARM = Modifier(args=[None], className='ExpBoosterModifier', player=True, stackCount=1, typeId='SUPER_EXP_CHARM', shortDescription='+60% EXP Gain', description='Increases gain of EXP. Points by 60%. ', customName='Super EXP Charm', customType='PassiveBoost', maxStack='30')
-    GOLDEN_EXP_CHARM = Modifier(args=[None], className='ExpBoosterModifier', player=True, stackCount=1, typeId='GOLDEN_EXP_CHARM', shortDescription='+100% EXP Gain', description='Increases gain of EXP. Points by 100%. ', customName='Golden EXP Charm', customType='PassiveBoost', maxStack='10')
+    SUPER_EXP_CHARM = Modifier(args=[60], className='ExpBoosterModifier', player=True, stackCount=1, typeId='SUPER_EXP_CHARM', shortDescription='+60% EXP Gain', description='Increases gain of EXP. Points by 60%. ', customName='Super EXP Charm', customType='PassiveBoost', maxStack='30')
+    GOLDEN_EXP_CHARM = Modifier(args=[100], className='ExpBoosterModifier', player=True, stackCount=1, typeId='GOLDEN_EXP_CHARM', shortDescription='+100% EXP Gain', description='Increases gain of EXP. Points by 100%. ', customName='Golden EXP Charm', customType='PassiveBoost', maxStack='10')
     SHINY_CHARM = Modifier(args=None, className='ShinyRateBoosterModifier', player=True, stackCount=1, typeId='SHINY_CHARM', shortDescription='Increase shiny encounter %', description='Dramatically increases the chance of a wild Pokémon being Shiny.', customName='Shiny Charm', customType='PassiveBoost', maxStack='4')
     ABILITY_CHARM = Modifier(args=None, className='HiddenAbilityRateBoosterModifier', player=True, stackCount=1, typeId='ABILITY_CHARM', shortDescription='Wild pokemon hidden ability chance increased', description='Dramatically increases the chance of a wild Pokémon having a Hidden Ability.', customName='Ability Charm', customType='PassiveBoost', maxStack='3')                                                    
     IV_SCANNER = Modifier(args=None, className='IvScannerModifier', player=True, stackCount=1, typeId='IV_SCANNER', shortDescription='Scan enemy IVs', description='Allows scanning the IVs of wild Pokémon. 2 IVs are revealed per stack. The best IVs are shown first.', customName='IV Scanner', customType='PassiveBoost', maxStack='1')
@@ -121,8 +121,8 @@ class ModifierType(Enum):
     SOUL_DEW = Modifier(args=[None], className='PokemonNatureWeightModifier', player=True, stackCount=1, typeId='SOUL_DEW', shortDescription='Increase nature influence (additive +10%)', description='Increases the influence of a Pokémon\'s nature on its stats by 10% (additive).', customName='Soul Dew', customType='OtherHoldable', maxStack='10')
     MULTI_LENS = Modifier(args=[None], className='PokemonMultiHitModifier', player=True, stackCount=1, typeId='MULTI_LENS', shortDescription='Attacks hit one additional time', description='Attacks hit one additional time at the cost of a 60/75/82.5% power reduction per stack respectively.', customName='Multi Lens', customType='OtherHoldable', maxStack='3')
     MINI_BLACK_HOLE = Modifier(args=[None], className='TurnHeldItemTransferModifier', player=True, stackCount=1, typeId='MINI_BLACK_HOLE', shortDescription='Steal one item each turn from enemy', description='Every turn, the holder acquires one held item from the foe.', customName='Mini Black Hole', customType='OtherHoldable', maxStack='1')
-    LUCKY_EGG = Modifier(args=[None, None], className='PokemonExpBoosterModifier', player=True, stackCount=1, typeId='LUCKY_EGG', shortDescription='+40% EXP Gain', description='Increases the holder\'s gain of EXP. Points by 40%.', customName='Lucky Egg', customType='OtherHoldable', maxStack='99')
-    GOLDEN_EGG = Modifier(args=[None, None], className='PokemonExpBoosterModifier', player=True, stackCount=1, typeId='GOLDEN_EGG', shortDescription='+100% EXP Gain', description='Increases the holder\'s gain of EXP. Points by 100%. ', customName='Golden Pokbeall', customType='OtherHoldable', maxStack='99')
+    LUCKY_EGG = Modifier(args=[None, 40], className='PokemonExpBoosterModifier', player=True, stackCount=1, typeId='LUCKY_EGG', shortDescription='+40% EXP Gain', description='Increases the holder\'s gain of EXP. Points by 40%.', customName='Lucky Egg', customType='OtherHoldable', maxStack='99')
+    GOLDEN_EGG = Modifier(args=[None, 100], className='PokemonExpBoosterModifier', player=True, stackCount=1, typeId='GOLDEN_EGG', shortDescription='+100% EXP Gain', description='Increases the holder\'s gain of EXP. Points by 100%. ', customName='Golden Pokbeall', customType='OtherHoldable', maxStack='99')
     #FORM_CHANGE_ITEM0 = Modifier(args=[None, 0, True], className='PokemonFormChangeItemModifier', player=True, stackCount=1, typeId='FORM_CHANGE_ITEM', typePregenArgs=[0], description='Causes certain Pokémon to change form.', customName='FormChangeItem', customType='OtherHoldable', maxStack='1')
     # the form change exists from 0-70... 
     # Dangerous Items
@@ -218,7 +218,12 @@ class ModifierEditor:
     def add_or_update_modifier(self, data, modifier_type: ModifierType, stack, poke_id, sessionSlot):
         try:
             modifier = modifier_type.value
+            maxStack = int(modifier.maxStack)
+            if stack > maxStack:
+                stack = maxStack
+                
             modifier.stackCount = stack
+
 
             # Handle args with poke_id
             if modifier.args:
@@ -234,10 +239,6 @@ class ModifierEditor:
                     return False
                 if existing_modifier.get('typePregenArgs') != new_modifier.get('typePregenArgs'):
                     return False
-                if existing_modifier.get('className') != new_modifier.get('className'):
-                    return False
-                if existing_modifier.get('player') != new_modifier.get('player'):
-                    return False
                 return True
 
             existing = next(
@@ -246,20 +247,19 @@ class ModifierEditor:
             )
 
             if existing:
-                existing['stackCount'] = modifier.stackCount
-                if poke_id is not None:
-                    cFormatter.print(Color.GREEN, f'Successfully updated {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot} for Pokémon ID {poke_id}.')
+                if existing['stackCount'] != modifier.stackCount:
+                    existing['stackCount'] = modifier.stackCount
+                    message = f'Successfully updated {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot} for Pokémon ID {poke_id}' if modifier.args else f'Successfully updated {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot}'
                 else:
-                    cFormatter.print(Color.GREEN, f'Successfully updated {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot}.')
+                    message = f'No change for {modifier.typeId} in slot_{sessionSlot} for Pokémon ID {poke_id}' if modifier.args else f'No change for {modifier.typeId} in slot_{sessionSlot}'
             else:
                 data['modifiers'].append(modifier.to_json())
-                if poke_id is not None:
-                    cFormatter.print(Color.GREEN, f'Successfully written {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot} for Pokémon ID {poke_id}.')
-                else:
-                    cFormatter.print(Color.GREEN, f'Successfully written {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot}.')
+                message = f'Successfully written {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot} for Pokémon ID {poke_id}' if modifier.args else f'Successfully written {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot}'
 
             self.save_json(data, f'slot_{sessionSlot}.json')
+            cFormatter.print(Color.GREEN, message)
             self.notify_message = (f'Successfully added or updated modifier {modifier.typeId}', 'success')
+
         except Exception as e:
             self.notify_message = (f'Something went wrong. \n {e}', 'error')
             cFormatter.print(Color.INFO, f'Something went wrong. \n {e}', 'error')

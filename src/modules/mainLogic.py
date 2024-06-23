@@ -287,12 +287,11 @@ class Rogue:
 
         """
         try:
-            if not self.slot:
+            while not self.slot or self.slot > 5 or self.slot < 1:
                 slot = int(input('Enter slot (1-5): '))
                 self.slot = slot
-                if slot > 5 or slot < 1:
-                    cFormatter.print(Color.INFO, 'Invalid input.')
-                    return
+                if self.slot > 5 or self.slot < 1:
+                    cFormatter.print(Color.INFO, 'Invalid input. Slot number must be between 1 and 5.')
 
             trainer_data = self.get_trainer_data()
             game_data = self.get_gamesave_data(slot)
