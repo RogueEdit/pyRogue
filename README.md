@@ -128,6 +128,9 @@ Attention: When ever this tool detects you are trying to manipulate a daily seed
 
 - Propper logging in case you need to troubleshoot
 
+- Item Editor
+![Preview Image](.github/previews/itemEditor.png)
+
 ## Regarding Bans and Limited Accounts
 https://www.reddit.com/r/pokerogue/comments/1d8hncf/cheats_and_exploits_post_followup_bannable/
 
