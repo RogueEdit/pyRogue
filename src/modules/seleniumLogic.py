@@ -43,19 +43,6 @@ Expected Output Example:
 >> Session ID: abc123clientSessionId
 >> Token: abc123token
 >> # Additional headers: {'Content-Type': 'application/json', 'User-Agent': '...'}
-
-Modules/Librarys used and for what purpose exactly in each function:
-- selenium.webdriver: Provides browser automation for logging in and interacting with web elements.
-- selenium.webdriver.common.by: Locates HTML elements on web pages for user interaction.
-- selenium.webdriver.common.keys: Sends special keys like RETURN to simulate user actions.
-- selenium.webdriver.support.ui: Implements WebDriverWait for synchronizing with page loads.
-- selenium.webdriver.support.expected_conditions: Defines conditions for WebDriverWait to wait until certain elements or states are achieved.
-- selenium.common.exceptions: Handles exceptions that may arise during the login process.
-- json: Parses JSON data received from API responses to extract tokens and session IDs.
-- time: Adds a randomized wait time to ensure elements are fully loaded before interaction.
-- typing: Provides type hints to specify the expected types of function arguments and return values.
-- utilities.CustomLogger: Manages logging settings to control the amount and format of log outputs.
-- random: Generates random integers to add variability in waiting times during the login process.
 """
 
 from selenium import webdriver

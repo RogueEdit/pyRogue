@@ -3,7 +3,8 @@
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
 # Date of release: 13.06.2024 
-# Last Edited: 20.06.2024
+# Last Edited: 23.06.2024
+
 """
 This script provides a class 'Rogue' for interacting with the PokeRogue API to manage trainer and gamesave data.
 
@@ -286,12 +287,11 @@ class Rogue:
 
         """
         try:
-            if not self.slot:
+            while not self.slot or self.slot > 5 or self.slot < 1:
                 slot = int(input('Enter slot (1-5): '))
                 self.slot = slot
-                if slot > 5 or slot < 1:
-                    cFormatter.print(Color.INFO, 'Invalid input.')
-                    return
+                if self.slot > 5 or self.slot < 1:
+                    cFormatter.print(Color.INFO, 'Invalid input. Slot number must be between 1 and 5.')
 
             trainer_data = self.get_trainer_data()
             game_data = self.get_gamesave_data(slot)
@@ -369,7 +369,6 @@ class Rogue:
                 cFormatter.print(Color.DEBUG, f'Error fetching trainer data. Please restart the tool. \n {e}', isLogging=True)
 
     # TODO: Simplify
-    @limiter.lockout
     def get_gamesave_data(self, slot: int = 1) -> Optional[Dict[str, Any]]:
         """
         Fetch gamesave data from the API for a specified slot.
@@ -418,7 +417,7 @@ class Rogue:
                 response = self.session.get(f'{self.GAMESAVE_SLOT_URL}{slot-1}&clientSessionId={self.clientSessionId}', headers=self.headers)
                 response.raise_for_status()
                 if response.content:  # Check if the response content is not empty
-                    cFormatter.print(Color.GREEN, 'Successfully fetched data.')
+                    cFormatter.print(Color.GREEN, f'Successfully fetched data for slot {self.slot}.')
                     data = response.json()
                     self.__write_data(data, f'slot_{slot}.json', False)
                     return data
@@ -546,7 +545,7 @@ class Rogue:
         - datetime: For generating timestamps for backup file names.
         """
 
-        backup_dir = 'backup'
+        backup_dir =  config.backups_directory
         if not os.path.exists(backup_dir):
             os.makedirs(backup_dir)
         try:
@@ -575,8 +574,8 @@ class Rogue:
         Restore a backup of JSON files and update the timestamp in trainer.json.
 
         What it does:
-        - Restores a selected backup file (`backup_{trainerid}_{timestamp}.json`) to `trainer.json`.
-        - Updates the timestamp in `trainer.json` with the current timestamp upon restoration.
+        - Restores a selected backup file (`backup_{trainerid}_{timestamp}.json` or `backup_{trainerid}_slot_{slotnumber}_{timestamp}.json`) to the appropriate target file.
+        - Updates the timestamp in the target file with the current timestamp upon restoration.
         - Displays a numbered list of available backup files matching the current trainer ID for selection.
         - Prompts the user to choose a backup file to restore and handles user input validation.
         - Prints 'Data restored.' upon successful restoration.
@@ -591,33 +590,39 @@ class Rogue:
             # Output:
             # 1: base_123.json         <- Created on first edit
             # 2: backup_123_20230101_121212.json
+            # 3: backup_123_slot_1_090413.json
             # Enter the number of the file you want to restore: 2
             # Data restored.
 
         Modules/Librarys used and for what purpose exactly in each function:
         - os: For directory listing and file handling operations.
         - re: For filtering and sorting backup files based on trainer ID patterns.
-        - shutil: For copying files from the backup directory to `trainer.json`.
-        - datetime: For generating timestamps and updating timestamps in `trainer.json`.
+        - shutil: For copying files from the backup directory to the target file.
+        - datetime: For generating timestamps and updating timestamps in the target file.
         """
 
         try:
-            backup_dir = 'backup'
+            backup_dir = config.backups_directory
             files = os.listdir(backup_dir)
 
             # Filter and sort files that match trainerId
-            trainer_id_pattern = f'_{self.trainerId}_'
+            trainer_id_pattern = f'_{self.trainerId}'
+            base_file = f'base{trainer_id_pattern}.json'
             backup_files = sorted(
-                (f for f in files if re.match(rf'(base|backup){trainer_id_pattern}\d{{8}}_\d{{6}}\.json', f)),
-                key=lambda x: (re.findall(r'\d+', x)[0], re.findall(r'\d{8}_\d{6}', x)[0])
+                (f for f in files if re.match(rf'backup{trainer_id_pattern}(_slot_\d+)?_\d{{6,8}}(_\d{{6}})?\.json', f)),
+                key=lambda x: (re.findall(r'\d+', x)[0], re.findall(r'\d{6,8}(_\d{6})?', x)[0])
             )
 
-            if not backup_files:
+            # Include the base file at the top of the list if it exists
+            display_files = [base_file] if base_file in files else []
+            display_files += backup_files
+
+            if not display_files:
                 cFormatter.print(Color.WARNING, 'No backup files found for your trainer ID.')
                 return
 
             # Displaying sorted list with numbers
-            for idx, file in enumerate(backup_files, 1):
+            for idx, file in enumerate(display_files, 1):
                 sidenote = '        <- Created on first edit' if file.startswith('base_') else ''
                 print(f'{idx}: {file} {sidenote}')
 
@@ -625,13 +630,22 @@ class Rogue:
             while True:
                 try:
                     choice = int(input('Enter the number of the file you want to restore: '))
-                    if 1 <= choice <= len(backup_files):
-                        chosen_file = backup_files[choice - 1]
+                    if 1 <= choice <= len(display_files):
+                        chosen_file = display_files[choice - 1]
                         chosen_filepath = os.path.join(backup_dir, chosen_file)
 
                         # Determine the output filepath
                         parent_dir = os.path.abspath(os.path.join(backup_dir, os.pardir))
-                        output_filepath = os.path.join(parent_dir, './trainer.json')
+
+                        # If the chosen file has "slot_x" in its name, determine the slot number and the corresponding target file
+                        slot_match = re.search(r'_slot_(\d+)', chosen_file)
+                        if slot_match:
+                            slot_number = slot_match.group(1)
+                            output_filename = f'slot_{slot_number}.json'
+                        else:
+                            output_filename = 'trainer.json'
+
+                        output_filepath = os.path.join(parent_dir, output_filename)
 
                         # Copy the chosen file to the output filepath
                         shutil.copyfile(chosen_filepath, output_filepath)
@@ -1963,3 +1977,12 @@ class Rogue:
         edit = ModifierEditor()
         edit.user_menu(self.slot)
         
+    def change_save_slot(self):
+        try:
+            newSlot = int(input('Which save-slot you want to change to?: '))
+            self.slot = newSlot
+            self.get_gamesave_data(newSlot)  # Assuming this method fetches and prints data
+            return
+        except ValueError:
+            print("Invalid input. Please enter a valid slot number.")
+        return  # Ensure the function returns control to the main menu
