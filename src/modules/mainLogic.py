@@ -457,6 +457,7 @@ class Rogue:
             if self.useScripts:
                 self.driver.quit()
             cFormatter.print(Color.BRIGHT_GREEN, 'Session terminated successfully.')
+            sleep(5)
             exit(0)
         except Exception as e:
             cFormatter.print(Color.WARNING, f'Error logging out. {e}')
@@ -1748,94 +1749,76 @@ class Rogue:
         Usage Example:
             >>> example_instance = ExampleClass()
             >>> example_instance.edit_account_stats()
-
         """
         try:
-            trainer_data = self.__load_data('trainer.json')
-            
-            # Input for various gameplay statistics
-            battles: int = int(input('How many battles: '))
-            classicSessionsPlayed: int = int(input('How many classicSessionsPlayed: '))
-            dailyRunSessionPlayed: int = int(input('How many dailyRunSessionPlayed: '))
-            dailyRunSessionWon: int = int(input('How many dailyRunSessionWon: '))
-            eggsPulled: int = int(input('How many eggsPulled: '))
-            endlessSessionsPlayed: int = int(input('How many endlessSessionsPlayed: '))
-            epicEggsPulled: int = int(input('How many epicEggsPulled: '))
-            highestDamage: int = int(input('How many highestDamage: '))
-            highestEndlessWave: int = int(input('How many highestEndlessWave: '))
-            highestHeal: int = int(input('How many highestHeal: '))
-            highestLevel: int = int(input('How many highestLevel: '))
-            highestMoney: int = int(input('How many highestMoney: '))
-            legendaryEggsPulled: int = int(input('How many legendaryEggsPulled: '))
-            legendaryPokemonCaught: int = int(input('How many legendaryPokemonCaught: '))
-            legendaryPokemonHatched: int = int(input('How many legendaryPokemonHatched: '))
-            legendaryPokemonSeen: int = int(input('How many legendaryPokemonSeen: '))
-            manaphyEggsPulled: int = int(input('How many manaphyEggsPulled: '))
-            mythicalPokemonCaught: int = int(input('How many mythicalPokemonCaught: '))
-            mythicalPokemonHatched: int = int(input('How many mythicalPokemonHatched: '))
-            mythicalPokemonSeen: int = int(input('How many mythicalPokemonSeen: '))
-            playTime: int = int(input('How much playtime in hours: '))
-            pokemonCaught: int = int(input('How many pokemonCaught: '))
-            pokemonDefeated: int = int(input('How many pokemonDefeated: '))
-            pokemonFused: int = int(input('How many pokemonFused: '))
-            pokemonHatched: int = int(input('How many pokemonHatched: '))
-            pokemonSeen: int = int(input('How many pokemonSeen: '))
-            rareEggsPulled: int = int(input('How many rareEggsPulled: '))
-            ribbonsOwned: int = int(input('How many ribbonsOwned: '))
-            sessionsWon: int = int(input('How many sessionsWon: '))
-            shinyPokemonCaught: int = int(input('How many shinyPokemonCaught: '))
-            shinyPokemonHatched: int = int(input('How many shinyPokemonHatched: '))
-            shinyPokemonSeen: int = int(input('How many shinyPokemonSeen: '))
-            subLegendaryPokemonCaught: int = int(input('How many subLegendaryPokemonCaught: '))
-            subLegendaryPokemonHatched: int = int(input('How many subLegendaryPokemonHatched: '))
-            subLegendaryPokemonSeen: int = int(input('How many subLegendaryPokemonSeen: '))
-            trainersDefeated: int = int(input('How many trainersDefeated: '))
+            def get_valid_input(prompt: str, default: int) -> int:
+                """ Helper function to get valid integer input from the user """
+                while True:
+                    user_input = input(f"{prompt} (current: {default}): ").strip()
+                    if user_input.isdigit():
+                        return int(user_input)
+                    elif user_input == '':
+                        return default
+                    else:
+                        print("Invalid input. Please enter a valid number or press Enter to keep the current value.")
 
-            # Update gameStats in trainer_data
-            trainer_data['gameStats'] = {
-                'battles': battles,
-                'classicSessionsPlayed': classicSessionsPlayed,
-                'dailyRunSessionsPlayed': dailyRunSessionPlayed,
-                'dailyRunSessionsWon': dailyRunSessionWon,
-                'eggsPulled': eggsPulled,
-                'endlessSessionsPlayed': endlessSessionsPlayed,
-                'epicEggsPulled': epicEggsPulled,
-                'highestDamage': highestDamage,
-                'highestEndlessWave': highestEndlessWave,
-                'highestHeal': highestHeal,
-                'highestLevel': highestLevel,
-                'highestMoney': highestMoney,
-                'legendaryEggsPulled': legendaryEggsPulled,
-                'legendaryPokemonCaught': legendaryPokemonCaught,
-                'legendaryPokemonHatched': legendaryPokemonHatched,
-                'legendaryPokemonSeen': legendaryPokemonSeen,
-                'manaphyEggsPulled': manaphyEggsPulled,
-                'mythicalPokemonCaught': mythicalPokemonCaught,
-                'mythicalPokemonHatched': mythicalPokemonHatched,
-                'mythicalPokemonSeen': mythicalPokemonSeen,
-                'playTime': playTime * 3600,  # Convert hours to seconds
-                'pokemonCaught': pokemonCaught,
-                'pokemonDefeated': pokemonDefeated,
-                'pokemonFused': pokemonFused,
-                'pokemonHatched': pokemonHatched,
-                'pokemonSeen': pokemonSeen,
-                'rareEggsPulled': rareEggsPulled,
-                'ribbonsOwned': ribbonsOwned,
-                'sessionsWon': sessionsWon,
-                'shinyPokemonCaught': shinyPokemonCaught,
-                'shinyPokemonHatched': shinyPokemonHatched,
-                'shinyPokemonSeen': shinyPokemonSeen,
-                'subLegendaryPokemonCaught': subLegendaryPokemonCaught,
-                'subLegendaryPokemonHatched': subLegendaryPokemonHatched,
-                'subLegendaryPokemonSeen': subLegendaryPokemonSeen,
-                'trainersDefeated': trainersDefeated,
+            trainer_data = self.__load_data('trainer.json')
+
+            # Define the keys you want to update
+            keys_to_update = {
+                'battles': trainer_data['gameStats'].get('battles', 0),
+                'classicSessionsPlayed': trainer_data['gameStats'].get('classicSessionsPlayed', 0),
+                'dailyRunSessionsPlayed': trainer_data['gameStats'].get('dailyRunSessionsPlayed', 0),
+                'dailyRunSessionsWon': trainer_data['gameStats'].get('dailyRunSessionsWon', 0),
+                'eggsPulled': trainer_data['gameStats'].get('eggsPulled', 0),
+                'endlessSessionsPlayed': trainer_data['gameStats'].get('endlessSessionsPlayed', 0),
+                'epicEggsPulled': trainer_data['gameStats'].get('epicEggsPulled', 0),
+                'highestDamage': trainer_data['gameStats'].get('highestDamage', 0),
+                'highestEndlessWave': trainer_data['gameStats'].get('highestEndlessWave', 0),
+                'highestHeal': trainer_data['gameStats'].get('highestHeal', 0),
+                'highestLevel': trainer_data['gameStats'].get('highestLevel', 0),
+                'highestMoney': trainer_data['gameStats'].get('highestMoney', 0),
+                'legendaryEggsPulled': trainer_data['gameStats'].get('legendaryEggsPulled', 0),
+                'legendaryPokemonCaught': trainer_data['gameStats'].get('legendaryPokemonCaught', 0),
+                'legendaryPokemonHatched': trainer_data['gameStats'].get('legendaryPokemonHatched', 0),
+                'legendaryPokemonSeen': trainer_data['gameStats'].get('legendaryPokemonSeen', 0),
+                'manaphyEggsPulled': trainer_data['gameStats'].get('manaphyEggsPulled', 0),
+                'mythicalPokemonCaught': trainer_data['gameStats'].get('mythicalPokemonCaught', 0),
+                'mythicalPokemonHatched': trainer_data['gameStats'].get('mythicalPokemonHatched', 0),
+                'mythicalPokemonSeen': trainer_data['gameStats'].get('mythicalPokemonSeen', 0),
+                'pokemonCaught': trainer_data['gameStats'].get('pokemonCaught', 0),
+                'pokemonDefeated': trainer_data['gameStats'].get('pokemonDefeated', 0),
+                'pokemonFused': trainer_data['gameStats'].get('pokemonFused', 0),
+                'pokemonHatched': trainer_data['gameStats'].get('pokemonHatched', 0),
+                'pokemonSeen': trainer_data['gameStats'].get('pokemonSeen', 0),
+                'rareEggsPulled': trainer_data['gameStats'].get('rareEggsPulled', 0),
+                'ribbonsOwned': trainer_data['gameStats'].get('ribbonsOwned', 0),
+                'sessionsWon': trainer_data['gameStats'].get('sessionsWon', 0),
+                'shinyPokemonCaught': trainer_data['gameStats'].get('shinyPokemonCaught', 0),
+                'shinyPokemonHatched': trainer_data['gameStats'].get('shinyPokemonHatched', 0),
+                'shinyPokemonSeen': trainer_data['gameStats'].get('shinyPokemonSeen', 0),
+                'subLegendaryPokemonCaught': trainer_data['gameStats'].get('subLegendaryPokemonCaught', 0),
+                'subLegendaryPokemonHatched': trainer_data['gameStats'].get('subLegendaryPokemonHatched', 0),
+                'subLegendaryPokemonSeen': trainer_data['gameStats'].get('subLegendaryPokemonSeen', 0),
+                'trainersDefeated': trainer_data['gameStats'].get('trainersDefeated', 0)
             }
+
+            # Update only specified fields
+            for key, current_value in keys_to_update.items():
+                new_value = get_valid_input(f'Enter new value for {key}', current_value)
+                trainer_data['gameStats'][key] = new_value
+            
+            # Ensure playtime is retained
+            playtime = trainer_data['gameStats'].get('playtime')
+            if playtime is not None:
+                trainer_data['gameStats']['playtime'] = playtime
 
             # Write updated trainer_data to 'trainer.json'
             self.__write_data(trainer_data, 'trainer.json')
 
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function edit_account_stats(): {e}', isLogging=True)
+
 
 
     def unlock_all_features(self) -> None:
@@ -1856,7 +1839,6 @@ class Rogue:
         Usage Example:
             >>> example_instance = ExampleClass()
             >>> example_instance.unlock_all_features()
-
         """
         try:
             self.unlock_all_gamemodes()
@@ -1885,8 +1867,9 @@ class Rogue:
                     'hatchedCount': hatched,
                     'ivs': randIv
                 }
-
-            trainer_data['gameStats'] = {
+            
+            # Keys to update with random values
+            keys_to_update = {
                 'battles': total_caught + random.randint(1, total_caught),
                 'classicSessionsPlayed': random.randint(2500, 10000),
                 'dailyRunSessionsPlayed': random.randint(2500, 10000),
@@ -1907,7 +1890,6 @@ class Rogue:
                 'mythicalPokemonCaught': random.randint(20, 70),
                 'mythicalPokemonHatched': random.randint(20, 70),
                 'mythicalPokemonSeen': random.randint(20, 70),
-                'playTime': random.randint(5000, 10000) * 100,
                 'pokemonCaught': total_caught,
                 'pokemonDefeated': random.randint(2500, 10000),
                 'pokemonFused': random.randint(50, 150),
@@ -1922,13 +1904,22 @@ class Rogue:
                 'subLegendaryPokemonCaught': random.randint(10, 100),
                 'subLegendaryPokemonHatched': random.randint(10, 100),
                 'subLegendaryPokemonSeen': random.randint(10, 100),
-                'trainersDefeated': random.randint(100, 200),
+                'trainersDefeated': random.randint(100, 200)
             }
 
+            # Update the gameStats with new values
+            for key, value in keys_to_update.items():
+                trainer_data['gameStats'][key] = value
+            
+            # Ensure playtime is retained
+            playtime = trainer_data['gameStats'].get('playtime')
+            if playtime is not None:
+                trainer_data['gameStats']['playtime'] = playtime
+            
             self.__write_data(trainer_data, 'trainer.json')
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function unlock_all_features(): {e}', isLogging=True)
-  
+    
     def edit_hatchWaves(self) -> None:
         """
         Edits the hatch waves for eggs in the trainer's inventory.
