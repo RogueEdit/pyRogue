@@ -16,6 +16,7 @@ from typing import Any, List, Optional
 from modules.config import version
 from collections import defaultdict
 
+
 @dataclass
 class Modifier:
     args: Optional[List[Any]]
@@ -30,15 +31,28 @@ class Modifier:
     maxStack: Optional[int] = field(default=None, repr=False, compare=False)
     shortDescription: Optional[str] = field(default=None, repr=False, compare=False)
 
-    def to_json(self):
-        return {
-            "args": self.args,
+    def to_json(self, poke_id: Optional[int] = None) -> dict:
+        original_args = self.args  # Store original args for potential reset later
+
+        # Replace None with poke_id in args if necessary
+        if self.args is not None:
+            self.args = [poke_id if arg is None else arg for arg in self.args]
+
+        # Create JSON representation
+        json_data = {
+            "args": self.args if self.args else None,  # Ensures args is None if empty
             "className": self.className,
             "player": self.player,
             "stackCount": self.stackCount,
             "typeId": self.typeId,
-            "typePregenArgs": self.typePregenArgs
         }
+        if self.typePregenArgs is not None:
+            json_data["typePregenArgs"] = self.typePregenArgs
+
+        # Reset args to original state after using modified version
+        self.args = original_args
+
+        return json_data
 
 # customName needs to be localized later
 class ModifierType(Enum):
@@ -215,6 +229,7 @@ class ModifierEditor:
                 return modifier.get('stackCount', 0)
         return None
 
+
     def add_or_update_modifier(self, data, modifier_type: ModifierType, stack, poke_id, sessionSlot):
         try:
             modifier = modifier_type.value
@@ -224,37 +239,44 @@ class ModifierEditor:
                 
             modifier.stackCount = stack
 
+            # Save original args state
+            original_args = modifier.args[:] if modifier.args else None
 
             # Handle args with poke_id
             if modifier.args:
                 modifier.args = [poke_id if arg is None else arg for arg in modifier.args]
+                print(f"Original modifier.args: {original_args}, Modified modifier.args with poke_id: {modifier.args}")
 
             if 'modifiers' not in data or not isinstance(data['modifiers'], list):
                 data['modifiers'] = []
 
-            def modifiers_match(existing_modifier, new_modifier, poke_id):
+            def modifiers_match(existing_modifier, new_modifier):
                 if existing_modifier['typeId'] != new_modifier['typeId']:
                     return False
-                if existing_modifier.get('args') and existing_modifier['args'][0] != poke_id:
+                if existing_modifier.get('args') != new_modifier.get('args'):
                     return False
                 if existing_modifier.get('typePregenArgs') != new_modifier.get('typePregenArgs'):
                     return False
                 return True
 
             existing = next(
-                (m for m in data['modifiers'] if modifiers_match(m, asdict(modifier), poke_id)),
+                (m for m in data['modifiers'] if modifiers_match(m, modifier.to_json(poke_id))),
                 None
             )
 
             if existing:
+                print(f"Existing modifier JSON: {existing}")
                 if existing['stackCount'] != modifier.stackCount:
                     existing['stackCount'] = modifier.stackCount
                     message = f'Successfully updated {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot} for Pokémon ID {poke_id}' if modifier.args else f'Successfully updated {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot}'
                 else:
                     message = f'No change for {modifier.typeId} in slot_{sessionSlot} for Pokémon ID {poke_id}' if modifier.args else f'No change for {modifier.typeId} in slot_{sessionSlot}'
             else:
-                data['modifiers'].append(modifier.to_json())
+                data['modifiers'].append(modifier.to_json(poke_id))
                 message = f'Successfully written {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot} for Pokémon ID {poke_id}' if modifier.args else f'Successfully written {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot}'
+
+            # Restore original args state
+            modifier.args = original_args
 
             self.save_json(data, f'slot_{sessionSlot}.json')
             cFormatter.print(Color.GREEN, message)
@@ -263,7 +285,6 @@ class ModifierEditor:
         except Exception as e:
             self.notify_message = (f'Something went wrong. \n {e}', 'error')
             cFormatter.print(Color.INFO, f'Something went wrong. \n {e}', 'error')
-
 
 
     def user_menu(self, sessionSlot):
