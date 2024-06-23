@@ -203,7 +203,6 @@ def initialize_folders() -> None:
     if not os.path.exists(backups_directory):
         os.makedirs(backups_directory)
         cFormatter.print(Color.GREEN, f'Created backup directory: {backups_directory}')
-    # Create the backups directory if it doesn't exist
 
 def replace_middle_with_dots(username):
     if len(username) < 3:  # If username length is less than 3, return as is (minimum 2 characters)
@@ -214,6 +213,6 @@ def replace_middle_with_dots(username):
     end_visible = visible_chars - start_visible  # Remaining visible characters from the end
     
     # Construct the masked username
-    masked_username = username[:start_visible] + '*' * (len(username) - start_visible - end_visible) + username[-end_visible:]
+    masked_username = username[:start_visible] + '*' * (len(username) - start_visible - end_visible)
     
     return masked_username

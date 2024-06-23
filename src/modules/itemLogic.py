@@ -3,7 +3,7 @@
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/JulianStiebler/
 # Date of release: 13.06.2024 
-# Last Edited: 20.06.2024
+# Last Edited: 23.06.2024
 
 # Unlike the other code, reusing this in your own project is forbidden.
 
