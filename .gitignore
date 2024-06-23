@@ -1,0 +1,17 @@
+.venv/*
+src/modules/__pycache__/*
+src/utilities/__pycache__/*
+*/__pycache__/*
+src/backups/*
+src/logs/*.log
+src/trainer.json
+src/slot_1.json
+/src/tests/menuTest/__pycache__
+/src/backup
+.vs/*
+/src/.vs
+src/modules/dev/slot_2.json
+src/dev/slot_4.json
+src/dev/slot_2.json
+/dist
+/build
