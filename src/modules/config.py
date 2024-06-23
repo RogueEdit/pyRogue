@@ -204,10 +204,7 @@ def initialize_folders() -> None:
         os.makedirs(backups_directory)
         cFormatter.print(Color.GREEN, f'Created backup directory: {backups_directory}')
     # Create the backups directory if it doesn't exist
-    if not os.path.exists(data_directory):
-        os.makedirs(backups_directory)
-        cFormatter.print(Color.GREEN, f'Created backup directory: {backups_directory}')
-
+    
 def replace_middle_with_dots(username):
     if len(username) < 3:  # If username length is less than 3, return as is (minimum 2 characters)
         return username
