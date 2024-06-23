@@ -11,7 +11,7 @@ import json
 from utilities import cFormatter, Color
 from colorama import Fore, Style
 from enum import Enum
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field
 from typing import Any, List, Optional
 from modules.config import version
 from collections import defaultdict
@@ -179,8 +179,8 @@ class ModifierEditor:
                 menu_items.extend(self.create_menu_items_chunk(modifiers_by_type[category]))
 
         # Add closing part
-        menu_items.append(("pyRogue Item Editor", 'category'))
-        menu_items.append((("Give all Modifiers", "Give All"), self.do_all_modifiers))
+        menu_items.append(('pyRogue Item Editor', 'category'))
+        menu_items.append((('Give all Modifiers', "Give All"), self.do_all_modifiers))
         menu_items.append((('Return to Main Menu', f'{Fore.LIGHTYELLOW_EX}Use when done'), self.end))
         menu_items.append(('You can also STRG+C to return to the Main Menu', 'category'))
         menu_items.append(('You can save these changes in the Main Menu', 'category'))
@@ -245,7 +245,7 @@ class ModifierEditor:
             # Handle args with poke_id
             if modifier.args:
                 modifier.args = [poke_id if arg is None else arg for arg in modifier.args]
-                print(f"Original modifier.args: {original_args}, Modified modifier.args with poke_id: {modifier.args}")
+                # print(f"Original modifier.args: {original_args}, Modified modifier.args with poke_id: {modifier.args}")
 
             if 'modifiers' not in data or not isinstance(data['modifiers'], list):
                 data['modifiers'] = []
@@ -265,7 +265,7 @@ class ModifierEditor:
             )
 
             if existing:
-                print(f"Existing modifier JSON: {existing}")
+                # print(f'Existing modifier JSON: {existing}')
                 if existing['stackCount'] != modifier.stackCount:
                     existing['stackCount'] = modifier.stackCount
                     message = f'Successfully updated {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot} for Pokémon ID {poke_id}' if modifier.args else f'Successfully updated {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot}'
@@ -303,11 +303,11 @@ class ModifierEditor:
                     elif self.notify_message[1] == 'warning':
                         cFormatter.print(Color.WARNING, f'{self.notify_message[0]}')
 
-                choice = int(input("Select an option by number: ").strip())
+                choice = int(input('Select an option by number: ').strip())
                 selected_item = next((item for item in valid_choices if item[0] == choice), None)
 
                 if selected_item is None:
-                    cFormatter.print(Color.ERROR, "Invalid choice, please try again.")
+                    cFormatter.print(Color.ERROR, 'Invalid choice, please try again.')
                     continue
 
                 chosen_item = selected_item[1]
@@ -330,7 +330,7 @@ class ModifierEditor:
                         if party_num < 0 or party_num > 5:
                             raise ValueError
                     except ValueError:
-                        cFormatter.print(Color.DEBUG, "Returning to the menu...")
+                        cFormatter.print(Color.DEBUG, 'Returning to the menu...')
                         continue
                     
                     poke_id = existing_data['party'][party_num]['id']
@@ -339,14 +339,14 @@ class ModifierEditor:
                     
                     while True:
                         if stacks_raw is not None:
-                            stack_count_input = input(f"You already have {stacks_raw} of {selected_modifier.value.customName}. Set new value to: ")
+                            stack_count_input = input(f'You already have {stacks_raw} of {selected_modifier.value.customName}. Set new value to: ')
                         else:
                             stack_count_input = input(f'How many {selected_modifier.value.customName} do you want? or enter any invalid input to retry: ')
                         try:
                             stack_count = int(stack_count_input)
                             break
                         except ValueError:
-                            cFormatter.print(Color.ERROR, "Invalid input. Please enter a valid number.")
+                            cFormatter.print(Color.ERROR, 'Invalid input. Please enter a valid number.')
 
                     self.add_or_update_modifier(existing_data, selected_modifier, stack_count, poke_id, sessionSlot)
 
@@ -378,18 +378,18 @@ class ModifierEditor:
             finally:
                 self.notify_message = ('Successfully added all modifiers except annoying ones.', 'success')
         except ValueError:
-            cFormatter.print(Color.ERROR, "Invalid input, please enter a number.")
+            cFormatter.print(Color.ERROR, 'Invalid input, please enter a number.')
 
     @staticmethod
     def end():
-        cFormatter.print(Color.GREEN, "Leaving pyRogue Item Editor.")
+        cFormatter.print(Color.GREEN, 'Leaving pyRogue Item Editor.')
 
     @staticmethod
     def print_modifiers(sessionSlot):
         data = ModifierEditor.load_json(f'slot_{sessionSlot}.json')
         if 'modifiers' in data and isinstance(data['modifiers'], list):
-            cFormatter.print(Color.INFO, "Current Modifiers:")
+            cFormatter.print(Color.INFO, 'Current Modifiers:')
             for modifier in data['modifiers']:
                 cFormatter.print(Color.INFO, json.dumps(modifier, indent=4))
         else:
-            cFormatter.print(Color.INFO, "No modifiers found.")
+            cFormatter.print(Color.INFO, 'No modifiers found.')

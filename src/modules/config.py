@@ -33,7 +33,7 @@ title: str = f'<(^.^(< pyRogue {version} >)^.^)>'
 owner: str = 'rogueEdit'
 repo: str = 'onlineRogueEditor'
 repo_url: str = f'https://github.com/{owner}/{repo}/'
-release_date: str = '21.06.2024 1:00'
+release_date: str = '23.06.2024 10:30'
 
 logs_directory: str = os.path.join(os.getcwd(), 'logs')
 backups_directory: str = os.path.join(os.getcwd(), 'backups')
@@ -204,7 +204,7 @@ def initialize_folders() -> None:
         os.makedirs(backups_directory)
         cFormatter.print(Color.GREEN, f'Created backup directory: {backups_directory}')
     # Create the backups directory if it doesn't exist
-    
+
 def replace_middle_with_dots(username):
     if len(username) < 3:  # If username length is less than 3, return as is (minimum 2 characters)
         return username

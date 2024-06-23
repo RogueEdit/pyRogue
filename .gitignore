@@ -11,3 +11,5 @@ src/slot_1.json
 .vs/*
 /src/.vs
 src/modules/dev/slot_2.json
+src/dev/slot_4.json
+src/dev/slot_2.json
