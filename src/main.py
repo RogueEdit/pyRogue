@@ -137,10 +137,10 @@ def m_mainMenu(rogue):
 
 @handle_operation_exceptions
 def main():
+    loginChoice = input('Please choose a method of logging in: ')
+    loginChoice = int(loginChoice)  # Attempt to convert input to integer
     while True:
         try:
-            loginChoice = input('Please choose a method of logging in: ')
-            loginChoice = int(loginChoice)  # Attempt to convert input to integer
             
             if loginChoice not in [1, 2, 3]:
                 cFormatter.print(Color.DEBUG, 'Please choose a valid option.')

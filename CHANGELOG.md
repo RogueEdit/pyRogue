@@ -15,11 +15,10 @@ Currently work in progres...
 ## Additions
 - Added Autocompleter Bidirectional functionality
   - You can now type either ID or Name's
-- Added Autocompleter to `f_editBiomes()`, `f_addCandies()`
+- Added Autocompleter to `f_editBiomes()`, `f_addCandies()`, `f_editAccountStats()`
 - `f_addEggsGenerator`() full rewritten;
   - New save structure from game, we now use the first egg we find as sample and if we don't find one we provided a basic that testedly works
     - Added `isShiny` and `overrideHiddenAbility` flags
-- Added (0: Cancel) everywhere aswell as you can type `cancel` or press `STRG+C` to escape from subMenus
 
 - Added function helpers
   - `fh_getIntInput()`, `fh_getChoiceInput()`, `fh_getCompleterInput()`
@@ -33,15 +32,17 @@ Currently work in progres...
 - Added functionality and decorators to handle error responses centralized
 - Renamed  variable and function to comply with naming convention
 - Rewritten input to use functionHelpers(`fh_`-definitions) to remove redundant code
-- Affected Functions so far
-    - `f_unlockAllCombined()` <Refined input logic>
-    - `f_editAccountStats()`
-    - `f_editHatchWaves()`
-    - `f_editMoney()`
-    - `f_editPokeballs()`
+- Added (0: Cancel) everywhere aswell as you can type `cancel` or press `STRG+C` to escape from subMenus
+  - Menus that present multiple options before saving will allow to type 0 to cancel+save;
+  - or type exit / cancel to Abort without saves
+  - All rewrites affect mentioned above affect those functions so far:
+    - `f_editAccountStats(tesed:works)` <Can now either random all, set one by choice (With AutoComplete by ID or Name) or loop over all one by one>
+    - `f_editHatchWaves(tested:works)`
+    - `f_editMoney(tested:works)`
+    - `f_editPokeballs(tested:works)` <Can now skip pokes, edit single ones or all> <Can now also skip choices>
     - `f_changeSaveSlot(tested:works)` <Can now change Slots directly>
-    - `f_submenuEditor()`
-    - `f_editBiome()` <Can now type ID or Biome, case-insesitive>
-    - `f_addCandies()`
-    - `f_addEggsGenerator()`
+    - `f_submenuEditor(tested:works)` - <Can now use Autocomplete and 0Cancel>
+    - `f_editBiome(tested:works)` <Can now type ID or Biome, case-insesitive, with autocompleter>
+    - `f_addCandies()` - #Error in function f_addCandies(): type object 'PokemonEnum' has no attribute 'items'
+    - `f_addEggsGenerator(tested:works)`
 

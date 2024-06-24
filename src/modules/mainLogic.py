@@ -1629,7 +1629,6 @@ class Rogue:
             '3': 'Rogue Balls',
             '4': 'Master Balls'
         }
-
         for key, name in pokeball_types.items():
             formattedName = f'{Fore.LIGHTYELLOW_EX}{name}{Style.RESET_ALL}'
             currentAmount = gameData.get('pokeballCounts', {}).get(key, '0')
@@ -1643,7 +1642,7 @@ class Rogue:
                         break
                     elif userInput.isdigit():
                         if userInput == '0':
-                            cFormatter.print(Color.DEBUG, 'Operation cancelled... No changes done.')
+                            cFormatter.print(Color.DEBUG, 'Operation cancelled...')
                             break
                         value = int(userInput)
                         if 0 <= value <= maxBound:
@@ -1701,8 +1700,6 @@ class Rogue:
 
         Raises:
         - OperationSuccessful: If the operation completes successfully.
-        - OperationError: If there is an error during the operation.
-        - OperationCancel: If the operation is canceled by the user.
 
         Modules Used:
         - .cFormatter: For printing formatted messages to the console, including colorized output.
@@ -1710,10 +1707,9 @@ class Rogue:
 
         Workflow:
         1. Loads trainer data.
-        2. If there are existing eggs, uses their structure as a sample.
-        3. Allows the player to specify attributes for the eggs (count, tier, gacha type, hatch waves, shiny, hidden ability).
-        4. Generates the specified number of eggs with the specified attributes.
-        5. Adds the generated eggs to the player's inventory, either replacing or adding to the existing eggs.
+        2. Allows the player to specify attributes for the eggs (count, tier, gacha type, hatch waves, shiny, hidden ability).
+        3. Generates the specified number of eggs with the specified attributes.
+        4. Adds the generated eggs to the player's inventory, either replacing or adding to the existing eggs.
         If there are no existing eggs, a sample structure is provided for the new eggs.
 
         Usage Example:
@@ -1721,66 +1717,87 @@ class Rogue:
             >>> example_instance.f_addEggsGenerator()
         """
         trainerData = self.__loadDataFromJSON('trainer.json')
-        currentAmount = len(trainerData.get('eggs', []))
 
-        if currentAmount >= 99:
-            userInput = self.fh_getChoiceInput(
-                'You already have the total max of eggs, replace eggs?',
-                {'1': 'Replace'}, zeroCancel=True
-            )
+        eggAmount = len(trainerData.get('eggs', []))
+
+        if eggAmount >= 75:
+            choicePrompt = 'You have max number of eggs, replace eggs?'
+            choices = {'1': 'Replace', '0': 'Cancel'}
         else:
-            userInput = self.fh_getChoiceInput(
-                f'You already have [{currentAmount}] eggs - should we add or replace?',
-                {'1': 'Replace', '2': 'Add'}, zeroCancel=True
-            )
+            choicePrompt = f'You have [{eggAmount}] eggs, add or replace eggs?'
+            choices = {'1': 'Replace', '2': 'Add', '0': 'Cancel'}
 
-        maxAmount = 99 - currentAmount if userInput == '2' else 99
+        replaceOrAdd = self.fh_getChoiceInput(choicePrompt, choices, zeroCancel=True)
+        if replaceOrAdd == '0':
+            return  # Operation canceled by the user
 
-        count = self.fh_getIntegerInput('How many eggs do you want to generate?', 0, maxAmount, "1: Replace | 2: Add", zeroCancel=True)
+        maxAmount = 75 - eggAmount if replaceOrAdd == '2' else 75
+
+        count = self.fh_getIntegerInput(
+            f'How many eggs do you want to have? (0 - {maxAmount})',
+            0,
+            maxAmount,
+            zeroCancel=True
+        )
         if count == 0:
-            cFormatter.print(Color.CRITICAL, 'No eggs to generate. Operation cancelled.')
-            return
+            return  # Operation canceled by the user
 
-        tier = self.fh_getChoiceInput(
+        tierChoices = {str(i + 1): tier for i, tier in enumerate(eggLogic.EGG_TIERS)}
+        tierChoice = self.fh_getChoiceInput(
             'What tier should the eggs have?',
-            {'1': 'Common', '2': 'Rare', '3': 'Epic', '4': 'Legendary', '5': 'Manaphy'},
+            tierChoices,
             zeroCancel=True
         )
 
+        gachaChoice = {'1': 'Move', '2': 'Legendary', '3': 'Shiny'}
         gachaType = self.fh_getChoiceInput(
             'What gacha type do you want to have?',
-            {'1': 'MoveGacha', '2': 'LegendaryGacha', '3': 'ShinyGacha'}, zeroCancel=True
+            gachaChoice,
+            zeroCancel=True
         )
 
-        hatchWaves = self.fh_getIntegerInput('After how many waves should they hatch?', 0, 100, zeroCancel=True)
-        isShiny = self.fh_getChoiceInput('Do you want it to be shiny?', {'1': 'Yes', '2': 'No'}, zeroCancel=True)
-        overrideHiddenAbility = self.fh_getChoiceInput('Do you want the hidden ability to be unlocked?', {'1': 'Yes', '2': 'No'}, zeroCancel=True)
+        hatchWaves = self.fh_getIntegerInput(
+            'After how many waves should they hatch? (0-100)',
+            0,
+            100,
+            zeroCancel=True
+        )
+        if hatchWaves == 0:
+            return  # Operation canceled by the user
 
-        sampleEgg = {
-            "id": 0,
-            "gachaType": 0,
-            "hatchWaves": 0,
-            "timestamp": 0,
-            "tier": 0,
-            "sourceType": 0,
-            "variantTier": 0,
-            "isShiny": False,
-            "species": 0,
-            "eggMoveIndex": 0,
-            "overrideHiddenAbility": False
-        }
+        isSHiny = self.fh_getChoiceInput(
+            promptMesage='Do you want it to be shiny?',
+            choices={'1': 'Yes', '2': 'No'},
+            zeroCancel=True
+        ) == '1'
 
-        eggDictionary = eggLogic.constructEggs(tier, gachaType, hatchWaves, count, isShiny, overrideHiddenAbility)  # noqa: F405
+        overrideHiddenAbility = self.fh_getChoiceInput(
+            promptMesage='Do you want the hidden ability to be unlocked?',
+            choices={'1': 'Yes', '2': 'No'},
+            zeroCancel=True
+        ) == '1'
 
-        if userInput == '1':
-            trainerData['eggs'] = eggDictionary
-        elif userInput == '2':
-            for egg in eggDictionary:
-                sampleEgg.update(egg)
-                trainerData['eggs'].append(sampleEgg)
+        tier = tierChoices[tierChoice]  # Retrieve the selected tier string
 
+        newEggs = eggLogic.constructEggs(
+            tier=tier,
+            gachaType=int(gachaType),
+            hatchWaves=hatchWaves,
+            eggAmount=count,
+            isShiny=isSHiny,
+            overrideHiddenAbility=overrideHiddenAbility
+        )
+
+        if replaceOrAdd == '1':
+            trainerData['eggs'][:count] = newEggs
+        elif replaceOrAdd == '2':
+            trainerData['eggs'].extend(newEggs)
+
+        cFormatter.print(Color.GREEN, f'[{count}] eggs generated successfully.')
         self.__writeJSONData(trainerData, 'trainer.json')
-        raise OperationSuccessful(f'{count} eggs succesfully generated.')
+
+
+
     
     @handle_operation_exceptions
     def f_unlockAllCombined(self) -> None:
@@ -1797,8 +1814,7 @@ class Rogue:
 
         Raises:
         - OperationSuccessful: If the operation completes successfully.
-        - OperationError: If there is an error during the operation.
-        - OperationCancel: If the operation is canceled by the user.
+        - ValueError: On wrong Inputs
 
         Modules Used:
         - .cFormatter: For printing formatted messages to the console, including colorized output.
@@ -1867,8 +1883,7 @@ class Rogue:
         action = self.fh_getChoiceInput('Choose which attribute to modify. You can type either ID or Name.', choices, renderMenu=True, zeroCancel=True)
 
         if action == 'random':
-            for key in keysToUpdate:
-                value = random.randint(0, 999999)
+            for key, value in keysToUpdate.items():
                 trainerData["gameStats"][key] = value
                 cFormatter.print(Color.DEBUG, f"Updated {key} with value {value}")
 
@@ -1944,7 +1959,8 @@ class Rogue:
         Edits the hatch waves for eggs in the trainer's inventory using helper functions for input validation.
 
         Raises:
-        - Exception: If any error occurs during the process.
+        - Exception: If any error occurs during the process due to the decorator.
+        - raise OperationSuccessful()
 
         Modules Used:
         - .cFormatter: For printing formatted messages to the console, including colorized output.
@@ -1997,9 +2013,11 @@ class Rogue:
         Helper method to get a validated choice input from the user.
 
         Args:
-        - prompt (str): The prompt message to display.
+        - promptMesage (str): The prompt message to display.
         - choices (dict): The dictionary containing choice options.
         - renderMenu (bool): If True, render the menu with line breaks for readability.
+        - zeroCancel (bool): If True, allow raise cancellation with '0' interrupting the operation and save.
+        - softCancel (bool): If True, allow soft cancellation with '0' interrupting the operation but allow saving.
 
         Returns:
         - str: The validated choice key.
@@ -2033,9 +2051,10 @@ class Rogue:
 
         Args:
         - prompt (str): The prompt message to display.
-        - min_val (int): The minimum valid value.
-        - max_val (int): The maximum valid value.
-        - actions (str): The string describing the action options.
+        - minBound (int): The minimum valid value.
+        - maxBound (int): The maximum valid value.
+        - zeroCancel (bool): If True, allow raise cancellation with '0' interrupting the operation and save.
+        - softCancel (bool): If True, allow soft cancellation with '0' interrupting the operation but allow saving.
 
         Returns:
         - int: The validated integer input.
@@ -2066,8 +2085,8 @@ class Rogue:
         Args:
         - prompt_message (str): The prompt message to display.
         - choices (dict): A dictionary mapping input choices to their corresponding values.
-        - zeroCancel (bool): Flag to enable cancelling with '0'.
-        - softCancel (bool): Flag to enable soft cancelling.
+        - zeroCancel (bool): If True, allow raise cancellation with '0' interrupting the operation and save.
+        - softCancel (bool): If True, allow soft cancellation with '0' interrupting the operation but allow saving.
 
         Returns:
         - str: The value corresponding to the validated input choice, or raises OperationCancel if the user cancels.

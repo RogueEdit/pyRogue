@@ -1,7 +1,11 @@
+import random
+import time
+from typing import List, Dict, Any, Tuple
 # Authors
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
-# Contributors: https://github.com/JulianStiebler
+# Contributors: https://github.com/M6D6M6A/
+# -> Documentation: https://github.com/JulianStiebler
 # Date of release: 06.06.2024
 # Last Edited: 20.06.2024
 
@@ -32,25 +36,11 @@ Modules/Librarys used and for what purpose exactly in each function:
 
 """
 
-import random
-# Provides functions to generate random numbers, used here for generating random egg IDs.
+EGG_MULTIPLIER: int = 1073741824
+GACHA_TYPE: List[str] = ['MoveGacha', 'LegendaryGacha', 'ShinyGacha']
+EGG_TIERS: List[str] = ['Common', 'Rare', 'Epic', 'Legendary', 'Manaphy']
 
-import time
-# Provides functions to work with time-related tasks, used here for generating timestamps.
-
-from typing import List, Tuple, Dict
-# Provides type hints for better code clarity and type checking.
-
-# Constant from game source code
-eggConstant: int = 1073741824  # This constant is used for calculating ID bounds
-
-# List of possible gacha types
-gachaTypes: List[str] = ['MoveGacha', 'LegendaryGacha', 'ShinyGacha']
-
-# List of possible egg tiers
-eggTiers: List[str] = ['Common', 'Rare', 'Epic', 'Legendary', 'Manaphy']
-
-def getIDBoundarys(tier: int) -> Tuple[int, int]:
+def __eggGetIDBounds(tier: int) -> Tuple[int, int]:
     """
     Get the ID bounds for a given tier.
 
@@ -60,15 +50,18 @@ def getIDBoundarys(tier: int) -> Tuple[int, int]:
     Returns:
         Tuple[int, int]: A tuple containing the start and end IDs.
 
-    Example:
-        start, end = getIDBoundarys(2)
+    Raises:
+        ValueError: If an invalid tier index is provided.
     """
-    # Calculate the start and end IDs for the given tier
-    start: int = tier * eggConstant
-    end: int = (tier + 1) * eggConstant - 1
+    if tier < 1 or tier > len(EGG_TIERS):
+        raise ValueError(f"Invalid tier index '{tier}'. Expected a value between 1 and {len(EGG_TIERS)}.")
+
+    tierIndex = tier - 1  # Convert to 0-based index
+    start = tierIndex * EGG_MULTIPLIER
+    end = (tierIndex + 1) * EGG_MULTIPLIER - 1
     return max(start, 255), end
 
-def generateRandomID(start: int, end: int, manaphy: bool = False) -> int:
+def __eggGetRandomId(start: int, end: int, manaphy: bool = False) -> int:
     """
     Get a random ID within the given range.
 
@@ -82,54 +75,43 @@ def generateRandomID(start: int, end: int, manaphy: bool = False) -> int:
     """
     if manaphy:
         return random.randrange(start, end + 1, 255)
+    else:
+        result: int = random.randint(start, end)
+        result = result if result % 255 != 0 else result - 1
+        return max(result, 1)
 
-    result: int = random.randint(start, end)
-
-    if result % 255 == 0:
-        result -= 1
-
-    return max(result, 1)
-
-def constructEggs(tier: str, gachaType: str, hatchWaveCount: int, eggAmount: int, isShiny: bool, overrideHiddenAbility: bool) -> List[Dict[str, int]]:
+def constructEggs(tier: str, gachaType: str, hatchWaves: int, eggAmount: int, isShiny: bool, overrideHiddenAbility: bool) -> List[Dict[str, Any]]:
     """
-    Generate eggs with the given properties.
+    Construct a list of eggs with given properties.
 
     Args:
-        tier (str): The tier of the eggs.
-        g_type (str): The gacha type.
-        hatch_waves (int): The number of hatch waves.
-        num_eggs (int): The number of eggs to generate.
-        is_shiny (bool): Whether the egg is shiny.
-        hidden_ability (bool): Whether the hidden ability is unlocked.
+        tier (str): The tier of the eggs ('Common', 'Rare', 'Epic', 'Legendary', 'Manaphy').
+        gacha_type (str): The gacha type ('MoveGacha', 'LegendaryGacha', 'ShinyGacha').
+        hatch_waves (int): The number of waves required to hatch.
+        num_eggs (int): The number of eggs to construct.
+        is_shiny (bool): Whether the eggs should be shiny.
+        override_hidden_ability (bool): Whether to override hidden ability.
 
     Returns:
-        List[Dict[str, int]]: A list of generated eggs.
-
-    Example:
-        eggs = constructEggs('Rare', 'LegendaryGacha', 3, 10, True, False)
+        List[Dict[str, Any]]: A list of constructed egg dictionaries.
     """
-    isManaphy: bool = tier == 'Manaphy'
-    start, end = getIDBoundarys(0 if isManaphy else eggTiers.index(tier))
-    
-    eggs: List[Dict[str, int]] = []
+    eggs = []
+    tierIndex = EGG_TIERS.index(tier)
+
     for _ in range(eggAmount):
-        egg_id: int = generateRandomID(start, end, isManaphy)
-        timestamp: int = int(time.time() * 1000)
+        eggId = __eggGetRandomId(*__eggGetIDBounds(tierIndex + 1), manaphy=(tier == 'Manaphy'))
+        timestamp = int(time.time() * 1000)
         
-        egg: Dict[str, int] = {
-            'id': egg_id,
-            'gachaType': gachaTypes.index(gachaType),
-            'hatchWaves': hatchWaveCount,
+        egg = {
+            'id': eggId,
+            'gachaType': GACHA_TYPE.index(gachaType),
+            'hatchWaves': hatchWaves,
             'timestamp': timestamp,
-            'tier': eggTiers.index(tier),
+            'tier': tierIndex,
+            'isShiny': isShiny,
+            'overrideHiddenAbility': overrideHiddenAbility
         }
         
-        # Add optional fields based on the input
-        if isShiny:
-            egg['isShiny'] = isShiny
-        if overrideHiddenAbility:
-            egg['overrideHiddenAbility'] = overrideHiddenAbility
-        
         eggs.append(egg)
-    
+
     return eggs
