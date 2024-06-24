@@ -25,19 +25,23 @@ Currently work in progres...
   - `fh_getIntInput()`, `fh_getChoiceInput()`, `fh_getCompleterInput()`
     - Sanitizes input, allows to escape from submenus more consistently
 
+- When editing acc stats
+  - Removed playtime due to a recent change
+  - Added 2 more options; randomize all - manual type all - manual choose one
+
 ## Rewrites
 - Added functionality and decorators to handle error responses centralized
 - Renamed  variable and function to comply with naming convention
 - Rewritten input to use functionHelpers(`fh_`-definitions) to remove redundant code
 - Affected Functions so far
-    - `f_unlockAllCombined(tested:works)`
+    - `f_unlockAllCombined()` <Refined input logic>
     - `f_editAccountStats()`
     - `f_editHatchWaves()`
     - `f_editMoney()`
     - `f_editPokeballs()`
-    - `f_changeSaveSlot()`
+    - `f_changeSaveSlot(tested:works)` <Can now change Slots directly>
     - `f_submenuEditor()`
-    - `f_editBiome()`
+    - `f_editBiome()` <Can now type ID or Biome, case-insesitive>
     - `f_addCandies()`
     - `f_addEggsGenerator()`
 

@@ -29,7 +29,7 @@ def handle_operation_exceptions(func):
             func_name = func.__name__
             error_message = f'Error in function {func_name}: {e}'
             cFormatter.print(Color.CRITICAL, error_message, isLogging=True)
-            raise OperationError(original_exception=e, message=error_message)
+            # raise OperationError(original_exception=e, message=error_message)
     return wrapper
 
 class OperationCancel(Exception):

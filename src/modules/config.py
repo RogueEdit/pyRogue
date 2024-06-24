@@ -127,7 +127,7 @@ def f_checkForUpdates(requests: requests, datetime: datetime, timedelta: timedel
                 cFormatter.print(Color.CYAN, f'------> with SHA ({commit["sha"]})')
             cFormatter.print(Color.INFO, f'You can view the latest code here: {repoURL}')
             cFormatter.print(Color.INFO, 'It is highly recommended to update the source code. Some things might not be working as expected.')
-            cFormatter.printSeperators(60, '-', Color.CRITICAL)
+            cFormatter.fh_printSeperators(60, '-', Color.CRITICAL)
         else:
             cFormatter.print(Color.GREEN, 'No updates found.')
 
@@ -154,7 +154,7 @@ def f_printWelcomeText() -> None:
     cFormatter.print(Color.BRIGHT_GREEN, 'We create base-backups on every login and further backups every time you start or choose so manually.')
     cFormatter.print(Color.BRIGHT_GREEN, 'In case of trouble, please switch your Network (Hotspot, VPN etc).')
     cFormatter.print(Color.BRIGHT_GREEN, f'Otherwise please visit {repoURL} and report the issue.')
-    cFormatter.printSeperators(60, '-')
+    cFormatter.fh_printSeperators(60, '-')
     cFormatter.print(Color.BRIGHT_MAGENTA, '1: Using no browser with requests.    Reliability 6/10')
     cFormatter.print(Color.BRIGHT_MAGENTA, '2: Using own browser with requests.   Reliability 7/10')
     cFormatter.print(Color.BRIGHT_MAGENTA, '3: Using own browser with JavaScript. Reliability 9/10')

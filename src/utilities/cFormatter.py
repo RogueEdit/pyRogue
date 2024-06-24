@@ -149,7 +149,7 @@ class cFormatter(logging.Formatter):
         print(formatted_text)
 
     @staticmethod
-    def printSeperators(num_separators: Optional[int] = None, separator: str = '-', color: Optional[Color] = None) -> None:
+    def fh_printSeperators(num_separators: Optional[int] = None, separator: str = '-', color: Optional[Color] = None) -> None:
         """
         Prints separators with the specified color.
         
@@ -179,7 +179,7 @@ class cFormatter(logging.Formatter):
         print(formatted_separators)
 
     @staticmethod
-    def strip_color_codes(text: str) -> str:
+    def fh_stripColorCodes(text: str) -> str:
         """
         Strips ANSI color codes from the text for accurate length calculations.
         
@@ -203,7 +203,7 @@ class cFormatter(logging.Formatter):
         return ansi_escape.sub('', text)
 
     @staticmethod
-    def line_fill(line: str, helper_text: str = '', length: int = 55, fill_char: str = ' ', truncate: bool = False) -> str:
+    def fh_lineFill(line: str, helper_text: str = '', length: int = 55, fill_char: str = ' ', truncate: bool = False) -> str:
         """
         Formats a line of text to a fixed length by adding fill characters.
         
@@ -227,15 +227,15 @@ class cFormatter(logging.Formatter):
         Modules/Librarys used:
         - re: Used to strip ANSI color codes from text.
         """
-        stripped_line = cFormatter.strip_color_codes(line)
-        stripped_helper_text = cFormatter.strip_color_codes(helper_text)
+        stripped_line = cFormatter.fh_stripColorCodes(line)
+        stripped_helper_text = cFormatter.fh_stripColorCodes(helper_text)
         
         total_length = len(stripped_line) + len(stripped_helper_text)
         
         if truncate and total_length > length:
             truncated_length = length - len(stripped_line) - 3  # 3 characters for "..."
             line = line[:truncated_length] + '...'
-            stripped_line = cFormatter.strip_color_codes(line)
+            stripped_line = cFormatter.fh_stripColorCodes(line)
             total_length = len(stripped_line) + len(stripped_helper_text)
 
         fill_length = length - total_length
@@ -243,7 +243,7 @@ class cFormatter(logging.Formatter):
         return f"{Style.RESET_ALL}{line}{fill}{helper_text}"
 
     @staticmethod
-    def center_text(text: str, length: int = 55, fill_char: str = ' ') -> str:
+    def fh_centerText(text: str, length: int = 55, fill_char: str = ' ') -> str:
         """
         Centers a text within a given length, filling with the specified character.
         
@@ -265,7 +265,7 @@ class cFormatter(logging.Formatter):
         Modules/Librarys used:
         - re: Used to strip ANSI color codes from text.
         """
-        stripped_text = cFormatter.strip_color_codes(text)
+        stripped_text = cFormatter.fh_stripColorCodes(text)
         total_length = len(stripped_text)
         if total_length >= length:
             return text[:length]
@@ -280,7 +280,7 @@ class cFormatter(logging.Formatter):
         return f"{front_fill}{text}{back_fill}"
 
     @staticmethod
-    def initialize_menu(term: List[Union[str, Tuple[str, str, Optional[str]], Tuple[str, callable]]], length: Optional[int] = 55) -> List[Tuple[int, callable]]:
+    def m_initializeMenu(term: List[Union[str, Tuple[str, str, Optional[str]], Tuple[str, callable]]], length: Optional[int] = 55) -> List[Tuple[int, callable]]:
         """
         Initializes and prints a menu based on the provided term list.
         
@@ -316,19 +316,19 @@ class cFormatter(logging.Formatter):
         for item in term:
             if isinstance(item, tuple):
                 if item[1] == 'helper':
-                    print(Fore.GREEN + '* ' + cFormatter.center_text(f' {item[0]} ', length, '-') + f' {Fore.GREEN}*' + Style.RESET_ALL)
+                    print(Fore.GREEN + '* ' + cFormatter.fh_centerText(f' {item[0]} ', length, '-') + f' {Fore.GREEN}*' + Style.RESET_ALL)
                 elif item[1] == 'title':
-                    print(Fore.GREEN + '* ' + cFormatter.center_text(f' {item[0]} ', length, '*') + f' {Fore.GREEN}*' + Style.RESET_ALL)
+                    print(Fore.GREEN + '* ' + cFormatter.fh_centerText(f' {item[0]} ', length, '*') + f' {Fore.GREEN}*' + Style.RESET_ALL)
                 elif item[1] == 'category':
-                    print(Fore.LIGHTYELLOW_EX + '* ' + cFormatter.center_text(f' {item[0]} ', length, '>') + ' *' + Style.RESET_ALL)
+                    print(Fore.LIGHTYELLOW_EX + '* ' + cFormatter.fh_centerText(f' {item[0]} ', length, '>') + ' *' + Style.RESET_ALL)
                 else:
                     text, func = item
                     line = f'{actual_idx}: {text[0]}'
-                    formatted_line = cFormatter.line_fill(line, text[1], length, ' ', True)
+                    formatted_line = cFormatter.fh_lineFill(line, text[1], length, ' ', True)
                     print(Fore.GREEN + '* ' + formatted_line + f' {Fore.GREEN}*' + Style.RESET_ALL)
                     valid_choices.append((actual_idx, func))
                     actual_idx += 1
             else:
-                print(Fore.YELLOW + '* ' + cFormatter.center_text(item, length, '*') + ' *' + Style.RESET_ALL)
+                print(Fore.YELLOW + '* ' + cFormatter.fh_centerText(item, length, '*') + ' *' + Style.RESET_ALL)
         
         return valid_choices

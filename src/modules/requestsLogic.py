@@ -255,7 +255,7 @@ class requestsLogic:
         self.username = username
         self.password = password
         self.token: Optional[str] = None
-        self.session_id: Optional[str] = None
+        self.sessionId: Optional[str] = None
         self.session = requests.Session()
 
     def calcSessionId(self) -> str:
@@ -303,15 +303,15 @@ class requestsLogic:
 
             login_response = response.json()
             self.token = login_response.get('token')
-            cFormatter.printSeperators(30, '-')
-            self.session_id = self.calcSessionId()
+            cFormatter.fh_printSeperators(30, '-')
+            self.sessionId = self.calcSessionId()
             cFormatter.print(Color.GREEN, 'Login successful.')
             status_code_color = Color.BRIGHT_GREEN if response.status_code == 200 else Color.BRIGHT_RED
             cFormatter.print(status_code_color, f'HTTP Status Code: {response.status_code}')
             cFormatter.print(Color.CYAN, f'Response URL: {response.request.url}', isLogging=True)
             filtered_headers = {key: value for key, value in response.headers.items() if key != 'Report-To'}
             cFormatter.print(Color.CYAN, f'Response Headers: {filtered_headers}', isLogging=True)
-            cFormatter.printSeperators(30, '-')
+            cFormatter.fh_printSeperators(30, '-')
             return True
 
         except requests.RequestException:

@@ -294,7 +294,7 @@ class ModifierEditor:
                 break
             try:
                 print('')
-                valid_choices = cFormatter.initialize_menu(self.menu_items, length=75)
+                valid_choices = cFormatter.m_initializeMenu(self.menu_items, length=75)
                 if self.notify_message:
                     if self.notify_message[1] == 'success':
                         cFormatter.print(Color.GREEN, f'{self.notify_message[0]}')
