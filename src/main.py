@@ -70,44 +70,46 @@ def m_executeOptions(choice_index, valid_choices):
 
 @handle_operation_exceptions
 def m_mainMenu(rogue):
-    useWhenDone = f'{Fore.LIGHTYELLOW_EX}(Use when Done)'
     title = f'{config.title}>'
-
+    useWhenDone = f'{Fore.LIGHTYELLOW_EX}(Use when Done)'
+    untouched = f'{Fore.LIGHTYELLOW_EX}(UNTOUCHED)'
+    reworked = f'{Fore.GREEN}(REWORKED)'
+    broken = f'{Fore.RED}(BROKEN)'
     term = [
         (title, 'title'),
         ('Account Actions', 'category'),
-        (('Create a backup', ''), rogue.create_backup),
-        (('Recover your backup', ''), rogue.restore_backup),
-        (('Load Game-Data from server', ''), rogue.get_trainer_data),
-        (('Change save-slot to edit', 'workingWIP'), rogue.f_changeSaveSlot),
-        (('Edit account stats', 'workingWIP'), rogue.f_editAccountStats),
+        (('Create a backup', untouched), rogue.create_backup),
+        (('Recover your backup', untouched), rogue.restore_backup),
+        (('Load Game-Data from server', untouched), rogue.get_trainer_data),
+        (('Change save-slot to edit', reworked), rogue.f_changeSaveSlot),
+        (('Edit account stats', reworked), rogue.f_editAccountStats),
 
         ('Trainer Data Actions', 'category'),
-        (('Edit a starter', ''), rogue.edit_starter_separate),
-        (('Edit your egg-tickets', ''), rogue.add_ticket),
-        (('Edit candies on a starter', ''), rogue.f_addCandies),
-        (('Edit Egg-hatch durations', 'workingWIP'), rogue.f_editHatchWaves),
-        (('Generate eggs', 'workingWIP'), rogue.f_addEggsGenerator),
-        (('Unlock all vouchers', ''), rogue.f_editVouchers),
-        (('Unlock all starters', ''), rogue.f_unlockStarters),
-        (('Unlock all achievements', ''), rogue.f_editAchivements),
-        (('Unlock all gamemodes', ''), rogue.f_editGamemodes),
-        (('Unlock Everything', ''), rogue.f_unlockAllCombined),
+        (('Edit a starter', untouched), rogue.edit_starter_separate),
+        (('Edit your egg-tickets', untouched), rogue.add_ticket),
+        (('Edit candies on a starter', broken), rogue.f_addCandies),
+        (('Edit Egg-hatch durations', reworked), rogue.f_editHatchWaves),
+        (('Generate eggs', broken), rogue.f_addEggsGenerator),
+        (('Unlock all vouchers', untouched), rogue.f_editVouchers),
+        (('Unlock all starters', untouched), rogue.f_unlockStarters),
+        (('Unlock all achievements', untouched), rogue.f_editAchivements),
+        (('Unlock all gamemodes', untouched), rogue.f_editGamemodes),
+        (('Unlock Everything', 'mightwork'), rogue.f_unlockAllCombined),
 
         ('Session Data Actions', 'category'),
-        (('Edit CURRENT Pokemon Party', ''), rogue.edit_pokemon_party),
-        (('Edit money amount', 'workingWIP'), rogue.f_editMoney),
-        (('Edit pokeballs amount', 'workingWIP'), rogue.f_editPokeballs),
-        (('Edit current biome', 'workingWIP'), rogue.f_editBiome),
-        (('Edit Items', f'{Fore.GREEN + Style.BRIGHT}NEW{Style.RESET_ALL}'), rogue.f_submenuItemEditor),
+        (('Edit CURRENT Pokemon Party', untouched), rogue.edit_pokemon_party),
+        (('Edit money amount', reworked), rogue.f_editMoney),
+        (('Edit pokeballs amount', reworked), rogue.f_editPokeballs),
+        (('Edit current biome', reworked), rogue.f_editBiome),
+        (('Edit Items', untouched), rogue.f_submenuItemEditor),
 
         ('Print game information', 'category'),
-        (('Show all Pokemon ID', 'workingWIP'), rogue.print_pokedex),
-        (('Show all Biome IDs', 'workingWIP'), rogue.f_printBiomes),
-        (('Show all Move IDs', 'workingWIP'), rogue.print_moves),
-        (('Show all Vouchers IDs', 'workingWIP'), rogue.print_vouchers),
-        (('Show all Natures IDs', 'workingWIP'), rogue.print_natures),
-        (('Show all NaturesSlot IDs', 'workingWIP'), rogue.print_natureSlot),
+        (('Show all Pokemon ID', reworked), rogue.print_pokedex),
+        (('Show all Biome IDs', reworked), rogue.f_printBiomes),
+        (('Show all Move IDs', reworked), rogue.print_moves),
+        (('Show all Vouchers IDs', reworked), rogue.print_vouchers),
+        (('Show all Natures IDs', reworked), rogue.print_natures),
+        (('Show all NaturesSlot IDs', reworked), rogue.print_natureSlot),
 
         ('You can always edit your JSON manually as well!', 'helper'),
         (('Save data and upload to the Server', useWhenDone), rogue.update_all),

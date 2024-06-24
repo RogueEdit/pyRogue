@@ -1,13 +1,13 @@
 import random
 import time
 from typing import List, Dict, Any, Tuple
+
 # Authors
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
-# Contributors: https://github.com/M6D6M6A/
-# -> Documentation: https://github.com/JulianStiebler
-# Date of release: 06.06.2024
-# Last Edited: 20.06.2024
+# Contributors: https://github.com/JulianStiebler
+# Date of release: 25.06.2024
+# Last Edited: 25.06.2024
 
 """
 This script provides functions to generate and manage eggs in a game environment,
@@ -86,11 +86,11 @@ def constructEggs(tier: str, gachaType: str, hatchWaves: int, eggAmount: int, is
 
     Args:
         tier (str): The tier of the eggs ('Common', 'Rare', 'Epic', 'Legendary', 'Manaphy').
-        gacha_type (str): The gacha type ('MoveGacha', 'LegendaryGacha', 'ShinyGacha').
-        hatch_waves (int): The number of waves required to hatch.
-        num_eggs (int): The number of eggs to construct.
-        is_shiny (bool): Whether the eggs should be shiny.
-        override_hidden_ability (bool): Whether to override hidden ability.
+        gachaType (str): The gacha type ('MoveGacha', 'LegendaryGacha', 'ShinyGacha').
+        hatchWaves (int): The number of waves required to hatch.
+        eggAmount (int): The number of eggs to construct.
+        isShiny (bool): Whether the eggs should be shiny.
+        overrideHiddenAbility (bool): Whether to override hidden ability.
 
     Returns:
         List[Dict[str, Any]]: A list of constructed egg dictionaries.
