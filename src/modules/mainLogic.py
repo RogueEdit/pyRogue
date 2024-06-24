@@ -62,6 +62,9 @@ Modules/Librarys used and for what purpose exactly in each function:
 - requests: Making HTTP requests to interact with the PokeRogue API.
 - prompt_toolkit: Building interactive command-line interfaces for user interactions.
 """
+# Import custom Exceptions
+from modules.handler import handle_operation_exceptions, OperationError, OperationCancel, OperationSuccessful, PropagateResponse, CustomJSONDecodeError  # noqa: F401
+from modules.handler import handle_http_exceptions, HTTPEmptyResponse  # noqa: F401
 
 from modules import handle_error_response, HeaderGenerator, config
 from utilities import Generator, EnumLoader, cFormatter, Color, Limiter, eggLogic
@@ -88,7 +91,6 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 #global_compressor = zstd.ZstdCompressor()
 #global_decompressor = zstd.ZstdDecompressor()
-
 
 class Rogue:
     """
@@ -147,12 +149,12 @@ class Rogue:
 
         self.generator = Generator()
         self.generator.generate()
-        self.enum = EnumLoader()
+        self.appData = EnumLoader()
 
-        self.backup_dir = config.backups_directory
-        self.data_dir = config.data_directory
+        self.backup_dir = config.backupDirectory
+        self.data_dir = config.dataDirectory
 
-        self.pokemon_id_by_name, self.biomes_by_id, self.moves_by_id, self.nature_data, self.vouchers_data, self.natureSlot_data = self.enum.convert_to_enums()
+        self.pokemon_id_by_name, self.biomesByID, self.moves_by_id, self.natureData, self.vouchers_data, self.natureSlot_data = self.appData.f_convertToEnums()
 
         try:
             with open(f'{self.data_dir}/extra.json') as f:
@@ -294,7 +296,7 @@ class Rogue:
                     cFormatter.print(Color.INFO, 'Invalid input. Slot number must be between 1 and 5.')
 
             trainer_data = self.get_trainer_data()
-            game_data = self.get_gamesave_data(slot)
+            game_data = self.getSlotData(slot)
 
             if game_data and trainer_data:
                 self.create_backup()
@@ -342,7 +344,7 @@ class Rogue:
                         #decompressed_data = self.__decompress_zstd(response)
                         #data = json.loads(decompressed_data)
                         data = json.loads(response)
-                        self.__write_data(data, 'trainer.json', False)
+                        self.__writeJSONData(data, 'trainer.json', False)
                         cFormatter.print(Color.GREEN, 'Successfully fetched trainer data.')
                         return data
                     except json.JSONDecodeError as e:
@@ -361,7 +363,7 @@ class Rogue:
                     data = response.json()
                     self.trainerId = data.get('trainerId')
                     self.secretId = data.get('secretId')
-                    self.__write_data(data, 'trainer.json', False)
+                    self.__writeJSONData(data, 'trainer.json', False)
                     return data
                 else:
                     return handle_error_response(response)
@@ -369,7 +371,7 @@ class Rogue:
                 cFormatter.print(Color.DEBUG, f'Error fetching trainer data. Please restart the tool. \n {e}', isLogging=True)
 
     # TODO: Simplify
-    def get_gamesave_data(self, slot: int = 1) -> Optional[Dict[str, Any]]:
+    def getSlotData(self, slot: int = 1) -> Optional[Dict[str, Any]]:
         """
         Fetch gamesave data from the API for a specified slot.
 
@@ -405,7 +407,7 @@ class Rogue:
                         #decompressed_data = self.__decompress_zstd(response)
                         #data = json.loads(decompressed_data)
                         data = json.loads(response)
-                        self.__write_data(data, f'slot_{slot}.json', False)
+                        self.__writeJSONData(data, f'slot_{slot}.json', False)
                         return data
                     except json.JSONDecodeError as e:
                         cFormatter.print(Color.WARNING, f'Error decoding JSON: {e}', isLogging=True)
@@ -419,12 +421,14 @@ class Rogue:
                 if response.content:  # Check if the response content is not empty
                     cFormatter.print(Color.GREEN, f'Successfully fetched data for slot {self.slot}.')
                     data = response.json()
-                    self.__write_data(data, f'slot_{slot}.json', False)
+                    self.__writeJSONData(data, f'slot_{slot}.json', False)
                     return data
                 else:
                     return handle_error_response(response)
             except requests.RequestException as e:
                 cFormatter.print(Color.CRITICAL, f'Error fetching save-slot data. Please restart the tool. \n {e}', isLogging=True)
+
+            self.slot = slot
 
     def logout(self) -> None:
         """
@@ -462,7 +466,7 @@ class Rogue:
         except Exception as e:
             cFormatter.print(Color.WARNING, f'Error logging out. {e}')
 
-    def __write_data(self, data: Dict[str, Any], filename: str, showSuccess: bool = True) -> None:
+    def __writeJSONData(self, data: Dict[str, Any], filename: str, showSuccess: bool = True) -> None:
         """
         Write data to a JSON file.
 
@@ -491,7 +495,7 @@ class Rogue:
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function __write_data(): {e}', isLogging=True)
 
-    def __load_data(self, file_path: str) -> Dict[str, Any]:
+    def __loadDataFromJSON(self, file_path: str) -> Dict[str, Any]:
         """
         Load data from a specified file path.
 
@@ -525,7 +529,7 @@ class Rogue:
         Create a backup of JSON files.
 
         What it does:
-        - Creates a backup of all JSON files in the current directory to `config.backups_directory`.
+        - Creates a backup of all JSON files in the current directory to `config.backupsDirectory`.
         - Uses a timestamped naming convention for backup files (`backup_{trainerid}_{timestamp}.json`).
         - Prints 'Backup created.' upon successful backup completion.
 
@@ -546,7 +550,7 @@ class Rogue:
         - datetime: For generating timestamps for backup file names.
         """
 
-        backup_dir =  config.backups_directory
+        backup_dir =  config.backupDirectory
         if not os.path.exists(backup_dir):
             os.makedirs(backup_dir)
         try:
@@ -603,7 +607,7 @@ class Rogue:
         """
 
         try:
-            backup_dir = config.backups_directory
+            backup_dir = config.backupDirectory
             files = os.listdir(backup_dir)
 
             # Filter and sort files that match trainerId
@@ -739,6 +743,9 @@ class Rogue:
                 self.logout()
         except SSLError as ssl_err:
             cFormatter.print(Color.WARNING, f'SSL error occurred: {ssl_err}', isLogging=True)
+            cFormatter.print(Color.WARNING, 'Took too long to edit, you need to be faster. Session expired.')
+            sleep(5)
+            self.logout()
         except ConnectionError as conn_err:
             cFormatter.print(Color.WARNING, f'Connection error occurred: {conn_err}', isLogging=True)
         except Timeout as timeout_err:
@@ -746,7 +753,7 @@ class Rogue:
         except requests.exceptions.RequestException as e:
            cFormatter.print(Color.WARNING, f'Error occurred during request: {e}', isLogging=True)
 
-    def unlock_all_starters(self) -> None:
+    def f_unlockStarters(self) -> None:
         """
         Allows to unlock various options for starters and updates the local .json file.
 
@@ -778,7 +785,7 @@ class Rogue:
 
         """
         try:
-            trainer_data: dict = self.__load_data('trainer.json')
+            trainer_data: dict = self.__loadDataFromJSON('trainer.json')
 
             choice: int = int(input('Do you want to unlock all forms of the pokemon? (All forms are Tier 3 shinies. 1: Yes | 2: No): '))
             if not 1 <= choice <= 2:
@@ -853,7 +860,7 @@ class Rogue:
                 trainer_data['dexData'][entry] = {
                     'seenAttr': 479,
                     'caughtAttr': self.__MAX_BIG_INT if choice == 1 else caught_attr,
-                    'natureAttr': self.nature_data.UNLOCK_ALL.value if nature == 1 else None,
+                    'natureAttr': self.natureData.UNLOCK_ALL.value if nature == 1 else None,
                     'seenCount': seen,
                     'caughtCount': caught,
                     'hatchedCount': hatched,
@@ -870,7 +877,7 @@ class Rogue:
                     'classicWinCount': None if ribbon == 2 else 1,
                 }
 
-            self.__write_data(trainer_data, 'trainer.json')
+            self.__writeJSONData(trainer_data, 'trainer.json')
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function unlock_all_starter(): {e}', isLogging=True)
 
@@ -901,7 +908,7 @@ class Rogue:
 
         """
         try:
-            trainer_data: dict = self.__load_data('trainer.json')
+            trainer_data: dict = self.__loadDataFromJSON('trainer.json')
             
             if not dexId:
                 pokemon_completer: WordCompleter = WordCompleter(self.pokemon_id_by_name.__members__.keys(), ignore_case=True)
@@ -985,12 +992,12 @@ class Rogue:
             
             self.print_natures()
 
-            nature_completer: WordCompleter = WordCompleter(self.nature_data.__members__.keys(), ignore_case=True)
+            nature_completer: WordCompleter = WordCompleter(self.natureData.__members__.keys(), ignore_case=True)
             
             cFormatter.print(Color.BRIGHT_YELLOW, 'Write the name of the nature, it will recommend for auto-completion.')
             nature: str = prompt('What nature would you like?: ', completer=nature_completer)
 
-            nature: int = self.nature_data[nature].value
+            nature: int = self.natureData[nature].value
 
             trainer_data['dexData'][str(dexId)] = {
                 'seenAttr': 479,
@@ -1010,7 +1017,7 @@ class Rogue:
                 'valueReduction': costReduce
             }
 
-            self.__write_data(trainer_data, 'trainer.json')
+            self.__writeJSONData(trainer_data, 'trainer.json')
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function edit_starters(): {e}', isLogging=True)
 
@@ -1042,7 +1049,7 @@ class Rogue:
 
         """
         try:
-            trainer_data = self.__load_data('trainer.json')
+            trainer_data = self.__loadDataFromJSON('trainer.json')
 
             common: int = int(input('How many common vouchers do you want: '))
 
@@ -1060,7 +1067,7 @@ class Rogue:
             }
             trainer_data['voucherCounts'] = voucher_counts
 
-            self.__write_data(trainer_data, 'trainer.json')
+            self.__writeJSONData(trainer_data, 'trainer.json')
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function add_tickets(): {e}', isLogging=True)
 
@@ -1089,7 +1096,7 @@ class Rogue:
             slot = self.slot
             filename = f'slot_{slot}.json'
 
-            game_data = self.__load_data(filename)
+            game_data = self.__loadDataFromJSON(filename)
 
             if game_data['gameMode'] == 3:
                 cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot edit this property on Daily Runs.')
@@ -1110,9 +1117,9 @@ class Rogue:
                 cFormatter.print(Color.BRIGHT_YELLOW, 'Invalid party slot.')
                 return
 
-            cFormatter.print_separators(65, '-', Color.WHITE)
+            cFormatter.printSeperators(65, '-', Color.WHITE)
             cFormatter.print(Color.WHITE, '\n'.join(options))
-            cFormatter.print_separators(65, '-', Color.WHITE)
+            cFormatter.printSeperators(65, '-', Color.WHITE)
 
             command = int(input('Option: '))
             if command < 1 or command > 7:
@@ -1181,11 +1188,11 @@ class Rogue:
             
                 game_data['party'][party_num]['nature'] = natureSlot
 
-            self.__write_data(game_data, filename)
+            self.__writeJSONData(game_data, filename)
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function edit_pokemon_party(): {e}', isLogging=True)
 
-    def unlock_all_gamemodes(self) -> None:
+    def f_editGamemodes(self) -> None:
         """
         Unlocks all game modes for the player.
 
@@ -1206,7 +1213,7 @@ class Rogue:
 
         """
         try:
-            trainer_data = self.__load_data('trainer.json')
+            trainer_data = self.__loadDataFromJSON('trainer.json')
 
             unlocked_modes = trainer_data.get('unlocks', {})
             if not unlocked_modes:
@@ -1216,12 +1223,12 @@ class Rogue:
             for mode in unlocked_modes:
                 unlocked_modes[mode] = True
 
-            self.__write_data(trainer_data, 'trainer.json')
+            self.__writeJSONData(trainer_data, 'trainer.json')
         
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function unlock_all_gamemodes(): {e}', isLogging=True)
 
-    def unlock_all_achievements(self) -> None:
+    def f_editAchivements(self) -> None:
         """
         Unlocks all achievements for the player.
 
@@ -1243,7 +1250,7 @@ class Rogue:
 
         """
         try:
-            trainer_data = self.__load_data('trainer.json')
+            trainer_data = self.__loadDataFromJSON('trainer.json')
 
             current_time_ms = int(time.time() * 1000) 
             min_time_ms = current_time_ms - 3600 * 1000  
@@ -1254,12 +1261,12 @@ class Rogue:
                 for achievement in achievements
             }
 
-            self.__write_data(trainer_data, 'trainer.json')
+            self.__writeJSONData(trainer_data, 'trainer.json')
 
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function unlock_all_achievements(): {e}', isLogging=True)
 
-    def edit_vouchers(self) -> None:
+    def f_editVouchers(self) -> None:
         """
         Unlocks all vouchers for the player or a specific voucher with random unlock times.
 
@@ -1281,7 +1288,7 @@ class Rogue:
 
         """
         try:
-            trainer_data = self.__load_data('trainer.json')
+            trainer_data = self.__loadDataFromJSON('trainer.json')
 
             current_time_ms = int(time.time() * 1000) 
             min_time_ms = current_time_ms - 3600 * 1000  
@@ -1312,7 +1319,7 @@ class Rogue:
                     random_time = min_time_ms + random.randint(0, current_time_ms - min_time_ms)
                     trainer_data['voucherUnlocks'][vouchers] = random_time
 
-            self.__write_data(trainer_data, 'trainer.json')
+            self.__writeJSONData(trainer_data, 'trainer.json')
 
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function edit_vouchers(): {e}', isLogging=True)
@@ -1363,7 +1370,7 @@ class Rogue:
 
         """
         try:
-            biomes = [f'{member.value}: {member.name}' for member in self.biomes_by_id]
+            biomes = [f'{member.value}: {member.name}' for member in self.biomesByID]
             cFormatter.print(Color.WHITE, '\n'.join(biomes))
         
         except Exception as e:
@@ -1415,7 +1422,7 @@ class Rogue:
 
         """
         try:
-            natures = [f'{member.value}: {member.name}' for member in self.nature_data]
+            natures = [f'{member.value}: {member.name}' for member in self.natureData]
             cFormatter.print(Color.WHITE, '\n'.join(natures))
         
         except Exception as e:
@@ -1473,7 +1480,8 @@ class Rogue:
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function print_natureSlot(): {e}', isLogging=True)
 
-    def add_candies(self, dexId: Optional[str] = None) -> None:
+    @handle_operation_exceptions
+    def f_addCandies(self, dexId: Optional[str] = None) -> None:
         """
         Adds candies to a Pokémon.
 
@@ -1494,35 +1502,43 @@ class Rogue:
 
         Usage Example:
             >>> example_instance = ExampleClass()
-            >>> example_instance.add_candies('pikachu')
+            >>> example_instance.f_addCandies('pikachu')
 
         """
         try:
-            trainer_data = self.__load_data('trainer.json')
+            trainerData = self.__loadDataFromJSON('trainer.json')
             
             if not dexId:
-                pokemon_completer: WordCompleter = WordCompleter(self.pokemon_id_by_name.__members__.keys(), ignore_case=True)
-
-                cFormatter.print(Color.INFO, 'Write the name of the pokemon it will recommend for auto-completion.')
-                dexId: str = prompt('Enter Pokemon (Name / ID): ', completer=pokemon_completer)
-            
-                try:
-                    dexId: str = self.pokemon_id_by_name[dexId.lower()].value
-                except KeyError:
-                    cFormatter.print(Color.INFO, f'No Pokemon with Name: {dexId}')
+                # Prepare bidirectional mapping for Pokemon names and IDs
+                pokemonNames = {name.lower(): id_ for name, id_ in self.appData.pokemonIDByName.items()}
+                pokemonIDs = {id_: name for name, id_ in self.appData.pokemonIDByName.items()}
+                
+                # Combine both mappings into a single dictionary for input choices
+                choices = {**pokemonNames, **pokemonIDs}
+                
+                # Prompt user for Pokemon name or ID with auto-completion
+                promptMessage = 'Enter Pokemon (Either Name or ID): '
+                dexId = self.fh_getCompleterInput(promptMessage, choices)
+                
+                if dexId == 'cancel':
                     return
                 
-            candies = int(input('How many candies you want on your pokemon: '))
-            trainer_data['starterData'][dexId]['candyCount'] = candies
+                # If the input is a Pokemon name, convert it to ID
+                if dexId.lower() in pokemonNames:
+                    dexId = pokemonNames[dexId.lower()]
 
-            self.__write_data(trainer_data, 'trainer.json')
+            candies = int(input('How many candies you want on your pokemon: '))
+            trainerData['starterData'][dexId]['candyCount'] = candies
+
+            self.__writeJSONData(trainerData, 'trainer.json')
         
         except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function add_candies(): {e}', isLogging=True)
+            cFormatter.print(Color.CRITICAL, f'Error in function f_addCandies(): {e}', isLogging=True)
 
-    def edit_biome(self) -> None:
+    @handle_operation_exceptions
+    def f_editBiome(self) -> None:
         """
-        Edits the biome of the game.
+        Edits the biome of the game using helper functions for input validation and word completion.
 
         Raises:
         - None
@@ -1532,31 +1548,29 @@ class Rogue:
 
         Workflow:
         1. Loads game data for the current slot.
-        2. Allows the player to choose a biome by name.
-        3. Updates the game data with the chosen biome.
+        2. Allows the player to choose a biome by name or ID using auto-completion.
+        3. Updates the game data with the chosen biome ID.
 
         Usage Example:
-            >>> example_instance = ExampleClass()
-            >>> example_instance.edit_biome()
+            >>> example_instance = ExampleClass(1)  # Replace with actual slot number
+            >>> example_instance.f_editBiome()
 
         """
-        try:
-            game_data = self.__load_data(f'slot_{self.slot}.json')
-            self.print_biomes()
-            biome_completer: WordCompleter = WordCompleter(self.biomes_by_id.__members__.keys(), ignore_case=True)
-            cFormatter.print(Color.INFO, 'Write the name of the biome, it will recommend for auto-completion.')
 
-            biome: str = prompt('What biome would you like?: ', completer=biome_completer)
-            biome: int = int(self.biomes_by_id[biome].value)
-            game_data['arena']['biome'] = biome
-            self.__write_data(game_data, f'slot_{self.slot}.json')
-        
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function edit_biome(): {e}', isLogging=True)
+        gameData = self.__loadDataFromJSON(f'slot_{self.slot}.json')
+        self.print_biomes()
+        biome_completer: WordCompleter = WordCompleter(self.biomesByID.__members__.keys(), ignore_case=True)
+        cFormatter.print(Color.INFO, 'Write the name of the biome, it will recommend for auto-completion.')
 
-    def edit_pokeballs(self) -> None:
+        biome: str = prompt('What biome would you like?: ', completer=biome_completer)
+        biome: int = int(self.biomesByID[biome].value)
+        gameData["arena"]["biome"] = biome
+        self.__write_data(gameData, f'slot_{self.slot}.json')
+
+    @handle_operation_exceptions
+    def f_editPokeballs(self) -> None:
         """
-        Edits the number of pokeballs in the game.
+        Edits the number of pokeballs in the game using helper functions for input validation.
 
         Raises:
         - None
@@ -1566,42 +1580,41 @@ class Rogue:
 
         Workflow:
         1. Loads game data for the current slot.
-        2. Allows the player to input the number of each type of pokeball.
+        2. Allows the player to input the number of each type of pokeball using validated input.
         3. Updates the game data with the new counts for each type of pokeball.
 
         Usage Example:
             >>> example_instance = ExampleClass()
-            >>> example_instance.edit_pokeballs()
-
+            >>> example_instance.f_editPokeballs()
         """
-        try:
-            game_data = self.__load_data(f'slot_{self.slot}.json')
+        gameData = self.__loadDataFromJSON(f'slot_{self.slot}.json')
 
-            if game_data['gameMode'] == 3:
-                cFormatter.print(Color.CRITICAL, 'Cannot edit this property on daily runs!')
-                return
+        if gameData["gameMode"] == 3:
+            cFormatter.print(Color.CRITICAL, 'Cannot edit this property on daily runs!')
+            return
 
-            choice = int(input('How many pokeballs do you want?: '))
-            game_data['pokeballCounts']['0'] = choice
+        choices = {
+            '0': 'pokeballCounts.0',
+            '1': 'pokeballCounts.1',
+            '2': 'pokeballCounts.2',
+            '3': 'pokeballCounts.3',
+            '4': 'pokeballCounts.4'
+        }
 
-            choice = int(input('How many great balls do you want?: '))
-            game_data['pokeballCounts']['1'] = choice
-
-            choice = int(input('How many ultra balls do you want?: '))
-            game_data['pokeballCounts']['2'] = choice
-
-            choice = int(input('How many rogue balls do you want?: '))
-            game_data['pokeballCounts']['3'] = choice
-
-            choice = int(input('How many master balls do you want?: '))
-            game_data['pokeballCounts']['4'] = choice
-
-            self.__write_data(game_data, f'slot_{self.slot}.json')
+        actions = "1: Great Balls | 2: Ultra Balls | 3: Rogue Balls | 4: Master Balls"
         
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function edit_pokeballs(): {e}', isLogging=True)
+        for key in choices:
+            prompt = f"How many {choices[key].split('.')[1].capitalize()} do you want?: "
+            minBound = 0
+            maxBound = 999
+            value = self.fh_getIntegerInput(prompt, minBound, maxBound, actions)
+            if value is not None:
+                gameData[choices[key]] = value
 
-    def edit_money(self) -> None:
+        self.__writeJSONData(gameData, f'slot_{self.slot}.json')
+
+    @handle_operation_exceptions
+    def f_editMoney(self) -> None:
         """
         Edits the amount of Poke-Dollars in the game.
 
@@ -1618,29 +1631,31 @@ class Rogue:
 
         Usage Example:
             >>> example_instance = ExampleClass()
-            >>> example_instance.edit_money()
-
+            >>> example_instance.f_editMoney()
         """
-        try:
-            game_data = self.__load_data(f'slot_{self.slot}.json')
 
-            if game_data['gameMode'] == 3:
-                cFormatter.print(Color.CRITICAL, 'Cannot edit this property on daily runs!')
-                return
+        gameData = self.__loadDataFromJSON(f'slot_{self.slot}.json')
 
-            choice = int(input('How many Poke-Dollars do you want?: '))
-            game_data['money'] = choice
-            self.__write_data(game_data, f'slot_{self.slot}.json')
-        
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function edit_money(): {e}', isLogging=True)
+        if gameData["gameMode"] == 3:
+            cFormatter.print(Color.CRITICAL, 'Cannot edit this property on daily runs!')
+            return
 
-    def generate_eggs(self) -> None:
+        prompt = 'How many Poke-Dollars do you want? '
+        choice = self.fh_getIntegerInput(prompt, 0, float('inf'), zeroCancel=True)
+        if choice == 0:
+            raise OperationCancel()
+        gameData["money"] = choice
+        self.__writeJSONData(gameData, f'slot_{self.slot}.json')
+
+    @handle_operation_exceptions
+    def f_addEggsGenerator(self) -> None:
         """
         Generates eggs for the player.
 
         Raises:
-        - None
+        - OperationSuccessful: If the operation completes successfully.
+        - OperationError: If there is an error during the operation.
+        - OperationCancel: If the operation is canceled by the user.
 
         Modules Used:
         - .cFormatter: For printing formatted messages to the console, including colorized output.
@@ -1648,281 +1663,218 @@ class Rogue:
 
         Workflow:
         1. Loads trainer data.
-        2. Allows the player to specify attributes for the eggs (count, tier, gacha type, hatch waves).
-        3. Generates the specified number of eggs with the specified attributes.
-        4. Adds the generated eggs to the player's inventory.
+        2. If there are existing eggs, uses their structure as a sample.
+        3. Allows the player to specify attributes for the eggs (count, tier, gacha type, hatch waves, shiny, hidden ability).
+        4. Generates the specified number of eggs with the specified attributes.
+        5. Adds the generated eggs to the player's inventory, either replacing or adding to the existing eggs.
+        If there are no existing eggs, a sample structure is provided for the new eggs.
 
         Usage Example:
             >>> example_instance = ExampleClass()
-            >>> example_instance.generate_eggs()
-
+            >>> example_instance.f_addEggsGenerator()
         """
-        try:
-            trainer_data = self.__load_data('trainer.json')
+        trainerData = self.__loadDataFromJSON('trainer.json')
+        currentAmount = len(trainerData.get('eggs', []))
 
-            if trainer_data['eggs'] is not None:
-                egg_len = len(trainer_data['eggs'])
-            else:
-                trainer_data['eggs'] = []
-                egg_len = len(trainer_data['eggs'])
-            
-            if egg_len >= 75:
-                replace_or_add = input(
-                    'You have max number of eggs, replace eggs? (0: Cancel, 1: Replace): '
-                )
-                if replace_or_add == '2':
-                    replace_or_add = '1'
-            else:
-                replace_or_add = input(
-                    f'You have [{egg_len}] eggs, add or replace eggs? (0: Cancel, 1: Replace, 2: Add): '
-                )
-                
-            if replace_or_add not in ['1', '2']:
-                raise ValueError('Invalid replace_or_add selected!')
-                
-            max_count = 75 - egg_len if replace_or_add == '2' else 75
-            
-            count = int(
-                input(f'How many eggs do you want to have? (0 - {max_count})(number): ')
+        if currentAmount >= 99:
+            userInput = self.fh_getChoiceinput(
+                'You already have the total max of eggs, replace eggs?',
+                {'0': 'Cancel', '1': 'Replace'}
             )
-            tier = input(
-                'What tier should the eggs have? (1: Common, 2: Rare, 3: Epic, 4: Legendary, 5: Manaphy): '
-            )
-            # Map tier to string
-            tier_map = {
-                '1': 'COMMON',
-                '2': 'RARE',
-                '3': 'EPIC',
-                '4': 'LEGENDARY',
-                '5': 'MANAPHY'
-            }
-            if tier not in tier_map:
-                raise ValueError('Invalid tier selected!')
-            tier = tier_map[tier]
-            
-            gacha_type = input(
-                'What gacha type do you want to have? (1: Move, 2: Legendary, 3: Shiny): '
-            )
-            # Map gacha type to string
-            gacha_map = {
-                '1': 'MOVE',
-                '2': 'LEGENDARY',
-                '3': 'SHINY'
-            }
-            if gacha_type not in gacha_map:
-                raise ValueError('Invalid gacha_type selected!')
-            gacha_type = gacha_map[gacha_type]
-            
-            hatch_waves = int(
-                input('After how many waves should they hatch? (0-100)(number): ')
+        else:
+            userInput = self.fh_getChoiceinput(
+                f'You already have [{currentAmount}] eggs - should we add or replace?',
+                {'0': 'Cancel', '1': 'Replace', '2': 'Add'}
             )
 
-            new_eggs = eggLogic.generate_eggs(tier, gacha_type, hatch_waves, count)  # noqa: F405
+        if userInput == '0':
+            cFormatter.print(Color.CRITICAL, 'Operation cancelled.')
+            return
 
-            if replace_or_add == '1':
-                trainer_data['eggs'] = new_eggs
-            elif replace_or_add == '2':
-                trainer_data['eggs'].extend(new_eggs)
-            
-            cFormatter.print(Color.GREEN, f'[{count}] eggs generated successfully.')
-            self.__write_data(trainer_data, 'trainer.json')
-            
+        maxAmount = 99 - currentAmount if userInput == '2' else 99
 
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function generate_eggs(): {e}', isLogging=True)
+        count = self.fh_getIntegerInput('How many eggs do you want to generate?', 0, maxAmount, "1: Replace | 2: Add")
+        if count == 0:
+            cFormatter.print(Color.CRITICAL, 'No eggs to generate. Operation cancelled.')
+            return
 
-    def edit_account_stats(self) -> None:
+        tier = self.fh_getChoiceinput(
+            'What tier should the eggs have?',
+            {'1': 'Common', '2': 'Rare', '3': 'Epic', '4': 'Legendary', '5': 'Manaphy'}
+        )
+
+        gachaType = self.fh_getChoiceinput(
+            'What gacha type do you want to have?',
+            {'1': 'MoveGacha', '2': 'LegendaryGacha', '3': 'ShinyGacha'}
+        )
+
+        hatchWaves = self.fh_getIntegerInput('After how many waves should they hatch?', 0, 100)
+        isShiny = self.fh_getChoiceinput('Do you want it to be shiny?', {'0': 'No', '1': 'Yes'})
+        overrideHiddenAbility = self.fh_getChoiceinput('Do you want the hidden ability to be unlocked?', {'0': 'No', '1': 'Yes'})
+
+        sample_egg = {
+            "id": 0,
+            "gachaType": 0,
+            "hatchWaves": 0,
+            "timestamp": 0,
+            "tier": 0,
+            "sourceType": 0,
+            "variantTier": 0,
+            "isShiny": False,
+            "species": 0,
+            "eggMoveIndex": 0,
+            "overrideHiddenAbility": False
+        }
+
+        eggDictionary = eggLogic.constructEggs(tier, gachaType, hatchWaves, count, isShiny, overrideHiddenAbility)  # noqa: F405
+
+        if userInput == '1':
+            trainerData['eggs'] = eggDictionary
+        elif userInput == '2':
+            for egg in eggDictionary:
+                sample_egg.update(egg)
+                trainerData['eggs'].append(sample_egg)
+
+        self.__writeJSONData(trainerData, 'trainer.json')
+        raise OperationSuccessful(f'{count} eggs succesfully generated.')
+    
+    def f_unlockAllCombined(self) -> None:
+        self.f_editGamemodes()
+        self.f_editAchivements()
+        self.f_editVouchers()
+        self.f_unlockStarters()
+        self.f_editAccountStats()
+
+    @handle_operation_exceptions
+    def f_editAccountStats(self) -> None:
         """
-        Edits the statistics of the player's account.
+        Modifies the statistics and attributes of the player's account.
 
         Raises:
-        - None
-
-        Modules Used:
-        - .cFormatter: For printing formatted messages to the console, including colorized output.
-
-        Workflow:
-        1. Loads trainer data from 'trainer.json'.
-        2. Allows the player to input various statistics related to their gameplay.
-        3. Updates the trainer data with the new statistics.
-
-        Usage Example:
-            >>> example_instance = ExampleClass()
-            >>> example_instance.edit_account_stats()
-        """
-        try:
-            def get_valid_input(prompt: str, default: int) -> int:
-                """ Helper function to get valid integer input from the user """
-                while True:
-                    user_input = input(f"{prompt} (current: {default}): ").strip()
-                    if user_input.isdigit():
-                        return int(user_input)
-                    elif user_input == '':
-                        return default
-                    else:
-                        print("Invalid input. Please enter a valid number or press Enter to keep the current value.")
-
-            trainer_data = self.__load_data('trainer.json')
-
-            # Define the keys you want to update
-            keys_to_update = {
-                'battles': trainer_data['gameStats'].get('battles', 0),
-                'classicSessionsPlayed': trainer_data['gameStats'].get('classicSessionsPlayed', 0),
-                'dailyRunSessionsPlayed': trainer_data['gameStats'].get('dailyRunSessionsPlayed', 0),
-                'dailyRunSessionsWon': trainer_data['gameStats'].get('dailyRunSessionsWon', 0),
-                'eggsPulled': trainer_data['gameStats'].get('eggsPulled', 0),
-                'endlessSessionsPlayed': trainer_data['gameStats'].get('endlessSessionsPlayed', 0),
-                'epicEggsPulled': trainer_data['gameStats'].get('epicEggsPulled', 0),
-                'highestDamage': trainer_data['gameStats'].get('highestDamage', 0),
-                'highestEndlessWave': trainer_data['gameStats'].get('highestEndlessWave', 0),
-                'highestHeal': trainer_data['gameStats'].get('highestHeal', 0),
-                'highestLevel': trainer_data['gameStats'].get('highestLevel', 0),
-                'highestMoney': trainer_data['gameStats'].get('highestMoney', 0),
-                'legendaryEggsPulled': trainer_data['gameStats'].get('legendaryEggsPulled', 0),
-                'legendaryPokemonCaught': trainer_data['gameStats'].get('legendaryPokemonCaught', 0),
-                'legendaryPokemonHatched': trainer_data['gameStats'].get('legendaryPokemonHatched', 0),
-                'legendaryPokemonSeen': trainer_data['gameStats'].get('legendaryPokemonSeen', 0),
-                'manaphyEggsPulled': trainer_data['gameStats'].get('manaphyEggsPulled', 0),
-                'mythicalPokemonCaught': trainer_data['gameStats'].get('mythicalPokemonCaught', 0),
-                'mythicalPokemonHatched': trainer_data['gameStats'].get('mythicalPokemonHatched', 0),
-                'mythicalPokemonSeen': trainer_data['gameStats'].get('mythicalPokemonSeen', 0),
-                'pokemonCaught': trainer_data['gameStats'].get('pokemonCaught', 0),
-                'pokemonDefeated': trainer_data['gameStats'].get('pokemonDefeated', 0),
-                'pokemonFused': trainer_data['gameStats'].get('pokemonFused', 0),
-                'pokemonHatched': trainer_data['gameStats'].get('pokemonHatched', 0),
-                'pokemonSeen': trainer_data['gameStats'].get('pokemonSeen', 0),
-                'rareEggsPulled': trainer_data['gameStats'].get('rareEggsPulled', 0),
-                'ribbonsOwned': trainer_data['gameStats'].get('ribbonsOwned', 0),
-                'sessionsWon': trainer_data['gameStats'].get('sessionsWon', 0),
-                'shinyPokemonCaught': trainer_data['gameStats'].get('shinyPokemonCaught', 0),
-                'shinyPokemonHatched': trainer_data['gameStats'].get('shinyPokemonHatched', 0),
-                'shinyPokemonSeen': trainer_data['gameStats'].get('shinyPokemonSeen', 0),
-                'subLegendaryPokemonCaught': trainer_data['gameStats'].get('subLegendaryPokemonCaught', 0),
-                'subLegendaryPokemonHatched': trainer_data['gameStats'].get('subLegendaryPokemonHatched', 0),
-                'subLegendaryPokemonSeen': trainer_data['gameStats'].get('subLegendaryPokemonSeen', 0),
-                'trainersDefeated': trainer_data['gameStats'].get('trainersDefeated', 0)
-            }
-
-            # Update only specified fields
-            for key, current_value in keys_to_update.items():
-                new_value = get_valid_input(f'Enter new value for {key}', current_value)
-                trainer_data['gameStats'][key] = new_value
-            
-            # Ensure playtime is retained
-            playtime = trainer_data['gameStats'].get('playtime')
-            if playtime is not None:
-                trainer_data['gameStats']['playtime'] = playtime
-
-            # Write updated trainer_data to 'trainer.json'
-            self.__write_data(trainer_data, 'trainer.json')
-
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function edit_account_stats(): {e}', isLogging=True)
-
-
-
-    def unlock_all_features(self) -> None:
-        """
-        Maximizes the statistics and attributes of the player's account.
-
-        Raises:
-        - None
+        - OperationSuccessful: If the operation completes successfully.
+        - OperationError: If there is an error during the operation.
+        - OperationCancel: If the operation is canceled by the user.
 
         Modules Used:
         - .cFormatter: For printing formatted messages to the console, including colorized output.
         - random: Standard library for generating random numbers.
 
         Workflow:
-        1. Calls methods to unlock all game modes, achievements, vouchers, and starters.
+        1. Loads trainer data from 'trainer.json'.
         2. Generates random statistics for various gameplay attributes and updates the trainer data accordingly.
+        3. Prompts the user to choose whether to randomize all values, manually enter values for each attribute, or manually enter values in a loop.
+        4. Updates the gameStats based on user input.
+        5. Writes the updated trainer data back to 'trainer.json'.
 
         Usage Example:
             >>> example_instance = ExampleClass()
-            >>> example_instance.unlock_all_features()
+            >>> example_instance.f_editAccountStats()
         """
-        try:
-            self.unlock_all_gamemodes()
-            self.unlock_all_achievements()
-            self.edit_vouchers()
-            self.unlock_all_starters()
+        trainerData = self.__loadDataFromJSON('trainer.json')
 
-            trainer_data = self.__load_data('trainer.json')
-        
-            total_caught = 0
-            total_seen = 0
-            for entry in trainer_data['dexData'].keys():
-                caught = random.randint(500, 1000)
-                seen = random.randint(500, 1000)
-                hatched = random.randint(500, 1000)
-                total_caught += caught
-                total_seen += seen
-                randIv: List[int] = random.sample(range(20, 30), 6)
+        totalCaught = 0
+        totalSeen = 0
+        for entry in trainerData['dexData'].keys():
+            caught = random.randint(500, 1000)
+            seen = random.randint(500, 1000)
+            hatched = random.randint(500, 1000)
+            totalCaught += caught
+            totalSeen += seen
+            randIv = random.sample(range(20, 30), 6)
 
-                trainer_data['dexData'][entry] = {
-                    'seenAttr': random.randint(500, 5000),
-                    'caughtAttr': self.__MAX_BIG_INT,
-                    'natureAttr': self.nature_data.UNLOCK_ALL.value,
-                    'seenCount': seen,
-                    'caughtCount': caught,
-                    'hatchedCount': hatched,
-                    'ivs': randIv
-                }
-            
-            # Keys to update with random values
-            keys_to_update = {
-                'battles': total_caught + random.randint(1, total_caught),
-                'classicSessionsPlayed': random.randint(2500, 10000),
-                'dailyRunSessionsPlayed': random.randint(2500, 10000),
-                'dailyRunSessionsWon': random.randint(50, 150),
-                'eggsPulled': random.randint(100, 300),
-                'endlessSessionsPlayed': random.randint(100, 300),
-                'epicEggsPulled': random.randint(50, 100),
-                'highestDamage': random.randint(10000, 12000),
-                'highestEndlessWave': random.randint(300, 1000),
-                'highestHeal': random.randint(10000, 12000),
-                'highestLevel': random.randint(3000, 8000),
-                'highestMoney': random.randint(1000000, 10000000),
-                'legendaryEggsPulled': random.randint(10, 50),
-                'legendaryPokemonCaught': random.randint(25, 100),
-                'legendaryPokemonHatched': random.randint(25, 100),
-                'legendaryPokemonSeen': random.randint(2500, 10000),
-                'manaphyEggsPulled': random.randint(5, 10),
-                'mythicalPokemonCaught': random.randint(20, 70),
-                'mythicalPokemonHatched': random.randint(20, 70),
-                'mythicalPokemonSeen': random.randint(20, 70),
-                'pokemonCaught': total_caught,
-                'pokemonDefeated': random.randint(2500, 10000),
-                'pokemonFused': random.randint(50, 150),
-                'pokemonHatched': random.randint(2500, 10000),
-                'pokemonSeen': total_seen,
-                'rareEggsPulled': random.randint(150, 250),
-                'ribbonsOwned': random.randint(600, 1000),
-                'sessionsWon': random.randint(50, 100),
-                'shinyPokemonCaught': len(list(trainer_data['dexData'])) * 2,
-                'shinyPokemonHatched': random.randint(70, 150),
-                'shinyPokemonSeen': random.randint(50, 150),
-                'subLegendaryPokemonCaught': random.randint(10, 100),
-                'subLegendaryPokemonHatched': random.randint(10, 100),
-                'subLegendaryPokemonSeen': random.randint(10, 100),
-                'trainersDefeated': random.randint(100, 200)
+            trainerData['dexData'][entry] = {
+                'seenAttr': random.randint(500, 5000),
+                'caughtAttr': self.__MAX_BIG_INT,
+                'natureAttr': self.natureData.UNLOCK_ALL.value,
+                'seenCount': seen,
+                'caughtCount': caught,
+                'hatchedCount': hatched,
+                'ivs': randIv
             }
 
-            # Update the gameStats with new values
-            for key, value in keys_to_update.items():
-                trainer_data['gameStats'][key] = value
-            
-            # Ensure playtime is retained
-            playtime = trainer_data['gameStats'].get('playtime')
-            if playtime is not None:
-                trainer_data['gameStats']['playtime'] = playtime
-            
-            self.__write_data(trainer_data, 'trainer.json')
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function unlock_all_features(): {e}', isLogging=True)
-    
-    def edit_hatchWaves(self) -> None:
+        keysToUpdate = {
+            'battles': totalCaught + random.randint(1, totalCaught),
+            'classicSessionsPlayed': random.randint(2500, 10000),
+            'dailyRunSessionsPlayed': random.randint(2500, 10000),
+            'dailyRunSessionsWon': random.randint(50, 150),
+            'eggsPulled': random.randint(100, 300),
+            'endlessSessionsPlayed': random.randint(100, 300),
+            'epicEggsPulled': random.randint(50, 100),
+            'highestDamage': random.randint(10000, 12000),
+            'highestEndlessWave': random.randint(300, 1000),
+            'highestHeal': random.randint(10000, 12000),
+            'highestLevel': random.randint(3000, 8000),
+            'highestMoney': random.randint(1000000, 10000000),
+            'legendaryEggsPulled': random.randint(10, 50),
+            'legendaryPokemonCaught': random.randint(25, 100),
+            'legendaryPokemonHatched': random.randint(25, 100),
+            'legendaryPokemonSeen': random.randint(2500, 10000),
+            'manaphyEggsPulled': random.randint(5, 10),
+            'mythicalPokemonCaught': random.randint(20, 70),
+            'mythicalPokemonHatched': random.randint(20, 70),
+            'mythicalPokemonSeen': random.randint(20, 70),
+            'pokemonCaught': totalCaught,
+            'pokemonDefeated': random.randint(2500, 10000),
+            'pokemonFused': random.randint(50, 150),
+            'pokemonHatched': random.randint(2500, 10000),
+            'pokemonSeen': totalSeen,
+            'rareEggsPulled': random.randint(150, 250),
+            'ribbonsOwned': random.randint(600, 1000),
+            'sessionsWon': random.randint(50, 100),
+            'shinyPokemonCaught': len(list(trainerData['dexData'])) * 2,
+            'shinyPokemonHatched': random.randint(70, 150),
+            'shinyPokemonSeen': random.randint(50, 150),
+            'subLegendaryPokemonCaught': random.randint(10, 100),
+            'subLegendaryPokemonHatched': random.randint(10, 100),
+            'subLegendaryPokemonSeen': random.randint(10, 100),
+            'trainersDefeated': random.randint(100, 200)
+        }
+
+        choices = {
+            'random': 'Randomize all values',
+            'manual': 'Manually enter values for a single attribute',
+            'loop': 'Manually enter values for all attributes in a loop',
+            'cancel': 'Cancel operation'
+        }
+
+        action = self.fh_getChoiceinput("Choose action", choices)
+
+        if action == 'random':
+            for key in keysToUpdate:
+                trainerData["gameStats"][key] = random.randint(0, 999999)
+
+        elif action == 'manual':
+            while True:
+                option_list = {str(index + 1): key for index, key in enumerate(keysToUpdate.keys())}
+                option_list.update({'0': 'Cancel'})
+
+                chosen_option = self.fh_getCompleterInput("Choose attribute to edit", option_list, actions=" | ".join(option_list.keys()), zeroCancel=True)
+
+                key_to_edit = option_list[chosen_option]
+                prompt_message = f'Enter new value for {key_to_edit} ({trainerData["gameStats"].get(key_to_edit, 0)}): '
+                new_value = self.fh_getIntegerInput(prompt_message, 0, 999999)
+
+                trainerData["gameStats"][key_to_edit] = new_value
+                cFormatter.print(Color.GREEN, f'{key_to_edit} updated successfully.')
+
+        elif action == 'loop':
+            for key in keysToUpdate:
+                prompt_message = f'Enter new value for {key} ({trainerData["gameStats"].get(key, 0)}): '
+                new_value = self.fh_getIntegerInput(prompt_message, 0, 999999)
+                trainerData["gameStats"][key] = new_value
+                cFormatter.print(Color.GREEN, f'{key} updated successfully.')
+
+        playtime = trainerData["gameStats"].get('playtime')
+        if playtime is not None:
+            trainerData["gameStats"]["playtime"] = playtime
+
+        self.__writeJSONData(trainerData, 'trainer.json')
+        raise OperationSuccessful("Account statistics updated successfully.")
+
+    @handle_operation_exceptions
+    def f_editHatchWaves(self) -> None:
         """
-        Edits the hatch waves for eggs in the trainer's inventory.
+        Edits the hatch waves for eggs in the trainer's inventory using helper functions for input validation.
 
         Raises:
         - Exception: If any error occurs during the process.
@@ -1933,47 +1885,141 @@ class Rogue:
         Workflow:
         1. Loads trainer data from 'trainer.json'.
         2. Checks if there are any eggs in the trainer's inventory.
-        3. Allows the player to input the number of waves after which eggs should hatch.
+        3. Allows the player to input the number of waves after which eggs should hatch using validated input.
         4. Updates the hatch waves attribute for all eggs in the trainer's inventory.
         5. Writes updated trainer data to 'trainer.json'.
 
         Usage Example:
             >>> example_instance = ExampleClass()
-            >>> example_instance.edit_hatchWaves()
-
+            >>> example_instance.f_editHatchWaves()
         """
-        try:
-            trainer_data = self.__load_data('trainer.json')
+        trainerData = self.__loadDataFromJSON('trainer.json')
 
-            if trainer_data['eggs'] is not None:
-                egg_len = len(trainer_data['eggs'])
-                hatch_waves = int(input(
-                    f'You have a total of [{egg_len}] eggs - after how many waves should they hatch?: '
-                ))
-                
-                for egg in trainer_data['eggs']:
-                    egg['hatchWaves'] = hatch_waves
+        if 'eggs' in trainerData and trainerData['eggs']:
+            eggAmount = len(trainerData['eggs'])
+            actions = "1 - 100"
+            prompt = f'You currently have [{eggAmount}] eggs - after how many waves should they hatch?'
+            hatchWaves = self.fh_getIntegerInput(prompt, 0, 100, actions)
 
-                # Write updated trainer_data to 'trainer.json'
-                self.__write_data(trainer_data, 'trainer.json')
-                
-            else:
-                cFormatter.print(Color.GREEN, 'You have no eggs to hatch.')
+            for egg in trainerData['eggs']:
+                egg["hatchWaves"] = hatchWaves
 
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function edit_hatchWaves(): {e}', isLogging=True)
+            # Write updated trainer_data to 'trainer.json'
+            self.__writeJSONData(trainerData, 'trainer.json')
+            raise OperationSuccessful()
+        else:
+            cFormatter.print(Color.GREEN, 'You have no eggs to hatch.')
+            return
 
-    def run_item_editor(self):
+    def f_submenuItemEditor(self):
         from modules import ModifierEditor
         edit = ModifierEditor()
         edit.user_menu(self.slot)
-        
-    def change_save_slot(self):
+    
+    @handle_operation_exceptions
+    def f_changeSaveSlot(self):
         try:
             newSlot = int(input('Which save-slot you want to change to?: '))
-            self.slot = newSlot
-            self.get_gamesave_data(newSlot)  # Assuming this method fetches and prints data
-            return
+            self.getSlotData(newSlot)  
         except ValueError:
-            print("Invalid input. Please enter a valid slot number.")
-        return  # Ensure the function returns control to the main menu
+            print('Invalid input. Please enter a valid slot number.')
+        finally:
+            self.slot = newSlot
+            return
+    
+    @handle_operation_exceptions
+    def fh_getChoiceinput(self, prompt: str, choices: dict, actions: str=None, zeroCancel: bool=False) -> str:
+        """
+        Helper method to get a validated choice input from the user, including a "0: Cancel" option.
+
+        Args:
+        - prompt (str): The prompt message to display.
+        - choices (dict): A dictionary mapping input choices to their corresponding values.
+        - actions (str): The string describing the action options.
+
+        Returns:
+        - str: The value corresponding to the validated input choice, or "cancel" if the user cancels.
+        """
+        fullPrompt = f'{prompt} (0: Cancel | {actions})'
+        if actions:
+            fullPrompt = f'{prompt} (0: Cancel | {actions}): '
+        else:
+            fullPrompt = f'{prompt} (0: Cancel): '
+
+        while True:
+            userInput = input(fullPrompt).strip()
+            if zeroCancel:
+                if userInput == '0' or userInput.lower() == 'exit' or userInput.lower() == 'cancel':
+                    raise OperationCancel()
+            if userInput in choices:
+                return choices[userInput]
+            if actions:
+                print(f'Invalid choice. Please select a valid option. (0: Cancel | {actions})')
+            else:
+                print('Invalid choice. Please select a valid option. (0: Cancel)')
+
+    @handle_operation_exceptions
+    def fh_getIntegerInput(self, prompt: str, minBound: int, maxBound: int, actions: str=None, zeroCancel: bool=False) -> int:
+        """
+        Helper method to get a validated integer input from the user.
+
+        Args:
+        - prompt (str): The prompt message to display.
+        - min_val (int): The minimum valid value.
+        - max_val (int): The maximum valid value.
+        - actions (str): The string describing the action options.
+
+        Returns:
+        - int: The validated integer input.
+        """
+        if actions:
+            fullPrompt = f'{prompt} (0: Cancel | {actions}): '
+        else:
+            fullPrompt = f'{prompt} (0: Cancel): '
+
+        while True:
+            userInput = input(fullPrompt).strip()
+            if zeroCancel:
+                if userInput == '0' or userInput.lower() == 'exit' or userInput.lower() == 'cancel':
+                    raise OperationCancel()
+            if userInput.isdigit():
+                value = int(userInput)
+                if minBound <= value <= maxBound:
+                    return value
+            if actions:
+                print(f'Invalid input. Please enter a number between {minBound} and {maxBound}. (0: Cancel | {actions})')
+            else:
+                print(f'Invalid input. Please enter a number between {minBound} and {maxBound}. (0: Cancel)')
+
+    @handle_operation_exceptions     
+    def fh_getCompleterInput(promptMessage: str, choices: dict, actions: str=None, zeroCancel: bool=False) -> str:
+        """
+        Helper method to get input from the user with auto-completion support.
+
+        Args:
+        - prompt_message (str): The prompt message to display.
+        - choices (dict): A dictionary mapping input choices to their corresponding values.
+        - actions (str): A string describing the action options.
+
+        Returns:
+        - str: The value corresponding to the validated input choice, or "cancel" if the user cancels.
+        """
+        if actions:
+            fullPrompt = f'{promptMessage} ({actions}): '
+        else:
+            fullPrompt = f'{promptMessage} (0: Cancel): '
+
+        # Create a WordCompleter from the keys of choices dictionary
+        completer = WordCompleter(choices.keys(), ignore_case=True)
+
+        while True:
+            userInput = prompt(fullPrompt, completer=completer).strip()
+            
+            if zeroCancel:
+                if userInput == '0' or userInput.lower() == 'exit' or userInput.lower() == 'cancel':
+                    raise OperationCancel()
+            
+            if userInput in choices:
+                return choices[userInput]
+            
+            cFormatter.print(Color.BRIGHT_RED, f'Invalid input "{userInput}". Please enter a valid option. (0: Cancel | {actions})')

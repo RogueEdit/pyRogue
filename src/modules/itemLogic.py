@@ -2,8 +2,8 @@
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/JulianStiebler/
-# Date of release: 13.06.2024 
-# Last Edited: 23.06.2024
+# Date of release: 23.06.2024 
+# Last Edited: 24.06.2024
 
 # Unlike the other code, reusing this in your own project is forbidden.
 

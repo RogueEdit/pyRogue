@@ -303,7 +303,7 @@ class requestsLogic:
 
             login_response = response.json()
             self.token = login_response.get('token')
-            cFormatter.print_separators(30, '-')
+            cFormatter.printSeperators(30, '-')
             self.session_id = self.calcSessionId()
             cFormatter.print(Color.GREEN, 'Login successful.')
             status_code_color = Color.BRIGHT_GREEN if response.status_code == 200 else Color.BRIGHT_RED
@@ -311,7 +311,7 @@ class requestsLogic:
             cFormatter.print(Color.CYAN, f'Response URL: {response.request.url}', isLogging=True)
             filtered_headers = {key: value for key, value in response.headers.items() if key != 'Report-To'}
             cFormatter.print(Color.CYAN, f'Response Headers: {filtered_headers}', isLogging=True)
-            cFormatter.print_separators(30, '-')
+            cFormatter.printSeperators(30, '-')
             return True
 
         except requests.RequestException:

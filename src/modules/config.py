@@ -28,18 +28,19 @@ import os
 from datetime import datetime, timedelta
 import requests
 from utilities import cFormatter, Color
+
 version: str = 'v0.3.2'
 title: str = f'<(^.^(< pyRogue {version} >)^.^)>'
 owner: str = 'rogueEdit'
 repo: str = 'onlineRogueEditor'
-repo_url: str = f'https://github.com/{owner}/{repo}/'
-release_date: str = '23.06.2024 10:30'
+repoURL: str = f'https://github.com/{owner}/{repo}/'
+releaseDate: str = '23.06.2024 10:30'
 
-logs_directory: str = os.path.join(os.getcwd(), 'logs')
-backups_directory: str = os.path.join(os.getcwd(), 'backups')
-data_directory: str = os.path.join(os.getcwd(), 'data')
+logsDirectory: str = os.path.join(os.getcwd(), 'logs')
+backupDirectory: str = os.path.join(os.getcwd(), 'backups')
+dataDirectory: str = os.path.join(os.getcwd(), 'data')
 
-def check_for_updates(requests: requests, datetime: datetime, timedelta: timedelta, Style: object) -> None:
+def f_checkForUpdates(requests: requests, datetime: datetime, timedelta: timedelta, Style: object) -> None:
     """
     Check for updates on the GitHub repository since a specified release date.
 
@@ -63,7 +64,7 @@ def check_for_updates(requests: requests, datetime: datetime, timedelta: timedel
     - timedelta: Calculates local timezone offset for converting release date to UTC.
     - utilities.cFormatter: Prints colored console output for displaying update details.
     """
-    def convert_to_iso_format(date_string: str, timedelta: timedelta) -> str:
+    def f_convertToISOFormat(date_string: str, timedelta: timedelta) -> str:
         """
         Convert a date string to ISO 8601 format in UTC timezone.
 
@@ -84,27 +85,27 @@ def check_for_updates(requests: requests, datetime: datetime, timedelta: timedel
         - datetime: Parses and formats the input date string.
         """
         # Parse the input date string
-        date_format = '%d.%m.%Y %H:%M'
+        dateFormat = '%d.%m.%Y %H:%M'
         try:
-            dt = datetime.strptime(date_string, date_format)
+            dt = datetime.strptime(date_string, dateFormat)
         except ValueError as e:
             raise ValueError("Incorrect date format, should be 'dd.mm.yyyy HH:MM'") from e
 
         # Determine local timezone offset for Central European Time (CET)
-        is_dst = datetime.now().timetuple().tm_isdst
-        timezone_offset = timedelta(hours=2) if is_dst else timedelta(hours=1)
+        isDST = datetime.now().timetuple().tm_isdst
+        timezoneOffset = timedelta(hours=2) if isDST else timedelta(hours=1)
 
         # Apply local timezone offset to convert to UTC
-        utc_dt = dt - timezone_offset
+        utcDT = dt - timezoneOffset
 
         # Format datetime object to ISO 8601 format with UTC timezone 'Z' (Zulu time)
-        iso_format = utc_dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+        isoFormat = utcDT.strftime('%Y-%m-%dT%H:%M:%SZ')
 
-        return iso_format
+        return isoFormat
 
     try:
         # Convert release date to ISO 8601 format
-        check_date = datetime.fromisoformat(convert_to_iso_format(release_date, timedelta))
+        check_date = datetime.fromisoformat(f_convertToISOFormat(releaseDate, timedelta))
 
         # Construct GitHub API URL and parameters
         url = f'https://api.github.com/repos/{owner}/{repo}/commits'
@@ -117,16 +118,16 @@ def check_for_updates(requests: requests, datetime: datetime, timedelta: timedel
         commits = response.json()  # Parse JSON response
 
         # Extract commit titles and SHAs
-        commit_list = [{'sha': commit['sha'], 'message': commit['commit']['message']} for commit in commits]
+        commitList = [{'sha': commit['sha'], 'message': commit['commit']['message']} for commit in commits]
 
-        if commit_list:
+        if commitList:
             cFormatter.print(Color.CRITICAL, '********* Outdated source code found. New commits: *********')
-            for commit in commit_list:
+            for commit in commitList:
                 cFormatter.print(Color.WARNING, f'---- Commit Name: ({commit["message"]})')
                 cFormatter.print(Color.CYAN, f'------> with SHA ({commit["sha"]})')
-            cFormatter.print(Color.INFO, f'You can view the latest code here: {repo_url}')
+            cFormatter.print(Color.INFO, f'You can view the latest code here: {repoURL}')
             cFormatter.print(Color.INFO, 'It is highly recommended to update the source code. Some things might not be working as expected.')
-            cFormatter.print_separators(60, '-', Color.CRITICAL)
+            cFormatter.printSeperators(60, '-', Color.CRITICAL)
         else:
             cFormatter.print(Color.GREEN, 'No updates found.')
 
@@ -137,7 +138,7 @@ def check_for_updates(requests: requests, datetime: datetime, timedelta: timedel
     except Exception as e:
         cFormatter.print(Color.CRITICAL, f'Couldnt resolve check_for_updates() - An unexpected error occurred: {e}')
 
-def initialize_text() -> None:
+def f_printWelcomeText() -> None:
     """
     Print initialization messages for the program.
 
@@ -152,13 +153,13 @@ def initialize_text() -> None:
     cFormatter.print(Color.BRIGHT_GREEN, f'<pyRogue {version}>')
     cFormatter.print(Color.BRIGHT_GREEN, 'We create base-backups on every login and further backups every time you start or choose so manually.')
     cFormatter.print(Color.BRIGHT_GREEN, 'In case of trouble, please switch your Network (Hotspot, VPN etc).')
-    cFormatter.print(Color.BRIGHT_GREEN, f'Otherwise please visit {repo_url} and report the issue.')
-    cFormatter.print_separators(60, '-')
+    cFormatter.print(Color.BRIGHT_GREEN, f'Otherwise please visit {repoURL} and report the issue.')
+    cFormatter.printSeperators(60, '-')
     cFormatter.print(Color.BRIGHT_MAGENTA, '1: Using no browser with requests.    Reliability 6/10')
     cFormatter.print(Color.BRIGHT_MAGENTA, '2: Using own browser with requests.   Reliability 7/10')
     cFormatter.print(Color.BRIGHT_MAGENTA, '3: Using own browser with JavaScript. Reliability 9/10')
 
-def print_help() -> None:
+def f_printHelp() -> None:
     """
     Print helpful information for the user.
 
@@ -174,7 +175,7 @@ def print_help() -> None:
     """
     cFormatter.print(Color.INFO, 'You can always edit your JSON manually as well.')
     cFormatter.print(Color.INFO, 'If you need assistance, please refer to the program\'s GitHub page.')
-    cFormatter.print(Color.INFO, f'{repo_url}')
+    cFormatter.print(Color.INFO, f'{repoURL}')
     cFormatter.print(Color.INFO, f'This is release version {version} - please include that in your issue or question report.')
     cFormatter.print(Color.INFO, 'This version now also features a log file.')
     cFormatter.print(Color.INFO, 'We do not take responsibility if your accounts get flagged or banned, and')
@@ -182,7 +183,7 @@ def print_help() -> None:
     cFormatter.print(Color.INFO, 'calculate the checksum of this binary and visit {repo_url}')
     cFormatter.print(Color.INFO, 'to see the value it should have to know it\'s original from source.')
 
-def initialize_folders() -> None:
+def f_initFolders() -> None:
     """
     Initialize necessary directories for logs, backups, and data.
 
@@ -196,23 +197,24 @@ def initialize_folders() -> None:
     """
 
     # Create the logs directory if it doesn't exist
-    if not os.path.exists(logs_directory):
-        os.makedirs(logs_directory)
-        cFormatter.print(Color.GREEN, f'Created logs directory: {logs_directory}')
+    if not os.path.exists(logsDirectory):
+        os.makedirs(logsDirectory)
+        cFormatter.print(Color.GREEN, f'Created logs directory: {logsDirectory}')
     # Create the backups directory if it doesn't exist
-    if not os.path.exists(backups_directory):
-        os.makedirs(backups_directory)
-        cFormatter.print(Color.GREEN, f'Created backup directory: {backups_directory}')
+    if not os.path.exists(backupDirectory):
+        os.makedirs(backupDirectory)
+        cFormatter.print(Color.GREEN, f'Created backup directory: {backupDirectory}')
 
-def replace_middle_with_dots(username):
+def f_anonymizeName(username):
     if len(username) < 3:  # If username length is less than 3, return as is (minimum 2 characters)
         return username
     
-    visible_chars = max(int(len(username) * 0.2), 1)  # Calculate how many characters to leave visible
-    start_visible = max(visible_chars // 2, 1)  # At least 1 character visible from the start
-    end_visible = visible_chars - start_visible  # Remaining visible characters from the end
+    visibleChars = max(int(len(username) * 0.2), 1)  # Calculate how many characters to leave visible
+    startVisible = max(visibleChars // 2, 1)  # At least 1 character visible from the start
+    endVisible = visibleChars - startVisible  # Remaining visible characters from the end
     
     # Construct the masked username
-    masked_username = username[:start_visible] + '*' * (len(username) - start_visible - end_visible)
+    maskedUsername = username[:startVisible] + '*' * (len(username) - startVisible - endVisible)
     
-    return masked_username
+    return maskedUsername
+    

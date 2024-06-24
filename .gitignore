@@ -15,3 +15,4 @@ src/dev/slot_4.json
 src/dev/slot_2.json
 /dist
 /build
+/src/modules/handler/__pycache__

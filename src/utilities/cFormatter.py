@@ -149,7 +149,7 @@ class cFormatter(logging.Formatter):
         print(formatted_text)
 
     @staticmethod
-    def print_separators(num_separators: Optional[int] = None, separator: str = '-', color: Optional[Color] = None) -> None:
+    def printSeperators(num_separators: Optional[int] = None, separator: str = '-', color: Optional[Color] = None) -> None:
         """
         Prints separators with the specified color.
         

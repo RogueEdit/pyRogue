@@ -86,7 +86,7 @@ class CustomLogger:
     def __init__(self):
         # Create and configure file handler
         # Define the path to the logs directory in the current working directory
-        logs_directory = config.logs_directory
+        logs_directory = config.logsDirectory
 
         formatter_file = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 

@@ -59,10 +59,10 @@ from datetime import datetime, timedelta
 # datetime, timedelta: For date and time operations, particularly for update checking.
 
 init()
-config.initialize_folders()
+config.f_initFolders()
 logger = CustomLogger()
-config.check_for_updates(requests, datetime, timedelta, Style)
-config.initialize_text()
+config.f_checkForUpdates(requests, datetime, timedelta, Style)
+config.f_printWelcomeText()
 
 def main():
     while True:
@@ -92,7 +92,7 @@ def main():
                 login = requestsLogic(username, password)
                 try:
                     if login.login():
-                        cFormatter.print(Color.INFO, f'Logged in as: {config.replace_middle_with_dots(username)}')
+                        cFormatter.print(Color.INFO, f'Logged in as: {config.f_anonymizeName(username)}')
                         session.cookies.set('pokerogue_sessionId', login.session_id, domain='pokerogue.net')
                         rogue = Rogue(session, login.token, login.session_id)
                         break
@@ -136,27 +136,27 @@ def main():
         (('Create a backup', ''), rogue.create_backup),
         (('Recover your backup', ''), rogue.restore_backup),
         (('Load Game-Data from server', ''), rogue.get_trainer_data),
-        (('Change save-slot to edit', ''), rogue.change_save_slot),
-        (('Edit account stats', ''), rogue.edit_account_stats),
+        (('Change save-slot to edit', ''), rogue.f_changeSaveSlot),
+        (('Edit account stats', ''), rogue.f_editAccountStats),
 
         ('Trainer Data Actions', 'category'),
         (('Edit a starter', ''), rogue.edit_starter_separate),
         (('Edit your egg-tickets', ''), rogue.add_ticket),
-        (('Edit candies on a starter', ''), rogue.add_candies),
-        (('Edit Egg-hatch durations', ''), rogue.edit_hatchWaves),
-        (('Generate eggs', ''), rogue.generate_eggs),
-        (('Unlock all vouchers', ''), rogue.edit_vouchers),
-        (('Unlock all starters', ''), rogue.unlock_all_starters),
-        (('Unlock all achievements', ''), rogue.unlock_all_achievements),
-        (('Unlock all gamemodes', ''), rogue.unlock_all_gamemodes),
-        (('Unlock Everything', ''), rogue.unlock_all_features),
+        (('Edit candies on a starter', ''), rogue.f_addCandies),
+        (('Edit Egg-hatch durations', ''), rogue.f_editHatchWaves),
+        (('Generate eggs', ''), rogue.f_addEggsGenerator),
+        (('Unlock all vouchers', ''), rogue.f_editVouchers),
+        (('Unlock all starters', ''), rogue.f_unlockStarters),
+        (('Unlock all achievements', ''), rogue.f_editAchivements),
+        (('Unlock all gamemodes', ''), rogue.f_editGamemodes),
+        (('Unlock Everything', ''), rogue.f_unlockAllCombined),
 
         ('Session Data Actions', 'category'),
         (('Edit CURRENT Pokemon Party', ''), rogue.edit_pokemon_party),
-        (('Edit money amount', ''), rogue.edit_money),
-        (('Edit pokeballs amount', ''), rogue.edit_pokeballs),
-        (('Edit current biome', ''), rogue.edit_biome),
-        (('Edit Items', f'{Fore.GREEN + Style.BRIGHT}NEW{Style.RESET_ALL}'), rogue.run_item_editor),
+        (('Edit money amount', ''), rogue.f_editMoney),
+        (('Edit pokeballs amount', ''), rogue.f_editPokeballs),
+        (('Edit current biome', ''), rogue.f_editBiome),
+        (('Edit Items', f'{Fore.GREEN + Style.BRIGHT}NEW{Style.RESET_ALL}'), rogue.f_submenuItemEditor),
 
         ('Print game information', 'category'),
         (('Show all Pokemon ID', ''), rogue.print_pokedex),
@@ -168,7 +168,7 @@ def main():
 
         ('You can always edit your JSON manually as well!', 'helper'),
         (('Save data and upload to the Server', useWhenDone), rogue.update_all),
-        (('Print help and program information', ''), config.print_help),
+        (('Print help and program information', ''), config.f_printHelp),
         (('Logout', ''), rogue.logout),
         (title, 'title'),
     ]
