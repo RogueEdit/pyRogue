@@ -152,8 +152,8 @@ class Rogue:
         self.backup_dir = config.backups_directory
         self.data_dir = config.data_directory
 
-        self.pokemon_id_by_name, self.biomes_by_id, self.moves_by_id, self.nature_data, self.vouchers_data, self.natureSlot_data = self.enum.convert_to_enums()
-
+        self.pokemon_id_by_name, self.pokemon_name_by_id, self.biomes_by_id, self.move_id_by_name, self.move_name_by_id, self.nature_data, self.vouchers_data, self.natureSlot_data = self.enum.convert_to_enums()
+        
         try:
             with open(f'{self.data_dir}/extra.json') as f:
                 self.extra_data = json.load(f)
@@ -1104,10 +1104,41 @@ class Rogue:
                 '7: Change nature of a pokemon in your team'
             ]
 
+
+            current_party = []
+
+            # Iterate through each pokemon
+            for pokemon in game_data['party']:
+                species_str = str(pokemon["species"])  # Convert pokemon species to string
+                while species_str not in self.pokemon_name_by_id.__members__ and species_str:
+                    # While species_str is not a key in self.pokemon_name_by_id and species_str is not empty.
+                    # This needs to happen since the pokemon list is currently incomplete, but this could be
+                    # but this could change in the future.
+                    species_str = str(int(species_str) - 1)  # Decrement species_str by 1 and convert to string
+                
+                if species_str in self.pokemon_name_by_id.__members__:
+                    # If a valid key is found in self.pokemon_name_by_id
+                    current_party.append(str.title(self.pokemon_name_by_id[species_str].value))  # Append the corresponding value to current_party
+                else:
+                    # Handle the case where no suitable key is found (optional)
+                    current_party.append(None)  # Append None or any other fallback value
+
+            # Capitalize each name for presentation
+            current_party = [str.title(pokemon) for pokemon in current_party]
+
+            cFormatter.print(Color.WHITE, 'Current Pokemon (starters, not current form) are:')
+            cFormatter.print_separators(65, '-', Color.WHITE)
+            for i, pokemon in enumerate(current_party):
+                cFormatter.print(Color.WHITE, f'{i}: {pokemon}')
+            cFormatter.print_separators(65, '-', Color.WHITE)
+
             party_num = int(input('Select the party slot of the Pokémon you want to edit (0-5): '))
-            if party_num < 0 or party_num > 5:
+            if party_num < 0 or party_num > len(current_party) - 1:
                 cFormatter.print(Color.BRIGHT_YELLOW, 'Invalid party slot.')
                 return
+            
+            selected_pokemon = current_party[party_num]
+            cFormatter.print(Color.GREEN, f'Selected Pokemon: {selected_pokemon}')
 
             cFormatter.print_separators(65, '-', Color.WHITE)
             cFormatter.print(Color.WHITE, '\n'.join(options))
@@ -1154,6 +1185,16 @@ class Rogue:
                     int(input('HP IVs: ')), int(input('Spe IVs: ')), int(input('Def IVs: '))]
                 game_data['party'][party_num]['ivs'] = ivs
             elif command == 6:
+                # Grab current moves
+                current_moves = [self.move_name_by_id[str(move["moveId"])].value for move in game_data['party'][party_num]['moveset']]
+                
+                # Print moves before prompting
+                cFormatter.print(Color.WHITE, f"Current moves on {selected_pokemon}")
+                cFormatter.print_separators(65, '-', Color.WHITE)
+                for i, move in enumerate(current_moves):
+                    cFormatter.print(Color.WHITE, f'{i}: {move}')
+                cFormatter.print_separators(65, '-', Color.WHITE)
+
                 move_slot = int(input('Select the move you want to change (from 0 to 3): '))
                 if move_slot < 0 or move_slot > 3:
                     cFormatter.print(Color.INFO, 'Invalid input.')
@@ -1161,12 +1202,13 @@ class Rogue:
                 
                 self.print_moves()
 
-                move_completer: WordCompleter = WordCompleter(self.moves_by_id.__members__.keys(), ignore_case=True)
+                cFormatter.print(Color.GREEN, f"You are editing {current_moves[move_slot]} in slot {move_slot}")
+                move_completer: WordCompleter = WordCompleter(self.move_id_by_name.__members__.keys(), ignore_case=True)
                 
                 cFormatter.print(Color.INFO, 'Write the name of the move, it will recommend for auto completion.')
                 move: str = prompt('What move would you like?: ', completer=move_completer)
 
-                move: int = int(self.moves_by_id[move].value)
+                move: int = int(self.move_id_by_name[move].value)
             
                 game_data['party'][party_num]['moveset'][move_slot]['moveId'] = move
             else:
@@ -1388,7 +1430,7 @@ class Rogue:
 
         """
         try:
-            moves = [f'{member.value}: {member.name}' for member in self.moves_by_id]
+            moves = [f'{member.value}: {member.name}' for member in self.move_id_by_name]
             cFormatter.print(Color.WHITE, '\n'.join(moves))
         
         except Exception as e:
