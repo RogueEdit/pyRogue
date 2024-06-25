@@ -1,46 +1,171 @@
-import random
-import time
-from typing import List, Dict, Any, Tuple
-
 # Authors
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
-# Contributors: https://github.com/JulianStiebler
-# Date of release: 25.06.2024
+# Contributors: https://github.com/JulianStiebler/
+# Date of release: 13.06.2024 
 # Last Edited: 25.06.2024
 
 """
-This script provides functions to generate and manage eggs in a game environment,
-including calculation of ID bounds, random ID generation, and egg data generation.
 
-Features:
-- Generates random IDs for different egg tiers and gacha types.
-- Calculates ID bounds based on game constants.
-- Generates eggs with specified properties including tier, gacha type, hatch waves, and timestamp.
+Tier and Source Type Initialization:
 
-Modules:
-- random: Provides functions to generate random numbers, used for generating random egg IDs.
-- time: Provides functions to work with time-related tasks, used for generating timestamps.
-- typing: Provides type hints for better code clarity and type checking.
+    using eggOptions.tier to determine the _tier of the egg. If not provided, it falls back to Overrides.EGG_TIER_OVERRIDE or rolls a random tier using this.rollEggTier().
+    _sourceType is set to eggOptions.sourceType or undefined.
 
-Workflow:
-1. Define game constants like EGG_MULTIPLIER, GACHA_TYPES, and EGG_TIERS.
-2. Use functions to calculate ID bounds for different egg tiers.
-3. Generate random IDs within the calculated bounds, considering special cases like Manaphy eggs.
-4. Generate eggs with specified properties such as tier, gacha type, hatch waves, and timestamp.
+Pulled Eggs:
 
-Modules/Librarys used and for what purpose exactly in each function:
-- random: Provides functions for generating random numbers. Used in get_random_id() to generate random egg IDs.
-- time: Provides functions for working with timestamps. Used in generate_eggs() to timestamp each generated egg.
-- typing: Provides type hints for defining function argument types and return types. Used throughout for type annotations.
+    If eggOptions.pulled is true, you check for eggOptions.scene to potentially override the _tier using this.checkForPityTierOverrides().
 
+ID Generation:
+
+    _id is generated using eggOptions.id if provided or by calling Utils.randInt(EGG_SEED, EGG_SEED * this._tier).
+
+Timestamp and Hatch Waves:
+
+    _timestamp defaults to the current time if not provided in eggOptions.
+    _hatchWaves is determined by eggOptions.hatchWaves or defaults to a tier-specific default using this.getEggTierDefaultHatchWaves().
+
+Shiny, Variant, Species, and Hidden Ability:
+
+    _isShiny is set based on eggOptions.isShiny, Overrides.EGG_SHINY_OVERRIDE, or randomly rolled.
+    _variantTier is set similarly for variants.
+    _species is determined by eggOptions.species or randomly rolled using this.rollSpecies().
+    _overrideHiddenAbility is set to eggOptions.overrideHiddenAbility or defaults to false.
+
+Species-Specific Handling:
+
+    If eggOptions.species is provided, it overrides _tier and _hatchWaves. If the species has no variants, _variantTier is set to VariantTier.COMMON.
+
+Egg Move Index:
+
+    _eggMoveIndex defaults to a random value using this.rollEggMoveIndex() unless specified in eggOptions.
+
+Pulled Egg Actions:
+
+    If eggOptions.pulled is true, you increase pull statistics and add the egg to game data using this.increasePullStatistic() and this.addEggToGameData().
+
+
+
+    
+Source Code from https://github.com/pagefaultgames/pokerogue/ multiple files
+  constructor(eggOptions?: IEggOptions) {
+    //if (eggOptions.tier && eggOptions.species) throw Error("Error egg can't have species and tier as option. only choose one of them.")
+
+    this._tier = eggOptions.tier ?? (Overrides.EGG_TIER_OVERRIDE ?? this.rollEggTier());
+    this._sourceType = eggOptions.sourceType ?? undefined;
+    // If egg was pulled, check if egg pity needs to override the egg tier
+    if (eggOptions.pulled) {
+      // Needs this._tier and this._sourceType to work
+      this.checkForPityTierOverrides(eggOptions.scene);
+    }
+
+    this._id = eggOptions.id ?? Utils.randInt(EGG_SEED, EGG_SEED * this._tier);
+
+    this._sourceType = eggOptions.sourceType ?? undefined;
+    this._hatchWaves = eggOptions.hatchWaves ?? this.getEggTierDefaultHatchWaves();
+    this._timestamp = eggOptions.timestamp ?? new Date().getTime();
+
+    // First roll shiny and variant so we can filter if species with an variant exist
+    this._isShiny = eggOptions.isShiny ?? (Overrides.EGG_SHINY_OVERRIDE || this.rollShiny());
+    this._variantTier = eggOptions.variantTier ?? (Overrides.EGG_VARIANT_OVERRIDE ?? this.rollVariant());
+    this._species = eggOptions.species ?? this.rollSpecies(eggOptions.scene);
+
+    this._overrideHiddenAbility = eggOptions.overrideHiddenAbility ?? false;
+
+    // Override egg tier and hatchwaves if species was given
+    if (eggOptions.species) {
+      this._tier = this.getEggTierFromSpeciesStarterValue();
+      this._hatchWaves = eggOptions.hatchWaves ?? this.getEggTierDefaultHatchWaves();
+      // If species has no variant, set variantTier to common. This needs to
+      // be done because species with no variants get filtered at rollSpecies but since the
+      // species is set the check never happens
+      if (!getPokemonSpecies(this.species).hasVariants()) {
+        this._variantTier = VariantTier.COMMON;
+      }
+    }
+    // Needs this._tier so it needs to be generated afer the tier override if bought from same species
+    this._eggMoveIndex = eggOptions.eggMoveIndex ?? this.rollEggMoveIndex();
+    if (eggOptions.pulled) {
+      this.increasePullStatistic(eggOptions.scene);
+      this.addEggToGameData(eggOptions.scene);
+    }
+  }
+
+
+export const EGG_SEED = 1073741824;
+
+// Rates for specific random properties in 1/x
+const DEFAULT_SHINY_RATE = 128;
+const GACHA_SHINY_UP_SHINY_RATE = 64;
+const SAME_SPECIES_EGG_SHINY_RATE = 32;
+const SAME_SPECIES_EGG_HA_RATE = 16;
+const MANAPHY_EGG_MANAPHY_RATE = 8;
+
+// 1/x for legendary eggs, 1/x*2 for epic eggs, 1/x*4 for rare eggs, and 1/x*8 for common eggs
+const DEFAULT_RARE_EGGMOVE_RATE = 6;
+const SAME_SPECIES_EGG_RARE_EGGMOVE_RATE = 3;
+const GACHA_MOVE_UP_RARE_EGGMOVE_RATE = 3;
+
+
+/** Egg options to override egg properties */
+export interface IEggOptions {
+  /** Id. Used to check if egg type will be manaphy (id % 204 === 0) */
+  id?: number;
+  /** Timestamp when this egg got created */
+  timestamp?: number;
+  /** Defines if the egg got pulled from a gacha or not. If true, egg pity and pull statistics will be applyed.
+   * Egg will be automaticly added to the game data.
+   * NEEDS scene eggOption to work.
+   */
+  pulled?: boolean;
+  /** Defines where the egg comes from. Applies specific modifiers.
+   * Will also define the text displayed in the egg list.
+   */
+  sourceType?: EggSourceType;
+  /** Needs to be defined if eggOption pulled is defined or if no species or isShiny is degined since this will be needed to generate them. */
+        export enum EggSourceType {
+            GACHA_MOVE,
+            GACHA_LEGENDARY,
+            GACHA_SHINY,
+            SAME_SPECIES_EGG,
+            EVENT
+        }
+  scene?: BattleScene;
+  /** Sets the tier of the egg. Only species of this tier can be hatched from this egg.
+   * Tier will be overriden if species eggOption is set.
+   */
+  tier?: EggTier;
+  /** Sets how many waves it will take till this egg hatches. */
+  hatchWaves?: number;
+  /** Sets the exact species that will hatch from this egg.
+   * Needs scene eggOption if not provided.
+   */
+  species?: Species;
+  /** Defines if the hatched pokemon will be a shiny. */
+  isShiny?: boolean;
+  /** Defines the variant of the pokemon that will hatch from this egg. If no variantTier is given the normal variant rates will apply. */
+  variantTier?: VariantTier;
+  /** Defines which egg move will be unlocked. 3 = rare egg move. */
+  eggMoveIndex?: number;
+  /** Defines if the egg will hatch with the hidden ability of this species.
+   *  If no hidden ability exist, a random one will get choosen.
+   */
+  overrideHiddenAbility?: boolean
+}
 """
 
-EGG_MULTIPLIER: int = 1073741824
-GACHA_TYPE: List[str] = ['MoveGacha', 'LegendaryGacha', 'ShinyGacha']
-EGG_TIERS: List[str] = ['Common', 'Rare', 'Epic', 'Legendary', 'Manaphy']
+import random
+import time
+from typing import List, Tuple, Dict
 
-def __eggGetIDBounds(tier: int) -> Tuple[int, int]:
+# Constant from game source code
+EGG_SEED: int = 1073741824
+
+# List of possible gacha types & List of possible egg tiers
+GACHA_TYPES: List[str] = ['MoveGacha', 'LegendaryGacha', 'ShinyGacha', 'SAME_SPECIES_EGG', 'EVENT'],
+eggTiers: List[str] = ['Common', 'Rare', 'Epic', 'Legendary', 'Manaphy']
+
+def getIDBoundarys(tier: int) -> Tuple[int, int]:
     """
     Get the ID bounds for a given tier.
 
@@ -50,18 +175,15 @@ def __eggGetIDBounds(tier: int) -> Tuple[int, int]:
     Returns:
         Tuple[int, int]: A tuple containing the start and end IDs.
 
-    Raises:
-        ValueError: If an invalid tier index is provided.
+    Example:
+        start, end = getIDBoundarys(2)
     """
-    if tier < 1 or tier > len(EGG_TIERS):
-        raise ValueError(f"Invalid tier index '{tier}'. Expected a value between 1 and {len(EGG_TIERS)}.")
-
-    tierIndex = tier - 1  # Convert to 0-based index
-    start = tierIndex * EGG_MULTIPLIER
-    end = (tierIndex + 1) * EGG_MULTIPLIER - 1
+    # Calculate the start and end IDs for the given tier
+    start: int = tier * EGG_SEED
+    end: int = (tier + 1) * EGG_SEED - 1
     return max(start, 255), end
 
-def __eggGetRandomId(start: int, end: int, manaphy: bool = False) -> int:
+def generateRandomID(start: int, end: int, manaphy: bool = False) -> int:
     """
     Get a random ID within the given range.
 
@@ -74,44 +196,54 @@ def __eggGetRandomId(start: int, end: int, manaphy: bool = False) -> int:
         int: The random ID.
     """
     if manaphy:
-        return random.randrange(start, end + 1, 255)
-    else:
-        result: int = random.randint(start, end)
-        result = result if result % 255 != 0 else result - 1
-        return max(result, 1)
+        # Generate a random ID that is divisible by 204 within the specified range
+        return random.randrange(start // 204 * 204, (end // 204 + 1) * 204, 204)
 
-def constructEggs(tier: str, gachaType: str, hatchWaves: int, eggAmount: int, isShiny: bool, overrideHiddenAbility: bool) -> List[Dict[str, Any]]:
+    # Generate a regular random ID within the specified range
+    result: int = random.randint(start, end)
+
+    if result % 204 == 0:
+        result -= 1
+
+    return max(result, 1)
+
+def constructEggs(tier: int, gachaType: int, hatchWaveCount: int, eggAmount: int, isShiny: bool, variantTier: bool) -> List[Dict[str, int]]:
     """
-    Construct a list of eggs with given properties.
+    Generate eggs with the given properties.
 
     Args:
-        tier (str): The tier of the eggs ('Common', 'Rare', 'Epic', 'Legendary', 'Manaphy').
-        gachaType (str): The gacha type ('MoveGacha', 'LegendaryGacha', 'ShinyGacha').
-        hatchWaves (int): The number of waves required to hatch.
-        eggAmount (int): The number of eggs to construct.
-        isShiny (bool): Whether the eggs should be shiny.
-        overrideHiddenAbility (bool): Whether to override hidden ability.
+        tier (int): The tier of the eggs.
+        g_type (int): The gacha type.
+        hatch_waves (int): The number of hatch waves.
+        num_eggs (int): The number of eggs to generate.
+        is_shiny (bool): Whether the egg is shiny.
+        hidden_ability (bool): Whether the hidden ability is unlocked.
 
     Returns:
-        List[Dict[str, Any]]: A list of constructed egg dictionaries.
+        List[Dict[str, int]]: A list of generated eggs.
+
+    Example:
+        eggs = constructEggs(1, 2, 3, 10, True, False)
     """
-    eggs = []
-    tierIndex = EGG_TIERS.index(tier)
-
+    isManaphy: bool = tier == 4
+    start, end = getIDBoundarys(0 if isManaphy else tier)
+    
+    eggs: List[Dict[str, int]] = []
     for _ in range(eggAmount):
-        eggId = __eggGetRandomId(*__eggGetIDBounds(tierIndex + 1), manaphy=(tier == 'Manaphy'))
-        timestamp = int(time.time() * 1000)
+        eggID: int = generateRandomID(start, end, isManaphy)
+        timestamp: int = int(time.time() * 1000)
         
-        egg = {
-            'id': eggId,
-            'gachaType': GACHA_TYPE.index(gachaType),
-            'hatchWaves': hatchWaves,
+        egg: Dict[str, int] = {
+            'id': eggID,
+            'gachaType': gachaType,
+            'hatchWaves': hatchWaveCount,
             'timestamp': timestamp,
-            'tier': tierIndex,
-            'isShiny': isShiny,
-            'overrideHiddenAbility': overrideHiddenAbility
+            'tier': tier,
         }
-        
+        if variantTier:
+            egg['variantTier'] = 3
+        if isShiny:
+            egg['isShiny'] = isShiny
         eggs.append(egg)
-
+    
     return eggs

@@ -16,3 +16,4 @@ src/dev/slot_2.json
 /dist
 /build
 /src/modules/handler/__pycache__
+src/data/extra.json

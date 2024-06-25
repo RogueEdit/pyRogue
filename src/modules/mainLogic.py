@@ -1700,6 +1700,8 @@ class Rogue:
 
         Raises:
         - OperationSuccessful: If the operation completes successfully.
+        - OperationError: If there is an error during the operation.
+        - OperationCancel: If the operation is canceled by the user.
 
         Modules Used:
         - .cFormatter: For printing formatted messages to the console, including colorized output.
@@ -1707,9 +1709,10 @@ class Rogue:
 
         Workflow:
         1. Loads trainer data.
-        2. Allows the player to specify attributes for the eggs (count, tier, gacha type, hatch waves, shiny, hidden ability).
-        3. Generates the specified number of eggs with the specified attributes.
-        4. Adds the generated eggs to the player's inventory, either replacing or adding to the existing eggs.
+        2. If there are existing eggs, uses their structure as a sample.
+        3. Allows the player to specify attributes for the eggs (count, tier, gacha type, hatch waves, shiny, hidden ability).
+        4. Generates the specified number of eggs with the specified attributes.
+        5. Adds the generated eggs to the player's inventory, either replacing or adding to the existing eggs.
         If there are no existing eggs, a sample structure is provided for the new eggs.
 
         Usage Example:
@@ -1717,84 +1720,55 @@ class Rogue:
             >>> example_instance.f_addEggsGenerator()
         """
         trainerData = self.__loadDataFromJSON('trainer.json')
+        currentEggs = trainerData.get('eggs', [])
+        currentAmount = len(currentEggs)
 
-        eggAmount = len(trainerData.get('eggs', []))
-
-        if eggAmount >= 75:
-            choicePrompt = 'You have max number of eggs, replace eggs?'
-            choices = {'1': 'Replace', '0': 'Cancel'}
+        if currentAmount >= 99:
+            userInput = self.fh_getChoiceInput(
+                'You already have the total max of eggs, replace eggs?',
+                {'1': 'Replace'}, zeroCancel=True
+            )
         else:
-            choicePrompt = f'You have [{eggAmount}] eggs, add or replace eggs?'
-            choices = {'1': 'Replace', '2': 'Add', '0': 'Cancel'}
+            userInput = self.fh_getChoiceInput(
+                f'You already have [{currentAmount}] eggs - should we add or replace?',
+                {'1': 'Replace', '2': 'Add'}, zeroCancel=True
+            )
 
-        replaceOrAdd = self.fh_getChoiceInput(choicePrompt, choices, zeroCancel=True)
-        if replaceOrAdd == '0':
-            return  # Operation canceled by the user
+        maxAmount = 99 - currentAmount if userInput == '2' else 99
 
-        maxAmount = 75 - eggAmount if replaceOrAdd == '2' else 75
-
-        count = self.fh_getIntegerInput(
-            f'How many eggs do you want to have? (0 - {maxAmount})',
-            0,
-            maxAmount,
-            zeroCancel=True
-        )
+        count = self.fh_getIntegerInput('How many eggs do you want to generate?', 0, maxAmount, zeroCancel=True)
         if count == 0:
-            return  # Operation canceled by the user
+            cFormatter.print(Color.CRITICAL, 'No eggs to generate. Operation cancelled.')
+            return
 
-        tierChoices = {str(i + 1): tier for i, tier in enumerate(eggLogic.EGG_TIERS)}
-        tierChoice = self.fh_getChoiceInput(
+        tier = int(self.fh_getChoiceInput(
             'What tier should the eggs have?',
-            tierChoices,
+            {'1': 'Common', '2': 'Rare', '3': 'Epic', '4': 'Legendary', '5': 'Manaphy'},
             zeroCancel=True
-        )
+        )) - 1  # Adjusting for 0-based index
 
-        gachaChoice = {'1': 'Move', '2': 'Legendary', '3': 'Shiny'}
-        gachaType = self.fh_getChoiceInput(
+        gachaType = int(self.fh_getChoiceInput(
             'What gacha type do you want to have?',
-            gachaChoice,
-            zeroCancel=True
-        )
+            {'1': 'MoveGacha', '2': 'LegendaryGacha', '3': 'ShinyGacha'}, zeroCancel=True
+        )) - 1  # Adjusting for 0-based index
 
-        hatchWaves = self.fh_getIntegerInput(
-            'After how many waves should they hatch? (0-100)',
-            0,
-            100,
-            zeroCancel=True
-        )
-        if hatchWaves == 0:
-            return  # Operation canceled by the user
+        hatchWaves = self.fh_getIntegerInput('After how many waves should they hatch?', 0, 100, zeroCancel=True)
+        
+        # Get hidden ability preference as boolean
+        isShiny: bool = self.fh_getChoiceInput('Do you want the hidden ability to be unlocked?', {'1': 'Yes', '2': 'No'}, zeroCancel=True) == '1'
 
-        isSHiny = self.fh_getChoiceInput(
-            promptMesage='Do you want it to be shiny?',
-            choices={'1': 'Yes', '2': 'No'},
-            zeroCancel=True
-        ) == '1'
+        # Get hidden ability preference as boolean
+        variantTier: bool = self.fh_getChoiceInput('Do you want the hidden ability to be unlocked?', {'1': 'Yes', '2': 'No'}, zeroCancel=True) == '1'
 
-        overrideHiddenAbility = self.fh_getChoiceInput(
-            promptMesage='Do you want the hidden ability to be unlocked?',
-            choices={'1': 'Yes', '2': 'No'},
-            zeroCancel=True
-        ) == '1'
+        eggDictionary = eggLogic.constructEggs(tier, gachaType, hatchWaves, count, isShiny, variantTier)
 
-        tier = tierChoices[tierChoice]  # Retrieve the selected tier string
+        if userInput == '1':
+            trainerData['eggs'] = eggDictionary
+        elif userInput == '2':
+            trainerData['eggs'].extend(eggDictionary)
 
-        newEggs = eggLogic.constructEggs(
-            tier=tier,
-            gachaType=int(gachaType),
-            hatchWaves=hatchWaves,
-            eggAmount=count,
-            isShiny=isSHiny,
-            overrideHiddenAbility=overrideHiddenAbility
-        )
-
-        if replaceOrAdd == '1':
-            trainerData['eggs'][:count] = newEggs
-        elif replaceOrAdd == '2':
-            trainerData['eggs'].extend(newEggs)
-
-        cFormatter.print(Color.GREEN, f'[{count}] eggs generated successfully.')
         self.__writeJSONData(trainerData, 'trainer.json')
+        raise OperationSuccessful(f'{count} eggs successfully generated.')
 
 
 

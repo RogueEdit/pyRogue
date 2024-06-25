@@ -89,7 +89,7 @@ def m_mainMenu(rogue):
         (('Edit your egg-tickets', untouched), rogue.add_ticket),
         (('Edit candies on a starter', broken), rogue.f_addCandies),
         (('Edit Egg-hatch durations', reworked), rogue.f_editHatchWaves),
-        (('Generate eggs', broken), rogue.f_addEggsGenerator),
+        (('Generate eggs', reworked), rogue.f_addEggsGenerator),
         (('Unlock all vouchers', untouched), rogue.f_editVouchers),
         (('Unlock all starters', untouched), rogue.f_unlockStarters),
         (('Unlock all achievements', untouched), rogue.f_editAchivements),
