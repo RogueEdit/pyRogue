@@ -3,7 +3,7 @@
 <img src="https://img.shields.io/badge/Make_sure_to_mark_with_a-Star_<3-Red">
 
 Based on the Source Code of pokerogue.net - https://github.com/pagefaultgames/pokerogue
-In compliance with Pokerogue's License
+> In compliance with Pokerogue's License this project here is also released under AGPL3.
 
 ![Preview Image](.github/previews/main.png)
 ![Preview Image](.github/previews/tool.png)
