@@ -996,7 +996,7 @@ class Rogue:
             else:
                 abilityAttr = 0
             
-            self.print_natures()
+            self.legacy_natures()
 
             nature_completer: WordCompleter = WordCompleter(self.natureData.__members__.keys(), ignore_case=True)
             
@@ -1173,7 +1173,7 @@ class Rogue:
                     cFormatter.print(Color.INFO, 'Invalid input.')
                     return
                 
-                self.print_moves()
+                self.legacy_moves()
 
                 move_completer: WordCompleter = WordCompleter(self.moves_by_id.__members__.keys(), ignore_case=True)
                 
@@ -1184,7 +1184,7 @@ class Rogue:
             
                 game_data['party'][party_num]['moveset'][move_slot]['moveId'] = move
             else:
-                self.p_natureSlots()
+                self.legacy_natureSlot()
 
                 natureSlot_completer: WordCompleter = WordCompleter(self.natureSlot_data.__members__.keys(), ignore_case=True)
                 cFormatter.print(Color.INFO, 'Write the name of the nature, it will recommend for auto-completion.')
@@ -1312,7 +1312,7 @@ class Rogue:
                     voucher_unlocks[voucher] = random_time
                 trainer_data['voucherUnlocks'] = voucher_unlocks
             else:
-                self.p_vouchers()
+                self.legacy_vouchers()
                 vouchers_completer: WordCompleter = WordCompleter(self.vouchers_data.__members__.keys(), ignore_case=True)
                 cFormatter.print(Color.INFO, 'Write the name of the voucher, it will recommend for auto-completion.')
             
@@ -1330,7 +1330,7 @@ class Rogue:
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function edit_vouchers(): {e}', isLogging=True)
 
-    def p_pokeDex(self) -> None:
+    def legacy_pokedex(self) -> None:
         """
         Prints all Pokemon available in the game.
 
@@ -1346,117 +1346,39 @@ class Rogue:
 
         Usage Example:
             >>> example_instance = ExampleClass()
-            >>> example_instance.print_pokedex()
+            >>> example_instance.f_printEnum()
 
         """
         pokemons = [f'{member.value}: {member.name}' for member in self.pokemon_id_by_name]
         cFormatter.print(Color.WHITE, '\n'.join(pokemons))
+        
 
-    def f_printBiomes(self) -> None:
+
+    def legacy_printBiomes(self) -> None:
         biomes = [f'{member.value}: {member.name}' for member in self.biomesByID]
         cFormatter.print(Color.WHITE, '\n'.join(biomes))
+
+    def legacy_moves(self) -> None:
+        moves = [f'{member.value}: {member.name}' for member in self.moves_by_id]
+        cFormatter.print(Color.WHITE, '\n'.join(moves))
+
+
+    def legacy_natures(self) -> None:  
+        natures = [f'{member.value}: {member.name}' for member in self.natureData]
+        cFormatter.print(Color.WHITE, '\n'.join(natures))
         
+    def legacy_vouchers(self) -> None:
+        vouchers = [f'{member.value}: {member.name}' for member in self.vouchers_data]
+        cFormatter.print(Color.WHITE, '\n'.join(vouchers))
 
-    def print_moves(self) -> None:
-        """
-        Prints all moves available in the game.
-
-        Raises:
-        - None
-
-        Modules Used:
-        - .cFormatter: For printing formatted messages to the console, including colorized output.
-
-        Workflow:
-        1. Retrieves move data.
-        2. Prints out the list of moves available in the game.
-
-        Usage Example:
-            >>> example_instance = ExampleClass()
-            >>> example_instance.print_moves()
-
-        """
-        try:
-            moves = [f'{member.value}: {member.name}' for member in self.moves_by_id]
-            cFormatter.print(Color.WHITE, '\n'.join(moves))
-        
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function print_moves(): {e}', isLogging=True)
-
-    def print_natures(self) -> None:
-        """
-        Prints all natures available in the game.
-
-        Raises:
-        - None
-
-        Modules Used:
-        - .cFormatter: For printing formatted messages to the console, including colorized output.
-
-        Workflow:
-        1. Retrieves nature data.
-        2. Prints out the list of natures available in the game.
-
-        Usage Example:
-            >>> example_instance = ExampleClass()
-            >>> example_instance.print_natures()
-
-        """
-        try:
-            natures = [f'{member.value}: {member.name}' for member in self.natureData]
-            cFormatter.print(Color.WHITE, '\n'.join(natures))
-        
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function print_natures(): {e}', isLogging=True)
-    
-    def p_vouchers(self) -> None:
-        """
-        Prints all vouchers available in the game.
-
-        Raises:
-        - None
-
-        Modules Used:
-        - .cFormatter: For printing formatted messages to the console, including colorized output.
-
-        Workflow:
-        1. Retrieves voucher data.
-        2. Prints out the list of vouchers available in the game.
-
-        Usage Example:
-            >>> example_instance = ExampleClass()
-            >>> example_instance.print_vouchers()
-
-        """
-        try:
-            vouchers = [f'{member.value}: {member.name}' for member in self.vouchers_data]
-            cFormatter.print(Color.WHITE, '\n'.join(vouchers))
-        
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function print_vouchers(): {e}', isLogging=True)
-
-    def p_natureSlots(self) -> None:
-        """
-        Prints all natureSlot IDs available in the game.
-
-        Raises:
-        - None
-
-        Modules Used:
-        - .cFormatter: For printing formatted messages to the console, including colorized output.
-
-        Workflow:
-        1. Retrieves natureSlot data.
-        2. Prints out the list of natureSlot IDs available in the game.
-
-        Usage Example:
-            >>> example_instance = ExampleClass()
-            >>> example_instance.print_natureSlot()
-
-        """
+    def legacy_natureSlot(self) -> None:
         natureSlot = [f'{member.value}: {member.name}' for member in self.natureSlot_data]
         cFormatter.print(Color.WHITE, '\n'.join(natureSlot))
 
+    @handle_operation_exceptions
+    def fh_printEnums(self, type):
+        pass
+        # merge prints here
 
     @handle_operation_exceptions
     def f_addCandies(self) -> None:
@@ -1554,7 +1476,7 @@ class Rogue:
         cFormatter.print(Color.DEBUG, 'Write the name of the biome or its ID.')
 
         # Prompt user for biome input
-        self.f_printBiomes()
+        self.legacy_printBiomes()
 
         inputValue = self.fh_getCompleterInput(
             promptMessage='Choose which Biome you like. You can either type the ID or Name.',
@@ -1590,7 +1512,11 @@ class Rogue:
         Edits the number of pokeballs in the game using helper functions for input validation.
 
         Raises:
-        - raise OperationSuccessful('Succesfully written Pokeballs.')
+        - Exception: If any error occurs during the process due to the decorator.
+        - OperationCancel(), OperationSoftCancel(), ValueError() depending on input due to the helper.
+        - OperationSuccessful('Successfully written Pokeballs.')
+            - and prints changed items.
+
 
         Modules Used:
         - .cFormatter: For printing formatted messages to the console, including colorized output.
@@ -1657,7 +1583,9 @@ class Rogue:
         Edits the amount of Poke-Dollars in the game.
 
         Raises:
-        - None
+        - Exception: If any error occurs during the process due to the decorator.
+        - OperationCancel(), OperationSoftCancel(), ValueError() depending on input due to the helper.
+        - OperationSuccessful(f'Written {choice} as money value to to local .json.')
 
         Modules Used:
         - .cFormatter: For printing formatted messages to the console, including colorized output.
@@ -1690,9 +1618,9 @@ class Rogue:
         Generates eggs for the player.
 
         Raises:
-        - OperationSuccessful: If the operation completes successfully.
-        - OperationError: If there is an error during the operation.
-        - OperationCancel: If the operation is canceled by the user.
+        - Exception: If any error occurs during the process due to the decorator.
+        - OperationCancel(), OperationSoftCancel(), ValueError() depending on input due to the helper.
+        - OperationSuccessful(f'{count} eggs successfully generated.')
 
         Modules Used:
         - .cFormatter: For printing formatted messages to the console, including colorized output.
@@ -1760,6 +1688,14 @@ class Rogue:
 
     @handle_operation_exceptions
     def f_unlockAllCombined(self) -> None:
+        """
+        Combines multiple functions.
+        - self.f_editGamemodes()
+        - self.f_editAchivements()
+        - self.f_editVouchers()
+        - self.f_unlockStarters()
+        - self.f_editAccountStats()
+        """
         self.f_editGamemodes()
         self.f_editAchivements()
         self.f_editVouchers()
@@ -1772,8 +1708,10 @@ class Rogue:
         Modifies the statistics and attributes of the player's account.
 
         Raises:
-        - OperationSuccessful: If the operation completes successfully.
-        - ValueError: On wrong Inputs
+        - Exception: If any error occurs during the process due to the decorator.
+        - OperationCancel(), OperationSoftCancel(), ValueError() depending on input due to the helper.
+        - OperationSuccessful('Successfully written Account Stats.')
+            - and prints changed items.
 
         Modules Used:
         - .cFormatter: For printing formatted messages to the console, including colorized output.
@@ -1917,7 +1855,8 @@ class Rogue:
 
         Raises:
         - Exception: If any error occurs during the process due to the decorator.
-        - raise OperationSuccessful()
+        - OperationCancel(), OperationSoftCancel(), ValueError() depending on input due to the helper.
+        - OperationSuccessful(f'Set hatch duration of your eggs to {hatchWaves}')
 
         Modules Used:
         - .cFormatter: For printing formatted messages to the console, including colorized output.
@@ -1947,11 +1886,12 @@ class Rogue:
 
             # Write updated trainer_data to 'trainer.json'
             self.__writeJSONData(trainerData, 'trainer.json')
-            raise OperationSuccessful()
+            raise OperationSuccessful(f'Set hatch duration of your eggs to {hatchWaves}')
         else:
             cFormatter.print(Color.GREEN, 'You have no eggs to hatch.')
             return
 
+    # TODO VERY IMPORTANT
     @handle_operation_exceptions
     def f_submenuItemEditor(self):
         from modules import ModifierEditor
@@ -1964,11 +1904,11 @@ class Rogue:
         newSlot = int(input('Which save-slot you want to change to?: '))
         self.getSlotData(newSlot)  
     
+    # TODO VERY IMPORTANT
+    # Move to other files but i had circular imports so i dont care for now
     @staticmethod
     def fh_getChoiceInput(promptMesage: str, choices: dict, renderMenu: bool = False, zeroCancel: bool=False, softCancel:bool = False) -> str:
         """
-        Helper method to get a validated choice input from the user.
-
         Args:
         - promptMesage (str): The prompt message to display.
         - choices (dict): The dictionary containing choice options.
@@ -1976,8 +1916,16 @@ class Rogue:
         - zeroCancel (bool): If True, allow raise cancellation with '0' interrupting the operation and save.
         - softCancel (bool): If True, allow soft cancellation with '0' interrupting the operation but allow saving.
 
+        Helper method to get a validated choice input from the user.
+
+        Raises:
+        - OperationCancel()
+        - OperationSoftCancel()
+        - ValueError()
+
         Returns:
         - str: The validated choice key.
+        - or any Raise depending on setup.
         """
         if renderMenu:
             actions = "\n".join([f'{idx + 1}: {desc}' for idx, desc in enumerate(choices.values())])
@@ -1998,30 +1946,36 @@ class Rogue:
                     raise OperationCancel()
                 if softCancel:
                     raise OperationSoftCancel()
+                
+            # If no cancel or skip is requested
             if userInput.isdigit():
                 idx = int(userInput) - 1
                 if 0 <= idx < len(choices):
                     return list(choices.keys())[idx]
-            print('Invalid input. Please enter a number corresponding to your choice.')
+                
+            raise ValueError(f'{userInput}')
 
     @staticmethod
     def fh_getIntegerInput(promptMessage: str, minBound: int, maxBound: int, zeroCancel: bool=False, softCancel: bool=False, allowSkip: bool=False) -> int:
         """
-        Helper method to get a validated integer input from the user.
-
-        Raises:
-            raise OperationCancel()
-            
-
         Args:
         - prompt (str): The prompt message to display.
         - minBound (int): The minimum valid value.
         - maxBound (int): The maximum valid value.
         - zeroCancel (bool): If True, allow raise cancellation with '0' interrupting the operation and save.
         - softCancel (bool): If True, allow soft cancellation with '0' interrupting the operation but allow saving.
+        - allowSkip (bool): If True, returns 'skip' 
+        Helper method to get a validated integer input from the user.
 
+
+        Raises:
+        - OperationCancel()
+        - OperationSoftCancel()
+        - ValueError()
+            
         Returns:
         - int: The validated integer input.
+        - or any Raise depending on setup.
         """
         if zeroCancel or softCancel or allowSkip:
             minBound = 0
@@ -2031,6 +1985,8 @@ class Rogue:
 
         while True:
             userInput = input(fullPrompt).strip()
+            if userInput.lower() == 'exit' or userInput.lower() == 'cancel':
+                raise OperationCancel()
             if userInput == '0':
                 if zeroCancel:
                     raise OperationCancel()
@@ -2038,26 +1994,34 @@ class Rogue:
                     raise OperationSoftCancel()
             if allowSkip and userInput.lower() == 'skip':
                 return 'skip'
+            
+            # If no cancel or skip is requested
             if userInput.isdigit():
                 value = int(userInput)
                 if minBound <= value <= maxBound:
                     return str(value)
                 
-            raise ValueError()
+            raise ValueError(f'{userInput}')
 
     @staticmethod
-    def fh_getCompleterInput(promptMessage: str, choices: dict, zeroCancel: bool = False, softCancel: bool = False) -> str:
+    def fh_getCompleterInput(promptMessage: str, choices: dict, zeroCancel: bool = False, softCancel: bool = False, allowSkip: bool = False) -> str:
         """
-        Helper method to get input from the user with auto-completion support.
-
         Args:
         - prompt_message (str): The prompt message to display.
         - choices (dict): A dictionary mapping input choices to their corresponding values.
         - zeroCancel (bool): If True, allow raise cancellation with '0' interrupting the operation and save.
         - softCancel (bool): If True, allow soft cancellation with '0' interrupting the operation but allow saving.
 
+        Helper method to get input from the user with auto-completion support.
+
+        Raises:
+        - OperationSoftCancel()
+        - OperationCancel()
+        - ValueError()
+
         Returns:
         - str: The value corresponding to the validated input choice, or raises OperationCancel if the user cancels.
+        - or any Raise depending on setup.
         """
         fullPrompt = f'{promptMessage}: '
         if zeroCancel or softCancel:
@@ -2071,14 +2035,17 @@ class Rogue:
 
             if userInput.lower() == 'exit' or userInput.lower() == 'cancel':
                 raise OperationCancel()
-            
             if userInput == '0':
                 if softCancel:
                     raise OperationSoftCancel()
                 if zeroCancel:
                     raise OperationCancel()
+            if allowSkip and userInput.lower() == 'skip':
+                return 'skip'
             
+            # If no cancel or skip is requested
             if userInput in choices or (userInput == '0' and softCancel):
                 return choices.get(userInput, '0')
             
-            cFormatter.print(Color.BRIGHT_RED, f'Invalid input "{userInput}". Please enter a valid option.')
+            # If none above valid 
+            raise ValueError(f'{userInput}')

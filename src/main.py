@@ -43,8 +43,10 @@ from datetime import datetime, timedelta
 init()
 config.f_initFolders()
 logger = CustomLogger()
-config.f_checkForUpdates(requests, datetime, timedelta, Style)
-config.f_printWelcomeText()
+
+if not config.debug:
+    config.f_checkForUpdates(requests, datetime, timedelta, Style)
+    config.f_printWelcomeText()
 
 # Global list for pre-command messages
 pre_command_messages = []
@@ -75,7 +77,8 @@ def m_mainMenu(rogue, editOffline: bool = False):
     useWhenDone = f'{Fore.LIGHTYELLOW_EX}(Use when Done)'
     untouched = f'{Fore.LIGHTYELLOW_EX}(UNTOUCHED)'
     reworked = f'{Fore.GREEN}(REWORKED)'
-    broken = f'{Fore.RED}(BROKEN)'
+    broken = f'{Fore.RED}(BROKEN)'  # noqa: F841
+
     term = [
         (title, 'title'),
         ('Account Actions', 'category'),
@@ -88,7 +91,7 @@ def m_mainMenu(rogue, editOffline: bool = False):
         ('Trainer Data Actions', 'category'),
         (('Edit a starter', untouched), rogue.edit_starter_separate),
         (('Edit your egg-tickets', untouched), rogue.add_ticket),
-        (('Edit candies on a starter', broken), rogue.f_addCandies),
+        (('Edit candies on a starter', reworked), rogue.f_addCandies),
         (('Edit Egg-hatch durations', reworked), rogue.f_editHatchWaves),
         (('Generate eggs', reworked), rogue.f_addEggsGenerator),
         (('Unlock all vouchers', untouched), rogue.f_editVouchers),
@@ -105,12 +108,12 @@ def m_mainMenu(rogue, editOffline: bool = False):
         (('Edit Items', untouched), rogue.f_submenuItemEditor),
 
         ('Print game information', 'category'),
-        (('Show all Pokemon ID', reworked), rogue.print_pokedex),
-        (('Show all Biome IDs', reworked), rogue.f_printBiomes),
-        (('Show all Move IDs', reworked), rogue.print_moves),
-        (('Show all Vouchers IDs', reworked), rogue.print_vouchers),
-        (('Show all Natures IDs', reworked), rogue.print_natures),
-        (('Show all NaturesSlot IDs', reworked), rogue.print_natureSlot),
+        (('Show all Pokemon ID', reworked), rogue.legacy_pokedex),
+        (('Show all Biome IDs', reworked), rogue.legacy_printBiomes),
+        (('Show all Move IDs', reworked), rogue.legacy_moves),
+        (('Show all Vouchers IDs', reworked), rogue.legacy_vouchers),
+        (('Show all Natures IDs', reworked), rogue.legacy_natures),
+        (('Show all NaturesSlot IDs', reworked), rogue.legacy_natureSlot),
 
         ('You can always edit your JSON manually as well!', 'helper'),
         (('Save data and upload to the Server', useWhenDone), rogue.update_all),

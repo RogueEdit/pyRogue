@@ -29,7 +29,7 @@ from datetime import datetime, timedelta
 import requests
 from utilities import cFormatter, Color
 
-debug: bool = False
+debug: bool = True
 version: str = 'v0.3.3-wip'
 title: str = f'<(^.^(< pyRogue {version} >)^.^)>'
 owner: str = 'rogueEdit'
