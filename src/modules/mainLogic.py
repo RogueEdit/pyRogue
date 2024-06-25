@@ -70,6 +70,7 @@ from modules.handler import handle_http_exceptions, HTTPEmptyResponse  # noqa: F
 from modules import handle_error_response, HeaderGenerator, config
 from utilities import Generator, EnumLoader, cFormatter, Color, Limiter, eggLogic
 
+from enum import Enum
 import json
 import random
 import os
@@ -1331,29 +1332,9 @@ class Rogue:
             cFormatter.print(Color.CRITICAL, f'Error in function edit_vouchers(): {e}', isLogging=True)
 
     def legacy_pokedex(self) -> None:
-        """
-        Prints all Pokemon available in the game.
-
-        Raises:
-        - None
-
-        Modules Used:
-        - .cFormatter: For printing formatted messages to the console, including colorized output.
-
-        Workflow:
-        1. Retrieves Pokemon data.
-        2. Prints out the list of Pokemon available in the game.
-
-        Usage Example:
-            >>> example_instance = ExampleClass()
-            >>> example_instance.f_printEnum()
-
-        """
         pokemons = [f'{member.value}: {member.name}' for member in self.pokemon_id_by_name]
         cFormatter.print(Color.WHITE, '\n'.join(pokemons))
         
-
-
     def legacy_printBiomes(self) -> None:
         biomes = [f'{member.value}: {member.name}' for member in self.biomesByID]
         cFormatter.print(Color.WHITE, '\n'.join(biomes))
@@ -1361,7 +1342,6 @@ class Rogue:
     def legacy_moves(self) -> None:
         moves = [f'{member.value}: {member.name}' for member in self.moves_by_id]
         cFormatter.print(Color.WHITE, '\n'.join(moves))
-
 
     def legacy_natures(self) -> None:  
         natures = [f'{member.value}: {member.name}' for member in self.natureData]
@@ -1376,20 +1356,17 @@ class Rogue:
         cFormatter.print(Color.WHITE, '\n'.join(natureSlot))
 
     @handle_operation_exceptions
-    def fh_printEnums(self, type):
-        pass
-        # merge prints here
-
-    @handle_operation_exceptions
     def f_addCandies(self) -> None:
         """
-        Adds candies to a Pokémon.
-
         Args:
         - dexId (str, optional): The ID of the Pokémon. Defaults to None.
 
+        Adds candies to a Pokémon.
+
         Raises:
-        - None
+        - Exception: If any error occurs during the process due to the decorator.
+        - OperationCancel(), OperationSoftCancel(), ValueError() depending on input due to the helper.
+        - OperationSuccessful(f'Biome updated to {biomeEnum.name}')
 
         Modules Used:
         - .cFormatter: For printing formatted messages to the console, including colorized output.
@@ -1403,7 +1380,6 @@ class Rogue:
         Usage Example:
             >>> example_instance = ExampleClass()
             >>> example_instance.f_addCandies('pikachu')
-
         """
 
         trainerData = self.__loadDataFromJSON('trainer.json')
@@ -1417,23 +1393,6 @@ class Rogue:
             zeroCancel=False
         )
 
-        # TODO IMPORTANT: Put in a function
-        # Ensure inputValue is a string
-        if isinstance(inputValue, self.appData.pokemonIDByName):
-            inputValue = inputValue.name.lower()
-        else:
-            inputValue = str(inputValue).strip().lower()
-
-        if inputValue.isdigit():
-            # Input is an ID
-            pokeEnum = next((member for member in self.appData.pokemonIDByName if member.value == int(inputValue)), None)
-        else:
-            # Input is a name
-            pokeEnum = next((member for member in self.appData.pokemonIDByName if member.name.lower() == inputValue), None)
-
-        if pokeEnum is None:
-            raise ValueError('Could not find biome data in runtime.')
-
         # Prompt for number of candies using fh_getIntegerInput method
         candies = self.fh_getIntegerInput(
             promptMessage='How many candies do you want to add (0 to cancel): ',
@@ -1443,10 +1402,11 @@ class Rogue:
         )
 
         # Update game data with the chosen Pokémon's candy count
-        trainerData["starterData"][pokeEnum.value]["candyCount"] = candies
+        trainerData["starterData"][inputValue.value]["candyCount"] = candies
 
         # Write updated data to JSON
         self.__writeJSONData(trainerData, 'trainer.json')
+        raise OperationSuccessful('Added candies ')
 
     @handle_operation_exceptions
     def f_editBiome(self) -> None:
@@ -1454,7 +1414,9 @@ class Rogue:
         Edits the biome of the game using helper functions for input validation and word completion.
 
         Raises:
-        - None
+        - Exception: If any error occurs during the process due to the decorator.
+        - OperationCancel(), OperationSoftCancel(), ValueError() depending on input due to the helper.
+        - OperationSuccessful(f'Biome updated to {biomeEnum.name}')
 
         Modules Used:
         - .cFormatter: For printing formatted messages to the console, including colorized output.
@@ -1516,7 +1478,6 @@ class Rogue:
         - OperationCancel(), OperationSoftCancel(), ValueError() depending on input due to the helper.
         - OperationSuccessful('Successfully written Pokeballs.')
             - and prints changed items.
-
 
         Modules Used:
         - .cFormatter: For printing formatted messages to the console, including colorized output.
@@ -2043,9 +2004,40 @@ class Rogue:
             if allowSkip and userInput.lower() == 'skip':
                 return 'skip'
             
-            # If no cancel or skip is requested
-            if userInput in choices or (userInput == '0' and softCancel):
-                return choices.get(userInput, '0')
-            
-            # If none above valid 
+            ## Validate the input
+            if userInput in choices:
+                return choices[userInput]
+
+            # Ensure inputValue is a string
+            inputValue = str(userInput).strip().lower()
+
+            if inputValue.isdigit():
+                # Input is an ID
+                enum_member = next((member for member in choices.values() if isinstance(member, Enum) and member.value == int(inputValue)), None)
+            else:
+                # Input is a name
+                enum_member = next((member for member in choices.values() if isinstance(member, Enum) and member.name.lower() == inputValue), None)
+
+            if enum_member is not None:
+                return enum_member
+
+            # If input is not valid
             raise ValueError(f'{userInput}')
+        
+    @handle_operation_exceptions
+    def fh_printEnums(self, enum_type: str) -> None:
+        enums_mapping = {
+            'pokedex': self.pokemon_id_by_name,
+            'biomes': self.biomesByID,
+            'moves': self.moves_by_id,
+            'natures': self.natureData,
+            'vouchers': self.vouchers_data,
+            'natureSlot': self.natureSlot_data,
+        }
+
+        if enum_type not in enums_mapping:
+            raise ValueError(f"Invalid enum_type: {enum_type}. Valid types are: {', '.join(enums_mapping.keys())}")
+
+        enums = enums_mapping[enum_type]
+        formatted_enums = [f'{member.value}: {member.name}' for member in enums]
+        cFormatter.print(Color.WHITE, '\n'.join(formatted_enums))
