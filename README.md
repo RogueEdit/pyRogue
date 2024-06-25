@@ -1,7 +1,9 @@
 # pyRogue
-> ## **pyRogue** is a educational project. 
+> ## **pyRogue** is a **educational** project. 
+<img src="https://img.shields.io/badge/Make_sure_to_mark_with_a-Star_<3-Red">
 
-<img src="https://img.shields.io/badge/Status-Working-green"> <a href="https://discord.gg/kn8fb2GvqY"><img src="https://img.shields.io/badge/Join_Our-Discord-blue"></a> <img src="https://img.shields.io/badge/Make_sure_to_mark_with_a-Star_<3-Red">
+Based on the Source Code of pokerogue.net - https://github.com/pagefaultgames/pokerogue
+> In compliance with Pokerogue's License this project here is also released under AGPL3.
 
 ![Preview Image](.github/previews/main.png)
 ![Preview Image](.github/previews/tool.png)
@@ -18,6 +20,8 @@
 - [Regarding Bans and Limited Accounts](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#regarding-bans-and-limited-accounts)
 
 ## Important foreword
+
+We learned enough about freezing python to binarys so from here on out it will be source code only.
 
 We will not sent you any files or contact you about anything. You can see who contributed and everything regarding us will be only done on GitHub. We will not contact you in any matter or will send you files. There are scammers out there. Here you can read the full source code, compile it from scratch and such or download a VT-checked official release.
 
