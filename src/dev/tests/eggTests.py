@@ -1,8 +1,13 @@
-from typing import Tuple
 import random
+import time
+from typing import List, Dict, Tuple
 
-# Constants from your existing code
-eggConstant: int = 1073741824
+# Constant from game source code
+EGG_SEED: int = 1073741824
+
+# List of possible gacha types & List of possible egg tiers
+GACHA_TYPES: List[str] = ['MoveGacha', 'LegendaryGacha', 'ShinyGacha', 'SAME_SPECIES_EGG', 'EVENT']
+eggTiers: List[str] = ['Common', 'Rare', 'Epic', 'Legendary', 'Manaphy%Old', 'Manaphy%New']
 
 def getIDBoundarys(tier: int) -> Tuple[int, int]:
     """
@@ -18,68 +23,107 @@ def getIDBoundarys(tier: int) -> Tuple[int, int]:
         start, end = getIDBoundarys(2)
     """
     # Calculate the start and end IDs for the given tier
-    start: int = tier * eggConstant
-    end: int = (tier + 1) * eggConstant - 1
+    start: int = tier * EGG_SEED
+    end: int = (tier + 1) * EGG_SEED - 1
     return max(start, 255), end
 
-def generateRandomID(start: int, end: int, manaphy: bool = False) -> int:
+def generateRandomID(start: int, end: int, tier: int) -> int:
     """
-    Get a random ID within the given range.
+    Get a random ID within the given range or modulo 204 for tier 4 (Manaphy).
 
     Args:
         start (int): The start of the ID range.
         end (int): The end of the ID range.
-        manaphy (bool): Whether the ID is for a Manaphy egg.
+        tier (int): The tier index.
 
     Returns:
         int: The random ID.
     """
-    if manaphy:
+    if tier < 4:
+        # Generate a regular random ID within the specified range for tiers 0 to 3
+        result: int = random.randint(start, end)
+        if result % 204 == 0:
+            result -= 1
+        return max(result, 1)
+    elif tier == 4:
+        return random.randrange(start, end + 1, 255)
+    elif tier == 5:
         # Generate a random ID that is divisible by 204 within the specified range
-        return random.randrange(start // 204 * 204, (end // 204 + 1) * 204, 204)
+        id_range_start = start // 204 * 204
+        id_range_end = (end // 204 + 1) * 204 - 1
+        return random.randrange(id_range_start, id_range_end + 1, 204)
+    else:
+        raise ValueError("Invalid tier index. Must be between 0 and 5 inclusive.")
 
-    # Generate a regular random ID within the specified range
-    result: int = random.randint(start, end)
-
-    if result % 204 == 0:
-        result -= 1
-
-    return max(result, 1)
-
-def validate_egg_generation(num_samples: int, isManaphy: bool, tier: int, eggAmount: int) -> int:
+def constructEggs(tier: int, gachaType: str, hatchWaveCount: int, eggAmount: int, isShiny: bool, variantTier: bool) -> List[Dict[str, int]]:
     """
-    Validate the egg ID generation against the criteria.
+    Generate eggs with the given properties.
 
     Args:
-        num_samples (int): Number of samples to generate and validate.
-        isManaphy (bool): Whether the eggs are Manaphy eggs.
-        tier (int): Tier index for the eggs.
-        eggAmount (int): Number of eggs to generate.
+        tier (int): The tier of the eggs.
+        g_type (int): The gacha type.
+        hatch_waves (int): The number of hatch waves.
+        num_eggs (int): The number of eggs to generate.
+        is_shiny (bool): Whether the egg is shiny.
+        hidden_ability (bool): Whether the hidden ability is unlocked.
 
     Returns:
-        int: Number of matches that meet the criteria.
-    """
-    match_count = 0
-    start, end = getIDBoundarys(0 if isManaphy else tier)
+        List[Dict[str, int]]: A list of generated eggs.
 
+    Example:
+        eggs = constructEggs(1, 2, 3, 10, True, False)
+    """
+    isManaphy: bool = tier == 4
+    start, end = getIDBoundarys(0 if isManaphy else tier)
+    
+    eggs: List[Dict[str, int]] = []
     for _ in range(eggAmount):
         eggID: int = generateRandomID(start, end, isManaphy)
+        timestamp: int = int(time.time() * 1000)
+        
+        egg: Dict[str, int] = {
+            'id': eggID,
+            'gachaType': GACHA_TYPES.index(gachaType),
+            'hatchWaves': hatchWaveCount,
+            'timestamp': timestamp,
+            'tier': tier,
+        }
+        if variantTier:
+            egg['variantTier'] = 3
+        if isShiny:
+            egg['isShiny'] = isShiny
+        eggs.append(egg)
+    
+    return eggs
 
-        # Check if the generated ID meets the criteria
-        if eggID % 204 == 0:
-            match_count += 1
+def testEggIDGeneration(tier: int, eggAmount: int = 100):
+    """
+    Test the egg ID generation to ensure IDs are within the expected bounds.
 
-    return match_count
+    Args:
+        tier (int): The tier of the eggs.
+        eggAmount (int): The number of eggs to generate for testing.
 
-if __name__ == "__main__":
-    # Define parameters for validation
-    num_samples = 100
-    isManaphy = False  # Change to True if validating Manaphy eggs
-    tier = 2            # Example tier index for eggs
-    eggAmount = 100     # Number of eggs to generate and validate
+    Returns:
+        None
+    """
+    gachaType = random.choice(GACHA_TYPES)
+    hatchWaveCount = random.randint(1, 10)
+    isShiny = random.choice([True, False])
+    variantTier = random.choice([True, False])
+    
+    eggs = constructEggs(tier, gachaType, hatchWaveCount, eggAmount, isShiny, variantTier)
+    start, end = getIDBoundarys(tier)
+    tierStr = eggTiers[tier] if tier < len(eggTiers) else f"Tier {tier}"
+    for egg in eggs:
+        eggID = egg['id']
+        if not (start <= eggID <= end):
+            print(f"Error: Egg ID {eggID} is out of bounds for tier {tierStr} (expected between {start} and {end})")
+        else:
+            print(f"Egg ID {eggID} is within bounds for tier {tierStr} (between {start} and {end})")
 
-    # Perform validation
-    matches = validate_egg_generation(num_samples, isManaphy, tier, eggAmount)
-
-    # Print results
-    print(f"Out of {num_samples} samples, {matches} matched the criteria.")
+# Test the ID generation for each tier
+for tier in range(len(eggTiers)):
+    print(f"Testing egg ID generation for tier {tier} ({eggTiers[tier]})")
+    testEggIDGeneration(tier)
+    print("\n")

@@ -164,6 +164,7 @@ EGG_SEED: int = 1073741824
 GACHA_TYPES: List[str] = ['MoveGacha', 'LegendaryGacha', 'ShinyGacha', 'SAME_SPECIES_EGG', 'EVENT'],
 eggTiers: List[str] = ['Common', 'Rare', 'Epic', 'Legendary', 'Manaphy']
 
+#From Sourcecode
 def getIDBoundarys(tier: int) -> Tuple[int, int]:
     """
     Get the ID bounds for a given tier.
@@ -195,8 +196,14 @@ def generateRandomID(start: int, end: int, manaphy: bool = False) -> int:
         int: The random ID.
     """
     if manaphy:
-        # Generate a random ID that is divisible by 204 within the specified range
+        # Generate a random ID that is divisible by 204 within the specified range based on tier
         return random.randrange(start // 204 * 204, (end // 204 + 1) * 204, 204)
+        """
+            For better visibility thats whats happening in this oneliner
+            idRangeStart = start // 204 * 204
+            idRangeEnd = (end // 204 + 1) * 204 - 1
+            return random.randrange(idRangeStart, idRangeEnd + 1, 204)
+        """
 
     # Generate a regular random ID within the specified range
     result: int = random.randint(start, end)
