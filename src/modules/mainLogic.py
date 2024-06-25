@@ -310,7 +310,7 @@ class Rogue:
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function __dump_data(): {e}', isLogging=True)
 
-    # TODO: Simplify
+    # TODO IMPORTANT: Simplify
     @limiter.lockout
     def get_trainer_data(self) -> dict:
         """
@@ -346,9 +346,10 @@ class Rogue:
                 response = self._make_request(f'{self.TRAINER_DATA_URL}{self.clientSessionId}')
                 if response:
                     try:
-                        # TODO: zstandart compression
-                        #decompressed_data = self.__decompress_zstd(response)
-                        #data = json.loads(decompressed_data)
+                        # TODO MAYBE: zstandart compression, was in a migration on the server at some point
+                        # but they reverted it, lets keep it so we know already
+                        # decompressed_data = self.__decompress_zstd(response)
+                        # data = json.loads(decompressed_data)
                         data = json.loads(response)
                         self.__writeJSONData(data, 'trainer.json', False)
                         cFormatter.print(Color.GREEN, 'Successfully fetched trainer data.')
@@ -376,7 +377,7 @@ class Rogue:
             except requests.RequestException as e:
                 cFormatter.print(Color.DEBUG, f'Error fetching trainer data. Please restart the tool. \n {e}', isLogging=True)
 
-    # TODO: Simplify
+    # TODO IMPORTNAT: Simplify
     def getSlotData(self, slot: int = 1) -> Optional[Dict[str, Any]]:
         """
         Fetch gamesave data from the API for a specified slot.
@@ -409,7 +410,8 @@ class Rogue:
                 response = self._make_request(f'{self.GAMESAVE_SLOT_URL}{slot-1}&clientSessionId={self.clientSessionId}')
                 if response:
                     try:
-                        # TODO: zstandart compression
+                        # TODO MAYBE: zstandart compression, was in a migration on the server at some point
+                        # but they reverted it, lets keep it so we know already
                         #decompressed_data = self.__decompress_zstd(response)
                         #data = json.loads(decompressed_data)
                         data = json.loads(response)
@@ -679,7 +681,7 @@ class Rogue:
                 break
 
 
-    # TODO: Simplify
+    # TODO IMPORTANT: Simplify
     @limiter.lockout
     def update_all(self) -> None:
         """
@@ -729,7 +731,8 @@ class Rogue:
             payload = {'clientSessionId': self.clientSessionId, 'session': game_data, "sessionSlotId": slot - 1,
                        'system': trainer_data}
             
-            # TODO: zstandart compression
+            # TODO MAYBE: zstandart compression, was in a migration on the server at some point
+            # but they reverted it, lets keep it so we know already
             #raw_payload = {'clientSessionId': self.clientSessionId, 'session': game_data, "sessionSlotId": slot - 1, 'system': trainer_data}
             #payload = self.__compress_zstd(payload)
             if self.useScripts:
@@ -1181,7 +1184,7 @@ class Rogue:
             
                 game_data['party'][party_num]['moveset'][move_slot]['moveId'] = move
             else:
-                self.print_natureSlot()
+                self.p_natureSlots()
 
                 natureSlot_completer: WordCompleter = WordCompleter(self.natureSlot_data.__members__.keys(), ignore_case=True)
                 cFormatter.print(Color.INFO, 'Write the name of the nature, it will recommend for auto-completion.')
@@ -1309,7 +1312,7 @@ class Rogue:
                     voucher_unlocks[voucher] = random_time
                 trainer_data['voucherUnlocks'] = voucher_unlocks
             else:
-                self.print_vouchers()
+                self.p_vouchers()
                 vouchers_completer: WordCompleter = WordCompleter(self.vouchers_data.__members__.keys(), ignore_case=True)
                 cFormatter.print(Color.INFO, 'Write the name of the voucher, it will recommend for auto-completion.')
             
@@ -1327,7 +1330,7 @@ class Rogue:
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function edit_vouchers(): {e}', isLogging=True)
 
-    def print_pokedex(self) -> None:
+    def p_pokeDex(self) -> None:
         """
         Prints all Pokemon available in the game.
 
@@ -1346,38 +1349,13 @@ class Rogue:
             >>> example_instance.print_pokedex()
 
         """
-        try:
-            pokemons = [f'{member.value}: {member.name}' for member in self.pokemon_id_by_name]
-            cFormatter.print(Color.WHITE, '\n'.join(pokemons))
-        
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function print_pokedex(): {e}', isLogging=True)
+        pokemons = [f'{member.value}: {member.name}' for member in self.pokemon_id_by_name]
+        cFormatter.print(Color.WHITE, '\n'.join(pokemons))
 
     def f_printBiomes(self) -> None:
-        """
-        Prints all biomes available in the game.
-
-        Raises:
-        - None
-
-        Modules Used:
-        - .cFormatter: For printing formatted messages to the console, including colorized output.
-
-        Workflow:
-        1. Retrieves biome data.
-        2. Prints out the list of biomes available in the game.
-
-        Usage Example:
-            >>> example_instance = ExampleClass()
-            >>> example_instance.print_biomes()
-
-        """
-        try:
-            biomes = [f'{member.value}: {member.name}' for member in self.biomesByID]
-            cFormatter.print(Color.WHITE, '\n'.join(biomes))
+        biomes = [f'{member.value}: {member.name}' for member in self.biomesByID]
+        cFormatter.print(Color.WHITE, '\n'.join(biomes))
         
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function print_biomes(): {e}', isLogging=True)
 
     def print_moves(self) -> None:
         """
@@ -1431,7 +1409,7 @@ class Rogue:
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function print_natures(): {e}', isLogging=True)
     
-    def print_vouchers(self) -> None:
+    def p_vouchers(self) -> None:
         """
         Prints all vouchers available in the game.
 
@@ -1457,7 +1435,7 @@ class Rogue:
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function print_vouchers(): {e}', isLogging=True)
 
-    def print_natureSlot(self) -> None:
+    def p_natureSlots(self) -> None:
         """
         Prints all natureSlot IDs available in the game.
 
@@ -1476,12 +1454,9 @@ class Rogue:
             >>> example_instance.print_natureSlot()
 
         """
-        try:
-            natureSlot = [f'{member.value}: {member.name}' for member in self.natureSlot_data]
-            cFormatter.print(Color.WHITE, '\n'.join(natureSlot))
-        
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function print_natureSlot(): {e}', isLogging=True)
+        natureSlot = [f'{member.value}: {member.name}' for member in self.natureSlot_data]
+        cFormatter.print(Color.WHITE, '\n'.join(natureSlot))
+
 
     @handle_operation_exceptions
     def f_addCandies(self) -> None:
@@ -1515,10 +1490,12 @@ class Rogue:
 
         inputValue = self.fh_getCompleterInput(
             promptMessage='Choose which pokemon: ',
-            choices={**{member.name.lower(): member for member in self.appData.pokemonIDByName}, **{str(member.value): member for member in self.appData.pokemonIDByName}},
+            choices={**{member.name.lower(): member for member in self.appData.pokemonIDByName}, 
+                     **{str(member.value): member for member in self.appData.pokemonIDByName}},
             zeroCancel=False
         )
 
+        # TODO IMPORTANT: Put in a function
         # Ensure inputValue is a string
         if isinstance(inputValue, self.appData.pokemonIDByName):
             inputValue = inputValue.name.lower()
@@ -1544,7 +1521,7 @@ class Rogue:
         )
 
         # Update game data with the chosen Pokémon's candy count
-        trainerData['starterData'][pokeEnum.value]['candyCount'] = candies
+        trainerData["starterData"][pokeEnum.value]["candyCount"] = candies
 
         # Write updated data to JSON
         self.__writeJSONData(trainerData, 'trainer.json')
@@ -1581,7 +1558,8 @@ class Rogue:
 
         inputValue = self.fh_getCompleterInput(
             promptMessage='Choose which Biome you like. You can either type the ID or Name.',
-            choices={**{member.name.lower(): member for member in self.appData.biomesByID}, **{str(member.value): member for member in self.appData.biomesByID}},
+            choices={**{member.name.lower(): member for member in self.appData.biomesByID}, 
+                     **{str(member.value): member for member in self.appData.biomesByID}},
             zeroCancel=False
         )
 
@@ -1648,7 +1626,6 @@ class Rogue:
             currentAmount = gameData.get('pokeballCounts', {}).get(key, '0')
             prompt = f'How many {formattedName}? (Currently have {currentAmount}): '
             maxBound = 999
-
             try:
                 while True:
                     value = self.fh_getIntegerInput(prompt, 0, maxBound, softCancel=True, allowSkip=True)
@@ -1751,9 +1728,6 @@ class Rogue:
         maxAmount = 99 - currentAmount if userInput == '2' else 99
 
         count = int(self.fh_getIntegerInput('How many eggs do you want to generate?', 0, maxAmount, zeroCancel=True))
-        if count == 0:
-            cFormatter.print(Color.CRITICAL, 'No eggs to generate. Operation cancelled.')
-            return
 
         tier = int(self.fh_getChoiceInput(
             'What tier should the eggs have?',
@@ -1984,6 +1958,7 @@ class Rogue:
         edit = ModifierEditor()
         edit.m_itemMenuPresent(self.slot)
 
+    # TODO VERY IMPORTANT
     @handle_operation_exceptions
     def f_changeSaveSlot(self):
         newSlot = int(input('Which save-slot you want to change to?: '))
