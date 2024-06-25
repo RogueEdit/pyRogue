@@ -29,6 +29,7 @@ from datetime import datetime, timedelta
 import requests
 from utilities import cFormatter, Color
 
+debug: bool = False
 version: str = 'v0.3.3-wip'
 title: str = f'<(^.^(< pyRogue {version} >)^.^)>'
 owner: str = 'rogueEdit'
@@ -158,6 +159,7 @@ def f_printWelcomeText() -> None:
     cFormatter.print(Color.BRIGHT_MAGENTA, '1: Using no browser with requests.    Reliability 6/10')
     cFormatter.print(Color.BRIGHT_MAGENTA, '2: Using own browser with requests.   Reliability 7/10')
     cFormatter.print(Color.BRIGHT_MAGENTA, '3: Using own browser with JavaScript. Reliability 9/10')
+    cFormatter.print(Color.BRIGHT_MAGENTA, '4: Just edit an existing trainer.json')
 
 def f_printHelp() -> None:
     """

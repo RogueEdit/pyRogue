@@ -64,7 +64,7 @@ Modules/Librarys used and for what purpose exactly in each function:
 - prompt_toolkit: Building interactive command-line interfaces for user interactions.
 """
 # Import custom Exceptions
-from modules.handler import handle_operation_exceptions, OperationError, OperationSuccessful, OperationCancel, PropagateResponse, CustomJSONDecodeError  # noqa: F401
+from modules.handler import handle_operation_exceptions, OperationError, OperationSuccessful, OperationCancel, PropagateResponse, OperationSoftCancel  # noqa: F401
 from modules.handler import handle_http_exceptions, HTTPEmptyResponse  # noqa: F401
 
 from modules import handle_error_response, HeaderGenerator, config
@@ -86,7 +86,7 @@ from prompt_toolkit.completion import WordCompleter
 from sys import exit
 import re
 #import zstandard as zstd
-from colorama import Fore, Style
+from colorama import Style
 limiter = Limiter(lockout_period=40, timestamp_file='./data/extra.json')
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -111,7 +111,7 @@ class Rogue:
     UPDATE_ALL_URL = 'https://api.pokerogue.net/savedata/updateall'
     LOGOUT_URL = 'https://api.pokerogue.net/account/logout'
 
-    def __init__(self, session: requests.Session, auth_token: str, clientSessionId: str = None, driver: dict = None, useScripts: Optional[bool] = None) -> None:
+    def __init__(self, session: requests.Session, auth_token: str, clientSessionId: str = None, driver: dict = None, useScripts: Optional[bool] = None, editOffline: bool=False) -> None:
         """
         Initializes the Rogue class instance.
 
@@ -156,7 +156,7 @@ class Rogue:
         self.data_dir = config.dataDirectory
 
         self.pokemon_id_by_name, self.biomesByID, self.moves_by_id, self.natureData, self.vouchers_data, self.natureSlot_data = self.appData.f_convertToEnums()
-
+        self.editOffline = editOffline
         try:
             with open(f'{self.data_dir}/extra.json') as f:
                 self.extra_data = json.load(f)
@@ -295,12 +295,17 @@ class Rogue:
                 self.slot = slot
                 if self.slot > 5 or self.slot < 1:
                     cFormatter.print(Color.INFO, 'Invalid input. Slot number must be between 1 and 5.')
+            if self.editOffline:
+                gameData = self.__loadDataFromJSON('trainer.json')
+                slotData = self.__loadDataFromJSON(f'slot_{slot}.json')
+                self.trainerId = gameData.get('trainerId')
+                self.secretId = gameData.get('secretId')
+            else:
+                gameData = self.get_trainer_data()
+                slotData = self.getSlotData(slot)
 
-            trainer_data = self.get_trainer_data()
-            game_data = self.getSlotData(slot)
-
-            if game_data and trainer_data:
-                self.create_backup()
+            if slotData and gameData:
+                self.f_createBackup()
 
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function __dump_data(): {e}', isLogging=True)
@@ -524,8 +529,7 @@ class Rogue:
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function __load_data(): {e}', isLogging=True)
 
-
-    def create_backup(self) -> None:
+    def f_createBackup(self, offline: bool = False) -> None:
         """
         Create a backup of JSON files.
 
@@ -538,7 +542,7 @@ class Rogue:
         :params: None
 
         Usage Example:
-            instance.create_backup()
+            instance.f_createBackup()
 
         Output Example:
             # Output: backup/backup_{trainerid}_{timestamp}.json
@@ -554,28 +558,28 @@ class Rogue:
         backup_dir =  config.backupDirectory
         if not os.path.exists(backup_dir):
             os.makedirs(backup_dir)
-        try:
-            for file in os.listdir('.'):
-                if file.endswith('.json'):
-                    with open(file, 'r') as f:
-                        data = json.load(f)
-                    trainer_id = data.get('trainerId')
-                    if trainer_id is not None:
-                        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-                        base_filename = f'base_{trainer_id}.json'
-                        base_filepath = os.path.join(backup_dir, base_filename)
 
-                        if os.path.exists(base_filepath):
-                            backup_filename = f'backup_{trainer_id}_{timestamp}.json'
-                            backup_filepath = os.path.join(backup_dir, backup_filename)
-                            shutil.copy(file, backup_filepath)
-                        else:
-                            shutil.copy(file, base_filepath)
-                        cFormatter.print(Color.GREEN, 'Backup created.')
-        except Exception as e:
-            cFormatter.print(Color.WARNING, f'Error in function create_backup(): {e}')
+        for file in os.listdir('.'):
+            if file.endswith('.json'):
+                with open(file, 'r') as f:
+                    data = json.load(f)
+                trainer_id = data.get('trainerId')
+                if trainer_id is not None:
+                    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                    
+                    base_filename = f'base_{trainer_id}.json'
+                    base_filepath = os.path.join(backup_dir, base_filename)
 
-    def restore_backup(self) -> None:
+                    if os.path.exists(base_filepath):
+                        backup_filename = f'backup_{trainer_id}_{timestamp}.json'
+                        backup_filepath = os.path.join(backup_dir, backup_filename)
+                        shutil.copy(file, backup_filepath)
+                    else:
+                        shutil.copy(file, base_filepath)
+                    cFormatter.print(Color.GREEN, 'Backup created.')
+
+    @handle_operation_exceptions
+    def f_restoreBackup(self) -> None:
         """
         Restore a backup of JSON files and update the timestamp in trainer.json.
 
@@ -606,76 +610,74 @@ class Rogue:
         - shutil: For copying files from the backup directory to the target file.
         - datetime: For generating timestamps and updating timestamps in the target file.
         """
+        backupDirectory = config.backupDirectory
+        files = os.listdir(backupDirectory)
 
-        try:
-            backup_dir = config.backupDirectory
-            files = os.listdir(backup_dir)
+        # Filter and sort files that match trainerId
+        regexPattern = f'_{self.trainerId}'
+        baseFile = f'base{regexPattern}.json'
+        backupFilesPattern = sorted(
+            (f for f in files if re.match(rf'backup{regexPattern}(_slot_\d+)?_\d{{6,8}}(_\d{{6}})?\.json', f)),
+            key=lambda x: (re.findall(r'\d+', x)[0], re.findall(r'\d{6,8}(_\d{6})?', x)[0])
+        )
 
-            # Filter and sort files that match trainerId
-            trainer_id_pattern = f'_{self.trainerId}'
-            base_file = f'base{trainer_id_pattern}.json'
-            backup_files = sorted(
-                (f for f in files if re.match(rf'backup{trainer_id_pattern}(_slot_\d+)?_\d{{6,8}}(_\d{{6}})?\.json', f)),
-                key=lambda x: (re.findall(r'\d+', x)[0], re.findall(r'\d{6,8}(_\d{6})?', x)[0])
-            )
+        # Include the base file at the top of the list if it exists
+        existingFiles = [baseFile] if baseFile in files else []
+        existingFiles += backupFilesPattern
 
-            # Include the base file at the top of the list if it exists
-            display_files = [base_file] if base_file in files else []
-            display_files += backup_files
+        if not existingFiles:
+            cFormatter.print(Color.WARNING, 'No backup files found for your trainer ID.')
+            return
 
-            if not display_files:
-                cFormatter.print(Color.WARNING, 'No backup files found for your trainer ID.')
-                return
+        # Displaying sorted list with numbers
+        for idx, file in enumerate(existingFiles, 1):
+            sidenote = '        <- Created on first edit' if file.startswith('base_') else ''
+            print(f'{idx}: {file} {sidenote}')
 
-            # Displaying sorted list with numbers
-            for idx, file in enumerate(display_files, 1):
-                sidenote = '        <- Created on first edit' if file.startswith('base_') else ''
-                print(f'{idx}: {file} {sidenote}')
+        # Getting user's choice
+        while True:
+            choice = int(self.fh_getIntegerInput(
+                promptMessage='Enter the number of the file you want to restore', 
+                minBound=1, maxBound=len(existingFiles),
+                zeroCancel=True
+            ))
+            if choice == 0:
+                raise OperationCancel()
+            if 1 <= choice <= len(existingFiles):
+                chosenFile = existingFiles[choice - 1]
+                chosenFilepath = os.path.join(backupDirectory, chosenFile)
 
-            # Getting user's choice
-            while True:
-                try:
-                    choice = int(input('Enter the number of the file you want to restore: '))
-                    if 1 <= choice <= len(display_files):
-                        chosen_file = display_files[choice - 1]
-                        chosen_filepath = os.path.join(backup_dir, chosen_file)
+                # Determine the output filepath
+                parentDirectory = os.path.abspath(os.path.join(backupDirectory, os.pardir))
 
-                        # Determine the output filepath
-                        parent_dir = os.path.abspath(os.path.join(backup_dir, os.pardir))
+                # If the chosen file has "slot_x" in its name, determine the slot number and the corresponding target file
+                matchSlot = re.search(r'_slot_(\d+)', chosenFile)
+                if matchSlot:
+                    dynSlot = matchSlot.group(1)
+                    outputFilename = f'slot_{dynSlot}.json'
+                else:
+                    outputFilename = 'trainer.json'
 
-                        # If the chosen file has "slot_x" in its name, determine the slot number and the corresponding target file
-                        slot_match = re.search(r'_slot_(\d+)', chosen_file)
-                        if slot_match:
-                            slot_number = slot_match.group(1)
-                            output_filename = f'slot_{slot_number}.json'
-                        else:
-                            output_filename = 'trainer.json'
+                outputFilepath = os.path.join(parentDirectory, outputFilename)
 
-                        output_filepath = os.path.join(parent_dir, output_filename)
+                # Copy the chosen file to the output filepath
+                shutil.copyfile(chosenFilepath, outputFilepath)
 
-                        # Copy the chosen file to the output filepath
-                        shutil.copyfile(chosen_filepath, output_filepath)
+                # Read the restored file
+                with open(outputFilepath, 'r') as file:
+                    data = json.load(file)
 
-                        # Read the restored file
-                        with open(output_filepath, 'r') as file:
-                            data = json.load(file)
+                # Update the timestamp
+                curTimestamp = int(datetime.now().timestamp() * 1000)
+                data['timestamp'] = curTimestamp
 
-                        # Update the timestamp
-                        current_timestamp = int(datetime.now().timestamp() * 1000)
-                        data['timestamp'] = current_timestamp
+                # Write the updated data back to the file
+                with open(outputFilepath, 'w') as file:
+                    json.dump(data, file, indent=4)
 
-                        # Write the updated data back to the file
-                        with open(output_filepath, 'w') as file:
-                            json.dump(data, file, indent=4)
+                cFormatter.print(Color.GREEN, 'Data restored and timestamp updated.')
+                break
 
-                        cFormatter.print(Color.GREEN, 'Data restored and timestamp updated.')
-                        break
-                    else:
-                        cFormatter.print(Color.WARNING, 'Invalid choice. Please enter a number within range.')
-                except ValueError:
-                    cFormatter.print(Color.GREEN, 'Invalid choice. Please enter a valid number.')
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function restore_backup(): {e}', isLogging=True)
 
     # TODO: Simplify
     @limiter.lockout
@@ -1482,7 +1484,7 @@ class Rogue:
             cFormatter.print(Color.CRITICAL, f'Error in function print_natureSlot(): {e}', isLogging=True)
 
     @handle_operation_exceptions
-    def f_addCandies(self, dexId: Optional[str] = None) -> None:
+    def f_addCandies(self) -> None:
         """
         Adds candies to a Pokémon.
 
@@ -1506,35 +1508,46 @@ class Rogue:
             >>> example_instance.f_addCandies('pikachu')
 
         """
-        try:
-            trainerData = self.__loadDataFromJSON('trainer.json')
-            
-            if not dexId:
-                # Prepare bidirectional mapping for Pokemon names and IDs
-                pokemonNames = {name.lower(): id_ for name, id_ in self.appData.pokemonIDByName.items()}
-                pokemonIDs = {id_: name for name, id_ in self.appData.pokemonIDByName.items()}
-                
-                # Combine both mappings into a single dictionary for input choices
-                choices = {**pokemonNames, **pokemonIDs}
-                
-                # Prompt user for Pokemon name or ID with auto-completion
-                promptMessage = 'Enter Pokemon (Either Name or ID): '
-                dexId = self.fh_getCompleterInput(promptMessage, choices)
-                
-                if dexId == 'cancel':
-                    return
-                
-                # If the input is a Pokemon name, convert it to ID
-                if dexId.lower() in pokemonNames:
-                    dexId = pokemonNames[dexId.lower()]
 
-            candies = int(input('How many candies you want on your pokemon: '))
-            trainerData['starterData'][dexId]['candyCount'] = candies
+        trainerData = self.__loadDataFromJSON('trainer.json')
 
-            self.__writeJSONData(trainerData, 'trainer.json')
-        
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function f_addCandies(): {e}', isLogging=True)
+        cFormatter.print(Color.DEBUG, 'Write the name of the Pokémon or its ID.')
+
+        inputValue = self.fh_getCompleterInput(
+            promptMessage='Choose which pokemon: ',
+            choices={**{member.name.lower(): member for member in self.appData.pokemonIDByName}, **{str(member.value): member for member in self.appData.pokemonIDByName}},
+            zeroCancel=False
+        )
+
+        # Ensure inputValue is a string
+        if isinstance(inputValue, self.appData.pokemonIDByName):
+            inputValue = inputValue.name.lower()
+        else:
+            inputValue = str(inputValue).strip().lower()
+
+        if inputValue.isdigit():
+            # Input is an ID
+            pokeEnum = next((member for member in self.appData.pokemonIDByName if member.value == int(inputValue)), None)
+        else:
+            # Input is a name
+            pokeEnum = next((member for member in self.appData.pokemonIDByName if member.name.lower() == inputValue), None)
+
+        if pokeEnum is None:
+            raise ValueError('Could not find biome data in runtime.')
+
+        # Prompt for number of candies using fh_getIntegerInput method
+        candies = self.fh_getIntegerInput(
+            promptMessage='How many candies do you want to add (0 to cancel): ',
+            minBound=0,
+            maxBound=999,  # Adjust maximum candies as needed
+            zeroCancel=True
+        )
+
+        # Update game data with the chosen Pokémon's candy count
+        trainerData['starterData'][pokeEnum.value]['candyCount'] = candies
+
+        # Write updated data to JSON
+        self.__writeJSONData(trainerData, 'trainer.json')
 
     @handle_operation_exceptions
     def f_editBiome(self) -> None:
@@ -1565,45 +1578,41 @@ class Rogue:
 
         # Prompt user for biome input
         self.f_printBiomes()
-        while True:
-            try:
-                inputValue = self.fh_getCompleterInput(
-                    promptMessage='Choose which Biome you like. You can either type the ID or Name.',
-                    choices={**{member.name.lower(): member for member in self.appData.biomesByID}, **{str(member.value): member for member in self.appData.biomesByID}},
-                    zeroCancel=False
-                )
 
-                # Ensure inputValue is a string
-                if isinstance(inputValue, self.appData.biomesByID):
-                    inputValue = inputValue.name.lower()
-                else:
-                    inputValue = str(inputValue).strip().lower()
+        inputValue = self.fh_getCompleterInput(
+            promptMessage='Choose which Biome you like. You can either type the ID or Name.',
+            choices={**{member.name.lower(): member for member in self.appData.biomesByID}, **{str(member.value): member for member in self.appData.biomesByID}},
+            zeroCancel=False
+        )
 
-                if inputValue.isdigit():
-                    # Input is an ID
-                    biomeEnum = next((member for member in self.appData.biomesByID if member.value == int(inputValue)), None)
-                else:
-                    # Input is a name
-                    biomeEnum = next((member for member in self.appData.biomesByID if member.name.lower() == inputValue), None)
+        # Ensure inputValue is a string
+        if isinstance(inputValue, self.appData.biomesByID):
+            inputValue = inputValue.name.lower()
+        else:
+            inputValue = str(inputValue).strip().lower()
 
-                if biomeEnum is None:
-                    raise ValueError('Could not find biome data in runtime.')
+        if inputValue.isdigit():
+            # Input is an ID
+            biomeEnum = next((member for member in self.appData.biomesByID if member.value == int(inputValue)), None)
+        else:
+            # Input is a name
+            biomeEnum = next((member for member in self.appData.biomesByID if member.name.lower() == inputValue), None)
 
-                # Update game data with the chosen biome ID
-                gameData["arena"]["biome"] = biomeEnum.value
-                self.__writeJSONData(gameData, f'slot_{self.slot}.json')
-                raise OperationSuccessful(f'Biome updated to {biomeEnum.name}')
+        if biomeEnum is None:
+            raise ValueError('Could not find biome data in runtime.')
+
+        # Update game data with the chosen biome ID
+        gameData["arena"]["biome"] = biomeEnum.value
+        self.__writeJSONData(gameData, f'slot_{self.slot}.json')
+        raise OperationSuccessful(f'Biome updated to {biomeEnum.name}')
             
-            except (ValueError, StopIteration):
-                cFormatter.print(Color.WARNING, f'Invalid input "{inputValue}". Please enter a valid biome name or ID.')
-
     @handle_operation_exceptions
     def f_editPokeballs(self) -> None:
         """
         Edits the number of pokeballs in the game using helper functions for input validation.
 
         Raises:
-        - None
+        - raise OperationSuccessful('Succesfully written Pokeballs.')
 
         Modules Used:
         - .cFormatter: For printing formatted messages to the console, including colorized output.
@@ -1623,42 +1632,47 @@ class Rogue:
             cFormatter.print(Color.CRITICAL, 'Cannot edit this property on daily runs!')
             return
 
-        pokeball_types = {
+        pokeballTypes = {
             '0': 'Pokeball',
             '1': 'Great Balls',
             '2': 'Ultra Balls',
             '3': 'Rogue Balls',
             '4': 'Master Balls'
         }
-        for key, name in pokeball_types.items():
-            formattedName = f'{Fore.LIGHTYELLOW_EX}{name}{Style.RESET_ALL}'
-            currentAmount = gameData.get('pokeballCounts', {}).get(key, '0')
-            prompt = f'How many {formattedName}? (Currently have {currentAmount})(0: Exit | 1-999 | "skip")?: '
-            maxBound = 999
-            while True:
-                try:
-                    userInput = input(prompt).strip()
-                    if userInput.lower() == 'skip':
-                        cFormatter.print(Color.YELLOW, f'Skipping {name}...')
-                        break
-                    elif userInput.isdigit():
-                        if userInput == '0':
-                            cFormatter.print(Color.DEBUG, 'Operation cancelled...')
-                            break
-                        value = int(userInput)
-                        if 0 <= value <= maxBound:
-                            gameData.setdefault('pokeballCounts', {})[key] = value
-                            cFormatter.print(Color.DEBUG, f'Queued {value} {name}.')
-                            break
-                        else:
-                            cFormatter.print(Color.WARNING, f'Invalid input. Please enter a number between 0 and {maxBound}.')
-                    else:
-                        cFormatter.print(Color.WARNING, 'Invalid input. Please enter a valid number or "skip".')
-                except ValueError:
-                    cFormatter.print(Color.WARNING, 'Invalid input. Please enter a valid number or "skip".')
 
-        self.__writeJSONData(gameData, f'slot_{self.slot}.json')
-        raise OperationSuccessful('Succesfully written Pokeballs.')
+        changed = False
+        changedItems = []
+
+        for key, name in pokeballTypes.items():
+            formattedName = f'{Color.INFO}{name}{Style.RESET_ALL}'
+            currentAmount = gameData.get('pokeballCounts', {}).get(key, '0')
+            prompt = f'How many {formattedName}? (Currently have {currentAmount}): '
+            maxBound = 999
+
+            try:
+                while True:
+                    value = self.fh_getIntegerInput(prompt, 0, maxBound, softCancel=True, allowSkip=True)
+                    if value == '0':
+                        raise OperationSoftCancel()  # Raise OperationSoftCancel to continue the loop
+                    elif value == 'skip':
+                        cFormatter.print(Color.YELLOW, f'Skipping {name}...')
+                        break  # Break out of the inner loop to proceed to the next item
+                    else:
+                        gameData.setdefault('pokeballCounts', {})[key] = int(value)
+                        changedItems.append(f"{name}: {value}")
+                        changed = True
+                        cFormatter.print(Color.DEBUG, f'Queued {value} {name}.')
+                        break  # Break out of the inner loop after successful input
+            except OperationSoftCancel:
+                break
+        if changed:
+            self.__writeJSONData(gameData, f'slot_{self.slot}.json')
+            cFormatter.print(Color.YELLOW, 'Changes saved:')
+            for item in changedItems:
+                cFormatter.print(Color.INFO, item)
+            raise OperationSuccessful('Successfully written Pokeballs.')
+        else:
+            cFormatter.print(Color.YELLOW, 'No changes made.')
 
     @handle_operation_exceptions
     def f_editMoney(self) -> None:
@@ -1680,19 +1694,18 @@ class Rogue:
             >>> example_instance = ExampleClass()
             >>> example_instance.f_editMoney()
         """
+        print('test')
+        saveData = self.__loadDataFromJSON(f'slot_{self.slot}.json')
 
-        gameData = self.__loadDataFromJSON(f'slot_{self.slot}.json')
-
-        if gameData["gameMode"] == 3:
+        if saveData["gameMode"] == 3:
             cFormatter.print(Color.CRITICAL, 'Cannot edit this property on daily runs!')
             return
 
         prompt = 'How many Poke-Dollars do you want? '
         choice = self.fh_getIntegerInput(prompt, 0, float('inf'), zeroCancel=True)
-        if choice == 0:
-            raise OperationCancel()
-        gameData["money"] = choice
-        self.__writeJSONData(gameData, f'slot_{self.slot}.json')
+        saveData["money"] = choice
+        self.__writeJSONData(saveData, f'slot_{self.slot}.json')
+        raise OperationSuccessful(f'Written {choice} as money value to to local .json.')
 
     @handle_operation_exceptions
     def f_addEggsGenerator(self) -> None:
@@ -1737,7 +1750,7 @@ class Rogue:
 
         maxAmount = 99 - currentAmount if userInput == '2' else 99
 
-        count = self.fh_getIntegerInput('How many eggs do you want to generate?', 0, maxAmount, zeroCancel=True)
+        count = int(self.fh_getIntegerInput('How many eggs do you want to generate?', 0, maxAmount, zeroCancel=True))
         if count == 0:
             cFormatter.print(Color.CRITICAL, 'No eggs to generate. Operation cancelled.')
             return
@@ -1746,7 +1759,7 @@ class Rogue:
             'What tier should the eggs have?',
             {'1': 'Common', '2': 'Rare', '3': 'Epic', '4': 'Legendary', '5': 'Manaphy'},
             zeroCancel=True
-        )) - 1  # Adjusting for 0-based index
+        )) - 1
 
         gachaType = int(self.fh_getChoiceInput(
             'What gacha type do you want to have?',
@@ -1756,7 +1769,7 @@ class Rogue:
         hatchWaves = self.fh_getIntegerInput('After how many waves should they hatch?', 0, 100, zeroCancel=True)
         
         # Get hidden ability preference as boolean
-        isShiny: bool = self.fh_getChoiceInput('Do you want the hidden ability to be unlocked?', {'1': 'Yes', '2': 'No'}, zeroCancel=True) == '1'
+        isShiny: bool = self.fh_getChoiceInput('Do you want it to be shiny?', {'1': 'Yes', '2': 'No'}, zeroCancel=True) == '1'
 
         # Get hidden ability preference as boolean
         variantTier: bool = self.fh_getChoiceInput('Do you want the hidden ability to be unlocked?', {'1': 'Yes', '2': 'No'}, zeroCancel=True) == '1'
@@ -1771,9 +1784,6 @@ class Rogue:
         self.__writeJSONData(trainerData, 'trainer.json')
         raise OperationSuccessful(f'{count} eggs successfully generated.')
 
-
-
-    
     @handle_operation_exceptions
     def f_unlockAllCombined(self) -> None:
         self.f_editGamemodes()
@@ -1806,17 +1816,17 @@ class Rogue:
             >>> example_instance = ExampleClass()
             >>> example_instance.f_editAccountStats()
         """
-        trainerData = self.__loadDataFromJSON('trainer.json')
+        gameData = self.__loadDataFromJSON('trainer.json')
 
         encounters = random.randint(100000, 200000)
-        caught = encounters / 25
+        caught = round(encounters / 25)
 
         keysToUpdate = {
             'battles': encounters,
             'classicSessionsPlayed': random.randint(2500, 10000),
             'dailyRunSessionsPlayed': random.randint(250, 1000),
             'dailyRunSessionsWon': random.randint(50, 150),
-            'eggsPulled': encounters / 50,
+            'eggsPulled': round(encounters / 50),
             'endlessSessionsPlayed': random.randint(100, 300),
             'epicEggsPulled': random.randint(50, 100),
             'highestDamage': random.randint(10000, 12000),
@@ -1840,7 +1850,7 @@ class Rogue:
             'rareEggsPulled': random.randint(150, 250),
             'ribbonsOwned': random.randint(600, 1000),
             'sessionsWon': random.randint(50, 100),
-            'shinyPokemonCaught': caught / 64,
+            'shinyPokemonCaught': round(caught / 64),
             'shinyPokemonHatched': random.randint(70, 150),
             'shinyPokemonSeen': random.randint(50, 150),
             'subLegendaryPokemonCaught': random.randint(10, 100),
@@ -1857,37 +1867,33 @@ class Rogue:
 
         action = self.fh_getChoiceInput('Choose which attribute to modify. You can type either ID or Name.', choices, renderMenu=True, zeroCancel=True)
 
+        changed = False
+        changedItems = []
+        
         if action == 'random':
             for key, value in keysToUpdate.items():
-                trainerData["gameStats"][key] = value
-                cFormatter.print(Color.DEBUG, f"Updated {key} with value {value}")
+                changedItems.append(f"{key}: {value}")
+                gameData["gameStats"][key] = value
+                changed = True
 
         elif action == 'manual':
             changed = False
+            optionList = {str(index + 1): key for index, key in enumerate(keysToUpdate.keys())}
+            nameToKey = {key.lower(): key for key in keysToUpdate.keys()}
+
+            menuDisplay = "\n".join([f"{index}: {key} ({gameData['gameStats'].get(key, 0)})" for index, key in optionList.items()])
+            cFormatter.print(Color.INFO, menuDisplay)
             while True:
-                optionList = {str(index + 1): key for index, key in enumerate(keysToUpdate.keys())}
-                nameToKey = {key.lower(): key for key in keysToUpdate.keys()}
-
-                menuDisplay = "\n".join([f"{index}: {key} ({trainerData['gameStats'].get(key, 0)})" for index, key in optionList.items()])
-                cFormatter.print(Color.INFO, menuDisplay)
-
                 try:
+
                     inputValue = self.fh_getCompleterInput(
                         'Choose attribute to edit:',
                         {**optionList, **nameToKey},
-                        zeroCancel=True
+                        softCancel=True
                     ).lower()
-
 
                     if isinstance(inputValue, str):
                         inputValue = inputValue.strip().lower()
-
-                    if inputValue == '0':
-                        if changed:
-                            cFormatter.print(Color.INFO, 'Cancelling and saving changes.')
-                        else:
-                            cFormatter.print(Color.INFO, 'Cancelling...')
-                        break
 
                     if inputValue.isdigit():
                         keyToEdit = next((key for index, key in optionList.items() if index == inputValue), None)
@@ -1897,36 +1903,38 @@ class Rogue:
                     if keyToEdit is None:
                         raise ValueError('Could not find attribute data in runtime.')
 
-                    promptMessage = f'Enter new value for {keyToEdit} (Current: {trainerData["gameStats"].get(keyToEdit, 0)}): '
+                    promptMessage = f'Enter new value for {keyToEdit} (Current: {gameData["gameStats"].get(keyToEdit, 0)}): '
                     newValue = self.fh_getIntegerInput(promptMessage, 0, 999999, softCancel=True)
 
-                    if newValue == '0':
-                        cFormatter.print(Color.INFO, 'Cancelling and saving changes.') ############
-                        break
-
-                    trainerData["gameStats"][keyToEdit] = newValue
+                    gameData["gameStats"][keyToEdit] = newValue
+                    changedItems.append(f"{keyToEdit}: {newValue}")
                     changed = True
-                    cFormatter.print(Color.GREEN, f'{keyToEdit} updated successfully.')
-
-                except (ValueError, StopIteration):
-                    cFormatter.print(Color.WARNING, 'Invalid input. Please enter a valid attribute name or ID.')
+                    cFormatter.print(Color.DEBUG, f'{keyToEdit} queued for update.')
+                except OperationSoftCancel:
+                    break
 
         elif action == 'loop':
             changed = False
             for key in keysToUpdate:
-                promptMessage = f'Enter new value for {key} ({trainerData["gameStats"].get(key, 0)}): '
-                newValue = self.fh_getIntegerInput(promptMessage, 0, 999999, softCancel=True)
-                if newValue == '0':
-                    if changed:
-                        cFormatter.print(Color.INFO, 'Saving and cancelling...')
-                    else:
-                        cFormatter.print(Color.INFO, 'Cancelling...')
+                try:
+                    while True:
+                        promptMessage = f'Enter new value for {key} ({gameData["gameStats"].get(key, 0)}): '
+                        newValue = self.fh_getIntegerInput(promptMessage, 0, 999999, softCancel=True)
+                        gameData["gameStats"][key] = newValue
+                        changedItems.append(f"{key}: {newValue}")
+                        changed = True
+                        break
+                except OperationSoftCancel:
                     break
-                trainerData["gameStats"][key] = newValue
-                changed = True
 
-        self.__writeJSONData(trainerData, 'trainer.json')
-        raise OperationSuccessful('Account statistics updated successfully.')
+        if changed:
+            self.__writeJSONData(gameData, 'trainer.json')
+            cFormatter.print(Color.YELLOW, 'Changes saved:')
+            for item in changedItems:
+                cFormatter.print(Color.INFO, item)
+            raise OperationSuccessful('Successfully written Account Stats.')
+        else:
+            cFormatter.print(Color.YELLOW, 'No changes made.')
 
     @handle_operation_exceptions
     def f_editHatchWaves(self) -> None:
@@ -1954,12 +1962,11 @@ class Rogue:
         trainerData = self.__loadDataFromJSON('trainer.json')
 
         if 'eggs' in trainerData and trainerData['eggs']:
-            minBound = 1
+            minBound = 0
             maxBound = 99
             eggAmount = len(trainerData['eggs'])
-            actions = f'{minBound} - {maxBound}'
             prompt = f'You currently have [{eggAmount}] eggs - after how many waves should they hatch?'
-            hatchWaves = self.fh_getIntegerInput(prompt, minBound, maxBound, actions, zeroCancel=True)
+            hatchWaves = self.fh_getIntegerInput(prompt, minBound, maxBound, zeroCancel=True)
 
             for egg in trainerData['eggs']:
                 egg["hatchWaves"] = hatchWaves
@@ -1975,7 +1982,7 @@ class Rogue:
     def f_submenuItemEditor(self):
         from modules import ModifierEditor
         edit = ModifierEditor()
-        edit.user_menu(self.slot)
+        edit.m_itemMenuPresent(self.slot)
 
     @handle_operation_exceptions
     def f_changeSaveSlot(self):
@@ -2009,10 +2016,13 @@ class Rogue:
 
         while True:
             userInput = input(fullPrompt).strip()
-            if (userInput == '0' and zeroCancel) or userInput.lower() == 'exit' or userInput.lower() == 'cancel':
+            if userInput.lower() == 'exit' or userInput.lower() == 'cancel':
                 raise OperationCancel()
-            if (userInput == '0' and softCancel):
-                return '0'
+            if userInput == '0':
+                if zeroCancel:
+                    raise OperationCancel()
+                if softCancel:
+                    raise OperationSoftCancel()
             if userInput.isdigit():
                 idx = int(userInput) - 1
                 if 0 <= idx < len(choices):
@@ -2020,9 +2030,13 @@ class Rogue:
             print('Invalid input. Please enter a number corresponding to your choice.')
 
     @staticmethod
-    def fh_getIntegerInput(promptMessage: str, minBound: int, maxBound: int, zeroCancel: bool=False, softCancel: bool=False) -> int:
+    def fh_getIntegerInput(promptMessage: str, minBound: int, maxBound: int, zeroCancel: bool=False, softCancel: bool=False, allowSkip: bool=False) -> int:
         """
         Helper method to get a validated integer input from the user.
+
+        Raises:
+            raise OperationCancel()
+            
 
         Args:
         - prompt (str): The prompt message to display.
@@ -2034,23 +2048,27 @@ class Rogue:
         Returns:
         - int: The validated integer input.
         """
-        if zeroCancel or softCancel:
+        if zeroCancel or softCancel or allowSkip:
             minBound = 0
-            fullPrompt = f'{promptMessage} (0: Cancel | 1 - {maxBound}): '
+            fullPrompt = f'{promptMessage} (0: Cancel | 1 - {maxBound} | "skip"): ' if allowSkip else f'{promptMessage} (0: Cancel | 1 - {maxBound}): '
         else:
             fullPrompt = f'{promptMessage} ({minBound} - {maxBound}): '
 
         while True:
             userInput = input(fullPrompt).strip()
-            if (userInput == '0' and zeroCancel) or userInput.lower() == 'exit' or userInput.lower() == 'cancel':
-                raise OperationCancel()
-            if (softCancel and userInput == '0'):
-                return '0'
+            if userInput == '0':
+                if zeroCancel:
+                    raise OperationCancel()
+                elif softCancel:
+                    raise OperationSoftCancel()
+            if allowSkip and userInput.lower() == 'skip':
+                return 'skip'
             if userInput.isdigit():
                 value = int(userInput)
                 if minBound <= value <= maxBound:
-                    return value
-                print(f'Invalid input. Please enter a number between {minBound} and {maxBound}.')
+                    return str(value)
+                
+            raise ValueError()
 
     @staticmethod
     def fh_getCompleterInput(promptMessage: str, choices: dict, zeroCancel: bool = False, softCancel: bool = False) -> str:
@@ -2076,8 +2094,14 @@ class Rogue:
         while True:
             userInput = prompt(fullPrompt, completer=completer).strip()  # Ensure prompt is the correct callable
 
-            if (userInput == '0' and zeroCancel) or userInput.lower() == 'exit' or userInput.lower() == 'cancel':
+            if userInput.lower() == 'exit' or userInput.lower() == 'cancel':
                 raise OperationCancel()
+            
+            if userInput == '0':
+                if softCancel:
+                    raise OperationSoftCancel()
+                if zeroCancel:
+                    raise OperationCancel()
             
             if userInput in choices or (userInput == '0' and softCancel):
                 return choices.get(userInput, '0')

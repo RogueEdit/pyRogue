@@ -70,7 +70,7 @@ def m_executeOptions(choice_index, valid_choices):
             raise KeyboardInterrupt
 
 @handle_operation_exceptions
-def m_mainMenu(rogue):
+def m_mainMenu(rogue, editOffline: bool = False):
     title = f'{config.title}>'
     useWhenDone = f'{Fore.LIGHTYELLOW_EX}(Use when Done)'
     untouched = f'{Fore.LIGHTYELLOW_EX}(UNTOUCHED)'
@@ -79,8 +79,8 @@ def m_mainMenu(rogue):
     term = [
         (title, 'title'),
         ('Account Actions', 'category'),
-        (('Create a backup', untouched), rogue.create_backup),
-        (('Recover your backup', untouched), rogue.restore_backup),
+        (('Create a backup', untouched), rogue.f_createBackup),
+        (('Recover your backup', untouched), rogue.f_restoreBackup),
         (('Load Game-Data from server', untouched), rogue.get_trainer_data),
         (('Change save-slot to edit', reworked), rogue.f_changeSaveSlot),
         (('Edit account stats', reworked), rogue.f_editAccountStats),
@@ -118,7 +118,8 @@ def m_mainMenu(rogue):
         (('Logout', ''), rogue.logout),
         (title, 'title'),
     ]
-
+    if editOffline:
+        term = [entry for entry in term if entry[1] != rogue.update_all]
     try:
         while True:
             validChoices = cFormatter.m_initializeMenu(term)
@@ -126,7 +127,6 @@ def m_mainMenu(rogue):
 
             if userInput == 'exit':
                 raise KeyboardInterrupt
-            
             if userInput.isdigit():
                 choiceIndex = int(userInput)
                 m_executeOptions(choiceIndex, validChoices)
@@ -140,39 +140,39 @@ def m_mainMenu(rogue):
 
 @handle_operation_exceptions
 def main():
-    loginChoice = input('Please choose a method of logging in: ')
-    loginChoice = int(loginChoice)  # Attempt to convert input to integer
-    while True:
-        try:
+    if config.debug:
+        rogue = Rogue(requests.session(), auth_token="Invalid Auth Token", editOffline=config.debug)
+        m_mainMenu(rogue)
+    else:
+        while True:
+            loginChoice = input('Please choose a method of logging in: ')
+            loginChoice = int(loginChoice)  # Attempt to convert input to integer
+            try:
+                if loginChoice not in [1, 2, 3, 4]:
+                    cFormatter.print(Color.DEBUG, 'Please choose a valid option.')
+                    continue  # Prompt user again if choice is not valid
+            except KeyboardInterrupt:
+                cFormatter.print(Color.DEBUG, '\nProgram interrupted by user.')
+                exit()
+            try:
+
+                if loginChoice != 4:
+                    username = input('Username: ')
+                    password = getpass.getpass('Password (password is hidden): ')
             
-            if loginChoice not in [1, 2, 3]:
-                cFormatter.print(Color.DEBUG, 'Please choose a valid option.')
-                continue  # Prompt user again if choice is not valid
-        except KeyboardInterrupt:
-            cFormatter.print(Color.DEBUG, '\nProgram interrupted by user.')
-            exit()
-        except ValueError:
-            cFormatter.print(Color.DEBUG, 'Invalid input. Please enter a number.')
-            continue  # Prompt user again for input
+                session = requests.Session()
+                if loginChoice == 1:
+                    login = requestsLogic(username, password)
+                    try:
+                        if login.login():
+                            cFormatter.print(Color.INFO, f'Logged in as: {config.f_anonymizeName(username)}')
+                            session.cookies.set('pokerogue_sessionId', login.sessionId, domain='pokerogue.net')
+                            rogue = Rogue(session, login.token, login.sessionId)
+                            break
+                    except Exception as e:
+                        cFormatter.print(Color.CRITICAL, f'Something went wrong. {e}', isLogging=True)
 
-        try:
-            username = input('Username: ')
-            password = getpass.getpass('Password (password is hidden): ')
-
-            session = requests.Session()
-            if loginChoice == 1:
-                login = requestsLogic(username, password)
-                try:
-                    if login.login():
-                        cFormatter.print(Color.INFO, f'Logged in as: {config.f_anonymizeName(username)}')
-                        session.cookies.set('pokerogue_sessionId', login.sessionId, domain='pokerogue.net')
-                        rogue = Rogue(session, login.token, login.sessionId)
-                        break
-                except Exception as e:
-                    cFormatter.print(Color.CRITICAL, f'Something went wrong. {e}', isLogging=True)
-
-            elif loginChoice in [2, 3]:
-                try:
+                elif loginChoice in [2, 3]:
                     if loginChoice == 3:
                         cFormatter.print(Color.INFO, 'Do not close your browser and do not browse in the game!')
                         cFormatter.print(Color.INFO, 'Do not close your browser and do not browse in the game!')
@@ -180,23 +180,28 @@ def main():
                     seleniumLogic = SeleniumLogic(username, password, 120, useScripts=(loginChoice == 3))
                     sessionId, token, driver = seleniumLogic.logic()
 
-                    if sessionId and token and driver:
+                    if sessionId and token:
+                        if not driver:
+                            driver = None
+                            print('Driver error')
                         cFormatter.print(Color.INFO, f'Logged in as: {config.f_anonymizeName(username)}')
                         session.cookies.set('pokerogue_sessionId', sessionId, domain='pokerogue.net')
                         rogue = Rogue(session, auth_token=token, clientSessionId=sessionId, driver=driver, useScripts=(loginChoice == 3))
                         break
                     else:
                         cFormatter.print(Color.CRITICAL, 'Failed to retrieve necessary authentication data from Selenium.')
-                except Exception as e:
-                    cFormatter.print(Color.CRITICAL, f'Something went wrong. {e}', isLogging=True)
 
-            else:
-                cFormatter.print(Color.CRITICAL, 'Invalid choice. Please choose a valid method.')
-        except KeyboardInterrupt:
-            cFormatter.print(Color.DEBUG, '\nProgram interrupted by user.')
-            exit()
 
-    m_mainMenu(rogue)
+                elif loginChoice == 4:
+                    rogue = Rogue(session, auth_token='Invalid Auth Token', editOffline=True)
+                    break
+                else:
+                    cFormatter.print(Color.CRITICAL, 'Invalid choice. Please choose a valid method.')
+            except KeyboardInterrupt:
+                cFormatter.print(Color.DEBUG, '\nProgram interrupted by user.')
+                exit()
+
+        m_mainMenu(rogue, editOffline=(loginChoice == 4))
 
 if __name__ == '__main__':
     while True:

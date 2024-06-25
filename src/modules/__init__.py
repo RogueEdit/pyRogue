@@ -3,7 +3,7 @@ from .requestsLogic import requestsLogic, HeaderGenerator, handle_error_response
 from .mainLogic import Rogue
 from .seleniumLogic import SeleniumLogic
 from .itemLogic import ModifierEditor
-from .handler import handle_operation_exceptions, OperationSuccessful, OperationCancel, OperationError, PropagateResponse, CustomJSONDecodeError
+from .handler import handle_operation_exceptions, OperationSuccessful, OperationCancel, OperationError, PropagateResponse, OperationSoftCancel
 from .handler import handle_http_exceptions, HTTPEmptyResponse
 
 __all__ = [
@@ -13,6 +13,6 @@ __all__ = [
     'ModifierEditor',
 
     # CustomExceptions
-    'handle_operation_exceptions', 'OperationSuccessful', 'OperationCancel', 'OperationError', 'PropagateResponse', 'CustomJSONDecodeError',
+    'handle_operation_exceptions', 'OperationSuccessful', 'OperationCancel', 'OperationError', 'PropagateResponse', 'OperationSoftCancel',
     'handle_http_exceptions', 'HTTPEmptyResponse'
 ]

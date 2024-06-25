@@ -32,7 +32,7 @@ class Modifier:
     maxStack: Optional[int] = field(default=None, repr=False, compare=False)
     shortDescription: Optional[str] = field(default=None, repr=False, compare=False)
 
-    def to_json(self, poke_id: Optional[int] = None) -> dict:
+    def fh_toJSON(self, poke_id: Optional[int] = None) -> dict:
         original_args = self.args  # Store original args for potential reset later
 
         # Replace None with poke_id in args if necessary
@@ -148,19 +148,19 @@ class ModifierType(Enum):
 
 class ModifierEditor:
     def __init__(self):
-        self.menu_items = self.create_menu_items()
-        self.notify_message = None
+        self.menuItems = self.m_createItemMenu()
+        self.notifyMessage = None
 
-    def create_menu_items(self):
-        menu_items = [(f'{version}', 'title')]
+    def m_createItemMenu(self):
+        m_itemMenuItems = [(f'{version}', 'title')]
 
         # Group the modifiers by customType
-        modifiers_by_type = defaultdict(list)
+        modifiersByType = defaultdict(list)
         for modifier in ModifierType:
-            modifiers_by_type[modifier.value.customType].append(modifier)
+            modifiersByType[modifier.value.customType].append(modifier)
 
         # Define the order of categories
-        category_order = [
+        m_menuSorting = [
             'StatBooster',
             'Vitamin',
             'XItem',
@@ -171,30 +171,30 @@ class ModifierEditor:
         ]
 
         # Dynamically create menu items based on the customType categories
-        for category in category_order:
-            if category in modifiers_by_type:
+        for category in m_menuSorting:
+            if category in modifiersByType:
                 if category == 'Danger':
-                    menu_items.append(('Not included in Give All', 'category'))
+                    m_itemMenuItems.append(('Not included in Give All', 'category'))
                 else:
-                    menu_items.append((category, 'category'))
-                menu_items.extend(self.create_menu_items_chunk(modifiers_by_type[category]))
+                    m_itemMenuItems.append((category, 'category'))
+                m_itemMenuItems.extend(self.m_createMenuChunks(modifiersByType[category]))
 
         # Add closing part
-        menu_items.append(('pyRogue Item Editor', 'category'))
-        menu_items.append((('Give all Modifiers', "Give All"), self.do_all_modifiers))
-        menu_items.append((('Return to Main Menu', f'{Fore.LIGHTYELLOW_EX}Use when done'), self.end))
-        menu_items.append(('You can also STRG+C to return to the Main Menu', 'category'))
-        menu_items.append(('You can save these changes in the Main Menu', 'category'))
-        menu_items.append(('Enter any command to see what it does', 'category'))
+        m_itemMenuItems.append(('pyRogue Item Editor', 'category'))
+        m_itemMenuItems.append((('Give all Modifiers', "Give All"), self.fh_doAllModifiers))
+        m_itemMenuItems.append((('Return to Main Menu', f'{Fore.LIGHTYELLOW_EX}Use when done'), self.end))
+        m_itemMenuItems.append(('You can also STRG+C to return to the Main Menu', 'category'))
+        m_itemMenuItems.append(('You can save these changes in the Main Menu', 'category'))
+        m_itemMenuItems.append(('Enter any command to see what it does', 'category'))
         
-        return menu_items
+        return m_itemMenuItems
 
-    def create_menu_items_chunk(self, modifiers):
+    def m_createMenuChunks(self, modifiers):
         chunk = []
-        for mod_type in modifiers:
+        for modType in modifiers:
             # Extracting the ModifierType name
-            modifier = mod_type.value
-            mod_description = modifier.shortDescription if modifier.shortDescription else modifier.description
+            modifier = modType.value
+            modifierDescription = modifier.shortDescription if modifier.shortDescription else modifier.description
             """
                 # Combining typeId with typePregenArgs if present
                 type_info = modifier.typeId
@@ -202,38 +202,38 @@ class ModifierEditor:
                     type_info += f" ({', '.join(map(str, modifier.typePregenArgs))})"
                 # Appending to chunk
             """
-            chunk.append(((modifier.customName, f'{mod_description} - (Max. {modifier.maxStack})'), mod_type))
+            chunk.append(((modifier.customName, f'{modifierDescription} - (Max. {modifier.maxStack})'), modType))
         return chunk
 
     @staticmethod
-    def format_modifier_name(name):
+    def fh_formatModifierName(name):
         return ' '.join([word.capitalize() for word in name.split('_')])
 
     @staticmethod
-    def load_json(file_path):
+    def fh_loadJSON(file_path):
         with open(file_path, 'r') as file:
             return json.load(file)
 
     @staticmethod
-    def save_json(data, file_path):
+    def fh_saveJSON(data, file_path):
         with open(file_path, 'w') as file:
             json.dump(data, file, indent=4)
 
     @staticmethod
-    def ensure_modifiers_block(data, type_id, type_pregen_args, poke_id):
+    def fh_ensureModifiersBlock(data, typeId, typePregenArgs, pokeId):
         if 'modifiers' not in data or not isinstance(data['modifiers'], list):
             data['modifiers'] = []
         for modifier in data['modifiers']:
-            if (modifier.get('typeId') == type_id and 
-                modifier.get('typePregenArgs') == type_pregen_args and
-                modifier.get('args') and modifier['args'][0] == poke_id):
+            if (modifier.get('typeId') == typeId and 
+                modifier.get('typePregenArgs') == typePregenArgs and
+                modifier.get('args') and modifier['args'][0] == pokeId):
                 return modifier.get('stackCount', 0)
         return None
 
 
-    def add_or_update_modifier(self, data, modifier_type: ModifierType, stack, poke_id, sessionSlot):
+    def f_recursiveAddOrUpdateMods(self, data, modifierType: ModifierType, stack, pokeId, sessionSlot):
         try:
-            modifier = modifier_type.value
+            modifier = modifierType.value
             maxStack = int(modifier.maxStack)
             if stack > maxStack:
                 stack = maxStack
@@ -241,27 +241,27 @@ class ModifierEditor:
             modifier.stackCount = stack
 
             # Save original args state
-            original_args = modifier.args[:] if modifier.args else None
+            originalArgs = modifier.args[:] if modifier.args else None
 
             # Handle args with poke_id
             if modifier.args:
-                modifier.args = [poke_id if arg is None else arg for arg in modifier.args]
+                modifier.args = [pokeId if arg is None else arg for arg in modifier.args]
                 # print(f"Original modifier.args: {original_args}, Modified modifier.args with poke_id: {modifier.args}")
 
             if 'modifiers' not in data or not isinstance(data['modifiers'], list):
                 data['modifiers'] = []
 
-            def modifiers_match(existing_modifier, new_modifier):
-                if existing_modifier['typeId'] != new_modifier['typeId']:
+            def modifiers_match(existingModifierData, newModifierData):
+                if existingModifierData['typeId'] != newModifierData['typeId']:
                     return False
-                if existing_modifier.get('args') != new_modifier.get('args'):
+                if existingModifierData.get('args') != newModifierData.get('args'):
                     return False
-                if existing_modifier.get('typePregenArgs') != new_modifier.get('typePregenArgs'):
+                if existingModifierData.get('typePregenArgs') != newModifierData.get('typePregenArgs'):
                     return False
                 return True
 
             existing = next(
-                (m for m in data['modifiers'] if modifiers_match(m, modifier.to_json(poke_id))),
+                (m for m in data['modifiers'] if modifiers_match(m, modifier.fh_toJSON(pokeId))),
                 None
             )
 
@@ -269,115 +269,114 @@ class ModifierEditor:
                 # print(f'Existing modifier JSON: {existing}')
                 if existing['stackCount'] != modifier.stackCount:
                     existing['stackCount'] = modifier.stackCount
-                    message = f'Successfully updated {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot} for Pokémon ID {poke_id}' if modifier.args else f'Successfully updated {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot}'
+                    message = f'Successfully updated {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot} for Pokémon ID {pokeId}' if modifier.args else f'Successfully updated {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot}'
                 else:
-                    message = f'No change for {modifier.typeId} in slot_{sessionSlot} for Pokémon ID {poke_id}' if modifier.args else f'No change for {modifier.typeId} in slot_{sessionSlot}'
+                    message = f'No change for {modifier.typeId} in slot_{sessionSlot} for Pokémon ID {pokeId}' if modifier.args else f'No change for {modifier.typeId} in slot_{sessionSlot}'
             else:
-                data['modifiers'].append(modifier.to_json(poke_id))
-                message = f'Successfully written {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot} for Pokémon ID {poke_id}' if modifier.args else f'Successfully written {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot}'
+                data['modifiers'].append(modifier.fh_toJSON(pokeId))
+                message = f'Successfully written {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot} for Pokémon ID {pokeId}' if modifier.args else f'Successfully written {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot}'
 
             # Restore original args state
-            modifier.args = original_args
+            modifier.args = originalArgs
 
-            self.save_json(data, f'slot_{sessionSlot}.json')
+            self.fh_saveJSON(data, f'slot_{sessionSlot}.json')
             cFormatter.print(Color.GREEN, message)
-            self.notify_message = (f'Successfully added or updated modifier {modifier.typeId}', 'success')
+            self.notifyMessage = (f'Successfully added or updated modifier {modifier.typeId}', 'success')
 
         except Exception as e:
-            self.notify_message = (f'Something went wrong. \n {e}', 'error')
+            self.notifyMessage = (f'Something went wrong. \n {e}', 'error')
             cFormatter.print(Color.INFO, f'Something went wrong. \n {e}', 'error')
 
 
-    def user_menu(self, sessionSlot):
-        existing_data = self.load_json(f'slot_{sessionSlot}.json')
+    def m_itemMenuPresent(self, sessionSlot):
+        slotData = self.fh_loadJSON(f'slot_{sessionSlot}.json')
         while True:
-            if existing_data['gameMode'] == 3:
+            if slotData['gameMode'] == 3:
                 break
             try:
                 print('')
-                valid_choices = cFormatter.m_initializeMenu(self.menu_items, length=75)
-                if self.notify_message:
-                    if self.notify_message[1] == 'success':
-                        cFormatter.print(Color.GREEN, f'{self.notify_message[0]}')
-                    elif self.notify_message[1] == 'error':
-                        cFormatter.print(Color.CRITICAL, f'{self.notify_message[0]}', isLogging=True)
-                    elif self.notify_message[1] == 'warning':
-                        cFormatter.print(Color.WARNING, f'{self.notify_message[0]}')
+                valid_choices = cFormatter.m_initializeMenu(self.menuItems, length=75)
+                if self.notifyMessage:
+                    if self.notifyMessage[1] == 'success':
+                        cFormatter.print(Color.GREEN, f'{self.notifyMessage[0]}')
+                    elif self.notifyMessage[1] == 'error':
+                        cFormatter.print(Color.CRITICAL, f'{self.notifyMessage[0]}', isLogging=True)
+                    elif self.notifyMessage[1] == 'warning':
+                        cFormatter.print(Color.WARNING, f'{self.notifyMessage[0]}')
 
                 choice = int(input('Select an option by number: ').strip())
-                selected_item = next((item for item in valid_choices if item[0] == choice), None)
+                selectedItem = next((item for item in valid_choices if item[0] == choice), None)
 
-                if selected_item is None:
+                if selectedItem is None:
                     cFormatter.print(Color.ERROR, 'Invalid choice, please try again.')
                     continue
 
-                chosen_item = selected_item[1]
+                chosenItem = selectedItem[1]
 
-                if callable(chosen_item):
-                    if chosen_item == self.end:
-                        chosen_item()
+                if callable(chosenItem):
+                    if chosenItem == self.end:
+                        chosenItem()
                         break
                     else:
-                        chosen_item(sessionSlot)
+                        chosenItem(sessionSlot)
                 else:
-                    selected_modifier = chosen_item
+                    selectedModifier = chosenItem
                     cFormatter.print(Color.DEBUG, 'You can always go back to the menu by typing anything not 0-5.')
-                    cFormatter.print(Color.DEBUG, f'Item Description: {Style.RESET_ALL}{selected_modifier.value.description}')
-                    cFormatter.print(Color.DEBUG, f'Max Stacks: {Style.RESET_ALL}{selected_modifier.value.maxStack}')
+                    cFormatter.print(Color.DEBUG, f'Item Description: {Style.RESET_ALL}{selectedModifier.value.description}')
+                    cFormatter.print(Color.DEBUG, f'Max Stacks: {Style.RESET_ALL}{selectedModifier.value.maxStack}')
                     
-                    party_num_input = input('Select the party slot of the Pokémon you want to edit (0-5): ')
+                    partySlot = int(input('Select the party slot of the Pokémon you want to edit (0-5): '))
                     try:
-                        party_num = int(party_num_input)
-                        if party_num < 0 or party_num > 5:
+                        if partySlot < 0 or partySlot > 5:
                             raise ValueError
                     except ValueError:
                         cFormatter.print(Color.DEBUG, 'Returning to the menu...')
                         continue
                     
-                    poke_id = existing_data['party'][party_num]['id']
+                    pokeId = slotData['party'][partySlot]['id']
                     
-                    stacks_raw = self.ensure_modifiers_block(existing_data, selected_modifier.value.typeId, selected_modifier.value.typePregenArgs, poke_id)
+                    existingStackCount = self.fh_ensureModifiersBlock(slotData, selectedModifier.value.typeId, selectedModifier.value.typePregenArgs, pokeId)
                     
                     while True:
-                        if stacks_raw is not None:
-                            stack_count_input = input(f'You already have {stacks_raw} of {selected_modifier.value.customName}. Set new value to: ')
+                        if existingStackCount is not None:
+                            stackCountInput = input(f'You already have {existingStackCount} of {selectedModifier.value.customName}. Set new value to: ')
                         else:
-                            stack_count_input = input(f'How many {selected_modifier.value.customName} do you want? or enter any invalid input to retry: ')
+                            stackCountInput = input(f'How many {selectedModifier.value.customName} do you want? or enter any invalid input to retry: ')
                         try:
-                            stack_count = int(stack_count_input)
+                            newStackCount = int(stackCountInput)
                             break
                         except ValueError:
                             cFormatter.print(Color.ERROR, 'Invalid input. Please enter a valid number.')
 
-                    self.add_or_update_modifier(existing_data, selected_modifier, stack_count, poke_id, sessionSlot)
+                    self.f_recursiveAddOrUpdateMods(slotData, selectedModifier, newStackCount, pokeId, sessionSlot)
 
             except ValueError:
-                cFormatter.print(Color.ERROR, "Invalid input, please enter a number.")
+                cFormatter.print(Color.ERROR, 'Invalid input, please enter a number.')
             except KeyboardInterrupt:
                 return
 
-    def do_all_modifiers(self, sessionSlot):
+    def fh_doAllModifiers(self, sessionSlot):
         try:
-            party_num = int(input('Select the party slot of the Pokémon you want to edit (0-5): '))
-            if party_num < 0 or party_num > 5:
+            partySlot = int(input('Select the party slot of the Pokémon you want to edit (0-5): '))
+            if partySlot < 0 or partySlot > 5:
                 message = 'Invalid party slot, please try again.'
                 cFormatter.print(Color.ERROR, message)
-                self.notify_message = (message, 'error')
+                self.notifyMessage = (message, 'error')
                 return
 
-            stack_count = int(input('Enter the stack count for the modifiers: '))
-            existing_data = self.load_json(f'slot_{sessionSlot}.json')
-            poke_id = existing_data['party'][party_num]['id']
+            stackCountInput = int(input('Enter the stack count for the modifiers: '))
+            slotData = self.fh_loadJSON(f'slot_{sessionSlot}.json')
+            pokeId = slotData['party'][partySlot]['id']
             try:
-                for mod_type in ModifierType:
-                    if mod_type.value.customType == 'Danger':
+                for modType in ModifierType:
+                    if modType.value.customType == 'Danger':
                         continue  # Skip modifiers with customType 'Danger'
-                    self.add_or_update_modifier(existing_data, mod_type, stack_count, poke_id, sessionSlot)
+                    self.f_recursiveAddOrUpdateMods(slotData, modType, stackCountInput, pokeId, sessionSlot)
             except Exception as e:
-                self.notify_message = f'Something unexpected happened. {e}'
+                self.notifyMessage = f'Something unexpected happened. {e}'
                 cFormatter.print(Color.WARNING, f'Something unexpected happened. {e}', isLogging=True)
             finally:
-                self.notify_message = ('Successfully added all modifiers except annoying ones.', 'success')
+                self.notifyMessage = ('Successfully added all modifiers except annoying ones.', 'success')
         except ValueError:
             cFormatter.print(Color.ERROR, 'Invalid input, please enter a number.')
 
@@ -386,8 +385,8 @@ class ModifierEditor:
         cFormatter.print(Color.GREEN, 'Leaving pyRogue Item Editor.')
 
     @staticmethod
-    def print_modifiers(sessionSlot):
-        data = ModifierEditor.load_json(f'slot_{sessionSlot}.json')
+    def fh_printModifiers(sessionSlot):
+        data = ModifierEditor.fh_loadJSON(f'slot_{sessionSlot}.json')
         if 'modifiers' in data and isinstance(data['modifiers'], list):
             cFormatter.print(Color.INFO, 'Current Modifiers:')
             for modifier in data['modifiers']:

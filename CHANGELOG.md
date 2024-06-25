@@ -28,6 +28,8 @@ Currently work in progres...
   - Removed playtime due to a recent change
   - Added 2 more options; randomize all - manual type all - manual choose one
 
+- Added 4th "login" option which is just edit locally existing json without server connection (for Offline)
+
 ## Rewrites
 - Added functionality and decorators to handle error responses centralized
 - Renamed  variable and function to comply with naming convention
@@ -36,13 +38,15 @@ Currently work in progres...
   - Menus that present multiple options before saving will allow to type 0 to cancel+save;
   - or type exit / cancel to Abort without saves
   - All rewrites affect mentioned above affect those functions so far:
-    - `f_editAccountStats(tesed:works)` <Can now either random all, set one by choice (With AutoComplete by ID or Name) or loop over all one by one>
-    - `f_editHatchWaves(tested:works)`
-    - `f_editMoney(tested:works)`
+    - `f_editAccountStats(retested:works)` <Can now either random all, set one by choice (With AutoComplete by ID or Name) or loop over all one by one>
     - `f_editPokeballs(tested:works)` <Can now skip pokes, edit single ones or all> <Can now also skip choices>
+    - `f_restoreBackup(tested:works)`
+    - `f_editMoney(tested:works)`
+    - `f_editHatchWaves(tested:works)`
     - `f_changeSaveSlot(tested:works)` <Can now change Slots directly>
     - `f_submenuEditor(tested:works)` - <Can now use Autocomplete and 0Cancel>
     - `f_editBiome(tested:works)` <Can now type ID or Biome, case-insesitive, with autocompleter>
-    - `f_addCandies()` - #Error in function f_addCandies(): type object 'PokemonEnum' has no attribute 'items'
     - `f_addEggsGenerator(tested:works)`
+    - `f_addCandies(tested:works)` - #Error in function f_addCandies(): type object 'PokemonEnum' has no attribute 'items'
+
 
