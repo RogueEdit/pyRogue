@@ -304,6 +304,8 @@ class Rogue:
             else:
                 gameData = self.get_trainer_data()
                 slotData = self.getSlotData(slot)
+                self.trainerId = gameData.get('trainerId')
+                self.secretId = gameData.get('secretId')
 
             if slotData and gameData:
                 self.f_createBackup()
@@ -1852,18 +1854,35 @@ class Rogue:
             cFormatter.print(Color.GREEN, 'You have no eggs to hatch.')
             return
 
-    # TODO VERY IMPORTANT
     @handle_operation_exceptions
     def f_submenuItemEditor(self):
         from modules import ModifierEditor
         edit = ModifierEditor()
         edit.m_itemMenuPresent(self.slot)
 
-    # TODO VERY IMPORTANT
     @handle_operation_exceptions
     def f_changeSaveSlot(self):
-        newSlot = int(input('Which save-slot you want to change to?: '))
-        self.getSlotData(newSlot)  
+        while True:
+            newSlot = self.fh_getIntegerInput(
+                'Select a slot: ', 1, 5,
+                zeroCancel=True
+            )
+            filename = f'slot_{newSlot}.json'
+            if int(self.slot) == int(newSlot):
+                cFormatter.print(Color.ERROR, f'Slot {filename} already loaded.')
+            else:
+                if self.editOffline:
+                    # Construct the filename
+                    
+                    if os.path.exists(filename):
+                        self.slot = newSlot
+                        raise OperationSuccessful(f'Changed slot to {newSlot}')
+                    else:
+                        cFormatter.print(Color.ERROR, f'File {filename} does not exist. Please select another slot.')
+                else:
+                    self.get_trainer_data(newSlot)
+
+
     
     # TODO VERY IMPORTANT
     # Move to other files but i had circular imports so i dont care for now

@@ -121,7 +121,7 @@ def m_mainMenu(rogue, editOffline: bool = False):
         (('Logout', ''), rogue.logout),
         (title, 'title'),
     ]
-    if editOffline:
+    if editOffline or config.debug:
         term = [entry for entry in term if entry[1] != rogue.update_all]
     try:
         while True:
