@@ -559,28 +559,30 @@ class Rogue:
         - shutil: For copying files from the current directory to the backup directory.
         - datetime: For generating timestamps for backup file names.
         """
+        if config.debugDeactivateBackup:
+            return
 
-        backup_dir =  config.backupDirectory
-        if not os.path.exists(backup_dir):
-            os.makedirs(backup_dir)
+        backupDirectory =  config.backupDirectory
+        if not os.path.exists(backupDirectory):
+            os.makedirs(backupDirectory)
 
         for file in os.listdir('.'):
             if file.endswith('.json'):
                 with open(file, 'r') as f:
                     data = json.load(f)
-                trainer_id = data.get('trainerId')
-                if trainer_id is not None:
+                trainerId = data.get('trainerId')
+                if trainerId is not None:
                     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
                     
-                    base_filename = f'base_{trainer_id}.json'
-                    base_filepath = os.path.join(backup_dir, base_filename)
+                    baseFilename = f'base_{trainerId}.json'
+                    baseFilepath = os.path.join(backupDirectory, baseFilename)
 
-                    if os.path.exists(base_filepath):
-                        backup_filename = f'backup_{trainer_id}_{timestamp}.json'
-                        backup_filepath = os.path.join(backup_dir, backup_filename)
-                        shutil.copy(file, backup_filepath)
+                    if os.path.exists(baseFilepath):
+                        backupFilename = f'backup_{trainerId}_{timestamp}.json'
+                        backupFilepath = os.path.join(backupDirectory, backupFilename)
+                        shutil.copy(file, backupFilepath)
                     else:
-                        shutil.copy(file, base_filepath)
+                        shutil.copy(file, baseFilepath)
                     cFormatter.print(Color.GREEN, 'Backup created.')
 
     @handle_operation_exceptions
@@ -1297,10 +1299,10 @@ class Rogue:
 
         """
         try:
-            trainer_data = self.__loadDataFromJSON('trainer.json')
+            gameData = self.__loadDataFromJSON('trainer.json')
 
-            current_time_ms = int(time.time() * 1000) 
-            min_time_ms = current_time_ms - 3600 * 1000  
+            currentTime = int(time.time() * 1000) 
+            minBoundaryTime = currentTime - 3600 * 1000  
             
 
             choice: int = int(input('Do you want to unlock all vouchers or unlock a specific voucher? (1: All | 2: Specific): '))
@@ -1309,26 +1311,26 @@ class Rogue:
                 cFormatter.print(Color.INFO, 'Invalid command.')
                 return
             elif choice == 1:
-                voucher_unlocks = {}
+                keysToUpdate = {}
                 for voucher in self.vouchers_data.__members__:
-                    random_time = min_time_ms + random.randint(0, current_time_ms - min_time_ms)
-                    voucher_unlocks[voucher] = random_time
-                trainer_data['voucherUnlocks'] = voucher_unlocks
+                    randomTime = minBoundaryTime + random.randint(0, currentTime - minBoundaryTime)
+                    keysToUpdate[voucher] = randomTime
+                gameData['voucherUnlocks'] = keysToUpdate
             else:
                 self.legacy_vouchers()
-                vouchers_completer: WordCompleter = WordCompleter(self.vouchers_data.__members__.keys(), ignore_case=True)
+                vouchersCompleter: WordCompleter = WordCompleter(self.vouchers_data.__members__.keys(), ignore_case=True)
                 cFormatter.print(Color.INFO, 'Write the name of the voucher, it will recommend for auto-completion.')
             
-                vouchers: str = prompt('What voucher would you like?: ', completer=vouchers_completer)
+                vouchers: str = prompt('What voucher would you like?: ', completer=vouchersCompleter)
 
-                if 'voucherUnlocks' in trainer_data and vouchers in trainer_data['voucherUnlocks']:
-                    random_time = min_time_ms + random.randint(0, current_time_ms - min_time_ms)
-                    trainer_data['voucherUnlocks'][vouchers] = random_time
+                if 'voucherUnlocks' in gameData and vouchers in gameData['voucherUnlocks']:
+                    randomTime = minBoundaryTime + random.randint(0, currentTime - minBoundaryTime)
+                    gameData['voucherUnlocks'][vouchers] = randomTime
                 else:
-                    random_time = min_time_ms + random.randint(0, current_time_ms - min_time_ms)
-                    trainer_data['voucherUnlocks'][vouchers] = random_time
+                    randomTime = minBoundaryTime + random.randint(0, currentTime - minBoundaryTime)
+                    gameData['voucherUnlocks'][vouchers] = randomTime
 
-            self.__writeJSONData(trainer_data, 'trainer.json')
+            self.__writeJSONData(gameData, 'trainer.json')
 
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function edit_vouchers(): {e}', isLogging=True)
@@ -1368,7 +1370,7 @@ class Rogue:
         Raises:
         - Exception: If any error occurs during the process due to the decorator.
         - OperationCancel(), OperationSoftCancel(), ValueError() depending on input due to the helper.
-        - OperationSuccessful(f'Biome updated to {biomeEnum.name}')
+        raise OperationSuccessful(f'Added {candies} candies to {pokeName}.')
 
         Modules Used:
         - .cFormatter: For printing formatted messages to the console, including colorized output.
@@ -1394,6 +1396,7 @@ class Rogue:
                      **{str(member.value): member for member in self.appData.pokemonIDByName}},
             zeroCancel=False
         )
+        pokeName = inputValue.name.lower()
 
         # Prompt for number of candies using fh_getIntegerInput method
         candies = self.fh_getIntegerInput(
@@ -1408,7 +1411,7 @@ class Rogue:
 
         # Write updated data to JSON
         self.__writeJSONData(trainerData, 'trainer.json')
-        raise OperationSuccessful('Added candies ')
+        raise OperationSuccessful(f'Added {candies} candies to {pokeName}.')
 
     @handle_operation_exceptions
     def f_editBiome(self) -> None:
@@ -1436,39 +1439,30 @@ class Rogue:
 
         # Initialize EnumLoader and load enums
         gameData = self.__loadDataFromJSON(f'slot_{self.slot}.json')
-
-        cFormatter.print(Color.DEBUG, 'Write the name of the biome or its ID.')
+        currentBiomeId = gameData["arena"]["biome"]
+        currentBiomeName = next((member.name for member in self.appData.biomesByID if member.value == currentBiomeId), "Unknown")
+        biomeData = self.appData.biomesByID
 
         # Prompt user for biome input
-        self.legacy_printBiomes()
+        self.fh_printEnums('biomes')
+        cFormatter.print(Color.INFO, f'Current Biome {currentBiomeName}. You can type `exit`, `cancel` or press STRG+C to exit.')
+        while True:
+            try:
+                inputValue = self.fh_getCompleterInput(
+                    promptMessage='Choose which Biome you like. You can either type the ID or Name',
+                    choices={**{member.name.lower(): member for member in biomeData}, 
+                            **{str(member.value): member for member in biomeData}},
+                    zeroCancel=False
+                )
+                break
+            except KeyboardInterrupt:
+                return
 
-        inputValue = self.fh_getCompleterInput(
-            promptMessage='Choose which Biome you like. You can either type the ID or Name.',
-            choices={**{member.name.lower(): member for member in self.appData.biomesByID}, 
-                     **{str(member.value): member for member in self.appData.biomesByID}},
-            zeroCancel=False
-        )
-
-        # Ensure inputValue is a string
-        if isinstance(inputValue, self.appData.biomesByID):
-            inputValue = inputValue.name.lower()
-        else:
-            inputValue = str(inputValue).strip().lower()
-
-        if inputValue.isdigit():
-            # Input is an ID
-            biomeEnum = next((member for member in self.appData.biomesByID if member.value == int(inputValue)), None)
-        else:
-            # Input is a name
-            biomeEnum = next((member for member in self.appData.biomesByID if member.name.lower() == inputValue), None)
-
-        if biomeEnum is None:
-            raise ValueError('Could not find biome data in runtime.')
 
         # Update game data with the chosen biome ID
-        gameData["arena"]["biome"] = biomeEnum.value
+        gameData["arena"]["biome"] = inputValue.value
         self.__writeJSONData(gameData, f'slot_{self.slot}.json')
-        raise OperationSuccessful(f'Biome updated to {biomeEnum.name}')
+        raise OperationSuccessful(f'Biome updated from {currentBiomeName} to {inputValue.name}.')
             
     @handle_operation_exceptions
     def f_editPokeballs(self) -> None:
@@ -1760,31 +1754,19 @@ class Rogue:
             cFormatter.print(Color.INFO, menuDisplay)
             while True:
                 try:
-
                     inputValue = self.fh_getCompleterInput(
                         'Choose attribute to edit:',
                         {**optionList, **nameToKey},
                         softCancel=True
                     ).lower()
 
-                    if isinstance(inputValue, str):
-                        inputValue = inputValue.strip().lower()
-
-                    if inputValue.isdigit():
-                        keyToEdit = next((key for index, key in optionList.items() if index == inputValue), None)
-                    else:
-                        keyToEdit = nameToKey.get(inputValue, None)
-
-                    if keyToEdit is None:
-                        raise ValueError('Could not find attribute data in runtime.')
-
-                    promptMessage = f'Enter new value for {keyToEdit} (Current: {gameData["gameStats"].get(keyToEdit, 0)}): '
+                    promptMessage = f'Enter new value for {inputValue} (Current: {gameData["gameStats"].get(inputValue, 0)}): '
                     newValue = self.fh_getIntegerInput(promptMessage, 0, 999999, softCancel=True)
 
-                    gameData["gameStats"][keyToEdit] = newValue
-                    changedItems.append(f"{keyToEdit}: {newValue}")
+                    gameData["gameStats"][inputValue] = newValue
+                    changedItems.append(f"{inputValue}: {newValue}")
                     changed = True
-                    cFormatter.print(Color.DEBUG, f'{keyToEdit} queued for update.')
+                    cFormatter.print(Color.DEBUG, f'{inputValue} queued for update.')
                 except OperationSoftCancel:
                     break
 
@@ -1882,10 +1864,6 @@ class Rogue:
                 else:
                     self.get_trainer_data(newSlot)
 
-
-    
-    # TODO VERY IMPORTANT
-    # Move to other files but i had circular imports so i dont care for now
     @staticmethod
     def fh_getChoiceInput(promptMesage: str, choices: dict, renderMenu: bool = False, zeroCancel: bool=False, softCancel:bool = False) -> str:
         """
@@ -2045,6 +2023,16 @@ class Rogue:
         
     @handle_operation_exceptions
     def fh_printEnums(self, enum_type: str) -> None:
+        """
+        enums_mapping = {
+            'pokedex': self.pokemon_id_by_name,
+            'biomes': self.biomesByID,
+            'moves': self.moves_by_id,
+            'natures': self.natureData,
+            'vouchers': self.vouchers_data,
+            'natureSlot': self.natureSlot_data,
+        }
+        """
         enums_mapping = {
             'pokedex': self.pokemon_id_by_name,
             'biomes': self.biomesByID,

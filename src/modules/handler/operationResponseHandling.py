@@ -24,6 +24,8 @@ def handle_operation_exceptions(func):
             funcName = func.__name__
             customMessage = sc.args[0] if sc.args else ""
             cFormatter.print(Color.DEBUG, f'Soft-cancelling {funcName}. {customMessage}')
+        except KeyboardInterrupt:
+            raise OperationCancel()
         except JSONDecodeError as jde:
             funcName = func.__name__
             customMessage = f'JSON decoding error in function {funcName}: {jde}'

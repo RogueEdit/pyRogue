@@ -35,7 +35,7 @@ import requests
 import brotli  # noqa: F401
 
 from modules import requestsLogic, Rogue, SeleniumLogic, config
-from modules.handler import OperationSuccessful, handle_operation_exceptions
+from modules.handler import OperationSuccessful, handle_operation_exceptions, OperationCancel, OperationSoftCancel
 from colorama import Fore, Style, init
 from utilities import cFormatter, Color, CustomLogger
 from datetime import datetime, timedelta
@@ -215,3 +215,10 @@ if __name__ == '__main__':
         except KeyboardInterrupt:
             cFormatter.print(Color.DEBUG, '\nProgram interrupted by user.')
             exit()
+        except OperationCancel:
+            cFormatter.print(Color.DEBUG, '\nProgram interrupted by user.')
+            exit()
+        except OperationSoftCancel:
+            cFormatter.print(Color.DEBUG, '\nProgram interrupted by user.')
+            exit()
+    

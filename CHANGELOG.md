@@ -4,8 +4,10 @@ Currently work in progres...
 ## Naming Convention
 - Everything camelCase with prefixes
 - Functions are prefixed with f_
+- Menu Fuctions are prefixed with m_
+- Enum/Data Functions will be prefixed with d_
 - Fuction Helpers are prefixed with fh_
-- "" for JSON and to make escaping easier, otherwise ''
+- "" for JSON and for header related stuff to make escaping easier, otherwise ''
 
 ## Bugfixes
 - Fixed maxStacks in itemLogic
@@ -22,18 +24,15 @@ Currently work in progres...
     - This Line would in runtime filter a entry that points to f_updateAll(). Handled by the decorator.
     - Centralized response handling, if correct setup we can even do raise OperationSuccessfull('Pokeballs added.')
       - Which would lead to a colored response, that mentions the function, possibily more, and add the customMessgae on to it.
-
 - `f_addEggsGenerator`() full rewritten;
   - New save structure from game, we now use the first egg we find as sample and if we don't find one we provided a basic that testedly works
     - Added `isShiny` and `overrideHiddenAbility` flags
     - Fixed calculation errors that were only valid ID's due to a bug, now they are all correct
     - Added sourcecode and more hints to whats going on for later repurpose
-
 - Added function helpers
   - `fh_getIntInput()`, `fh_getChoiceInput()`, `fh_getCompleterInput()`
     - Sanitizes input, allows to escape from submenus more consistently
     - Allows easier creation of completer-inputs and such.
-
 - When editing acc stats;
   - Removed playtime due to a recent change
   - Added 2 more options; randomize all - manual type all - manual choose one
@@ -57,5 +56,24 @@ Currently work in progres...
     - `f_submenuEditor(tested:works)` - <Can now use Autocomplete and 0Cancel>
     - `f_editBiome(tested:works)` <Can now type ID or Biome, case-insesitive, with autocompleter>
     - `f_addEggsGenerator(tested:works)`
-    - `f_addCandies(tested:works)` - #Error in function f_asddCandies(): type object 'PokemonEnum' has no attribute 'items'
+    - `f_addCandies(tested:works)` 
+    - `f_createBackup()` <- need to backup slots
+    - `f_restoreBackup(tested:works)` <Should automatically recognize slot backups too>
+    - ``
+    
+    - `f_editVouchers(wip)`
+    - `f_editAchivements(wip)`
+    - `f_editGamemodes(wip)`
+    - `add_ticket(wip)`
+    - `edit_starter_separate(wip)`
+
+    - Simplified:
+      - `update_all(wip)`
+      - `get_trainer_data(wip)`
+      - `getSlotData(wip)`
     - soon more.. all existing functions!
+
+
+# Removed
+- print_pokedex(), print_printBiomes(), print_moves(), print_natures(), print_vouchers(), print_natureSlot()
+  - replaced with fh_printEnum(type)
