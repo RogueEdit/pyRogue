@@ -3,7 +3,8 @@
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
 # Date of release: 13.06.2024 
-# Last Edited: 23.06.2024
+# Last Edited: 25.06.2024
+# Based on: https://github.com/pagefaultgames/pokerogue/
 
 """
 This script provides a class 'Rogue' for interacting with the PokeRogue API to manage trainer and gamesave data.

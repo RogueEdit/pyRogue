@@ -3,7 +3,7 @@
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/JulianStiebler/
 # Date of release: 06.06.2024
-# Last Edited: 20.06.2024
+# Last Edited: 25.06.2024
 
 """
 This script provides a lockout mechanism to limit the frequency of function executions. It includes functionality to

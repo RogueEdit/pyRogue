@@ -3,7 +3,8 @@
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/claudiunderthehood, https://github.com/JulianStiebler
 # Date of release: 06.06.2024
-# Last edited: 20.06.2024
+# Last edited: 25.06.2024
+# Based on: https://github.com/pagefaultgames/pokerogue/
 
 """
 This script provides functionalities to load data from JSON files and convert them into Enums.

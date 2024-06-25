@@ -1,4 +1,4 @@
-from typing import List, Dict, Tuple
+from typing import Tuple
 import random
 
 # Constants from your existing code
@@ -13,6 +13,9 @@ def getIDBoundarys(tier: int) -> Tuple[int, int]:
 
     Returns:
         Tuple[int, int]: A tuple containing the start and end IDs.
+
+    Example:
+        start, end = getIDBoundarys(2)
     """
     # Calculate the start and end IDs for the given tier
     start: int = tier * eggConstant

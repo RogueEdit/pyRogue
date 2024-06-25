@@ -3,7 +3,7 @@
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/JulianStiebler/
 # Date of release: 06.06.2024 
-# Last edited: 20.06.2024 - https://github.com/JulianStiebler/
+# Last edited: 25.06.2024
 
 """
 This module provides a custom logging formatter and various utility functions for enhanced console output.

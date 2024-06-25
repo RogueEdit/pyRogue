@@ -1,9 +1,10 @@
 # Authors
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
-# Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler
+# Contributors: https://github.com/claudiunderthehood
 # Date of release: 06.06.2024
-# Last Edited: 20.06.2024
+# Last Edited: 25.06.2024
+# Based on: https://github.com/pagefaultgames/pokerogue/
 
 """
 This script provides a generator for creating JSON files from various enums representing natures, no passive Pokemon, biomes, vouchers, and nature slots. It includes functionality to save these JSON files to disk.

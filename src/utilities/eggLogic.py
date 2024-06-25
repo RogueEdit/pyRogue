@@ -4,8 +4,11 @@
 # Contributors: https://github.com/JulianStiebler/
 # Date of release: 13.06.2024 
 # Last Edited: 25.06.2024
+# Based on: https://github.com/pagefaultgames/pokerogue/
 
 """
+Source Code from https://github.com/pagefaultgames/pokerogue/ multiple files
+
 
 Tier and Source Type Initialization:
 
@@ -44,10 +47,6 @@ Pulled Egg Actions:
 
     If eggOptions.pulled is true, you increase pull statistics and add the egg to game data using this.increasePullStatistic() and this.addEggToGameData().
 
-
-
-    
-Source Code from https://github.com/pagefaultgames/pokerogue/ multiple files
   constructor(eggOptions?: IEggOptions) {
     //if (eggOptions.tier && eggOptions.species) throw Error("Error egg can't have species and tier as option. only choose one of them.")
 
