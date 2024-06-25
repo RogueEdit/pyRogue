@@ -1,5 +1,5 @@
 # pyRogue
-> ## **pyRogue** is a educational project. 
+> ## **pyRogue** is a educational project. Do not abuse. We use it and develop on a local server. 
 
 <img src="https://img.shields.io/badge/Status-Working-green"> <a href="https://discord.gg/kn8fb2GvqY"><img src="https://img.shields.io/badge/Join_Our-Discord-blue"></a> <img src="https://img.shields.io/badge/Make_sure_to_mark_with_a-Star_<3-Red">
 
