@@ -7,6 +7,7 @@
 
 from utilities import cFormatter, Color
 from json import JSONDecodeError
+from modules.config import debugEnableTraceback
 
 def handle_operation_exceptions(func):
     def wrapper(*args, **kwargs):
@@ -19,7 +20,7 @@ def handle_operation_exceptions(func):
         except OperationError as oe:
             cFormatter.print(Color.DEBUG, str(oe), isLogging=True)
         except OperationCancel as oc:
-            cFormatter.print(Color.DEBUG, str(oc))
+            cFormatter.print(Color.DEBUG, f'\n{str(oc)}') # need \n cause it breaks on new lines
         except OperationSoftCancel as sc:
             funcName = func.__name__
             customMessage = sc.args[0] if sc.args else ""
@@ -30,14 +31,14 @@ def handle_operation_exceptions(func):
             funcName = func.__name__
             customMessage = f'JSON decoding error in function {funcName}: {jde}'
             cFormatter.print(Color.CRITICAL, customMessage, isLogging=True)
-        except ValueError as ve:
-            funcName = func.__name__
-            customMessage = ve.args[0] if ve.args else ""
-            cFormatter.print(Color.DEBUG, f'Incorrect input in {funcName}. {customMessage}', isLogging=True)
-        """except Exception as e:
+        
+        except Exception as e:
             funcName = func.__name__
             customMessage = f'Error in function {funcName}: {e}'
-            cFormatter.print(Color.CRITICAL, customMessage, isLogging=True)"""
+            cFormatter.print(Color.CRITICAL, customMessage, isLogging=True)
+            # This should forward any exception not handled to our main stack
+            if debugEnableTraceback:
+                raise Exception()
     return wrapper
 
 # ==============================================

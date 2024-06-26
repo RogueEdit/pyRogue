@@ -30,7 +30,8 @@ import requests
 from utilities import cFormatter, Color
 
 debug: bool = True
-debugDeactivateBackup: bool = True
+debugDeactivateBackup: bool = True if debug else False
+debugEnableTraceback: bool = True if debug else False
 version: str = 'v0.3.3-wip'
 title: str = f'<(^.^(< pyRogue {version} >)^.^)>'
 owner: str = 'rogueEdit'

@@ -1296,68 +1296,72 @@ class Rogue:
         Usage Example:
             >>> example_instance = ExampleClass()
             >>> example_instance.edit_vouchers()
-
         """
-        try:
-            gameData = self.__loadDataFromJSON('trainer.json')
+        gameData = self.__loadDataFromJSON('trainer.json')
+        currentTime = int(time.time() * 1000)
+        minBoundaryTime = currentTime - 3600 * 1000
+        changed = False
+        changedItems = []
 
-            currentTime = int(time.time() * 1000) 
-            minBoundaryTime = currentTime - 3600 * 1000  
+        # Initialize keysToUpdate with entries from your enum
+        voucherData = self.appData.voucherData
+        keysToUpdate = {member.name: member for member in voucherData}
+
+        # Ask the user if they want to unlock all vouchers or a specific one
+        choice = self.fh_getChoiceInput(
+            promptMesage='Do you want to unlock all vouchers or unlock a specific voucher?',
+            choices={'1': 'All', '2': 'Specific'},
+            zeroCancel=True
+        )
+
+        if choice == '1':
+            for key in keysToUpdate:
+                randomTime = minBoundaryTime + random.randint(0, currentTime - minBoundaryTime)
+                keysToUpdate[key] = randomTime
             
+            for key, value in keysToUpdate.items():
+                changedItems.append((key, randomTime))
+                
+                gameData["gameStats"][key] = value
+                changed = True
 
-            choice: int = int(input('Do you want to unlock all vouchers or unlock a specific voucher? (1: All | 2: Specific): '))
+        elif choice == '2':
+            self.legacy_vouchers()
+            self.fh_completerInfo()
 
-            if (choice < 1) or (choice > 2):
-                cFormatter.print(Color.INFO, 'Invalid command.')
-                return
-            elif choice == 1:
-                keysToUpdate = {}
-                for voucher in self.vouchers_data.__members__:
+            while True:
+                try:
+                    inputValue = self.fh_getCompleterInput(
+                        promptMessage='What voucher would you like?',
+                        choices={**{member.name.lower(): member for member in voucherData}, 
+                                **{str(member.value): member for member in voucherData}},
+                        softCancel=True
+                    )
+
+                    if inputValue == 'skip':
+                        raise OperationSoftCancel()
+
                     randomTime = minBoundaryTime + random.randint(0, currentTime - minBoundaryTime)
-                    keysToUpdate[voucher] = randomTime
-                gameData['voucherUnlocks'] = keysToUpdate
-            else:
-                self.legacy_vouchers()
-                vouchersCompleter: WordCompleter = WordCompleter(self.vouchers_data.__members__.keys(), ignore_case=True)
-                cFormatter.print(Color.INFO, 'Write the name of the voucher, it will recommend for auto-completion.')
-            
-                vouchers: str = prompt('What voucher would you like?: ', completer=vouchersCompleter)
+                    gameData.setdefault('voucherUnlocks', {})[inputValue.name] = randomTime
+                    changedItems.append((inputValue.name, randomTime))
+                    changed = True
+                    cFormatter.print(Color.DEBUG, f'{inputValue.name} queued for update.')
 
-                if 'voucherUnlocks' in gameData and vouchers in gameData['voucherUnlocks']:
-                    randomTime = minBoundaryTime + random.randint(0, currentTime - minBoundaryTime)
-                    gameData['voucherUnlocks'][vouchers] = randomTime
-                else:
-                    randomTime = minBoundaryTime + random.randint(0, currentTime - minBoundaryTime)
-                    gameData['voucherUnlocks'][vouchers] = randomTime
+                except ValueError:
+                    cFormatter.print(Color.INFO, 'Invalid input. Please try again.')
+                except OperationSoftCancel:
+                    break
 
+        if changed:
             self.__writeJSONData(gameData, 'trainer.json')
+            cFormatter.print(Color.YELLOW, 'Changes saved:')
+            for key, value in changedItems:
+                cFormatter.print(Color.INFO, f'Added {key} with timestamp {value}.')
+            raise OperationSuccessful('Successfully updated vouchers.')
+        else:
+            cFormatter.print(Color.YELLOW, 'No changes made.')
 
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function edit_vouchers(): {e}', isLogging=True)
 
-    def legacy_pokedex(self) -> None:
-        pokemons = [f'{member.value}: {member.name}' for member in self.pokemon_id_by_name]
-        cFormatter.print(Color.WHITE, '\n'.join(pokemons))
-        
-    def legacy_printBiomes(self) -> None:
-        biomes = [f'{member.value}: {member.name}' for member in self.biomesByID]
-        cFormatter.print(Color.WHITE, '\n'.join(biomes))
-
-    def legacy_moves(self) -> None:
-        moves = [f'{member.value}: {member.name}' for member in self.moves_by_id]
-        cFormatter.print(Color.WHITE, '\n'.join(moves))
-
-    def legacy_natures(self) -> None:  
-        natures = [f'{member.value}: {member.name}' for member in self.natureData]
-        cFormatter.print(Color.WHITE, '\n'.join(natures))
-        
-    def legacy_vouchers(self) -> None:
-        vouchers = [f'{member.value}: {member.name}' for member in self.vouchers_data]
-        cFormatter.print(Color.WHITE, '\n'.join(vouchers))
-
-    def legacy_natureSlot(self) -> None:
-        natureSlot = [f'{member.value}: {member.name}' for member in self.natureSlot_data]
-        cFormatter.print(Color.WHITE, '\n'.join(natureSlot))
 
     @handle_operation_exceptions
     def f_addCandies(self) -> None:
@@ -1388,19 +1392,17 @@ class Rogue:
 
         trainerData = self.__loadDataFromJSON('trainer.json')
 
-        cFormatter.print(Color.DEBUG, 'Write the name of the Pokémon or its ID.')
-
         inputValue = self.fh_getCompleterInput(
-            promptMessage='Choose which pokemon: ',
+            promptMessage='Write either the ID or the Name of the Pokemon: ',
             choices={**{member.name.lower(): member for member in self.appData.pokemonIDByName}, 
                      **{str(member.value): member for member in self.appData.pokemonIDByName}},
             zeroCancel=False
         )
         pokeName = inputValue.name.lower()
-
+        currentCandies = trainerData["starterData"][inputValue.value]["candyCount"]
         # Prompt for number of candies using fh_getIntegerInput method
         candies = self.fh_getIntegerInput(
-            promptMessage='How many candies do you want to add (0 to cancel): ',
+            promptMessage=f'How many candies do you want to add?\n You currently have {currentCandies} on {inputValue.name.capitalize()}. (0 to cancel):',
             minBound=0,
             maxBound=999,  # Adjust maximum candies as needed
             zeroCancel=True
@@ -1444,8 +1446,8 @@ class Rogue:
         biomeData = self.appData.biomesByID
 
         # Prompt user for biome input
-        self.fh_printEnums('biomes')
-        cFormatter.print(Color.INFO, f'Current Biome {currentBiomeName}. You can type `exit`, `cancel` or press STRG+C to exit.')
+        self.legacy_printBiomes()
+        cFormatter.print(Color.INFO, f'\nCurrent Biome {currentBiomeName}. You can type `exit`, `cancel` or press STRG+C to exit.')
         while True:
             try:
                 inputValue = self.fh_getCompleterInput(
@@ -1676,10 +1678,10 @@ class Rogue:
 
         Workflow:
         1. Loads trainer data from 'trainer.json'.
-        2. Generates random statistics for various gameplay attributes and updates the trainer data accordingly.
-        3. Prompts the user to choose whether to randomize all values, manually enter values for each attribute, or manually enter values in a loop.
-        4. Updates the gameStats based on user input.
-        5. Writes the updated trainer data back to 'trainer.json'.
+        2. Prompts the user to choose whether to randomize all values, manually enter values for each attribute, or manually enter values in a loop.
+        3. Either Generates random statistics for various gameplay attributes and updates the trainer data accordingly.
+        4. or Updates the gameStats based on user input.
+        5. Writes the updated trainer data back to 'trainer.json', only the keys specified.
 
         Usage Example:
             >>> example_instance = ExampleClass()
@@ -1733,9 +1735,9 @@ class Rogue:
             'manual': 'Manually enter values for a single attribute',
             'loop': 'Manually enter values for all attributes in a loop'
         }
-
+        cFormatter.fh_printSeperators(30, '-')
         action = self.fh_getChoiceInput('Choose which attribute to modify. You can type either ID or Name.', choices, renderMenu=True, zeroCancel=True)
-
+        cFormatter.fh_printSeperators(30, '-')
         changed = False
         changedItems = []
         
@@ -1752,13 +1754,14 @@ class Rogue:
 
             menuDisplay = "\n".join([f"{index}: {key} ({gameData['gameStats'].get(key, 0)})" for index, key in optionList.items()])
             cFormatter.print(Color.INFO, menuDisplay)
+            self.fh_completerInfo()
             while True:
                 try:
                     inputValue = self.fh_getCompleterInput(
                         'Choose attribute to edit:',
                         {**optionList, **nameToKey},
                         softCancel=True
-                    ).lower()
+                    )
 
                     promptMessage = f'Enter new value for {inputValue} (Current: {gameData["gameStats"].get(inputValue, 0)}): '
                     newValue = self.fh_getIntegerInput(promptMessage, 0, 999999, softCancel=True)
@@ -1897,7 +1900,7 @@ class Rogue:
 
         while True:
             userInput = input(fullPrompt).strip()
-            if userInput.lower() == 'exit' or userInput.lower() == 'cancel':
+            if userInput.lower() == 'exit' or userInput.lower() == 'cancel' or userInput == '':
                 raise OperationCancel()
             if userInput == '0':
                 if zeroCancel:
@@ -1943,7 +1946,7 @@ class Rogue:
 
         while True:
             userInput = input(fullPrompt).strip()
-            if userInput.lower() == 'exit' or userInput.lower() == 'cancel':
+            if userInput.lower() == 'exit' or userInput.lower() == 'cancel' or userInput == '':
                 raise OperationCancel()
             if userInput == '0':
                 if zeroCancel:
@@ -1987,11 +1990,11 @@ class Rogue:
 
         # Create a WordCompleter from the keys of choices dictionary
         completer = WordCompleter(choices.keys(), ignore_case=True)
-
+    
         while True:
             userInput = prompt(fullPrompt, completer=completer).strip()  # Ensure prompt is the correct callable
 
-            if userInput.lower() == 'exit' or userInput.lower() == 'cancel':
+            if userInput.lower() == 'exit' or userInput.lower() == 'cancel' or userInput == '':
                 raise OperationCancel()
             if userInput == '0':
                 if softCancel:
@@ -2013,14 +2016,14 @@ class Rogue:
                 enum_member = next((member for member in choices.values() if isinstance(member, Enum) and member.value == int(inputValue)), None)
             else:
                 # Input is a name
-                enum_member = next((member for member in choices.values() if isinstance(member, Enum) and member.name.lower() == inputValue), None)
+                enum_member = next((member for member in choices.values() if isinstance(member, Enum) and member.name() == inputValue), None)
 
             if enum_member is not None:
                 return enum_member
 
             # If input is not valid
-            raise ValueError(f'{userInput}')
-        
+            cFormatter.print(Color.INFO, 'Invalid choice.')
+    
     @handle_operation_exceptions
     def fh_printEnums(self, enum_type: str) -> None:
         """
@@ -2048,3 +2051,33 @@ class Rogue:
         enums = enums_mapping[enum_type]
         formatted_enums = [f'{member.value}: {member.name}' for member in enums]
         cFormatter.print(Color.WHITE, '\n'.join(formatted_enums))
+
+    def legacy_pokedex(self) -> None:
+        pokemons = [f'{member.value}: {member.name}' for member in self.pokemon_id_by_name]
+        cFormatter.print(Color.WHITE, '\n'.join(pokemons))
+        
+    def legacy_moves(self) -> None:
+        moves = [f'{member.value}: {member.name}' for member in self.moves_by_id]
+        cFormatter.print(Color.WHITE, '\n'.join(moves))
+
+    def legacy_natures(self) -> None:  
+        natures = [f'{member.value}: {member.name}' for member in self.natureData]
+        cFormatter.print(Color.WHITE, '\n'.join(natures))
+        
+    def legacy_vouchers(self) -> None:
+        vouchers = [f'{member.value}: {member.name}' for member in self.vouchers_data]
+        cFormatter.print(Color.WHITE, '\n'.join(vouchers))
+
+    def legacy_natureSlot(self) -> None:
+        natureSlot = [f'{member.value}: {member.name}' for member in self.natureSlot_data]
+        cFormatter.print(Color.WHITE, '\n'.join(natureSlot))
+
+    def legacy_printBiomes(self) -> None:
+        biomes = [f'{member.value}: {member.name}' for member in self.biomesByID]
+        cFormatter.print(Color.WHITE, '\n'.join(biomes))
+
+    @staticmethod
+    def fh_completerInfo():
+        cFormatter.fh_printSeperators(30, '-')
+        cFormatter.print(Color.DEBUG, 'You can type either the name or ID. 0 will cancel, but save done changes.')
+        cFormatter.print(Color.DEBUG, 'Type `exit` or `cancel` or nothing to cancel without safes.')
