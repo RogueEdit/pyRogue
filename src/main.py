@@ -123,6 +123,7 @@ def m_mainMenu(rogue, editOffline: bool = False):
     ]
     if editOffline or config.debug:
         term = [entry for entry in term if entry[1] != rogue.update_all]
+        term = [entry for entry in term if entry[1] != rogue.get_trainer_data]
     try:
         while True:
             validChoices = cFormatter.m_initializeMenu(term)

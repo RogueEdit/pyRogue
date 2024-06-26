@@ -49,21 +49,20 @@ Currently work in progres...
   - All rewrites affect mentioned above affect those functions so far:
     - `f_editAccountStats(retested:works)` <Can now either random all, set one by choice (With AutoComplete by ID or Name) or loop over all one by one>
     - `f_editPokeballs(tested:works)` <Can now skip pokes, edit single ones or all> <Can now also skip choices>
-    - `f_restoreBackup(tested:works)`
-    - `f_editMoney(tested:works)`
-    - `f_editHatchWaves(tested:works)`
+    - `f_restoreBackup(tested:works)` 
+    - `f_editMoney(tested:works)` <Adjusted to new input handlers>
+    - `f_editHatchWaves(tested:works)` <Adjusted to new input handlers>
     - `f_changeSaveSlot(tested:works)` <Can now change Slots directly>
     - `f_submenuEditor(tested:works)` - <Can now use Autocomplete and 0Cancel>
-    - `f_editBiome(tested:works)` <Can now type ID or Biome, case-insesitive, with autocompleter>
-    - `f_addEggsGenerator(tested:works)`
+    - `f_editBiome(tested:works)` <Can now type ID or Biome for autocomplete = case-insensitive, with autocompleter>
+    - `f_addEggsGenerator(tested:works)` <Rewritten, fixed ID, better input logic>
     - `f_addCandies(tested:works)` 
     - `f_createBackup()` <- need to backup slots
     - `f_restoreBackup(tested:works)` <Should automatically recognize slot backups too>
-    - ``
-    
-    - `f_editVouchers(wip)`
-    - `f_editAchivements(wip)`
-    - `f_editGamemodes(wip)`
+    - `f_editVouchers(tested:works)` <Can now either add single ones with autocomplete with ID/Name = case-insensitive, multiple in a loop or all at once.>
+
+    - `f_editAchivements(tested:works)` <Can now either add single ones with autocomplete with ID/Name = case-insensitive, multiple in a loop or all at once.>
+    - `f_editGamemodes(tested:works)` <Can now either add single ones with autocomplete with ID/Name = case-insensitive, multiple in a loop or all at once.>
     - `add_ticket(wip)`
     - `edit_starter_separate(wip)`
 

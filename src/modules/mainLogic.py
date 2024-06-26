@@ -156,7 +156,7 @@ class Rogue:
         self.backup_dir = config.backupDirectory
         self.data_dir = config.dataDirectory
 
-        self.pokemon_id_by_name, self.biomesByID, self.moves_by_id, self.natureData, self.vouchers_data, self.natureSlot_data = self.appData.f_convertToEnums()
+        self.pokemon_id_by_name, self.biomesByID, self.moves_by_id, self.vouchers_data, self.natureData, self.natureSlot_data, self.achievementsData = self.appData.f_convertToEnums()
         self.editOffline = editOffline
         try:
             with open(f'{self.data_dir}/extra.json') as f:

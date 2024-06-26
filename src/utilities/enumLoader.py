@@ -96,6 +96,9 @@ class EnumLoader:
             
             with open(f'{dataDir}/natureSlot.json') as f:
                 self.natureDataSlots = json.load(f)
+
+            with open(f'{dataDir}/achievements.json') as f:
+                self.achievementsData = json.load(f)
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in enumLoader.__f_loadData(). {e}', isLogging=True)
 
@@ -125,6 +128,7 @@ class EnumLoader:
         Convert loaded data to Enums.
 
         Returns:
+            self.pokemonIDByName, self.biomesByID, self.movesByID, self.voucherData, self.natureData, self.natureDataSlots, self.achievementsData
             tuple: A tuple containing the created Enums for Pokemon IDs, biomes, moves, natures, vouchers, and nature slots.
 
         Example:
@@ -146,5 +150,6 @@ class EnumLoader:
         self.voucherData = self.__f_createENUMFromDict(self.voucherData['vouchers'], 'VouchersEnum')
         self.natureData = self.__f_createENUMFromDict(self.natureData['natures'], 'NaturesEnum')
         self.natureDataSlots = self.__f_createENUMFromDict(self.natureDataSlots['natureSlot'], 'NaturesSlotEnum')
+        self.achievementsData = self.__f_createENUMFromDict(self.achievementsData['achvUnlocks'], 'AchievementsEnum')
 
-        return (self.pokemonIDByName, self.biomesByID, self.movesByID, self.natureData, self.voucherData, self.natureDataSlots)
+        return (self.pokemonIDByName, self.biomesByID, self.movesByID, self.voucherData, self.natureData, self.natureDataSlots, self.achievementsData)
