@@ -114,6 +114,9 @@ def m_mainMenu(rogue, editOffline: bool = False):
         term = [entry for entry in term if entry[1] != rogue.f_updateAllToServer]
         term = [entry for entry in term if entry[1] != rogue.f_getGameData]
         term = [entry for entry in term if entry[1] != rogue.f_logout]
+        replacement_entry = ('Offline-Edits are directly applied', 'helper')
+        term = [replacement_entry if entry == ('You can always edit your JSON manually as well!', 'helper') else entry for entry in term]
+
     try:
         while True:
             validChoices = cFormatter.m_initializeMenu(term)

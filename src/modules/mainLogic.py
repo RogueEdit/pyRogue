@@ -153,14 +153,14 @@ class Rogue:
         self.generator.generate()
         self.appData = EnumLoader()
 
-        self.backup_dir = config.backupDirectory
-        self.data_dir = config.dataDirectory
+        self.backupDirectory = config.backupDirectory
+        self.dataDirectory = config.dataDirectory
 
         self.starterNamesById, self.biomeNamesById, self.moveNamesById, self.vouchersData, self.natureData, self.natureSlotData, self.achievementsData, self.pokemonData = self.appData.f_convertToEnums()
         self.editOffline = editOffline
 
         
-        self.__dump_data()
+        self.__fh_dump_data()
 
     
     """    This might be needed 
@@ -254,7 +254,8 @@ class Rogue:
 
         return headers
     
-    def __dump_data(self, slot: int = 1) -> None:
+    @handle_operation_exceptions
+    def __fh_dump_data(self, slot: int = 1) -> None:
         """
         Dump data from the API to local files.
 
@@ -467,16 +468,19 @@ class Rogue:
             cFormatter.print(Color.BRIGHT_GREEN, 'Session terminated successfully.')
             sleep(5)
             exit(0)
+        except requests.exceptions.RequestException as e:
+            cFormatter.print(Color.WARNING, f'Error making logout request: {e}')
         except Exception as e:
             cFormatter.print(Color.WARNING, f'Error logging out. {e}')
 
+    @handle_operation_exceptions
     def f_createBackup(self, offline: bool = False) -> None:
         """
         Create a backup of JSON files.
 
         What it does:
-        - Creates a backup of all JSON files in the current directory to `config.backupsDirectory`.
-        - Uses a timestamped naming convention for backup files (`backup_{trainerid}_{timestamp}.json`).
+        - Creates a backup of all JSON files in the current directory to `config.backupDirectory`.
+        - Uses a timestamped naming convention for backup files (`backup_{trainerid}_{timestamp}.json` and `backup_{slot}_{trainerid}_{timestamp}.json`).
         - Prints 'Backup created.' upon successful backup completion.
 
         :args: None
@@ -487,6 +491,7 @@ class Rogue:
 
         Output Example:
             # Output: backup/backup_{trainerid}_{timestamp}.json
+            # Output: backup/backup_{slot}_{trainerid}_{timestamp}.json
             # Backup created.
 
         Modules/Librarys used and for what purpose exactly in each function:
@@ -498,28 +503,54 @@ class Rogue:
         if config.debugDeactivateBackup:
             return
 
-        backupDirectory =  config.backupDirectory
+        backupDirectory = config.backupDirectory
         if not os.path.exists(backupDirectory):
             os.makedirs(backupDirectory)
 
-        for file in os.listdir('.'):
-            if file.endswith('.json'):
-                with open(file, 'r') as f:
-                    data = json.load(f)
-                trainerId = data.get('trainerId')
-                if trainerId is not None:
-                    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-                    
-                    baseFilename = f'base_{trainerId}.json'
-                    baseFilepath = os.path.join(backupDirectory, baseFilename)
+        # Extract trainerId from trainer.json
+        trainerId = None
+        if os.path.exists('trainer.json'):
+            with open('trainer.json', 'r') as f:
+                data = json.load(f)
+            trainerId = data.get('trainerId')
 
-                    if os.path.exists(baseFilepath):
-                        backupFilename = f'backup_{trainerId}_{timestamp}.json'
-                        backupFilepath = os.path.join(backupDirectory, backupFilename)
-                        shutil.copy(file, backupFilepath)
-                    else:
-                        shutil.copy(file, baseFilepath)
-                    cFormatter.print(Color.GREEN, 'Backup created.')
+        if trainerId is None:
+            cFormatter.print(Color.RED, 'No valid trainerId found in trainer.json.')
+            return
+
+        # Backup trainer.json
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        baseTrainerFilename = f'base_{trainerId}_{timestamp}.json'
+        baseTrainerFilepath = os.path.join(backupDirectory, baseTrainerFilename)
+
+        if os.path.exists(baseTrainerFilepath):
+            backupTrainerFilename = f'backup_{trainerId}_{timestamp}.json'
+            backupTrainerFilepath = os.path.join(backupDirectory, backupTrainerFilename)
+            shutil.copy('trainer.json', backupTrainerFilepath)
+            cFormatter.print(Color.GREEN, f'Backup {backupTrainerFilename} created.')
+        else:
+            shutil.copy('trainer.json', baseTrainerFilepath)
+            cFormatter.print(Color.GREEN, f'Backup {baseTrainerFilename} created.')
+
+         # Backup slot_X.json files
+        for file in os.listdir('.'):
+            if file.startswith('slot_') and file.endswith('.json'):
+                slot_filename = file
+                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                baseSlotFilename = f'base_{slot_filename}'
+                baseSlotFilepath = os.path.join(backupDirectory, baseSlotFilename)
+
+                if os.path.exists(baseSlotFilepath):
+                    backupSlotFilename = f'backup_{slot_filename[:-5]}_{timestamp}.json'
+                    backupSlotFilepath = os.path.join(backupDirectory, backupSlotFilename)
+                    shutil.copy(file, backupSlotFilepath)
+                    cFormatter.print(Color.GREEN, f'Backup {backupSlotFilename} created.')
+                else:
+                    shutil.copy(file, baseSlotFilepath)
+                    cFormatter.print(Color.GREEN, f'Backup {baseSlotFilename} created.')
+
+
+        cFormatter.print(Color.GREEN, 'Backup created.')
 
     @handle_operation_exceptions
     def f_restoreBackup(self) -> None:
@@ -527,7 +558,7 @@ class Rogue:
         Restore a backup of JSON files and update the timestamp in trainer.json.
 
         What it does:
-        - Restores a selected backup file (`backup_{trainerid}_{timestamp}.json` or `backup_{trainerid}_slot_{slotnumber}_{timestamp}.json`) to the appropriate target file.
+        - Restores a selected backup file (`backup_{trainerid}_{timestamp}.json` or `backup_slot_{slot}_{trainerid}_{timestamp}.json`) to the appropriate target file.
         - Updates the timestamp in the target file with the current timestamp upon restoration.
         - Displays a numbered list of available backup files matching the current trainer ID for selection.
         - Prompts the user to choose a backup file to restore and handles user input validation.
@@ -547,79 +578,82 @@ class Rogue:
             # Enter the number of the file you want to restore: 2
             # Data restored.
 
-        Modules/Librarys used and for what purpose exactly in each function:
+        Modules/Libraries used and for what purpose exactly in each function:
         - os: For directory listing and file handling operations.
         - re: For filtering and sorting backup files based on trainer ID patterns.
         - shutil: For copying files from the backup directory to the target file.
         - datetime: For generating timestamps and updating timestamps in the target file.
         """
-        backupDirectory = config.backupDirectory
-        files = os.listdir(backupDirectory)
+        try:
+            backupDirectory = config.backupDirectory
+            files = os.listdir(backupDirectory)
 
-        # Filter and sort files that match trainerId
-        regexPattern = f'_{self.trainerId}'
-        baseFile = f'base{regexPattern}.json'
-        backupFilesPattern = sorted(
-            (f for f in files if re.match(rf'backup{regexPattern}(_slot_\d+)?_\d{{6,8}}(_\d{{6}})?\.json', f)),
-            key=lambda x: (re.findall(r'\d+', x)[0], re.findall(r'\d{6,8}(_\d{6})?', x)[0])
-        )
+            # Filter and sort files that match trainerId
+            trainerId = self.trainerId
+            baseFilePattern = re.compile(rf'base_{trainerId}_\d{{8}}_\d{{6}}\.json')
+            backupFilePattern = re.compile(rf'backup_(\d+_)?{trainerId}_\d{{8}}_\d{{6}}\.json')
 
-        # Include the base file at the top of the list if it exists
-        existingFiles = [baseFile] if baseFile in files else []
-        existingFiles += backupFilesPattern
+            # Get base and backup files separately
+            baseFiles = sorted([f for f in files if baseFilePattern.match(f)], key=os.path.getmtime)
+            backupFiles = sorted([f for f in files if backupFilePattern.match(f)], key=os.path.getmtime)
 
-        if not existingFiles:
-            cFormatter.print(Color.WARNING, 'No backup files found for your trainer ID.')
-            return
+            # Display files with base files first
+            displayFiles = baseFiles + backupFiles
 
-        # Displaying sorted list with numbers
-        for idx, file in enumerate(existingFiles, 1):
-            sidenote = '        <- Created on first edit' if file.startswith('base_') else ''
-            print(f'{idx}: {file} {sidenote}')
+            if not displayFiles:
+                cFormatter.print(Color.WARNING, 'No backup files found for your trainer ID.')
+                return
 
-        # Getting user's choice
-        while True:
-            choice = int(self.fh_getIntegerInput(
-                promptMessage='Enter the number of the file you want to restore', 
-                minBound=1, maxBound=len(existingFiles),
-                zeroCancel=True
-            ))
-            if choice == 0:
-                raise OperationCancel()
-            if 1 <= choice <= len(existingFiles):
-                chosenFile = existingFiles[choice - 1]
-                chosenFilepath = os.path.join(backupDirectory, chosenFile)
+            # Displaying sorted list with numbers
+            for idx, file in enumerate(displayFiles, 1):
+                sidenote = '        <- Created on first edit' if file.startswith('base_') else ''
+                print(f'{idx}: {file} {sidenote}')
 
-                # Determine the output filepath
-                parentDirectory = os.path.abspath(os.path.join(backupDirectory, os.pardir))
+            # Getting user's choice
+            while True:
+                try:
+                    choice = int(input('Enter the number of the file you want to restore: '))
+                    if 1 <= choice <= len(displayFiles):
+                        chosenFile = displayFiles[choice - 1]
+                        chosenFilepath = os.path.join(backupDirectory, chosenFile)
 
-                # If the chosen file has "slot_x" in its name, determine the slot number and the corresponding target file
-                matchSlot = re.search(r'_slot_(\d+)', chosenFile)
-                if matchSlot:
-                    dynSlot = matchSlot.group(1)
-                    outputFilename = f'slot_{dynSlot}.json'
-                else:
-                    outputFilename = 'trainer.json'
+                        # Determine the output filepath
+                        parentDirectory = os.path.abspath(os.path.join(backupDirectory, os.pardir))
 
-                outputFilepath = os.path.join(parentDirectory, outputFilename)
+                        # If the chosen file has "slot_X" in its name, determine the slot number and the corresponding target file
+                        matchSlot = re.search(r'backup_(\d+)_', chosenFile)
+                        if matchSlot:
+                            dynSlot = matchSlot.group(1)
+                            outputFilename = f'slot_{dynSlot}.json'
+                        else:
+                            outputFilename = 'trainer.json'
 
-                # Copy the chosen file to the output filepath
-                shutil.copyfile(chosenFilepath, outputFilepath)
+                        outputFilepath = os.path.join(parentDirectory, outputFilename)
 
-                # Read the restored file
-                with open(outputFilepath, 'r') as file:
-                    data = json.load(file)
+                        # Copy the chosen file to the output filepath
+                        shutil.copyfile(chosenFilepath, outputFilepath)
 
-                # Update the timestamp
-                curTimestamp = int(datetime.now().timestamp() * 1000)
-                data['timestamp'] = curTimestamp
+                        # Read the restored file
+                        with open(outputFilepath, 'r') as file:
+                            data = json.load(file)
 
-                # Write the updated data back to the file
-                with open(outputFilepath, 'w') as file:
-                    json.dump(data, file, indent=4)
+                        # Update the timestamp
+                        curTimestamp = int(datetime.now().timestamp() * 1000)
+                        data['timestamp'] = curTimestamp
 
-                cFormatter.print(Color.GREEN, 'Data restored and timestamp updated.')
-                break
+                        # Write the updated data back to the file
+                        with open(outputFilepath, 'w') as file:
+                            json.dump(data, file, indent=4)
+
+                        cFormatter.print(Color.GREEN, 'Data restored and timestamp updated.')
+                        break
+                    else:
+                        cFormatter.print(Color.WARNING, 'Invalid choice. Please enter a number within range.')
+                except ValueError:
+                    cFormatter.print(Color.WARNING, 'Invalid input. Please enter a valid number.')
+        
+        except Exception as e:
+            cFormatter.print(Color.CRITICAL, f'Error in function f_restoreBackup: {e}', isLogging=True)
 
     # TODO IMPORTANT: Simplify
     @limiter.lockout
@@ -1853,20 +1887,23 @@ class Rogue:
                 'Select a slot: ', 1, 5,
                 zeroCancel=True
             )
-            filename = f'slot_{newSlot}.json'
-            if int(self.slot) == int(newSlot):
-                cFormatter.print(Color.ERROR, f'Slot {filename} already loaded.')
-            else:
-                if self.editOffline:
-                    # Construct the filename
-                    
-                    if os.path.exists(filename):
-                        self.slot = newSlot
-                        raise OperationSuccessful(f'Changed slot to {newSlot}')
-                    else:
-                        cFormatter.print(Color.ERROR, f'File {filename} does not exist. Please select another slot.')
+            if self.editOffline or config.debug:
+                filename = f'slot_{newSlot}.json'
+                if int(self.slot) == int(newSlot):
+                    cFormatter.print(Color.ERROR, f'Slot {filename} already loaded.')
                 else:
-                    self.f_getGameData(newSlot)
+                    if self.editOffline:
+                        # Construct the filename
+                        
+                        if os.path.exists(filename):
+                            self.slot = newSlot
+                            raise OperationSuccessful(f'Changed slot to {newSlot}')
+                        else:
+                            cFormatter.print(Color.ERROR, f'File {filename} does not exist. Please select another slot.')
+                    else:
+                        self.f_getGameData(newSlot)
+            else:
+                self.f_getSlotData(newSlot)
 
     @staticmethod
     def fh_getChoiceInput(promptMesage: str, choices: dict, renderMenu: bool = False, zeroCancel: bool=False, softCancel:bool = False) -> str:

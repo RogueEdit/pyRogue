@@ -48,7 +48,8 @@ if not os.path.exists(dataDirectory):
 
 
 debug: bool = True
-debugDeactivateBackup: bool = True if debug else False
+# debugDeactivateBackup: bool = True if debug else False
+debugDeactivateBackup = False
 debugEnableTraceback: bool = True if debug else False
 
 cacertURL = 'https://curl.se/ca/cacert.pem'
