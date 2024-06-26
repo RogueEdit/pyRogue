@@ -60,7 +60,7 @@ from utilities import Limiter, cFormatter, Color
 import pyuseragents
 from user_agents import parse
 import string
-from modules.config import useCACERT
+from modules.config import useCaCert
 
 
 def handle_error_response(response: requests.Response) -> Dict[str, str]:
@@ -299,7 +299,7 @@ class requestsLogic:
             headers = HeaderGenerator.generate_headers()
             cFormatter.print(Color.DEBUG, 'Adding delay to appear more natural to the server. Please stand by...')
             cFormatter.print(Color.DEBUG, '(If it takes longer than 5 Seconds its not on us.)')
-            response = self.session.post(self.LOGIN_URL, headers=headers, data=data, verify=useCACERT)
+            response = self.session.post(self.LOGIN_URL, headers=headers, data=data, verify=useCaCert)
             sleep(random.randint(3, 5))
             response.raise_for_status()
 

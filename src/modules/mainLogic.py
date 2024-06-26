@@ -366,7 +366,7 @@ class Rogue:
                 cFormatter.print(Color.CRITICAL, f"Error in function get_trainer_data(): {e}", isLogging=True)
         else:
             try:
-                response = self.session.get(f'{self.TRAINER_DATA_URL}{self.clientSessionId}', headers=self.headers, verify=config.useCACERT)
+                response = self.session.get(f'{self.TRAINER_DATA_URL}{self.clientSessionId}', headers=self.headers, verify=config.useCaCert)
                 response.raise_for_status()
                 if response.content:  # Check if the response content is not empty
                     cFormatter.print(Color.GREEN, 'Successfully fetched trainer data.')
@@ -428,7 +428,7 @@ class Rogue:
                 cFormatter.print(Color.CRITICAL, f'Error in function get_gamesave_data(): {e}', isLogging=True)
         else:
             try:
-                response = self.session.get(f'{self.GAMESAVE_SLOT_URL}{slot-1}&clientSessionId={self.clientSessionId}', headers=self.headers, verify=config.useCACERT)
+                response = self.session.get(f'{self.GAMESAVE_SLOT_URL}{slot-1}&clientSessionId={self.clientSessionId}', headers=self.headers, verify=config.useCaCert)
                 response.raise_for_status()
                 if response.content:  # Check if the response content is not empty
                     cFormatter.print(Color.GREEN, f'Successfully fetched data for slot {self.slot}.')
@@ -687,7 +687,7 @@ class Rogue:
                 cFormatter.print(Color.GREEN, "That seemed to work! Refresh without cache (STRG+F5)")
                 self.f_logout()
             else:
-                response = self.session.post(url=url, headers=self.headers, json=payload, verify=config.useCACERT)
+                response = self.session.post(url=url, headers=self.headers, json=payload, verify=config.useCaCert)
                 if response.status_code == 400:
                     cFormatter.print(Color.WARNING, 'Bad Request!')
                     return

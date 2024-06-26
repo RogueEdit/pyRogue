@@ -29,10 +29,33 @@ from datetime import datetime, timedelta
 import requests
 from utilities import cFormatter, Color
 
+logsDirectory: str = os.path.join(os.getcwd(), 'logs')
+backupDirectory: str = os.path.join(os.getcwd(), 'backups')
+dataDirectory: str = os.path.join(os.getcwd(), 'data')
+
 debug: bool = True
 debugDeactivateBackup: bool = True if debug else False
 debugEnableTraceback: bool = True if debug else False
-useCACERT = False if debug else os.path.join(os.getcwd(), './data/cacert.pem')
+
+cacertURL = 'https://curl.se/ca/cacert.pem'
+cacertPath = f'{dataDirectory}/cacert.pem'
+if not os.path.exists(cacertPath):
+    print(f"{cacertPath} not found. This is needed for SSL Connections. \n Fetching from {cacertURL}...")
+
+    # Fetch the file using requests library
+    response = requests.get(cacertURL)
+    
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Save the content to local file
+        with open(cacertPath, 'wb') as f:
+            f.write(response.content)
+        print(f"Successfully fetched {cacertURL} and saved as {cacertPath}.")
+    else:
+        print(f"Failed to fetch {cacertURL}. \n Status code: {response.status_code}. \n Cannot use SSL.")
+        cacertPath = False
+useCACERT = False if debug else cacertPath
+
 version: str = 'v0.3.3-wip'
 title: str = f'<(^.^(< pyRogue {version} >)^.^)>'
 owner: str = 'rogueEdit'
@@ -40,9 +63,6 @@ repo: str = 'onlineRogueEditor'
 repoURL: str = f'https://github.com/{owner}/{repo}/'
 releaseDate: str = '23.06.2024 10:30'
 
-logsDirectory: str = os.path.join(os.getcwd(), 'logs')
-backupDirectory: str = os.path.join(os.getcwd(), 'backups')
-dataDirectory: str = os.path.join(os.getcwd(), 'data')
 
 def f_checkForUpdates(requests: requests, datetime: datetime, timedelta: timedelta, Style: object) -> None:
     """
@@ -125,7 +145,7 @@ def f_checkForUpdates(requests: requests, datetime: datetime, timedelta: timedel
         commitList = [{'sha': commit['sha'], 'message': commit['commit']['message']} for commit in commits]
 
         if commitList:
-            cFormatter.print(Color.CRITICAL, '********* Outdated source code found. New commits: *********')
+            cFormatter.print(Color.CRITICAL, '********* Outdated source code found. New commits: *********', isLogging=True)
             for commit in commitList:
                 cFormatter.print(Color.WARNING, f'---- Commit Name: ({commit["message"]})')
                 cFormatter.print(Color.CYAN, f'------> with SHA ({commit["sha"]})')
@@ -209,6 +229,27 @@ def f_initFolders() -> None:
     if not os.path.exists(backupDirectory):
         os.makedirs(backupDirectory)
         cFormatter.print(Color.GREEN, f'Created backup directory: {backupDirectory}')
+    
+    # URL to download the file from
+    cacertURL = "https://curl.se/ca/cacert.pem"
+    # Path to the local file
+    cacertPath = "/data/cacert.pem"
+
+    # Check if the file exists locally
+    if not os.path.exists(cacertPath):
+        print(f"{cacertPath} not found. Fetching from {cacertURL}...")
+
+        # Fetch the file using requests library
+        response = requests.get(cacertURL)
+        
+        # Check if the request was successful
+        if response.status_code == 200:
+            # Save the content to local file
+            with open(cacertPath, 'wb') as f:
+                f.write(response.content)
+            print(f"Successfully fetched {cacertURL} and saved as {cacertPath}.")
+        else:
+            print(f"Failed to fetch {cacertURL}. Status code: {response.status_code}")
 
 def f_anonymizeName(username):
     if len(username) < 3:  # If username length is less than 3, return as is (minimum 2 characters)
