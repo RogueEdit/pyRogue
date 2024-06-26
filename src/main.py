@@ -114,6 +114,7 @@ def m_mainMenu(rogue, editOffline: bool = False):
         # Filter entrys that would break offline
         term = [entry for entry in term if entry[1] != rogue.f_updateAllToServer]
         term = [entry for entry in term if entry[1] != rogue.f_getGameData]
+        term = [entry for entry in term if entry[1] != rogue.f_logout]
     try:
         while True:
             validChoices = cFormatter.m_initializeMenu(term)

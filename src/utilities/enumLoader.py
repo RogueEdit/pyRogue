@@ -54,7 +54,7 @@ class EnumLoader:
         Modules:
             - typing: Provides type hints for better code clarity and type checking.
         """
-        self.pokemonIDByName: Optional[Dict[str, int]] = None
+        self.starterNameByID: Optional[Dict[str, int]] = None
         self.biomesByID: Optional[Dict[str, int]] = None
         self.movesByID: Optional[Dict[str, int]] = None
         self.natureData: Optional[Dict[str, int]] = None
@@ -79,8 +79,8 @@ class EnumLoader:
         """
         try:
             dataDir: str = config.dataDirectory
-            with open(f'{dataDir}/pokemon.json') as f:
-                self.pokemonIDByName = json.load(f)
+            with open(f'{dataDir}/starter.json') as f:
+                self.starterNameByID = json.load(f)
 
             with open(f'{dataDir}/biomes.json') as f:
                 self.biomesByID = json.load(f)
@@ -99,6 +99,11 @@ class EnumLoader:
 
             with open(f'{dataDir}/achievements.json') as f:
                 self.achievementsData = json.load(f)
+
+            with open(f'{dataDir}/pokemon.json') as f:
+                self.pokemonData = json.load(f)
+
+            
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in enumLoader.__f_loadData(). {e}', isLogging=True)
 
@@ -144,12 +149,13 @@ class EnumLoader:
         """
         self.__f_loadData()
 
-        self.pokemonIDByName = self.__f_createENUMFromDict(self.pokemonIDByName['dex'], 'PokemonEnum')
+        self.starterNameByID = self.__f_createENUMFromDict(self.starterNameByID['dex'], 'StarterEnum')
         self.biomesByID = self.__f_createENUMFromDict(self.biomesByID['biomes'], 'BiomesEnum')
         self.movesByID = self.__f_createENUMFromDict(self.movesByID['moves'], 'MovesEnum')
         self.voucherData = self.__f_createENUMFromDict(self.voucherData['vouchers'], 'VouchersEnum')
         self.natureData = self.__f_createENUMFromDict(self.natureData['natures'], 'NaturesEnum')
         self.natureDataSlots = self.__f_createENUMFromDict(self.natureDataSlots['natureSlot'], 'NaturesSlotEnum')
         self.achievementsData = self.__f_createENUMFromDict(self.achievementsData['achvUnlocks'], 'AchievementsEnum')
+        self.pokemonData = self.__f_createENUMFromDict(self.pokemonData['dex'], 'PokemonEnum')
 
-        return (self.pokemonIDByName, self.biomesByID, self.movesByID, self.voucherData, self.natureData, self.natureDataSlots, self.achievementsData)
+        return (self.starterNameByID, self.biomesByID, self.movesByID, self.voucherData, self.natureData, self.natureDataSlots, self.achievementsData, self.pokemonData)

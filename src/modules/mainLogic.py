@@ -156,7 +156,7 @@ class Rogue:
         self.backup_dir = config.backupDirectory
         self.data_dir = config.dataDirectory
 
-        self.pokemon_id_by_name, self.biomesByID, self.moves_by_id, self.vouchers_data, self.natureData, self.natureSlot_data, self.achievementsData = self.appData.f_convertToEnums()
+        self.starterNamesById, self.biomeNamesById, self.moveNamesById, self.vouchersData, self.natureData, self.natureSlotData, self.achievementsData, self.pokemonData = self.appData.f_convertToEnums()
         self.editOffline = editOffline
         try:
             with open(f'{self.data_dir}/extra.json') as f:
@@ -864,7 +864,7 @@ class Rogue:
             trainer_data: dict = self.__fh_loadDataFromJSON('trainer.json')
             
             if not dexId:
-                pokemon_completer: WordCompleter = WordCompleter(self.pokemon_id_by_name.__members__.keys(), ignore_case=True)
+                pokemon_completer: WordCompleter = WordCompleter(self.starterNamesById.__members__.keys(), ignore_case=True)
 
                 cFormatter.print(Color.INFO, 'Write the name of the pokemon, it will recommend for auto-completion.')
                 dexId: str = prompt('Enter Pokemon (Name / ID): ', completer=pokemon_completer)
@@ -875,7 +875,7 @@ class Rogue:
                         return
                 else:
                     try:
-                        dexId: str = self.pokemon_id_by_name[dexId.lower()].value
+                        dexId: str = self.starterNamesById[dexId.lower()].value
                     except KeyError:
                         cFormatter.print(Color.INFO, f'No pokemon with ID: {dexId}')
                         return
@@ -1100,12 +1100,12 @@ class Rogue:
                 return
 
             if command == 1:
-                pokemon_completer: WordCompleter = WordCompleter(self.pokemon_id_by_name.__members__.keys(), ignore_case=True)
+                pokemon_completer: WordCompleter = WordCompleter(self.starterNamesById.__members__.keys(), ignore_case=True)
                 cFormatter.print(Color.INFO, 'Write the name of the pokemon, it will recommend for auto-completion.')
                 dexId: str = prompt('Enter Pokemon (Name / ID): ', completer=pokemon_completer)
                 
                 try:
-                    dexId: str = self.pokemon_id_by_name[dexId.lower()].value
+                    dexId: str = self.starterNamesById[dexId.lower()].value
                 except KeyError:
                     cFormatter.print(Color.INFO, f'No Pokemon with Name: {dexId}')
                     return
@@ -1142,22 +1142,22 @@ class Rogue:
                 
                 self.legacy_moves()
 
-                move_completer: WordCompleter = WordCompleter(self.moves_by_id.__members__.keys(), ignore_case=True)
+                move_completer: WordCompleter = WordCompleter(self.moveNamesById.__members__.keys(), ignore_case=True)
                 
                 cFormatter.print(Color.INFO, 'Write the name of the move, it will recommend for auto completion.')
                 move: str = prompt('What move would you like?: ', completer=move_completer)
 
-                move: int = int(self.moves_by_id[move].value)
+                move: int = int(self.moveNamesById[move].value)
             
                 game_data['party'][party_num]['moveset'][move_slot]['moveId'] = move
             else:
                 self.legacy_natureSlot()
 
-                natureSlot_completer: WordCompleter = WordCompleter(self.natureSlot_data.__members__.keys(), ignore_case=True)
+                natureSlot_completer: WordCompleter = WordCompleter(self.natureSlotData.__members__.keys(), ignore_case=True)
                 cFormatter.print(Color.INFO, 'Write the name of the nature, it will recommend for auto-completion.')
                 natureSlot: str = prompt('What nature would you like?: ', completer=natureSlot_completer)
 
-                natureSlot: int = int(self.natureSlot_data[natureSlot].value)
+                natureSlot: int = int(self.natureSlotData[natureSlot].value)
             
                 game_data['party'][party_num]['nature'] = natureSlot
 
@@ -1409,8 +1409,8 @@ class Rogue:
 
         inputValue = self.fh_getCompleterInput(
             promptMessage='Write either the ID or the Name of the Pokemon: ',
-            choices={**{member.name.lower(): member for member in self.appData.pokemonIDByName}, 
-                     **{str(member.value): member for member in self.appData.pokemonIDByName}},
+            choices={**{member.name.lower(): member for member in self.appData.starterNameByID}, 
+                     **{str(member.value): member for member in self.appData.starterNameByID}},
             zeroCancel=False
         )
         pokeName = inputValue.name.lower()
@@ -2046,12 +2046,12 @@ class Rogue:
         }
         """
         enums_mapping = {
-            'pokedex': self.pokemon_id_by_name,
-            'biomes': self.biomesByID,
-            'moves': self.moves_by_id,
+            'pokedex': self.starterNamesById,
+            'biomes': self.biomeNamesById,
+            'moves': self.moveNamesById,
             'natures': self.natureData,
-            'vouchers': self.vouchers_data,
-            'natureSlot': self.natureSlot_data,
+            'vouchers': self.vouchersData,
+            'natureSlot': self.natureSlotData,
         }
 
         if enum_type not in enums_mapping:
@@ -2062,11 +2062,11 @@ class Rogue:
         cFormatter.print(Color.WHITE, '\n'.join(formatted_enums))
 
     def legacy_pokedex(self) -> None:
-        pokemons = [f'{member.value}: {member.name}' for member in self.pokemon_id_by_name]
+        pokemons = [f'{member.value}: {member.name}' for member in self.starterNamesById]
         cFormatter.print(Color.WHITE, '\n'.join(pokemons))
         
     def legacy_moves(self) -> None:
-        moves = [f'{member.value}: {member.name}' for member in self.moves_by_id]
+        moves = [f'{member.value}: {member.name}' for member in self.moveNamesById]
         cFormatter.print(Color.WHITE, '\n'.join(moves))
 
     def legacy_natures(self) -> None:  
@@ -2074,15 +2074,15 @@ class Rogue:
         cFormatter.print(Color.WHITE, '\n'.join(natures))
         
     def legacy_vouchers(self) -> None:
-        vouchers = [f'{member.value}: {member.name}' for member in self.vouchers_data]
+        vouchers = [f'{member.value}: {member.name}' for member in self.vouchersData]
         cFormatter.print(Color.WHITE, '\n'.join(vouchers))
 
     def legacy_natureSlot(self) -> None:
-        natureSlot = [f'{member.value}: {member.name}' for member in self.natureSlot_data]
+        natureSlot = [f'{member.value}: {member.name}' for member in self.natureSlotData]
         cFormatter.print(Color.WHITE, '\n'.join(natureSlot))
 
     def legacy_printBiomes(self) -> None:
-        biomes = [f'{member.value}: {member.name}' for member in self.biomesByID]
+        biomes = [f'{member.value}: {member.name}' for member in self.biomeNamesById]
         cFormatter.print(Color.WHITE, '\n'.join(biomes))
 
     def legacy_printAchievements(self) -> None:
