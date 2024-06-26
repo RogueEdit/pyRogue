@@ -165,36 +165,36 @@ class HeaderGenerator:
     """
     @classmethod
     def generate_headers(cls, isAuthHeader: bool = False) -> Dict[str, str]:
-        user_agent_string = pyuseragents.random()
-        user_agent = parse(user_agent_string)
+        userAgentString = pyuseragents.random()
+        userAgent = parse(userAgentString)
 
-        browser_family = user_agent.browser.family
-        browser_version = user_agent.browser.version_string
-        os_family = user_agent.os.family
-        os_version = user_agent.os.version_string
-        is_mobile = user_agent.is_mobile
+        browserFamily = userAgent.browser.family
+        browserVersion = userAgent.browser.version_string
+        osFamily = userAgent.os.family
+        osVersion = userAgent.os.version_string
+        isMobile = userAgent.is_mobile
 
         headers = {
             "Accept": "application/x-www-form-urlencoded",
             "Content-Type": "application/x-www-form-urlencoded",
             "Origin": "https://pokerogue.net",
             "Referer": "https://pokerogue.net/",
-            "Sec-CH-UA-Mobile": "?1" if is_mobile else "?0",
+            "Sec-CH-UA-Mobile": "?1" if isMobile else "?0",
             "Sec-Fetch-Dest": "empty",
             "Sec-Fetch-Mode": "cors",
             "Sec-Fetch-Site": "same-site",
-            "User-Agent": user_agent_string,
+            "User-Agent": userAgentString,
         }
     
         # Define the optional headers
-        optional_headers = {
-            "Sec-CH-UA": f'"{browser_family}";v="{browser_version}"',
-            "Sec-CH-UA-Platform": os_family,
-            "Sec-CH-UA-Platform-Version": os_version,
+        optionalHeader = {
+            "Sec-CH-UA": f'"{browserFamily}";v="{browserVersion}"',
+            "Sec-CH-UA-Platform": osFamily,
+            "Sec-CH-UA-Platform-Version": osVersion,
         }
 
         # Randomly decide to add some or all of the optional headers
-        for header, value in optional_headers.items():
+        for header, value in optionalHeader.items():
             if random.choice([True, False]):
                 headers[header] = value
 
@@ -274,12 +274,12 @@ class requestsLogic:
         characters = string.ascii_letters + string.digits
         result = []
         for _ in range(32):
-            random_index = random.randint(0, len(characters) - 1)
-            result.append(characters[random_index])
+            randomIndex = random.randint(0, len(characters) - 1)
+            result.append(characters[randomIndex])
 
         return "".join(result)
 
-    limiter = Limiter(lockout_period=40, timestamp_file='./data/extra.json')
+    limiter = Limiter()
 
     @limiter.lockout
     def login(self) -> bool:

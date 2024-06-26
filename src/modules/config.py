@@ -27,11 +27,25 @@ Workflow:
 import os
 from datetime import datetime, timedelta
 import requests
-from utilities import cFormatter, Color
-
+# need to manually do it to avoid circular imports
+from colorama import Fore, Style, init
+init(autoreset=True)
 logsDirectory: str = os.path.join(os.getcwd(), 'logs')
 backupDirectory: str = os.path.join(os.getcwd(), 'backups')
 dataDirectory: str = os.path.join(os.getcwd(), 'data')
+
+
+if not os.path.exists(logsDirectory):
+    os.makedirs(logsDirectory)
+    print(f'{Fore.GREEN}Created logs directory: {logsDirectory}')
+# Create the backups directory if it doesn't exist
+if not os.path.exists(backupDirectory):
+    os.makedirs(backupDirectory)
+    print(f'{Fore.GREEN}Created backup directory: {backupDirectory}')
+if not os.path.exists(dataDirectory):
+    os.makedirs(dataDirectory)
+    print(f'{Fore.GREEN}Created data directory: {dataDirectory}')
+
 
 debug: bool = True
 debugDeactivateBackup: bool = True if debug else False
@@ -40,8 +54,8 @@ debugEnableTraceback: bool = True if debug else False
 cacertURL = 'https://curl.se/ca/cacert.pem'
 cacertPath = f'{dataDirectory}/cacert.pem'
 if not os.path.exists(cacertPath):
-    print(f"{cacertPath} not found. This is needed for SSL Connections. \n Fetching from {cacertURL}...")
-
+    print(f'{Fore.RED}\n{cacertPath} not found. \nThis is needed for SSL Connections. \n Fetching from {cacertURL}...{Style.RESET_ALL}')
+    print(f'{Fore.RED}\nIf it is your first time starting up that is normal.{Style.RESET_ALL}')
     # Fetch the file using requests library
     response = requests.get(cacertURL)
     
@@ -50,12 +64,12 @@ if not os.path.exists(cacertPath):
         # Save the content to local file
         with open(cacertPath, 'wb') as f:
             f.write(response.content)
-        print(f"Successfully fetched {cacertURL} and saved as {cacertPath}.")
+        print(f'{Fore.GREEN}Successfully fetched {cacertURL} and saved as {cacertPath}.{Style.RESET_ALL}')
     else:
-        print(f"Failed to fetch {cacertURL}. \n Status code: {response.status_code}. \n Cannot use SSL.")
+        print(f'Failed to fetch {cacertURL}. \n Status code: {response.status_code}. \n Cannot use SSL.')
         cacertPath = False
-useCACERT = False if debug else cacertPath
 
+useCaCert = False if debug else cacertPath
 version: str = 'v0.3.3-wip'
 title: str = f'<(^.^(< pyRogue {version} >)^.^)>'
 owner: str = 'rogueEdit'
@@ -145,22 +159,22 @@ def f_checkForUpdates(requests: requests, datetime: datetime, timedelta: timedel
         commitList = [{'sha': commit['sha'], 'message': commit['commit']['message']} for commit in commits]
 
         if commitList:
-            cFormatter.print(Color.CRITICAL, '********* Outdated source code found. New commits: *********', isLogging=True)
+            print(f'{Fore.YELLOW}********* Outdated source code found. New commits: *********{Style.RESET_ALL}')
             for commit in commitList:
-                cFormatter.print(Color.WARNING, f'---- Commit Name: ({commit["message"]})')
-                cFormatter.print(Color.CYAN, f'------> with SHA ({commit["sha"]})')
-            cFormatter.print(Color.INFO, f'You can view the latest code here: {repoURL}')
-            cFormatter.print(Color.INFO, 'It is highly recommended to update the source code. Some things might not be working as expected.')
-            cFormatter.fh_printSeperators(60, '-', Color.CRITICAL)
+                print(f'{Fore.YELLOW}---- Commit Name: ({commit["message"]}{Style.RESET_ALL})')
+                print(f'{Fore.BLUE}------> with SHA ({commit["sha"]}{Style.RESET_ALL})')
+            print(f'{Fore.YELLOW}You can view the latest code here: {repoURL}{Style.RESET_ALL}')
+            print(f'{Fore.YELLOW}It is highly recommended to update the source code. Some things might not be working as expected.{Style.RESET_ALL}')
+            print(f'{Fore.YELLOW}------------------------------------------------------------{Style.RESET_ALL}')
         else:
-            cFormatter.print(Color.GREEN, 'No updates found.')
+            print(f'{Fore.GREEN}No updates found.')
 
     except ValueError as ve:
-        cFormatter.print(Color.CRITICAL, f'Couldnt resolve check_for_updates() - ValueError occurred: {ve}')
+        print(f'{Fore.RED}Couldnt resolve check_for_updates() - ValueError occurred: {ve}')
     except requests.exceptions.RequestException as re:
-        cFormatter.print(Color.CRITICAL, f'Couldnt resolve check_for_updates() - RequestException occurred: {re}')
+        print(f'{Fore.RED}Couldnt resolve check_for_updates() - RequestException occurred: {re}')
     except Exception as e:
-        cFormatter.print(Color.CRITICAL, f'Couldnt resolve check_for_updates() - An unexpected error occurred: {e}')
+        print(f'{Fore.RED}Couldnt resolve check_for_updates() - An unexpected error occurred: {e}')
 
 def f_printWelcomeText() -> None:
     """
@@ -174,15 +188,15 @@ def f_printWelcomeText() -> None:
     Modules/Librarys used and for what purpose exactly in each function:
     - utilities.cFormatter: Prints colored console output for initialization messages.
     """
-    cFormatter.print(Color.BRIGHT_GREEN, f'<pyRogue {version}>')
-    cFormatter.print(Color.BRIGHT_GREEN, 'We create base-backups on every login and further backups every time you start or choose so manually.')
-    cFormatter.print(Color.BRIGHT_GREEN, 'In case of trouble, please switch your Network (Hotspot, VPN etc).')
-    cFormatter.print(Color.BRIGHT_GREEN, f'Otherwise please visit {repoURL} and report the issue.')
-    cFormatter.fh_printSeperators(60, '-')
-    cFormatter.print(Color.BRIGHT_MAGENTA, '1: Using no browser with requests.    Reliability 6/10')
-    cFormatter.print(Color.BRIGHT_MAGENTA, '2: Using own browser with requests.   Reliability 7/10')
-    cFormatter.print(Color.BRIGHT_MAGENTA, '3: Using own browser with JavaScript. Reliability 9/10')
-    cFormatter.print(Color.BRIGHT_MAGENTA, '4: Just edit an existing trainer.json')
+    print(f'{Fore.GREEN}<pyRogue {version}>')
+    print(f'{Fore.GREEN}We create base-backups on every login and further backups every time you start or choose so manually.')
+    print(f'{Fore.GREEN}In case of trouble, please switch your Network (Hotspot, VPN etc).')
+    print(f'{Fore.GREEN}Otherwise please visit {repoURL} and report the issue.')
+    print('------------------------------------------------------------')
+    print(f'{Fore.MAGENTA}{Style.BRIGHT}1: Using no browser with requests.    Reliability 6/10')
+    print(f'{Fore.MAGENTA}{Style.BRIGHT}2: Using own browser with requests.   Reliability 7/10')
+    print(f'{Fore.MAGENTA}{Style.BRIGHT}3: Using own browser with JavaScript. Reliability 9/10')
+    print(f'{Fore.MAGENTA}{Style.BRIGHT}4: Just edit an existing trainer.json')
 
 def f_printHelp() -> None:
     """
@@ -198,58 +212,15 @@ def f_printHelp() -> None:
     Modules/Librarys used and for what purpose exactly in each function:
     - utilities.cFormatter: Prints colored console output for help messages.
     """
-    cFormatter.print(Color.INFO, 'You can always edit your JSON manually as well.')
-    cFormatter.print(Color.INFO, 'If you need assistance, please refer to the program\'s GitHub page.')
-    cFormatter.print(Color.INFO, f'{repoURL}')
-    cFormatter.print(Color.INFO, f'This is release version {version} - please include that in your issue or question report.')
-    cFormatter.print(Color.INFO, 'This version now also features a log file.')
-    cFormatter.print(Color.INFO, 'We do not take responsibility if your accounts get flagged or banned, and')
-    cFormatter.print(Color.INFO, 'you never know if there is a clone of this program. If you are not sure, please')
-    cFormatter.print(Color.INFO, 'calculate the checksum of this binary and visit {repo_url}')
-    cFormatter.print(Color.INFO, 'to see the value it should have to know it\'s original from source.')
-
-def f_initFolders() -> None:
-    """
-    Initialize necessary directories for logs, backups, and data.
-
-    This function checks if necessary directories (logs, backups, data) exist and creates them if they do not.
-
-    Usage Example:
-        >>> initialize_folders()
-
-    Modules/Librarys used and for what purpose exactly in each function:
-    - os: Interacts with the operating system to create directories.
-    """
-
-    # Create the logs directory if it doesn't exist
-    if not os.path.exists(logsDirectory):
-        os.makedirs(logsDirectory)
-        cFormatter.print(Color.GREEN, f'Created logs directory: {logsDirectory}')
-    # Create the backups directory if it doesn't exist
-    if not os.path.exists(backupDirectory):
-        os.makedirs(backupDirectory)
-        cFormatter.print(Color.GREEN, f'Created backup directory: {backupDirectory}')
-    
-    # URL to download the file from
-    cacertURL = "https://curl.se/ca/cacert.pem"
-    # Path to the local file
-    cacertPath = "/data/cacert.pem"
-
-    # Check if the file exists locally
-    if not os.path.exists(cacertPath):
-        print(f"{cacertPath} not found. Fetching from {cacertURL}...")
-
-        # Fetch the file using requests library
-        response = requests.get(cacertURL)
-        
-        # Check if the request was successful
-        if response.status_code == 200:
-            # Save the content to local file
-            with open(cacertPath, 'wb') as f:
-                f.write(response.content)
-            print(f"Successfully fetched {cacertURL} and saved as {cacertPath}.")
-        else:
-            print(f"Failed to fetch {cacertURL}. Status code: {response.status_code}")
+    print(f'{Fore.YELLOW}You can always edit your JSON manually as well.')
+    print(f'{Fore.YELLOW}If you need assistance, please refer to the program\'s GitHub page.')
+    print(f'{Fore.YELLOW}{repoURL}')
+    print(f'{Fore.YELLOW}This is release version {version} - please include that in your issue or question report.')
+    print(f'{Fore.YELLOW}This version now also features a log file.')
+    print(f'{Fore.YELLOW}We do not take responsibility if your accounts get flagged or banned, and')
+    print(f'{Fore.YELLOW}you never know if there is a clone of this program. If you are not sure, please')
+    print(f'{Fore.YELLOW}calculate the checksum of this binary and visit {repoURL}')
+    print(f'{Fore.YELLOW}to see the value it should have to know it\'s original from source.')
 
 def f_anonymizeName(username):
     if len(username) < 3:  # If username length is less than 3, return as is (minimum 2 characters)

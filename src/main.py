@@ -41,7 +41,6 @@ from utilities import cFormatter, Color, CustomLogger
 from datetime import datetime, timedelta
 
 init()
-config.f_initFolders()
 logger = CustomLogger()
 
 if not config.debug:

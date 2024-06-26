@@ -88,7 +88,7 @@ from sys import exit
 import re
 #import zstandard as zstd
 from colorama import Style, Fore
-limiter = Limiter(lockout_period=40, timestamp_file='./data/extra.json')
+limiter = Limiter()
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 #global_compressor = zstd.ZstdCompressor()
@@ -158,19 +158,12 @@ class Rogue:
 
         self.starterNamesById, self.biomeNamesById, self.moveNamesById, self.vouchersData, self.natureData, self.natureSlotData, self.achievementsData, self.pokemonData = self.appData.f_convertToEnums()
         self.editOffline = editOffline
-        try:
-            with open(f'{self.data_dir}/extra.json') as f:
-                self.extra_data = json.load(f)
-            
-            with open(f'{self.data_dir}/passive.json') as f:
-                self.passive_data = json.load(f)
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Something on inital data generation failed. {e}', isLogging=True)
+
         
         self.__dump_data()
 
     
-    """    
+    """    This might be needed 
     def __compress_zstd(data, encoding='utf-8'):
             compressor = zstd.ZstdCompressor()
             compressed_data = compressor.compress(data.encode(encoding))
@@ -181,7 +174,7 @@ class Rogue:
         decompressed_data = decompressor.decompress(compressed_data)
         return decompressed_data.decode(encoding)"""
 
-    def _make_request(self, url: str, method: str = 'GET', data: Optional[Dict[str, Any]] = None) -> str:
+    def fh_make_request(self, url: str, method: str = 'GET', data: Optional[Dict[str, Any]] = None) -> str:
         """
         Makes an HTTP request using the Selenium WebDriver.
 
@@ -346,7 +339,7 @@ class Rogue:
         cFormatter.print(Color.INFO, 'Fetching trainer data...')
         if self.useScripts:
             try:
-                response = self._make_request(f'{self.TRAINER_DATA_URL}{self.clientSessionId}')
+                response = self.fh_make_request(f'{self.TRAINER_DATA_URL}{self.clientSessionId}')
                 if response:
                     try:
                         # TODO MAYBE: zstandart compression, was in a migration on the server at some point
@@ -410,7 +403,7 @@ class Rogue:
         
         if self.useScripts:
             try:
-                response = self._make_request(f'{self.GAMESAVE_SLOT_URL}{slot-1}&clientSessionId={self.clientSessionId}')
+                response = self.fh_make_request(f'{self.GAMESAVE_SLOT_URL}{slot-1}&clientSessionId={self.clientSessionId}')
                 if response:
                     try:
                         # TODO MAYBE: zstandart compression, was in a migration on the server at some point
@@ -683,7 +676,7 @@ class Rogue:
             #raw_payload = {'clientSessionId': self.clientSessionId, 'session': game_data, "sessionSlotId": slot - 1, 'system': trainer_data}
             #payload = self.__compress_zstd(payload)
             if self.useScripts:
-                response = self._make_request(url, method='POST', data=json.dumps(payload))
+                response = self.fh_make_request(url, method='POST', data=json.dumps(payload))
                 cFormatter.print(Color.GREEN, "That seemed to work! Refresh without cache (STRG+F5)")
                 self.f_logout()
             else:

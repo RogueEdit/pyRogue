@@ -76,7 +76,7 @@ class Limiter:
         - utilities.cFormatter: Custom formatter for colored printing and logging.
     """
     
-    def __init__(self, lockout_period: int, timestamp_file: str = './data/extra.json'):
+    def __init__(self, lockoutPeriod: int = 40, timestampFile: str = './data/extra.json'):
         """
         Initialize the Limiter object.
 
@@ -88,8 +88,8 @@ class Limiter:
             - os: Provides a way to interact with the operating system, particularly for file and directory operations.
             - json: Provides functionalities to work with JSON data for reading and writing timestamps.
         """
-        self.lockout_period = lockout_period
-        self.timestamp_file = timestamp_file
+        self.lockout_period = lockoutPeriod
+        self.timestamp_file = timestampFile
         if not os.path.exists(os.path.dirname(self.timestamp_file)):
             os.makedirs(os.path.dirname(self.timestamp_file))
         if not os.path.exists(self.timestamp_file):
