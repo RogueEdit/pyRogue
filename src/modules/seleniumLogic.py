@@ -56,6 +56,7 @@ import time
 from typing import Optional, Tuple, Dict, Any
 from utilities import CustomLogger
 import random
+from modules.config import useCACERT
 
 class SeleniumLogic:
     """
@@ -115,6 +116,8 @@ class SeleniumLogic:
         options.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
         options.add_argument("--disable-infobars")  # Disable infobars
         options.add_argument("--enable-javascript") # enable javascript explicitly
+        if useCACERT:
+            options.add_argument(f"--ca-certificate={useCACERT}")
 
         driver = webdriver.Chrome(options=options)
         url = "https://www.pokerogue.net/"

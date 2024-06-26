@@ -150,15 +150,16 @@ def main():
         m_mainMenu(rogue)
     else:
         while True:
-            loginChoice = input('Please choose a method of logging in: ')
-            if not loginChoice.isdigit() or int(loginChoice) not in [1, 2, 3, 4]:
+            loginChoice = int(input('Please choose a method of logging in: '))
+            if loginChoice not in [1, 2, 3, 4]:
                 cFormatter.print(Color.DEBUG, 'Please choose a valid option.')
                 continue  # Prompt user again if choice is not valid
 
             if loginChoice != 4:
                 username = input('Username: ')
                 password = getpass.getpass('Password (password is hidden): ')
-        
+
+
             session = requests.Session()
             if loginChoice == 1:
                 login = requestsLogic(username, password)
