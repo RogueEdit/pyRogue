@@ -1239,12 +1239,15 @@ class Rogue:
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function unlock_all_gamemodes(): {e}', isLogging=True)
 
+    @handle_operation_exceptions
     def f_editAchivements(self) -> None:
         """
-        Unlocks all achievements for the player.
+        Unlocks all achievements for the player or a specific achievement with random unlock times.
 
         Raises:
-        - None
+        - Exception: If any error occurs during the process due to the decorator.
+        - OperationCancel(), OperationSoftCancel(), ValueError() depending on input due to the helper.
+        - raise OperationSuccessful('Successfully updated achievements.') - and prints edited achievements
 
         Modules Used:
         - time: For generating current timestamp.
@@ -1253,36 +1256,89 @@ class Rogue:
 
         Workflow:
         1. Loads trainer data and retrieves achievement data.
-        2. Generates random unlock times for each achievement and updates the game data accordingly.
+        2. Allows the user to choose to unlock all achievements or a specific achievement with random unlock times.
+        3. Updates the game data with the unlocked achievement information.
 
         Usage Example:
             >>> example_instance = ExampleClass()
-            >>> example_instance.unlock_all_achievements()
-
+            >>> example_instance.f_editAchievements()
         """
-        try:
-            trainer_data = self.__loadDataFromJSON('trainer.json')
+        gameData = self.__loadDataFromJSON('trainer.json')
+        achievementsData = self.appData.achievementsData
+        keysToUpdate = {member.name: member for member in achievementsData}
 
-            current_time_ms = int(time.time() * 1000) 
-            min_time_ms = current_time_ms - 3600 * 1000  
+        currentAmount = gameData.get('achvUnlocks', {})
+        if len(currentAmount) >= len(keysToUpdate):
+            cFormatter.print(Color.INFO, 'You already have all achievements.')
 
-            achievements = self.extra_data['achievements']
-            trainer_data['achvUnlocks'] = {
-                achievement: random.randint(min_time_ms, current_time_ms)
-                for achievement in achievements
-            }
 
-            self.__writeJSONData(trainer_data, 'trainer.json')
+        # Ask the user if they want to unlock all vouchers or a specific one
+        choice = self.fh_getChoiceInput(
+            promptMesage='Do you want to unlock all achievements or unlock a specific voucher?',
+            choices={'1': 'All', '2': 'Specific'},
+            zeroCancel=True
+        )
 
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function unlock_all_achievements(): {e}', isLogging=True)
+        currentTime = int(time.time() * 1000)
+        minBoundaryTime = currentTime - 3600 * 1000
+        changed = False
+        changedItems = []
 
+        if choice == '1':
+            for key in keysToUpdate:
+                randomTime = minBoundaryTime + random.randint(0, currentTime - minBoundaryTime)
+                keysToUpdate[key] = randomTime
+            
+            for key, value in keysToUpdate.items():
+                changedItems.append((key, value))
+                
+                gameData.setdefault('achvUnlocks', {})[key] = value
+                changed = True
+
+        elif choice == '2':
+            self.legacy_printAchievements()
+            self.fh_completerInfo()
+
+
+
+            while True:
+                try:
+                    inputValue = self.fh_getCompleterInput(
+                        promptMessage='What achievement would you like?',
+                        choices={**{member.name.lower(): member for member in achievementsData}, 
+                                **{str(member.value): member for member in achievementsData}},
+                        softCancel=True
+                    )
+
+                    randomTime = minBoundaryTime + random.randint(0, currentTime - minBoundaryTime)
+                    gameData.setdefault('voucherUnlocks', {})[inputValue.name] = randomTime
+                    changedItems.append((inputValue.name, randomTime))
+                    changed = True
+                    cFormatter.print(Color.DEBUG, f'{inputValue.name} queued for update.')
+
+                except ValueError:
+                    cFormatter.print(Color.INFO, 'Invalid input. Please try again.')
+                except OperationSoftCancel:
+                    break
+
+        if changed:
+            self.__writeJSONData(gameData, 'trainer.json')
+            cFormatter.print(Color.YELLOW, 'Changes saved:')
+            for key, value in changedItems:
+                cFormatter.print(Color.INFO, f'Added {key} with timestamp {value}.')
+            raise OperationSuccessful('Successfully updated achievements.')
+        else:
+            cFormatter.print(Color.YELLOW, 'No changes made.')
+
+    @handle_operation_exceptions
     def f_editVouchers(self) -> None:
         """
         Unlocks all vouchers for the player or a specific voucher with random unlock times.
 
         Raises:
-        - None
+        - Exception: If any error occurs during the process due to the decorator.
+        - OperationCancel(), OperationSoftCancel(), ValueError() depending on input due to the helper.
+        - raise OperationSuccessful('Successfully updated vouchers.') - and prints edited vouchers
 
         Modules Used:
         - random: For generating random unlock times.
@@ -1298,21 +1354,28 @@ class Rogue:
             >>> example_instance.edit_vouchers()
         """
         gameData = self.__loadDataFromJSON('trainer.json')
+        voucherData = self.appData.voucherData
+        keysToUpdate = {member.name: member for member in voucherData}
+        currentAmount = gameData.get('voucherUnlocks', {})
+        if len(currentAmount) >= len(keysToUpdate):
+            cFormatter.print(Color.INFO, 'You already have all vouchers.')
+
+
+    
+
+        # Initialize keysToUpdate with entries from your enum
+
+        # Ask the user if they want to unlock all vouchers or a specific one
+        choice = self.fh_getChoiceInput(
+            promptMesage='Do you want to unlock all vouchers or unlock a specific voucher?\n',
+            choices={'1': 'All', '2': 'Specific'},
+            zeroCancel=True
+        )
+
         currentTime = int(time.time() * 1000)
         minBoundaryTime = currentTime - 3600 * 1000
         changed = False
         changedItems = []
-
-        # Initialize keysToUpdate with entries from your enum
-        voucherData = self.appData.voucherData
-        keysToUpdate = {member.name: member for member in voucherData}
-
-        # Ask the user if they want to unlock all vouchers or a specific one
-        choice = self.fh_getChoiceInput(
-            promptMesage='Do you want to unlock all vouchers or unlock a specific voucher?',
-            choices={'1': 'All', '2': 'Specific'},
-            zeroCancel=True
-        )
 
         if choice == '1':
             for key in keysToUpdate:
@@ -1320,9 +1383,9 @@ class Rogue:
                 keysToUpdate[key] = randomTime
             
             for key, value in keysToUpdate.items():
-                changedItems.append((key, randomTime))
+                changedItems.append((key, value))
                 
-                gameData["gameStats"][key] = value
+                gameData.setdefault('voucherUnlocks', {})[key] = value
                 changed = True
 
         elif choice == '2':
@@ -1337,9 +1400,6 @@ class Rogue:
                                 **{str(member.value): member for member in voucherData}},
                         softCancel=True
                     )
-
-                    if inputValue == 'skip':
-                        raise OperationSoftCancel()
 
                     randomTime = minBoundaryTime + random.randint(0, currentTime - minBoundaryTime)
                     gameData.setdefault('voucherUnlocks', {})[inputValue.name] = randomTime
@@ -1361,8 +1421,6 @@ class Rogue:
         else:
             cFormatter.print(Color.YELLOW, 'No changes made.')
 
-
-
     @handle_operation_exceptions
     def f_addCandies(self) -> None:
         """
@@ -1374,7 +1432,7 @@ class Rogue:
         Raises:
         - Exception: If any error occurs during the process due to the decorator.
         - OperationCancel(), OperationSoftCancel(), ValueError() depending on input due to the helper.
-        raise OperationSuccessful(f'Added {candies} candies to {pokeName}.')
+        - raise OperationSuccessful(f'Added {candies} candies to {pokeName}.')
 
         Modules Used:
         - .cFormatter: For printing formatted messages to the console, including colorized output.
@@ -2075,6 +2133,10 @@ class Rogue:
     def legacy_printBiomes(self) -> None:
         biomes = [f'{member.value}: {member.name}' for member in self.biomesByID]
         cFormatter.print(Color.WHITE, '\n'.join(biomes))
+
+    def legacy_printAchievements(self) -> None:
+        achivements = [f'{member.value}: {member.name}' for member in self.achievementsData]
+        cFormatter.print(Color.WHITE, '\n'.join(achivements))
 
     @staticmethod
     def fh_completerInfo():

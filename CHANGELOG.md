@@ -60,8 +60,8 @@ Currently work in progres...
     - `f_createBackup()` <- need to backup slots
     - `f_restoreBackup(tested:works)` <Should automatically recognize slot backups too>
     - `f_editVouchers(tested:works)` <Can now either add single ones with autocomplete with ID/Name = case-insensitive, multiple in a loop or all at once.>
-
     - `f_editAchivements(tested:works)` <Can now either add single ones with autocomplete with ID/Name = case-insensitive, multiple in a loop or all at once.>
+
     - `f_editGamemodes(tested:works)` <Can now either add single ones with autocomplete with ID/Name = case-insensitive, multiple in a loop or all at once.>
     - `add_ticket(wip)`
     - `edit_starter_separate(wip)`

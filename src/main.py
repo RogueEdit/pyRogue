@@ -122,6 +122,7 @@ def m_mainMenu(rogue, editOffline: bool = False):
         (title, 'title'),
     ]
     if editOffline or config.debug:
+        # Filter entrys that would break offline
         term = [entry for entry in term if entry[1] != rogue.update_all]
         term = [entry for entry in term if entry[1] != rogue.get_trainer_data]
     try:
