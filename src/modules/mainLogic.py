@@ -1059,53 +1059,47 @@ class Rogue:
             >>> example_instance = ExampleClass()
             >>> example_instance.f_addTicket()
         """
-        try:
-            trainer_data = self.__loadDataFromJSON('trainer.json')
+        gameData = self.__loadDataFromJSON('trainer.json')
 
-            voucher_types = {
-                '0': 'common',
-                '1': 'rare',
-                '2': 'epic',
-                '3': 'legendary'
-            }
+        voucherTypes = {
+            '0': 'common',
+            '1': 'rare',
+            '2': 'epic',
+            '3': 'legendary'
+        }
 
-            changed = False
-            changedItems = []
+        changed = False
+        changedItems = []
 
-            for key, type_name in voucher_types.items():
-                formatted_name = f'{Fore.YELLOW}{type_name.capitalize()}{Style.RESET_ALL}'
-                current_count = trainer_data.get('voucherCounts', {}).get(key, 0)
-                prompt = f'How many {formatted_name} vouchers do you want? (Currently have {current_count})\n'
-                max_bound = 999
-
+        for key, name in voucherTypes.items():
+            formattedName = f'{Fore.YELLOW}{name}{Style.RESET_ALL}'
+            currentAmount = gameData.get('pokeballCounts', {}).get(key, '0')
+            prompt = f'How many {formattedName}? (Currently have {currentAmount})\n'
+            maxBound = 999
+            try:
                 while True:
-                    try:
-                        value = self.fh_getIntegerInput(prompt, 0, max_bound, softCancel=True, allowSkip=True)
-                        if value == 'skip':
-                            cFormatter.print(Color.YELLOW, f'Skipping {type_name} vouchers...')
-                            break
-                        elif value == '0':
-                            raise OperationSoftCancel()  # Raise OperationSoftCancel to continue the loop
-                        else:
-                            trainer_data.setdefault('voucherCounts', {})[key] = int(value)
-                            changedItems.append(f"{type_name.capitalize()} vouchers: {value}")
-                            changed = True
-                            cFormatter.print(Color.DEBUG, f'Queued {value} {type_name} vouchers.')
-                            break
-                    except OperationSoftCancel:
-                        break
-
-            if changed:
-                self.__writeJSONData(trainer_data, 'trainer.json')
-                cFormatter.print(Color.YELLOW, 'Changes saved:')
-                for item in changedItems:
-                    cFormatter.print(Color.INFO, item)
-                raise OperationSuccessful('Successfully written voucher counts.')
-            else:
-                cFormatter.print(Color.YELLOW, 'No changes made.')
-
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function f_addTicket(): {e}', isLogging=True)
+                    value = self.fh_getIntegerInput(prompt, 0, maxBound, softCancel=True, allowSkip=True)
+                    if value == '0':
+                        raise OperationSoftCancel()  # Raise OperationSoftCancel to continue the loop
+                    elif value == 'skip':
+                        cFormatter.print(Color.YELLOW, f'Skipping {name}...')
+                        break  # Break out of the inner loop to proceed to the next item
+                    else:
+                        gameData.setdefault('voucherCounts', {})[key] = int(value)
+                        changedItems.append(f"{name}: {value}")
+                        changed = True
+                        cFormatter.print(Color.DEBUG, f'Queued {value} {name}.')
+                        break  # Break out of the inner loop after successful input
+            except OperationSoftCancel:
+                break
+        if changed:
+            self.__writeJSONData(gameData, 'trainer.json')
+            cFormatter.print(Color.YELLOW, 'Changes saved:')
+            for item in changedItems:
+                cFormatter.print(Color.INFO, item)
+            raise OperationSuccessful('Successfully written Pokeballs.')
+        else:
+            cFormatter.print(Color.YELLOW, 'No changes made.')
 
     # Await response
     def edit_pokemon_party(self) -> None:
