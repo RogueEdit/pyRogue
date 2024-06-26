@@ -48,22 +48,9 @@ if not config.debug:
     config.f_checkForUpdates(requests, datetime, timedelta, Style)
     config.f_printWelcomeText()
 
-# Global list for pre-command messages
-pre_command_messages = []
-
-def m_propagateMessages():
-    """
-    Prints messages from the global pre_command_messages list and then clears the list.
-    """
-    global pre_command_messages
-    if pre_command_messages:
-        for message in pre_command_messages:
-            cFormatter.print(Color.INFO, message)
-        pre_command_messages.clear()
 
 @handle_operation_exceptions
 def m_executeOptions(choice_index, valid_choices):
-    m_propagateMessages()  # Print messages before executing the option
     for idx, func in valid_choices:
         if idx == choice_index:
             func()
@@ -82,30 +69,32 @@ def m_mainMenu(rogue, editOffline: bool = False):
     term = [
         (title, 'title'),
         ('Account Actions', 'category'),
-        (('Create a backup', untouched), rogue.f_createBackup),
-        (('Recover your backup', untouched), rogue.f_restoreBackup),
+        ((f'{Fore.YELLOW}Create a backup', untouched), rogue.f_createBackup),
+        ((f'{Fore.YELLOW}Recover your backup', untouched), rogue.f_restoreBackup),
         (('Load Game-Data from server', untouched), rogue.get_trainer_data),
         (('Change save-slot to edit', reworked), rogue.f_changeSaveSlot),
         (('Edit account stats', reworked), rogue.f_editAccountStats),
 
-        ('Trainer Data Actions', 'category'),
-        (('Edit a starter', untouched), rogue.edit_starter_separate),
-        (('Edit your egg-tickets', untouched), rogue.add_ticket),
-        (('Edit candies on a starter', reworked), rogue.f_addCandies),
-        (('Edit Egg-hatch durations', reworked), rogue.f_editHatchWaves),
-        (('Generate eggs', reworked), rogue.f_addEggsGenerator),
-        (('Unlock all vouchers', untouched), rogue.f_editVouchers),
-        (('Unlock all starters', untouched), rogue.f_unlockStarters),
-        (('Unlock all achievements', untouched), rogue.f_editAchivements),
-        (('Unlock all gamemodes', untouched), rogue.f_editGamemodes),
-        (('Unlock Everything', 'mightwork'), rogue.f_unlockAllCombined),
+        ('Edits', 'category'),
+        ((f'{Fore.YELLOW}Create eggs', reworked), rogue.f_addEggsGenerator),
+        ((f'Edit {Fore.YELLOW}Egg-hatch durations', reworked), rogue.f_editHatchWaves),
+        ((f'Edit {Fore.YELLOW}egg-tickets', reworked), rogue.f_addTicket),
+        ((f'Edit {Fore.YELLOW}vouchers', reworked), rogue.f_editVouchers),
+        ((f'Edit {Fore.YELLOW}achievements', reworked), rogue.f_editAchivements),
+        ((f'{Fore.YELLOW}Edit a starter', untouched), rogue.edit_starter_separate),
+        ((f'{Fore.YELLOW}Edit candies on a starter', reworked), rogue.f_addCandies),
+
+        ('Unlocks', 'category'),
+        ((f'Unlock {Fore.YELLOW}all starters', untouched), rogue.f_unlockStarters),
+        ((f'Unlock {Fore.YELLOW}all gamemodes', reworked), rogue.f_unlockGamemodes),
+        (('Unlock Everything', reworked), rogue.f_unlockAllCombined),
 
         ('Session Data Actions', 'category'),
-        (('Edit CURRENT Pokemon Party', untouched), rogue.edit_pokemon_party),
-        (('Edit money amount', reworked), rogue.f_editMoney),
-        (('Edit pokeballs amount', reworked), rogue.f_editPokeballs),
-        (('Edit current biome', reworked), rogue.f_editBiome),
-        (('Edit Items', untouched), rogue.f_submenuItemEditor),
+        ((f'Edit {Fore.YELLOW}current Pokemon Party', untouched), rogue.edit_pokemon_party),
+        ((f'Edit {Fore.YELLOW}money amount', reworked), rogue.f_editMoney),
+        ((f'Edit {Fore.YELLOW}pokeballs amount', reworked), rogue.f_editPokeballs),
+        ((f'Edit {Fore.YELLOW}current biome', reworked), rogue.f_editBiome),
+        ((f'Edit {Fore.YELLOW}Items', reworked), rogue.f_submenuItemEditor),
 
         ('Print game information', 'category'),
         (('Show all Pokemon ID', reworked), rogue.legacy_pokedex),
@@ -116,7 +105,7 @@ def m_mainMenu(rogue, editOffline: bool = False):
         (('Show all NaturesSlot IDs', reworked), rogue.legacy_natureSlot),
 
         ('You can always edit your JSON manually as well!', 'helper'),
-        (('Save data and upload to the Server', useWhenDone), rogue.update_all),
+        ((f'{Fore.YELLOW}Save data and upload to the Server', useWhenDone), rogue.update_all),
         (('Print help and program information', ''), config.f_printHelp),
         (('Logout', ''), rogue.logout),
         (title, 'title'),

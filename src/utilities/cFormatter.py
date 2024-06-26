@@ -136,25 +136,25 @@ class cFormatter(logging.Formatter):
         
         if isLogging:
             # Determine the logging level based on color
-            log_level = logging.INFO
+            logLevel = logging.INFO
             for level, col in cFormatter.LOG_LEVELS.items():
                 if col == color:
-                    log_level = level
+                    logLevel = level
                     break
-            logger.log(log_level, text)
+            logger.log(logLevel, text)
 
         # Format text with ANSI color codes and print to console
-        color_code = color.value
-        formatted_text = f'{color_code}{text}{Style.RESET_ALL}'
+        colorCode = color.value
+        formatted_text = f'{colorCode}{text}{Style.RESET_ALL}'
         print(formatted_text)
 
     @staticmethod
-    def fh_printSeperators(num_separators: Optional[int] = None, separator: str = '-', color: Optional[Color] = None) -> None:
+    def fh_printSeperators(numSeperator: Optional[int] = None, separator: str = '-', color: Optional[Color] = None) -> None:
         """
         Prints separators with the specified color.
         
         Args:
-            num_separators (int, optional): The number of separator characters to print. If None, uses terminal width. Defaults to None.
+            numSeperator (int, optional): The number of separator characters to print. If None, uses terminal width. Defaults to None.
             separator (str, optional): The character to use for separators. Defaults to '-'.
             color (Color, optional): The color to use for formatting separators. Defaults to None.
             
@@ -170,13 +170,13 @@ class cFormatter(logging.Formatter):
         - shutil: Used to get the terminal width.
         - colorama: Used to apply color to text.
         """
-        if num_separators is None:
-            terminal_width = shutil.get_terminal_size().columns
-            num_separators = terminal_width
+        if numSeperator is None:
+            terminalWidth = shutil.get_terminal_size().columns
+            numSeperator = terminalWidth
 
-        color_code = color.value if color else ''
-        formatted_separators = f'{color_code}{separator * num_separators}{Style.RESET_ALL}'
-        print(formatted_separators)
+        colorCode = color.value if color else ''
+        formattedSeperator = f'{colorCode}{separator * numSeperator}{Style.RESET_ALL}'
+        print(formattedSeperator)
 
     @staticmethod
     def fh_stripColorCodes(text: str) -> str:
@@ -199,26 +199,26 @@ class cFormatter(logging.Formatter):
         Modules/Librarys used:
         - re: Used to strip ANSI color codes from text.
         """
-        ansi_escape = re.compile(r'\x1b\[.*?m')
-        return ansi_escape.sub('', text)
+        ansiEscape = re.compile(r'\x1b\[.*?m')
+        return ansiEscape.sub('', text)
 
     @staticmethod
-    def fh_lineFill(line: str, helper_text: str = '', length: int = 55, fill_char: str = ' ', truncate: bool = False) -> str:
+    def fh_lineFill(line: str, helperText: str = '', length: int = 55, fill_char: str = ' ', truncate: bool = False) -> str:
         """
-        Formats a line of text to a fixed length by adding fill characters.
-        
         Args:
             line (str): The main text line to format.
-            helper_text (str, optional): Additional text to append. Defaults to ''.
+            helperText (str, optional): Additional text to append. Defaults to ''.
             length (int, optional): The total length of the formatted line. Defaults to 55.
-            fill_char (str, optional): The character used for filling empty space. Defaults to ' '.
+            fillChar (str, optional): The character used for filling empty space. Defaults to ' '.
             truncate (bool, optional): Whether to truncate the line if it exceeds the specified length. Defaults to False.
             
+        Formats a line of text to a fixed length by adding fill characters.
+        
         Returns:
             str: The formatted line of text.
             
         Usage Example:
-            formatted_line = cFormatter.line_fill('Main text', 'Helper text', 80, '-')
+            formatedLine = cFormatter.fh_lineFill('Main text', 'Helper text', 80, '-')
             print(formatted_line)
             
         Example Output:
@@ -227,37 +227,37 @@ class cFormatter(logging.Formatter):
         Modules/Librarys used:
         - re: Used to strip ANSI color codes from text.
         """
-        stripped_line = cFormatter.fh_stripColorCodes(line)
-        stripped_helper_text = cFormatter.fh_stripColorCodes(helper_text)
+        strippedLine = cFormatter.fh_stripColorCodes(line)
+        strippedHelperText = cFormatter.fh_stripColorCodes(helperText)
         
-        total_length = len(stripped_line) + len(stripped_helper_text)
+        totalLength = len(strippedLine) + len(strippedHelperText)
         
-        if truncate and total_length > length:
-            truncated_length = length - len(stripped_line) - 3  # 3 characters for "..."
+        if truncate and totalLength > length:
+            truncated_length = length - len(strippedLine) - 3  # 3 characters for "..."
             line = line[:truncated_length] + '...'
-            stripped_line = cFormatter.fh_stripColorCodes(line)
-            total_length = len(stripped_line) + len(stripped_helper_text)
+            strippedLine = cFormatter.fh_stripColorCodes(line)
+            totalLength = len(strippedLine) + len(strippedHelperText)
 
-        fill_length = length - total_length
-        fill = fill_char * fill_length
-        return f"{Style.RESET_ALL}{line}{fill}{helper_text}"
+        fillLength = length - totalLength
+        fill = fill_char * fillLength
+        return f"{Style.RESET_ALL}{line}{fill}{helperText}"
 
     @staticmethod
-    def fh_centerText(text: str, length: int = 55, fill_char: str = ' ') -> str:
+    def fh_centerText(text: str, length: int = 55, fillChar: str = ' ') -> str:
         """
-        Centers a text within a given length, filling with the specified character.
-        
         Args:
             text (str): The text to center.
             length (int, optional): The total length of the centered text. Defaults to 55.
-            fill_char (str, optional): The character used for filling empty space. Defaults to ' '.
+            fillChar (str, optional): The character used for filling empty space. Defaults to ' '.
+        
+        Centers a text within a given length, filling with the specified character.
             
         Returns:
             str: The centered text.
             
         Usage Example:
-            centered_text = cFormatter.center_text('Centered Text', 80, '-')
-            print(centered_text)
+            centered_text = cFormatter.fh_centerText('Centered Text', 80, '-')
+            print(centeredText)
             
         Example Output:
             --------------Centered Text---------------
@@ -266,27 +266,27 @@ class cFormatter(logging.Formatter):
         - re: Used to strip ANSI color codes from text.
         """
         stripped_text = cFormatter.fh_stripColorCodes(text)
-        total_length = len(stripped_text)
-        if total_length >= length:
+        totalLength = len(stripped_text)
+        if totalLength >= length:
             return text[:length]
         
-        fill_length = length - total_length
-        front_fill = fill_char * (fill_length // 2)
-        back_fill = fill_char * (fill_length - (fill_length // 2))
-        if fill_char == '>':
-            back_fill = '<' * (fill_length - (fill_length // 2))
+        fillLength = length - totalLength
+        frontFill = fillChar * (fillLength // 2)
+        backFill = fillChar * (fillLength - (fillLength // 2))
+        if fillChar == '>':
+            backFill = '<' * (fillLength - (fillLength // 2))
         
         
-        return f"{front_fill}{text}{back_fill}"
+        return f"{frontFill}{text}{backFill}"
 
     @staticmethod
     def m_initializeMenu(term: List[Union[str, Tuple[str, str, Optional[str]], Tuple[str, callable]]], length: Optional[int] = 55) -> List[Tuple[int, callable]]:
         """
-        Initializes and prints a menu based on the provided term list.
-        
         Args:
             term (List[Union[str, Tuple[str, str, Optional[str]], Tuple[str, callable]]]): A list containing tuples and strings representing menu items.
             
+        Initializes and prints a menu based on the provided term list.
+        
         Returns:
             List[Tuple[int, callable]]: A list of tuples containing valid numbered choices and their associated functions.
             
@@ -298,7 +298,7 @@ class cFormatter(logging.Formatter):
                 ('Helper text', 'helper'),
                 ('Helper text', 'category'),
             ]
-            valid_choices = cFormatter.initialize_menu(term)
+            validChoices = cFormatter.m_initializeMenu(term)
             
         Example Output:
             * --------------------- pyRogue <v0.3> ---------------------- *
@@ -311,8 +311,8 @@ class cFormatter(logging.Formatter):
         Modules/Librarys used:
         - colorama: Used to apply color to text.
         """
-        valid_choices = []
-        actual_idx = 1
+        validChoices = []
+        actualIndex = 1
         for item in term:
             if isinstance(item, tuple):
                 if item[1] == 'helper':
@@ -323,12 +323,12 @@ class cFormatter(logging.Formatter):
                     print(Fore.LIGHTYELLOW_EX + '* ' + cFormatter.fh_centerText(f' {item[0]} ', length, '>') + ' *' + Style.RESET_ALL)
                 else:
                     text, func = item
-                    line = f'{actual_idx}: {text[0]}'
+                    line = f'{actualIndex}: {text[0]}'
                     formatted_line = cFormatter.fh_lineFill(line, text[1], length, ' ', True)
                     print(Fore.GREEN + '* ' + formatted_line + f' {Fore.GREEN}*' + Style.RESET_ALL)
-                    valid_choices.append((actual_idx, func))
-                    actual_idx += 1
+                    validChoices.append((actualIndex, func))
+                    actualIndex += 1
             else:
                 print(Fore.YELLOW + '* ' + cFormatter.fh_centerText(item, length, '*') + ' *' + Style.RESET_ALL)
         
-        return valid_choices
+        return validChoices

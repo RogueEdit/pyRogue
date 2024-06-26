@@ -87,7 +87,7 @@ from prompt_toolkit.completion import WordCompleter
 from sys import exit
 import re
 #import zstandard as zstd
-from colorama import Style
+from colorama import Style, Fore
 limiter = Limiter(lockout_period=40, timestamp_file='./data/extra.json')
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -1032,18 +1032,19 @@ class Rogue:
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function edit_starters(): {e}', isLogging=True)
 
-    def add_ticket(self) -> None:
+    @handle_operation_exceptions
+    def f_addTicket(self) -> None:
         """
         Simulates an egg gacha.
 
         Allows the user to input the number of common, rare, epic, and legendary vouchers they want to use.
         Updates the voucher counts in the trainer data.
 
-        Returns:
-        - None
-
         Raises:
-        - None
+        - Exception: If any error occurs during the process due to the decorator.
+        - OperationCancel(), OperationSoftCancel(), ValueError() depending on input due to the helper.
+        - OperationSuccessful('Successfully written voucher counts.')
+            - and prints changed items.
 
         Modules Used:
         - prompt_toolkit: For interactive command-line input.
@@ -1051,37 +1052,62 @@ class Rogue:
 
         Workflow:
         1. Loads existing data from 'trainer.json'.
-        2. Prompts user to input the number of common, rare, epic, and legendary vouchers.
+        2. Allows the user to input the number of each type of voucher.
         3. Updates 'trainer.json' with the new voucher counts.
 
         Usage Example:
             >>> example_instance = ExampleClass()
-            >>> example_instance.add_ticket()
-
+            >>> example_instance.f_addTicket()
         """
         try:
             trainer_data = self.__loadDataFromJSON('trainer.json')
 
-            common: int = int(input('How many common vouchers do you want: '))
-
-            rare: int = int(input('How many rare vouchers do you want: '))
-
-            epic: int = int(input('How many epic vouchers do you want: '))
-
-            legendary: int = int(input('How many legendary vouchers do you want: '))
-
-            voucher_counts: dict[str, int] = {
-                '0': common,
-                '1': rare,
-                '2': epic,
-                '3': legendary
+            voucher_types = {
+                '0': 'common',
+                '1': 'rare',
+                '2': 'epic',
+                '3': 'legendary'
             }
-            trainer_data['voucherCounts'] = voucher_counts
 
-            self.__writeJSONData(trainer_data, 'trainer.json')
+            changed = False
+            changedItems = []
+
+            for key, type_name in voucher_types.items():
+                formatted_name = f'{Fore.YELLOW}{type_name.capitalize()}{Style.RESET_ALL}'
+                current_count = trainer_data.get('voucherCounts', {}).get(key, 0)
+                prompt = f'How many {formatted_name} vouchers do you want? (Currently have {current_count})\n'
+                max_bound = 999
+
+                while True:
+                    try:
+                        value = self.fh_getIntegerInput(prompt, 0, max_bound, softCancel=True, allowSkip=True)
+                        if value == 'skip':
+                            cFormatter.print(Color.YELLOW, f'Skipping {type_name} vouchers...')
+                            break
+                        elif value == '0':
+                            raise OperationSoftCancel()  # Raise OperationSoftCancel to continue the loop
+                        else:
+                            trainer_data.setdefault('voucherCounts', {})[key] = int(value)
+                            changedItems.append(f"{type_name.capitalize()} vouchers: {value}")
+                            changed = True
+                            cFormatter.print(Color.DEBUG, f'Queued {value} {type_name} vouchers.')
+                            break
+                    except OperationSoftCancel:
+                        break
+
+            if changed:
+                self.__writeJSONData(trainer_data, 'trainer.json')
+                cFormatter.print(Color.YELLOW, 'Changes saved:')
+                for item in changedItems:
+                    cFormatter.print(Color.INFO, item)
+                raise OperationSuccessful('Successfully written voucher counts.')
+            else:
+                cFormatter.print(Color.YELLOW, 'No changes made.')
+
         except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function add_tickets(): {e}', isLogging=True)
+            cFormatter.print(Color.CRITICAL, f'Error in function f_addTicket(): {e}', isLogging=True)
 
+    # Await response
     def edit_pokemon_party(self) -> None:
         """
         Allows the user to edit the Pokemon party.
@@ -1203,7 +1229,8 @@ class Rogue:
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function edit_pokemon_party(): {e}', isLogging=True)
 
-    def f_editGamemodes(self) -> None:
+    @handle_operation_exceptions
+    def f_unlockGamemodes(self) -> None:
         """
         Unlocks all game modes for the player.
 
@@ -1223,21 +1250,18 @@ class Rogue:
             >>> example_instance.unlock_all_gamemodes()
 
         """
-        try:
-            trainer_data = self.__loadDataFromJSON('trainer.json')
+        trainer_data = self.__loadDataFromJSON('trainer.json')
 
-            unlocked_modes = trainer_data.get('unlocks', {})
-            if not unlocked_modes:
-                cFormatter.print(Color.INFO, 'Unable to find data entry: unlocks')
-                return
+        unlocked_modes = trainer_data.get('unlocks', {})
+        if not unlocked_modes:
+            cFormatter.print(Color.INFO, 'Unable to find data entry: unlocks')
+            return
 
-            for mode in unlocked_modes:
-                unlocked_modes[mode] = True
+        for mode in unlocked_modes:
+            unlocked_modes[mode] = True
 
-            self.__writeJSONData(trainer_data, 'trainer.json')
-        
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function unlock_all_gamemodes(): {e}', isLogging=True)
+        self.__writeJSONData(trainer_data, 'trainer.json')
+        raise OperationSuccessful('Unlocked all gamemodes.')
 
     @handle_operation_exceptions
     def f_editAchivements(self) -> None:
@@ -1448,7 +1472,7 @@ class Rogue:
             >>> example_instance.f_addCandies('pikachu')
         """
 
-        trainerData = self.__loadDataFromJSON('trainer.json')
+        gameData = self.__loadDataFromJSON('trainer.json')
 
         inputValue = self.fh_getCompleterInput(
             promptMessage='Write either the ID or the Name of the Pokemon: ',
@@ -1457,7 +1481,7 @@ class Rogue:
             zeroCancel=False
         )
         pokeName = inputValue.name.lower()
-        currentCandies = trainerData["starterData"][inputValue.value]["candyCount"]
+        currentCandies = gameData["starterData"][inputValue.value]["candyCount"]
         # Prompt for number of candies using fh_getIntegerInput method
         candies = self.fh_getIntegerInput(
             promptMessage=f'How many candies do you want to add?\n You currently have {currentCandies} on {inputValue.name.capitalize()}. (0 to cancel):',
@@ -1467,10 +1491,10 @@ class Rogue:
         )
 
         # Update game data with the chosen Pokémon's candy count
-        trainerData["starterData"][inputValue.value]["candyCount"] = candies
+        gameData["starterData"][inputValue.value]["candyCount"] = candies
 
         # Write updated data to JSON
-        self.__writeJSONData(trainerData, 'trainer.json')
+        self.__writeJSONData(gameData, 'trainer.json')
         raise OperationSuccessful(f'Added {candies} candies to {pokeName}.')
 
     @handle_operation_exceptions
@@ -1565,9 +1589,9 @@ class Rogue:
         changedItems = []
 
         for key, name in pokeballTypes.items():
-            formattedName = f'{Color.INFO}{name}{Style.RESET_ALL}'
+            formattedName = f'{Fore.YELLOW}{name}{Style.RESET_ALL}'
             currentAmount = gameData.get('pokeballCounts', {}).get(key, '0')
-            prompt = f'How many {formattedName}? (Currently have {currentAmount}): '
+            prompt = f'How many {formattedName}? (Currently have {currentAmount})\n'
             maxBound = 999
             try:
                 while True:
@@ -1713,7 +1737,7 @@ class Rogue:
         - self.f_unlockStarters()
         - self.f_editAccountStats()
         """
-        self.f_editGamemodes()
+        self.f_unlockGamemodes()
         self.f_editAchivements()
         self.f_editVouchers()
         self.f_unlockStarters()
@@ -2050,38 +2074,39 @@ class Rogue:
         completer = WordCompleter(choices.keys(), ignore_case=True)
     
         while True:
-            userInput = prompt(fullPrompt, completer=completer).strip()  # Ensure prompt is the correct callable
+            try:
+                userInput = prompt(fullPrompt, completer=completer).strip()  # Ensure prompt is the correct callable
 
-            if userInput.lower() == 'exit' or userInput.lower() == 'cancel' or userInput == '':
-                raise OperationCancel()
-            if userInput == '0':
-                if softCancel:
-                    raise OperationSoftCancel()
-                if zeroCancel:
+                if userInput.lower() == 'exit' or userInput.lower() == 'cancel' or userInput == '':
                     raise OperationCancel()
-            if allowSkip and userInput.lower() == 'skip':
-                return 'skip'
-            
-            ## Validate the input
-            if userInput in choices:
-                return choices[userInput]
-
-            # Ensure inputValue is a string
-            inputValue = str(userInput).strip().lower()
-
-            if inputValue.isdigit():
-                # Input is an ID
-                enum_member = next((member for member in choices.values() if isinstance(member, Enum) and member.value == int(inputValue)), None)
-            else:
-                # Input is a name
-                enum_member = next((member for member in choices.values() if isinstance(member, Enum) and member.name() == inputValue), None)
-
-            if enum_member is not None:
-                return enum_member
-
-            # If input is not valid
-            cFormatter.print(Color.INFO, 'Invalid choice.')
+                if userInput == '0':
+                    if softCancel:
+                        raise OperationSoftCancel()
+                    if zeroCancel:
+                        raise OperationCancel()
+                if allowSkip and userInput.lower() == 'skip':
+                    return 'skip'
+                
+                ## Validate the input
+                if userInput in choices:
+                    return choices[userInput]
     
+                # Ensure inputValue is a string
+                inputValue = str(userInput).strip().lower()
+                enumMember: Optional[Enum] = None
+                if inputValue.isdigit():
+                    # Input is an ID
+                    enumMember = next((member for member in choices.values() if isinstance(member, Enum) and member.value == int(inputValue)))
+                else:
+                    # Input is a name
+                    enumMember = next((member for member in choices.values() if isinstance(member, Enum) and member.name() == inputValue))
+
+                if enumMember is not None:
+                    return enumMember
+            # only except that here, this indicates invalid input for choicecompleter
+            except StopIteration:
+                cFormatter.print(Color.INFO, 'Invalid input.')
+            
     @handle_operation_exceptions
     def fh_printEnums(self, enum_type: str) -> None:
         """
