@@ -49,6 +49,7 @@ Currently work in progres...
   - All rewrites affect mentioned above affect those functions so far:
     - `f_editAccountStats(retested:works)` <Can now either random all, set one by choice (With AutoComplete by ID or Name) or loop over all one by one>
     - `f_editPokeballs(tested:works)` <Can now skip pokes, edit single ones or all> <Can now also skip choices>
+    - `f_editTickets(tested:works)` <Works now same as pokeballs>
     - `f_restoreBackup(tested:works)` 
     - `f_editMoney(tested:works)` <Adjusted to new input handlers>
     - `f_editHatchWaves(tested:works)` <Adjusted to new input handlers>
@@ -57,17 +58,19 @@ Currently work in progres...
     - `f_editBiome(tested:works)` <Can now type ID or Biome for autocomplete = case-insensitive, with autocompleter>
     - `f_addEggsGenerator(tested:works)` <Rewritten, fixed ID, better input logic>
     - `f_addCandies(tested:works)` 
-    - `f_createBackup()` <- need to backup slots
-    - `f_restoreBackup(tested:works)` <Should automatically recognize slot backups too>
     - `f_editVouchers(tested:works)` <Can now either add single ones with autocomplete with ID/Name = case-insensitive, multiple in a loop or all at once.>
     - `f_editAchivements(tested:works)` <Can now either add single ones with autocomplete with ID/Name = case-insensitive, multiple in a loop or all at once.>
-
     - `f_editGamemodes(tested:works)` <Can now either add single ones with autocomplete with ID/Name = case-insensitive, multiple in a loop or all at once.>
-    - `add_ticket(wip)`
-    - `edit_starter_separate(wip)`
+
+    - `edit_starter_separate(wip)` 
+    - `edit_pokemon_party(wip)`  https://github.com/RogueEdit/onlineRogueEditor/pull/152
+    - `f_unlockStarters(wip)` 
+    - `f_createBackup()` <- need to backup slots
+    - `f_restoreBackup(tested:works)` <Should automatically recognize slot backups too>
+    - `f_logout()` 
 
     - Simplified:
-      - `update_all(wip)`
+      - `f_updateAllToServer(wip)`
       - `get_trainer_data(wip)`
       - `getSlotData(wip)`
     - soon more.. all existing functions!

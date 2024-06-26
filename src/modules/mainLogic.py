@@ -297,13 +297,13 @@ class Rogue:
                 if self.slot > 5 or self.slot < 1:
                     cFormatter.print(Color.INFO, 'Invalid input. Slot number must be between 1 and 5.')
             if self.editOffline:
-                gameData = self.__loadDataFromJSON('trainer.json')
-                slotData = self.__loadDataFromJSON(f'slot_{slot}.json')
+                gameData = self.__fh_loadDataFromJSON('trainer.json')
+                slotData = self.__fh_loadDataFromJSON(f'slot_{slot}.json')
                 self.trainerId = gameData.get('trainerId')
                 self.secretId = gameData.get('secretId')
             else:
-                gameData = self.get_trainer_data()
-                slotData = self.getSlotData(slot)
+                gameData = self.f_getGameData()
+                slotData = self.f_getSlotData(slot)
                 self.trainerId = gameData.get('trainerId')
                 self.secretId = gameData.get('secretId')
 
@@ -315,7 +315,7 @@ class Rogue:
 
     # TODO IMPORTANT: Simplify
     @limiter.lockout
-    def get_trainer_data(self) -> dict:
+    def f_getGameData(self) -> dict:
         """
         Fetch trainer data from the API.
 
@@ -354,7 +354,7 @@ class Rogue:
                         # decompressed_data = self.__decompress_zstd(response)
                         # data = json.loads(decompressed_data)
                         data = json.loads(response)
-                        self.__writeJSONData(data, 'trainer.json', False)
+                        self.__fh_writeJSONData(data, 'trainer.json', False)
                         cFormatter.print(Color.GREEN, 'Successfully fetched trainer data.')
                         return data
                     except json.JSONDecodeError as e:
@@ -373,7 +373,7 @@ class Rogue:
                     data = response.json()
                     self.trainerId = data.get('trainerId')
                     self.secretId = data.get('secretId')
-                    self.__writeJSONData(data, 'trainer.json', False)
+                    self.__fh_writeJSONData(data, 'trainer.json', False)
                     return data
                 else:
                     return handle_error_response(response)
@@ -381,7 +381,7 @@ class Rogue:
                 cFormatter.print(Color.DEBUG, f'Error fetching trainer data. Please restart the tool. \n {e}', isLogging=True)
 
     # TODO IMPORTNAT: Simplify
-    def getSlotData(self, slot: int = 1) -> Optional[Dict[str, Any]]:
+    def f_getSlotData(self, slot: int = 1) -> Optional[Dict[str, Any]]:
         """
         Fetch gamesave data from the API for a specified slot.
 
@@ -418,7 +418,7 @@ class Rogue:
                         #decompressed_data = self.__decompress_zstd(response)
                         #data = json.loads(decompressed_data)
                         data = json.loads(response)
-                        self.__writeJSONData(data, f'slot_{slot}.json', False)
+                        self.__fh_writeJSONData(data, f'slot_{slot}.json', False)
                         self.slot = slot
                         return data
                     except json.JSONDecodeError as e:
@@ -433,7 +433,7 @@ class Rogue:
                 if response.content:  # Check if the response content is not empty
                     cFormatter.print(Color.GREEN, f'Successfully fetched data for slot {self.slot}.')
                     data = response.json()
-                    self.__writeJSONData(data, f'slot_{slot}.json', False)
+                    self.__fh_writeJSONData(data, f'slot_{slot}.json', False)
                     self.slot = slot
                     return data
                 else:
@@ -441,7 +441,7 @@ class Rogue:
             except requests.RequestException as e:
                 cFormatter.print(Color.CRITICAL, f'Error fetching save-slot data. Please restart the tool. \n {e}', isLogging=True)
 
-    def logout(self) -> None:
+    def f_logout(self) -> None:
         """
         Logout from the PokeRogue API session.
 
@@ -476,63 +476,6 @@ class Rogue:
             exit(0)
         except Exception as e:
             cFormatter.print(Color.WARNING, f'Error logging out. {e}')
-
-    def __writeJSONData(self, data: Dict[str, Any], filename: str, showSuccess: bool = True) -> None:
-        """
-        Write data to a JSON file.
-
-        Args:
-            data (Dict[str, Any]): The data to write.
-            filename (str): The name of the file.
-            showSuccess (bool, optional): Flag to print success message. Defaults to True.
-
-        Returns:
-            None
-
-        Example:
-            >>> rogue_instance.__write_data(data, 'trainer.json')
-            # Output:
-            # Written to local data. Do not forget to apply to server when done!
-
-        Modules/Librarys used and for what purpose exactly in each function:
-            - json: Used for serializing data into JSON format and writing to a file.
-            - cFormatter, Color: Used for formatting and printing colored output messages.
-        """
-        try:
-            with open(filename, 'w') as f:
-                json.dump(data, f, indent=4)
-                if showSuccess:
-                    cFormatter.print(Color.BRIGHT_GREEN, 'Written to local data. Do not forget to apply to server when done!')
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function __write_data(): {e}', isLogging=True)
-
-    def __loadDataFromJSON(self, file_path: str) -> Dict[str, Any]:
-        """
-        Load data from a specified file path.
-
-        Args:
-            file_path (str): Path to the file to be loaded.
-
-        Returns:
-            dict: Loaded data from the specified file.
-
-        Example:
-            >>> rogue_instance.__load_data('trainer.json')
-            # Output:
-            # Loaded data as a dictionary.
-
-        Raises:
-            Exception: If any error occurs during the process.
-
-        Modules/Librarys used and for what purpose exactly in each function:
-            - json: Used for deserializing data from JSON format.
-            - cFormatter, Color: Used for formatting and printing colored output messages.
-        """
-        try:
-            with open(file_path, 'r') as f:
-                return json.load(f)
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function __load_data(): {e}', isLogging=True)
 
     def f_createBackup(self, offline: bool = False) -> None:
         """
@@ -685,10 +628,9 @@ class Rogue:
                 cFormatter.print(Color.GREEN, 'Data restored and timestamp updated.')
                 break
 
-
     # TODO IMPORTANT: Simplify
     @limiter.lockout
-    def update_all(self) -> None:
+    def f_updateAllToServer(self) -> None:
         """
         Update all data using the provided URL.
 
@@ -743,7 +685,7 @@ class Rogue:
             if self.useScripts:
                 response = self._make_request(url, method='POST', data=json.dumps(payload))
                 cFormatter.print(Color.GREEN, "That seemed to work! Refresh without cache (STRG+F5)")
-                self.logout()
+                self.f_logout()
             else:
                 response = self.session.post(url=url, headers=self.headers, json=payload, verify=config.useCACERT)
                 if response.status_code == 400:
@@ -751,12 +693,12 @@ class Rogue:
                     return
                 response.raise_for_status()
                 cFormatter.print(Color.GREEN, 'Updated data Successfully!')
-                self.logout()
+                self.f_logout()
         except SSLError as ssl_err:
             cFormatter.print(Color.WARNING, f'SSL error occurred: {ssl_err}', isLogging=True)
             cFormatter.print(Color.WARNING, 'Took too long to edit, you need to be faster. Session expired.')
             sleep(5)
-            self.logout()
+            self.f_logout()
         except ConnectionError as conn_err:
             cFormatter.print(Color.WARNING, f'Connection error occurred: {conn_err}', isLogging=True)
         except Timeout as timeout_err:
@@ -796,7 +738,7 @@ class Rogue:
 
         """
         try:
-            trainer_data: dict = self.__loadDataFromJSON('trainer.json')
+            trainer_data: dict = self.__fh_loadDataFromJSON('trainer.json')
 
             choice: int = int(input('Do you want to unlock all forms of the pokemon? (All forms are Tier 3 shinies. 1: Yes | 2: No): '))
             if not 1 <= choice <= 2:
@@ -888,11 +830,11 @@ class Rogue:
                     'classicWinCount': None if ribbon == 2 else 1,
                 }
 
-            self.__writeJSONData(trainer_data, 'trainer.json')
+            self.__fh_writeJSONData(trainer_data, 'trainer.json')
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function unlock_all_starter(): {e}', isLogging=True)
 
-    def edit_starter_separate(self, dexId: Optional[str] = None) -> None:
+    def f_editStarter(self, dexId: Optional[str] = None) -> None:
         """
         Allows the user to edit starter Pokemon data for a trainer.
 
@@ -919,7 +861,7 @@ class Rogue:
 
         """
         try:
-            trainer_data: dict = self.__loadDataFromJSON('trainer.json')
+            trainer_data: dict = self.__fh_loadDataFromJSON('trainer.json')
             
             if not dexId:
                 pokemon_completer: WordCompleter = WordCompleter(self.pokemon_id_by_name.__members__.keys(), ignore_case=True)
@@ -1028,7 +970,7 @@ class Rogue:
                 'valueReduction': costReduce
             }
 
-            self.__writeJSONData(trainer_data, 'trainer.json')
+            self.__fh_writeJSONData(trainer_data, 'trainer.json')
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function edit_starters(): {e}', isLogging=True)
 
@@ -1059,7 +1001,7 @@ class Rogue:
             >>> example_instance = ExampleClass()
             >>> example_instance.f_addTicket()
         """
-        gameData = self.__loadDataFromJSON('trainer.json')
+        gameData = self.__fh_loadDataFromJSON('trainer.json')
 
         voucherTypes = {
             '0': 'common',
@@ -1093,7 +1035,7 @@ class Rogue:
             except OperationSoftCancel:
                 break
         if changed:
-            self.__writeJSONData(gameData, 'trainer.json')
+            self.__fh_writeJSONData(gameData, 'trainer.json')
             cFormatter.print(Color.YELLOW, 'Changes saved:')
             for item in changedItems:
                 cFormatter.print(Color.INFO, item)
@@ -1102,7 +1044,7 @@ class Rogue:
             cFormatter.print(Color.YELLOW, 'No changes made.')
 
     # Await response
-    def edit_pokemon_party(self) -> None:
+    def f_editPokemonParty(self) -> None:
         """
         Allows the user to edit the Pokemon party.
 
@@ -1127,7 +1069,7 @@ class Rogue:
             slot = self.slot
             filename = f'slot_{slot}.json'
 
-            game_data = self.__loadDataFromJSON(filename)
+            game_data = self.__fh_loadDataFromJSON(filename)
 
             if game_data['gameMode'] == 3:
                 cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot edit this property on Daily Runs.')
@@ -1219,7 +1161,7 @@ class Rogue:
             
                 game_data['party'][party_num]['nature'] = natureSlot
 
-            self.__writeJSONData(game_data, filename)
+            self.__fh_writeJSONData(game_data, filename)
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function edit_pokemon_party(): {e}', isLogging=True)
 
@@ -1244,7 +1186,7 @@ class Rogue:
             >>> example_instance.unlock_all_gamemodes()
 
         """
-        trainer_data = self.__loadDataFromJSON('trainer.json')
+        trainer_data = self.__fh_loadDataFromJSON('trainer.json')
 
         unlocked_modes = trainer_data.get('unlocks', {})
         if not unlocked_modes:
@@ -1254,7 +1196,7 @@ class Rogue:
         for mode in unlocked_modes:
             unlocked_modes[mode] = True
 
-        self.__writeJSONData(trainer_data, 'trainer.json')
+        self.__fh_writeJSONData(trainer_data, 'trainer.json')
         raise OperationSuccessful('Unlocked all gamemodes.')
 
     @handle_operation_exceptions
@@ -1281,7 +1223,7 @@ class Rogue:
             >>> example_instance = ExampleClass()
             >>> example_instance.f_editAchievements()
         """
-        gameData = self.__loadDataFromJSON('trainer.json')
+        gameData = self.__fh_loadDataFromJSON('trainer.json')
         achievementsData = self.appData.achievementsData
         keysToUpdate = {member.name: member for member in achievementsData}
 
@@ -1316,9 +1258,6 @@ class Rogue:
         elif choice == '2':
             self.legacy_printAchievements()
             self.fh_completerInfo()
-
-
-
             while True:
                 try:
                     inputValue = self.fh_getCompleterInput(
@@ -1340,7 +1279,7 @@ class Rogue:
                     break
 
         if changed:
-            self.__writeJSONData(gameData, 'trainer.json')
+            self.__fh_writeJSONData(gameData, 'trainer.json')
             cFormatter.print(Color.YELLOW, 'Changes saved:')
             for key, value in changedItems:
                 cFormatter.print(Color.INFO, f'Added {key} with timestamp {value}.')
@@ -1371,7 +1310,7 @@ class Rogue:
             >>> example_instance = ExampleClass()
             >>> example_instance.edit_vouchers()
         """
-        gameData = self.__loadDataFromJSON('trainer.json')
+        gameData = self.__fh_loadDataFromJSON('trainer.json')
         voucherData = self.appData.voucherData
         keysToUpdate = {member.name: member for member in voucherData}
         currentAmount = gameData.get('voucherUnlocks', {})
@@ -1431,7 +1370,7 @@ class Rogue:
                     break
 
         if changed:
-            self.__writeJSONData(gameData, 'trainer.json')
+            self.__fh_writeJSONData(gameData, 'trainer.json')
             cFormatter.print(Color.YELLOW, 'Changes saved:')
             for key, value in changedItems:
                 cFormatter.print(Color.INFO, f'Added {key} with timestamp {value}.')
@@ -1466,7 +1405,7 @@ class Rogue:
             >>> example_instance.f_addCandies('pikachu')
         """
 
-        gameData = self.__loadDataFromJSON('trainer.json')
+        gameData = self.__fh_loadDataFromJSON('trainer.json')
 
         inputValue = self.fh_getCompleterInput(
             promptMessage='Write either the ID or the Name of the Pokemon: ',
@@ -1488,7 +1427,7 @@ class Rogue:
         gameData["starterData"][inputValue.value]["candyCount"] = candies
 
         # Write updated data to JSON
-        self.__writeJSONData(gameData, 'trainer.json')
+        self.__fh_writeJSONData(gameData, 'trainer.json')
         raise OperationSuccessful(f'Added {candies} candies to {pokeName}.')
 
     @handle_operation_exceptions
@@ -1516,14 +1455,15 @@ class Rogue:
         """
 
         # Initialize EnumLoader and load enums
-        gameData = self.__loadDataFromJSON(f'slot_{self.slot}.json')
+        gameData = self.__fh_loadDataFromJSON(f'slot_{self.slot}.json')
         currentBiomeId = gameData["arena"]["biome"]
         currentBiomeName = next((member.name for member in self.appData.biomesByID if member.value == currentBiomeId), "Unknown")
         biomeData = self.appData.biomesByID
 
         # Prompt user for biome input
         self.legacy_printBiomes()
-        cFormatter.print(Color.INFO, f'\nCurrent Biome {currentBiomeName}. You can type `exit`, `cancel` or press STRG+C to exit.')
+        self.fh_completerInfo()
+        cFormatter.print(Color.INFO, f'\nCurrent Biome {currentBiomeName}.')
         while True:
             try:
                 inputValue = self.fh_getCompleterInput(
@@ -1539,7 +1479,7 @@ class Rogue:
 
         # Update game data with the chosen biome ID
         gameData["arena"]["biome"] = inputValue.value
-        self.__writeJSONData(gameData, f'slot_{self.slot}.json')
+        self.__fh_writeJSONData(gameData, f'slot_{self.slot}.json')
         raise OperationSuccessful(f'Biome updated from {currentBiomeName} to {inputValue.name}.')
             
     @handle_operation_exceptions
@@ -1565,7 +1505,7 @@ class Rogue:
             >>> example_instance = ExampleClass()
             >>> example_instance.f_editPokeballs()
         """
-        gameData = self.__loadDataFromJSON(f'slot_{self.slot}.json')
+        gameData = self.__fh_loadDataFromJSON(f'slot_{self.slot}.json')
 
         if gameData.get("gameMode") == 3:
             cFormatter.print(Color.CRITICAL, 'Cannot edit this property on daily runs!')
@@ -1604,7 +1544,7 @@ class Rogue:
             except OperationSoftCancel:
                 break
         if changed:
-            self.__writeJSONData(gameData, f'slot_{self.slot}.json')
+            self.__fh_writeJSONData(gameData, f'slot_{self.slot}.json')
             cFormatter.print(Color.YELLOW, 'Changes saved:')
             for item in changedItems:
                 cFormatter.print(Color.INFO, item)
@@ -1635,7 +1575,7 @@ class Rogue:
             >>> example_instance.f_editMoney()
         """
         print('test')
-        saveData = self.__loadDataFromJSON(f'slot_{self.slot}.json')
+        saveData = self.__fh_loadDataFromJSON(f'slot_{self.slot}.json')
 
         if saveData["gameMode"] == 3:
             cFormatter.print(Color.CRITICAL, 'Cannot edit this property on daily runs!')
@@ -1644,7 +1584,7 @@ class Rogue:
         prompt = 'How many Poke-Dollars do you want? '
         choice = self.fh_getIntegerInput(prompt, 0, float('inf'), zeroCancel=True)
         saveData["money"] = choice
-        self.__writeJSONData(saveData, f'slot_{self.slot}.json')
+        self.__fh_writeJSONData(saveData, f'slot_{self.slot}.json')
         raise OperationSuccessful(f'Written {choice} as money value to to local .json.')
 
     @handle_operation_exceptions
@@ -1673,7 +1613,7 @@ class Rogue:
             >>> example_instance = ExampleClass()
             >>> example_instance.f_addEggsGenerator()
         """
-        trainerData = self.__loadDataFromJSON('trainer.json')
+        trainerData = self.__fh_loadDataFromJSON('trainer.json')
         currentEggs = trainerData.get('eggs', [])
         currentAmount = len(currentEggs)
 
@@ -1718,19 +1658,11 @@ class Rogue:
         elif userInput == '2':
             trainerData['eggs'].extend(eggDictionary)
 
-        self.__writeJSONData(trainerData, 'trainer.json')
+        self.__fh_writeJSONData(trainerData, 'trainer.json')
         raise OperationSuccessful(f'{count} eggs successfully generated.')
 
     @handle_operation_exceptions
     def f_unlockAllCombined(self) -> None:
-        """
-        Combines multiple functions.
-        - self.f_editGamemodes()
-        - self.f_editAchivements()
-        - self.f_editVouchers()
-        - self.f_unlockStarters()
-        - self.f_editAccountStats()
-        """
         self.f_unlockGamemodes()
         self.f_editAchivements()
         self.f_editVouchers()
@@ -1763,7 +1695,7 @@ class Rogue:
             >>> example_instance = ExampleClass()
             >>> example_instance.f_editAccountStats()
         """
-        gameData = self.__loadDataFromJSON('trainer.json')
+        gameData = self.__fh_loadDataFromJSON('trainer.json')
 
         encounters = random.randint(100000, 200000)
         caught = round(encounters / 25)
@@ -1864,7 +1796,7 @@ class Rogue:
                     break
 
         if changed:
-            self.__writeJSONData(gameData, 'trainer.json')
+            self.__fh_writeJSONData(gameData, 'trainer.json')
             cFormatter.print(Color.YELLOW, 'Changes saved:')
             for item in changedItems:
                 cFormatter.print(Color.INFO, item)
@@ -1896,7 +1828,7 @@ class Rogue:
             >>> example_instance = ExampleClass()
             >>> example_instance.f_editHatchWaves()
         """
-        trainerData = self.__loadDataFromJSON('trainer.json')
+        trainerData = self.__fh_loadDataFromJSON('trainer.json')
 
         if 'eggs' in trainerData and trainerData['eggs']:
             minBound = 0
@@ -1909,7 +1841,7 @@ class Rogue:
                 egg["hatchWaves"] = hatchWaves
 
             # Write updated trainer_data to 'trainer.json'
-            self.__writeJSONData(trainerData, 'trainer.json')
+            self.__fh_writeJSONData(trainerData, 'trainer.json')
             raise OperationSuccessful(f'Set hatch duration of your eggs to {hatchWaves}')
         else:
             cFormatter.print(Color.GREEN, 'You have no eggs to hatch.')
@@ -1941,7 +1873,7 @@ class Rogue:
                     else:
                         cFormatter.print(Color.ERROR, f'File {filename} does not exist. Please select another slot.')
                 else:
-                    self.get_trainer_data(newSlot)
+                    self.f_getGameData(newSlot)
 
     @staticmethod
     def fh_getChoiceInput(promptMesage: str, choices: dict, renderMenu: bool = False, zeroCancel: bool=False, softCancel:bool = False) -> str:
@@ -2162,3 +2094,60 @@ class Rogue:
         cFormatter.fh_printSeperators(30, '-')
         cFormatter.print(Color.DEBUG, 'You can type either the name or ID. 0 will cancel, but save done changes.')
         cFormatter.print(Color.DEBUG, 'Type `exit` or `cancel` or nothing to cancel without safes.')
+
+    def __fh_writeJSONData(self, data: Dict[str, Any], filename: str, showSuccess: bool = True) -> None:
+        """
+        Write data to a JSON file.
+
+        Args:
+            data (Dict[str, Any]): The data to write.
+            filename (str): The name of the file.
+            showSuccess (bool, optional): Flag to print success message. Defaults to True.
+
+        Returns:
+            None
+
+        Example:
+            >>> rogue_instance.__write_data(data, 'trainer.json')
+            # Output:
+            # Written to local data. Do not forget to apply to server when done!
+
+        Modules/Librarys used and for what purpose exactly in each function:
+            - json: Used for serializing data into JSON format and writing to a file.
+            - cFormatter, Color: Used for formatting and printing colored output messages.
+        """
+        try:
+            with open(filename, 'w') as f:
+                json.dump(data, f, indent=4)
+                if showSuccess:
+                    cFormatter.print(Color.BRIGHT_GREEN, 'Written to local data. Do not forget to apply to server when done!')
+        except Exception as e:
+            cFormatter.print(Color.CRITICAL, f'Error in function __write_data(): {e}', isLogging=True)
+
+    def __fh_loadDataFromJSON(self, file_path: str) -> Dict[str, Any]:
+        """
+        Load data from a specified file path.
+
+        Args:
+            file_path (str): Path to the file to be loaded.
+
+        Returns:
+            dict: Loaded data from the specified file.
+
+        Example:
+            >>> rogue_instance.__load_data('trainer.json')
+            # Output:
+            # Loaded data as a dictionary.
+
+        Raises:
+            Exception: If any error occurs during the process.
+
+        Modules/Librarys used and for what purpose exactly in each function:
+            - json: Used for deserializing data from JSON format.
+            - cFormatter, Color: Used for formatting and printing colored output messages.
+        """
+        try:
+            with open(file_path, 'r') as f:
+                return json.load(f)
+        except Exception as e:
+            cFormatter.print(Color.CRITICAL, f'Error in function __load_data(): {e}', isLogging=True)

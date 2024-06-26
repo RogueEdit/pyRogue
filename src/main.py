@@ -71,7 +71,7 @@ def m_mainMenu(rogue, editOffline: bool = False):
         ('Account Actions', 'category'),
         ((f'{Fore.YELLOW}Create a backup', untouched), rogue.f_createBackup),
         ((f'{Fore.YELLOW}Recover your backup', untouched), rogue.f_restoreBackup),
-        (('Load Game-Data from server', untouched), rogue.get_trainer_data),
+        (('Load Game-Data from server', untouched), rogue.f_getGameData),
         (('Change save-slot to edit', reworked), rogue.f_changeSaveSlot),
         (('Edit account stats', reworked), rogue.f_editAccountStats),
 
@@ -81,7 +81,7 @@ def m_mainMenu(rogue, editOffline: bool = False):
         ((f'Edit {Fore.YELLOW}egg-tickets', reworked), rogue.f_addTicket),
         ((f'Edit {Fore.YELLOW}vouchers', reworked), rogue.f_editVouchers),
         ((f'Edit {Fore.YELLOW}achievements', reworked), rogue.f_editAchivements),
-        ((f'{Fore.YELLOW}Edit a starter', untouched), rogue.edit_starter_separate),
+        ((f'{Fore.YELLOW}Edit a starter', untouched), rogue.f_editStarter),
         ((f'{Fore.YELLOW}Edit candies on a starter', reworked), rogue.f_addCandies),
 
         ('Unlocks', 'category'),
@@ -90,7 +90,7 @@ def m_mainMenu(rogue, editOffline: bool = False):
         (('Unlock Everything', reworked), rogue.f_unlockAllCombined),
 
         ('Session Data Actions', 'category'),
-        ((f'Edit {Fore.YELLOW}current Pokemon Party', untouched), rogue.edit_pokemon_party),
+        ((f'Edit {Fore.YELLOW}current Pokemon Party', untouched), rogue.f_editPokemonParty),
         ((f'Edit {Fore.YELLOW}money amount', reworked), rogue.f_editMoney),
         ((f'Edit {Fore.YELLOW}pokeballs amount', reworked), rogue.f_editPokeballs),
         ((f'Edit {Fore.YELLOW}current biome', reworked), rogue.f_editBiome),
@@ -105,15 +105,15 @@ def m_mainMenu(rogue, editOffline: bool = False):
         (('Show all NaturesSlot IDs', reworked), rogue.legacy_natureSlot),
 
         ('You can always edit your JSON manually as well!', 'helper'),
-        ((f'{Fore.YELLOW}Save data and upload to the Server', useWhenDone), rogue.update_all),
+        ((f'{Fore.YELLOW}Save data and upload to the Server', useWhenDone), rogue.f_updateAllToServer),
         (('Print help and program information', ''), config.f_printHelp),
-        (('Logout', ''), rogue.logout),
+        (('Logout', ''), rogue.f_logout),
         (title, 'title'),
     ]
     if editOffline or config.debug:
         # Filter entrys that would break offline
-        term = [entry for entry in term if entry[1] != rogue.update_all]
-        term = [entry for entry in term if entry[1] != rogue.get_trainer_data]
+        term = [entry for entry in term if entry[1] != rogue.f_updateAllToServer]
+        term = [entry for entry in term if entry[1] != rogue.f_getGameData]
     try:
         while True:
             validChoices = cFormatter.m_initializeMenu(term)
