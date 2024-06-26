@@ -139,9 +139,9 @@ class Rogue:
         """
         self.slot = None
         self.session = session
-        self.auth_token = auth_token
+        self.authToken = auth_token
         self.clientSessionId = clientSessionId
-        self.headers = self._setup_headers()
+        self.headers = self.__fh_setup_headers()
         self.__MAX_BIG_INT = (2 ** 53) - 1
         self.driver = driver
         self.useScripts = useScripts
@@ -226,7 +226,7 @@ class Rogue:
 
         return self.driver.execute_async_script(script)
 
-    def _setup_headers(self, headers: Optional[Dict[str, str]] = None) -> Dict[str, str]:
+    def __fh_setup_headers(self, headers: Optional[Dict[str, str]] = None) -> Dict[str, str]:
         """
         Generates random headers for the session.
 
@@ -250,7 +250,7 @@ class Rogue:
             headers = HeaderGenerator.generate_headers()
         headers["Accept"] = "application/json"
         headers["Content-Type"] = "application/json"
-        headers["Authorization"] = self.auth_token
+        headers["Authorization"] = self.authToken
 
         return headers
     

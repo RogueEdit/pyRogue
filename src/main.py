@@ -39,6 +39,7 @@ from modules.handler import OperationSuccessful, handle_operation_exceptions, Op
 from colorama import Fore, Style, init
 from utilities import cFormatter, Color, CustomLogger
 from datetime import datetime, timedelta
+from utilities import fh_printMessageBuffer
 
 init()
 logger = CustomLogger()
@@ -64,6 +65,7 @@ def m_mainMenu(rogue, editOffline: bool = False):
     untouched = f'{Fore.LIGHTYELLOW_EX}(UNTOUCHED)'
     reworked = f'{Fore.GREEN}(REWORKED)'
     broken = f'{Fore.RED}(BROKEN)'  # noqa: F841
+    
 
     term = [
         (title, 'title'),
@@ -120,6 +122,7 @@ def m_mainMenu(rogue, editOffline: bool = False):
     try:
         while True:
             validChoices = cFormatter.m_initializeMenu(term)
+            fh_printMessageBuffer()
             userInput = input('Command: ').strip().lower()
 
             if userInput == 'exit':

@@ -5,9 +5,10 @@
 # Date of release: 25.06.2024 
 # Last Edited: 25.06.2024
 
-from utilities import cFormatter, Color
+from utilities import Color
 from json import JSONDecodeError
 from modules.config import debugEnableTraceback
+from utilities import fh_appendMessageBuffer
 
 def handle_operation_exceptions(func):
     def wrapper(*args, **kwargs):
@@ -17,36 +18,37 @@ def handle_operation_exceptions(func):
         except OperationSuccessful as os:
             funcName = func.__name__
             customMessage = os.args[0] if os.args else ""
-            cFormatter.print(Color.DEBUG, f'Operation {funcName} finished. {customMessage}')
+            fh_appendMessageBuffer(Color.GREEN, f'Operation {funcName} finished. {customMessage}')
 
         except OperationError as oe:
-            cFormatter.print(Color.DEBUG, str(oe), isLogging=True)
+            fh_appendMessageBuffer(Color.DEBUG, str(oe), isLogging=True)
 
         except OperationCancel as oc:
-            cFormatter.print(Color.DEBUG, f'\n{str(oc)}') # need \n cause it breaks on new lines
+            fh_appendMessageBuffer(Color.DEBUG, f'\n{str(oc)}') # need \n cause it breaks on new lines
 
         except OperationSoftCancel as sc:
             funcName = func.__name__
             customMessage = sc.args[0] if sc.args else ""
-            cFormatter.print(Color.DEBUG, f'Soft-cancelling {funcName}. {customMessage}')
+            fh_appendMessageBuffer(Color.DEBUG, f'Soft-cancelling {funcName}. {customMessage}')
 
         except KeyboardInterrupt:
+            fh_appendMessageBuffer(Color.DEBUG, 'Keyboard-interrupt detected.')
             raise OperationCancel()
         
         except JSONDecodeError as jde:
             funcName = func.__name__
             customMessage = f'JSON decoding error in function {funcName}: {jde}'
-            cFormatter.print(Color.CRITICAL, customMessage, isLogging=True)
+            fh_appendMessageBuffer(Color.CRITICAL, customMessage, isLogging=True)
 
         except IOError as ioe:
             funcName = func.__name__
             customMessage = f'JSON decoding error in function {funcName}: {ioe}'
-            cFormatter.print(Color.CRITICAL, f'Error loading data: {customMessage}', isLogging=True)
+            fh_appendMessageBuffer(Color.CRITICAL, f'Error loading data: {customMessage}', isLogging=True)
 
         except Exception as e:
             funcName = func.__name__
             customMessage = f'Error in function {funcName}: {e}'
-            cFormatter.print(Color.CRITICAL, customMessage, isLogging=True)
+            fh_appendMessageBuffer(Color.CRITICAL, customMessage, isLogging=True)
             # This should forward any exception not handled to our main stack
             if debugEnableTraceback:
                 raise Exception()
