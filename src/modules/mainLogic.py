@@ -70,6 +70,7 @@ class Rogue:
         # json generators
         self.generator = Generator()
         self.generator.generate()
+<<<<<<< HEAD
         self.enum = EnumLoader()
         
         # wordcomplete
@@ -83,6 +84,16 @@ class Rogue:
                 self.passive_data = json.load(f)
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Something on inital data generation failed. {e}', isLogging=True)
+=======
+        self.appData = EnumLoader()
+
+        self.backupDirectory = config.backupDirectory
+        self.dataDirectory = config.dataDirectory
+
+        (self.starterNameById, self.biomeNamesById, self.moveNamesById, self.vouchersData, self.natureData, 
+            self.natureSlotData, self.achievementsData, self.pokemonData, self.noPassiveIDs, self.hasFormsIDs) = self.appData.f_convertToEnums()
+        self.editOffline = editOffline
+>>>>>>> 8237e55 (working starter edit)
         
         self.__dump_data()
 
@@ -549,7 +560,59 @@ class Rogue:
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function unlock_all_starter(): {e}', isLogging=True)
 
+<<<<<<< HEAD
     def edit_starter_separate(self, dexId: Optional[str] = None) -> None:
+=======
+        choices = {
+            '1': 'Yes',
+            '2': 'No'
+        }
+
+        shinyChoice = False
+        choice = fh_getChoiceInput('Do you want to unlock all forms of the pokemon? (All forms are Tier 3 shinies)', choices)
+
+        if choice == '2':
+            shinyChoice = fh_getChoiceInput('Do you want Tier 3 shinies?', choices) == 1
+
+
+        iv = fh_getChoiceInput('Do you want the starters to have perfect IVs?', choices)
+        passive = fh_getChoiceInput('Do you want the starters to have the passive unlocked?', choices)
+        ribbon = fh_getChoiceInput('Do you want to unlock win-ribbons?', choices)
+        nature = fh_getChoiceInput('Do you want to unlock all natures?', choices)
+        costReduce = int(fh_getIntegerInput('How much do you want to reduce the cost? Yes, Lugia can cost nearly 0!', 1, 20))
+        abilityAttr = fh_getChoiceInput('Do you want to unlock all abilities?', choices)
+        if abilityAttr == '1':
+            abilityAttr = 7
+        else:
+            abilityAttr = 0
+
+        noPassives = {member.name: member for member in self.appData.noPassiveIDs}
+        combinedFormIDs = {key: member.value['Combined'] for key, member in self.appData.hasFormIDs.__members__.items() if 'Combined' in member.value}
+
+        for entry in gameData['dexData'].keys():
+            if choice == '1' and entry in combinedFormIDs:
+                caughtAttr = combinedFormIDs[entry]
+                shinyChoice = True
+            else:
+                caughtAttr = 255 if shinyChoice else 253
+
+            gameData['dexData'][entry].update({
+                'caughtAttr': caughtAttr,
+                'natureAttr': self.natureData.UNLOCK_ALL.value if nature == '1' else None,
+                'ivs': [31, 31, 31, 31, 31, 31] if iv == '1' else random.sample(range(20, 30), 6),
+                'friendship': random.randint(1, 300),
+                'abilityAttr': abilityAttr,
+                'passiveAttr': 0 if (entry in noPassives.values()) or (passive == '2') else 3,
+                'valueReduction': costReduce,
+                'classicWinCount': 0 if ribbon == '2' else 1,
+            })
+
+        self.__fh_writeJSONData(gameData, 'trainer.json')
+        fh_appendMessageBuffer(Color.GREEN, 'Data updated successfully.')
+        raise OperationCancel('Written changes for all starters.')
+
+    def f_editStarter(self, dexId: Optional[str] = None) -> None:
+>>>>>>> 8237e55 (working starter edit)
         """
         Allows the user to edit starter Pokemon data for a trainer.
 
@@ -560,6 +623,7 @@ class Rogue:
             trainer_data = self.__load_data('trainer.json')
             
             if not dexId:
+<<<<<<< HEAD
                 pokemon_completer: WordCompleter = WordCompleter(self.pokemon_id_by_name.__members__.keys(), ignore_case=True)
 
                 cFormatter.print(Color.INFO, 'Write the name of the pokemon, it will recommend for auto-completion.')
@@ -647,15 +711,74 @@ class Rogue:
             nature: str = prompt('What nature would you like?: ', completer=nature_completer)
 
             nature: int = self.nature_data[nature].value
+=======
+                inputValue = fh_getCompleterInput(
+                        promptMessage='Write either the ID or the Name of the Pokemon',
+                        choices={**{member.name.lower(): member for member in self.appData.starterNameByID}, 
+                                **{str(member.value): member for member in self.appData.starterNameByID}},
+                        softCancel=True
+                    )
+                dexId = inputValue.value
+
+                if str(dexId) not in trainer_data['starterData']:
+                    cFormatter.print(Color.INFO, f'No pokemon with ID: {dexId}')
+                    return
+
+            choices = {1: 'Yes', 2: 'No'}
+            form_choice = fh_getChoiceInput('Do you want to unlock all forms of the pokemon? (All forms are Tier 3 shinies)', choices, zeroCancel=True)
+            
+            combinedFormIDs = {key: member.value['Combined'] for key, member in self.appData.hasFormIDs.__members__.items() if 'Combined' in member.value}
+
+            if form_choice == '1' and dexId in combinedFormIDs:
+                caught_attr = combinedFormIDs[dexId]
+                shiny_choice = True
+            else:
+                shiny_choice = fh_getChoiceInput('Do you want Tier 3 shinies?', choices, zeroCancel=True) == '1'
+                caught_attr = 255 if shiny_choice else 253
+
+            caught = fh_getIntegerInput('How many of this Pokemon have you caught?', 1, self.__MAX_BIG_INT, zeroCancel=True)
+            hatched = fh_getIntegerInput('How many of this Pokemon have hatched from eggs?', 0, self.__MAX_BIG_INT, zeroCancel=True)
+            seen_count = fh_getIntegerInput('How many of this Pokemon have you seen?', 0, self.__MAX_BIG_INT, zeroCancel=True)
+            candies = fh_getIntegerInput('How many candies do you want?', 0, self.__MAX_BIG_INT, zeroCancel=True)
+            
+            nature = fh_getCompleterInput(
+                        promptMessage='Write either the ID or the Name of the Pokemon',
+                        choices={**{member.name.lower(): member for member in self.appData.natureData}, 
+                                **{str(member.value): member for member in self.appData.natureData}},
+                        softCancel=True
+                    )
+            
+            passive_choice = fh_getChoiceInput('Do you want the starters to have the passive unlocked?', {1: 'Yes', 2: 'No'}, zeroCancel=True)
+            if passive_choice == '1' and dexId in self.passive_data['noPassive']:
+                cFormatter.print(Color.INFO, 'This pokemon has no passive.')
+                passiveAttr = 0
+            else:
+                passiveAttr = 3 if passive_choice == '1' else 0
+
+            cost_reduce = fh_getIntegerInput('How much do you want to reduce the cost? (Number between 1 and 20)', 0, 20, zeroCancel=True)
+
+            ability_choice = fh_getChoiceInput('Do you want to unlock all abilities?', {1: 'Yes, with hidden', 2: 'No'}, zeroCancel=True)
+            abilityAttr = 7 if ability_choice == '1' else 0
+            
+            cFormatter.print(Color.INFO, 'Choose a value between 1 and 31 for your IVs (Pokemon Stats).')
+            ivs = [
+                fh_getIntegerInput('SpA IVs', 1, 31, zeroCancel=True),
+                fh_getIntegerInput('DEF IVs', 1, 31, zeroCancel=True),
+                fh_getIntegerInput('Attack IVs', 1, 31, zeroCancel=True),
+                fh_getIntegerInput('HP IVs', 1, 31, zeroCancel=True),
+                fh_getIntegerInput('Spe IVs', 1, 31, zeroCancel=True),
+                fh_getIntegerInput('Def IVs', 1, 31, zeroCancel=True)
+            ]
+>>>>>>> 8237e55 (working starter edit)
 
             trainer_data['dexData'][str(dexId)] = {
                 'seenAttr': 479,
                 'caughtAttr': caught_attr,
-                'natureAttr': nature,
+                'natureAttr': nature.value,
                 'seenCount': seen_count,
                 'caughtCount': caught,
                 'hatchedCount': hatched,
-                'ivs': ivs
+                'ivs': ivs  # Ensure ivs are defined appropriately in your code
             }
             trainer_data['starterData'][dexId] = {
                 'moveset': None,
@@ -663,14 +786,22 @@ class Rogue:
                 'candyCount': candies,
                 'abilityAttr': abilityAttr,
                 'passiveAttr': passiveAttr,
-                'valueReduction': costReduce
+                'valueReduction': cost_reduce
             }
 
             self.__write_data(trainer_data, 'trainer.json')
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function edit_starters(): {e}', isLogging=True)
+<<<<<<< HEAD
         
     def add_ticket(self) -> None:
+=======
+
+
+
+    @handle_operation_exceptions
+    def f_addTicket(self) -> None:
+>>>>>>> 8237e55 (working starter edit)
         """
         Simulates an egg gacha.
 

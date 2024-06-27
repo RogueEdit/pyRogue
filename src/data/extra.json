@@ -2,6 +2,7 @@
 {}
 =======
 {
+<<<<<<< HEAD
   "achievements": [
     "_10K_MONEY", "_100K_MONEY", "_1M_MONEY", "_10M_MONEY",
     "_250_DMG", "_1000_DMG", "_2500_DMG", "_10000_DMG",
@@ -46,3 +47,8 @@
   ]
 }
 >>>>>>> de88bdb (Logging and Formatting)
+=======
+    "login": 1719483764.2521758,
+    "f_getGameData": 1719483767.9756415
+}
+>>>>>>> 8237e55 (working starter edit)
