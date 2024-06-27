@@ -61,6 +61,7 @@ class EnumLoader:
         self.voucherData: Optional[Dict[str, int]] = None
         self.natureDataSlots: Optional[Dict[str, int]] = None
         self.noPassiveIDs: Optional[Dict[str, int]] = None
+        self.hasFormsIDs: Optional[Dict[str, int]] = None
 
     def __f_loadData(self) -> None:
         """
@@ -107,7 +108,7 @@ class EnumLoader:
             with open(f'{dataDir}/noPassive.json') as f:
                 self.noPassiveIDs = json.load(f)
 
-            with open(f'{dataDir}/hasForms.json') as f:
+            with open(f'{dataDir}/formIDs.json') as f:
                 self.hasFormsIDs = json.load(f)
 
             

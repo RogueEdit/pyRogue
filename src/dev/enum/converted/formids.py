@@ -1,0 +1,35 @@
+from enum import Enum
+
+class FormidsEnum(Enum):
+    FormidsEnum_DICT = {
+        'hasForms': {
+            '25': {'Pikachu': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+            '133': {'Eevee': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+            '351': {'Castform': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+            '412': {'Burmy': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+            '422': {'Shellos': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+            '479': {'Rotom': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+            '550': {'Basculin': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+            '585': {'Deerling': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+            '656': {'Froakie': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+            '664': {'Scatterbug': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+            '669': {'Flabebe': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+            '676': {'Furfrou': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+            '710': {'Pumpkaboo': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+            '716': {'Xerneas': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+            '718': {'Zygarde': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+            '741': {'Oricorio': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+            '744': {'Rockruff': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+            '774': {'Minior': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+            '801': {'Magearna': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+            '802': {'Marshadow': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+            '893': {'Zarude': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+            '978': {'TATSUGIRI': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+            '931': {'Squawkabilly': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+            '999': {'Gimmighoul': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+            '1007': {'Koraidon': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+            '1008': {'Miraidon': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+            '1012': {'Poltchageist': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+            '8128': {'Tauros': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+        },
+    }

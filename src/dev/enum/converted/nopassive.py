@@ -1,7 +1,7 @@
 from enum import Enum
 
-class PassiveEnum(Enum):
-    PassiveEnum_DICT = {
+class NopassiveEnum(Enum):
+    NopassiveEnum_DICT = {
         'noPassive': {
             '25': 25,
             '35': 35,

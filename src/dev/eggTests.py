@@ -49,9 +49,9 @@ def generateRandomID(start: int, end: int, tier: int) -> int:
         return random.randrange(start, end + 1, 255)
     elif tier == 5:
         # Generate a random ID that is divisible by 204 within the specified range
-        id_range_start = start // 204 * 204
-        id_range_end = (end // 204 + 1) * 204 - 1
-        return random.randrange(id_range_start, id_range_end + 1, 204)
+        idRangeMin = start // 204 * 204
+        idRangeMax = (end // 204 + 1) * 204 - 1
+        return random.randrange(idRangeMin, idRangeMax + 1, 204)
     else:
         raise ValueError("Invalid tier index. Must be between 0 and 5 inclusive.")
 

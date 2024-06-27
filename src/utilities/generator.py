@@ -2980,39 +2980,36 @@ class MovesEnum(Enum):
         'MALIGNANT_CHAIN': 919,
     }
 
-class hasFormsEnum(Enum):
-    HASFORMS_DICT = {
-        'Pikachu': 25,
-        'Eevee': 133,
-        'Castform': 351,
-        'Burmy': 412,
-        'Shellos': 422,
-        'Rotom': 479,
-        'Basculin': 550,
-        'Deerling': 585,
-        'Froaki': 656,
-        'Scatterbug': 664,
-        'Flabebe': 669,
-        'Furfrou': 676,
-        'Pumpkaboo': 710,
-        'Xerneas': 716,
-        'Zygarde': 718,
-        'Oricorio': 741,
-        'Rockruff': 744,
-        'Minior': 774,
-        'Magearna': 801,
-        'Marshadow': 802,
-        'Indeedee': 893,
-        'Cramorant': 845,
-        'Sinistea': 854,
-        'Zarude': 893,
-        'Tatsugiri': 978,
-        'Squawkabilly': 931,
-        'Gimmighoul': 999,
-        'Koraidon': 1007,
-        'Miraidon': 1008,
-        'Poltchageist': 1012,
-        'Tauros': 8128,
+class formIDEnum(Enum):
+    FORMID_DICT = {
+        '25': {'Pikachu': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+        '133': {'Eevee': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+        '351': {'Castform': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+        '412': {'Burmy': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+        '422': {'Shellos': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+        '479': {'Rotom': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+        '550': {'Basculin': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+        '585': {'Deerling': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+        '656': {'Froakie': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+        '664': {'Scatterbug': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+        '669': {'Flabebe': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+        '676': {'Furfrou': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+        '710': {'Pumpkaboo': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+        '716': {'Xerneas': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+        '718': {'Zygarde': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+        '741': {'Oricorio': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+        '744': {'Rockruff': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+        '774': {'Minior': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+        '801': {'Magearna': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+        '802': {'Marshadow': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+        '893': {'Zarude': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+        '978': {'TATSUGIRI': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+        '931': {'Squawkabilly': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+        '999': {'Gimmighoul': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+        '1007': {'Koraidon': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+        '1008': {'Miraidon': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+        '1012': {'Poltchageist': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
+        '8128': {'Tauros': {'Normal': 192, 'Partner': 320, 'Cosplay': 576, 'Cool Cosplay': 1088, 'Beauty Cosplay': 2112, 'Cute Cosplay': 4160, 'Smart Cosplay': 8256, 'Tough Cosplay': 16448, 'G-Max': 32832}, 'Combined': 65984},
     }
 
 class Generator:
@@ -3066,9 +3063,9 @@ class Generator:
     
     def __moves_to_json(self) -> str:
         return json.dumps({'moves': MovesEnum.MOVES_DICT.value}, indent=4)
-    
-    def __hasForms_to_json(self) -> str:
-        return json.dumps({'hasForms': hasFormsEnum.HASFORMS_DICT.value}, indent=4)
+
+    def __formIDs_to_json(self) -> str:
+        return json.dumps({'hasForms': formIDEnum.FORMID_DICT.value}, indent=4)
     
     def __fh_saveToFile(self, data: str, filename: str) -> None:
         """
@@ -3136,8 +3133,8 @@ class Generator:
             movesJSON: str = self.__moves_to_json()
             self.__fh_saveToFile(movesJSON, 'moves.json')
 
-            hasFormsJSON: str = self.__hasForms_to_json()
-            self.__fh_saveToFile(hasFormsJSON, 'hasForms.json')
+            formIDJSON: str = self.__formIDs_to_json()
+            self.__fh_saveToFile(formIDJSON, 'formIDs.json')
 
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Generating data on initializing startup failed. {e}', isLogging=True)
