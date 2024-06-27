@@ -93,7 +93,7 @@ def m_mainMenu(rogue, editOffline: bool = False):
         ((f'Edit {Fore.YELLOW}money amount', reworked), rogue.f_editMoney),
         ((f'Edit {Fore.YELLOW}pokeballs amount', reworked), rogue.f_editPokeballs),
         ((f'Edit {Fore.YELLOW}current biome', reworked), rogue.f_editBiome),
-        ((f'Edit {Fore.YELLOW}Items', untouched), rogue.f_submenuItemEditor),
+        ((f'Edit {Fore.YELLOW}Items', reworked), rogue.f_submenuItemEditor),
 
         ('Print game information', 'category'),
         (('Show all Pokemon ID', reworked), rogue.legacy_pokedex),
