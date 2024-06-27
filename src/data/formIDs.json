@@ -2,395 +2,261 @@
     "hasForms": {
         "25": {
             "Pikachu": {
-                "Normal": 192,
-                "Partner": 320,
-                "Cosplay": 576,
-                "Cool Cosplay": 1088,
-                "Beauty Cosplay": 2112,
-                "Cute Cosplay": 4160,
-                "Smart Cosplay": 8256,
-                "Tough Cosplay": 16448,
-                "G-Max": 32832
+                "Normal": 127,
+                "Partner": 383,
+                "Cosplay": 639,
+                "Cool Cosplay": 1151,
+                "Beauty Cosplay": 2175,
+                "Cute Cosplay": 4223,
+                "Smart Cosplay": 8319,
+                "Tough Cosplay": 16511,
+                "G-Max": 32895
             },
-            "Combined": 65984
+            "Combined": 65663
         },
         "133": {
             "Eevee": {
-                "Normal": 192,
-                "Partner": 320,
-                "Cosplay": 576,
-                "Cool Cosplay": 1088,
-                "Beauty Cosplay": 2112,
-                "Cute Cosplay": 4160,
-                "Smart Cosplay": 8256,
-                "Tough Cosplay": 16448,
-                "G-Max": 32832
+                "Normal": 127,
+                "Partner": 383,
+                "G-Max": 639
             },
-            "Combined": 65984
+            "Combined": 1151
         },
         "351": {
             "Castform": {
-                "Normal": 192,
-                "Partner": 320,
-                "Cosplay": 576,
-                "Cool Cosplay": 1088,
-                "Beauty Cosplay": 2112,
-                "Cute Cosplay": 4160,
-                "Smart Cosplay": 8256,
-                "Tough Cosplay": 16448,
-                "G-Max": 32832
+                "Normal": 127,
+                "Sunny": 383,
+                "Rainy": 639,
+                "Snowy": 1151
             },
-            "Combined": 65984
+            "Combined": 2175
         },
         "412": {
             "Burmy": {
-                "Normal": 192,
-                "Partner": 320,
-                "Cosplay": 576,
-                "Cool Cosplay": 1088,
-                "Beauty Cosplay": 2112,
-                "Cute Cosplay": 4160,
-                "Smart Cosplay": 8256,
-                "Tough Cosplay": 16448,
-                "G-Max": 32832
+                "Plant": 127,
+                "Sandy": 383,
+                "Trash": 639
             },
-            "Combined": 65984
+            "Combined": 1151
         },
         "422": {
             "Shellos": {
-                "Normal": 192,
-                "Partner": 320,
-                "Cosplay": 576,
-                "Cool Cosplay": 1088,
-                "Beauty Cosplay": 2112,
-                "Cute Cosplay": 4160,
-                "Smart Cosplay": 8256,
-                "Tough Cosplay": 16448,
-                "G-Max": 32832
+                "East Sea": 127,
+                "West Sea": 383
             },
-            "Combined": 65984
+            "Combined": 639
         },
         "479": {
             "Rotom": {
-                "Normal": 192,
-                "Partner": 320,
-                "Cosplay": 576,
-                "Cool Cosplay": 1088,
-                "Beauty Cosplay": 2112,
-                "Cute Cosplay": 4160,
-                "Smart Cosplay": 8256,
-                "Tough Cosplay": 16448,
-                "G-Max": 32832
+                "Normal": 127,
+                "Heat": 383,
+                "Wash": 639,
+                "Frost": 1151,
+                "Fan": 2175,
+                "Mow": 4223
             },
-            "Combined": 65984
+            "Combined": 8319
         },
         "550": {
             "Basculin": {
-                "Normal": 192,
-                "Partner": 320,
-                "Cosplay": 576,
-                "Cool Cosplay": 1088,
-                "Beauty Cosplay": 2112,
-                "Cute Cosplay": 4160,
-                "Smart Cosplay": 8256,
-                "Tough Cosplay": 16448,
-                "G-Max": 32832
+                "Red-Striped": 127,
+                "Blue-Striped": 383,
+                "White-Striped": 639
             },
-            "Combined": 65984
+            "Combined": 1151
         },
         "585": {
             "Deerling": {
-                "Normal": 192,
-                "Partner": 320,
-                "Cosplay": 576,
-                "Cool Cosplay": 1088,
-                "Beauty Cosplay": 2112,
-                "Cute Cosplay": 4160,
-                "Smart Cosplay": 8256,
-                "Tough Cosplay": 16448,
-                "G-Max": 32832
+                "Spring": 127,
+                "Summer": 383,
+                "Autumn": 639,
+                "Winter": 1151
             },
-            "Combined": 65984
+            "Combined": 2175
         },
         "656": {
             "Froakie": {
-                "Normal": 192,
-                "Partner": 320,
-                "Cosplay": 576,
-                "Cool Cosplay": 1088,
-                "Beauty Cosplay": 2112,
-                "Cute Cosplay": 4160,
-                "Smart Cosplay": 8256,
-                "Tough Cosplay": 16448,
-                "G-Max": 32832
+                "Normal": 127,
+                "Battle Bond": 383
             },
-            "Combined": 65984
+            "Combined": 639
         },
         "664": {
             "Scatterbug": {
-                "Normal": 192,
-                "Partner": 320,
-                "Cosplay": 576,
-                "Cool Cosplay": 1088,
-                "Beauty Cosplay": 2112,
-                "Cute Cosplay": 4160,
-                "Smart Cosplay": 8256,
-                "Tough Cosplay": 16448,
-                "G-Max": 32832
+                "Meadow": 127,
+                "Icy Snow": 383,
+                "Polar": 639,
+                "Tundra": 1151,
+                "Continental": 2175,
+                "Garden": 4223,
+                "Elegant": 8319
             },
-            "Combined": 65984
+            "Combined": 16511
         },
         "669": {
             "Flabebe": {
-                "Normal": 192,
-                "Partner": 320,
-                "Cosplay": 576,
-                "Cool Cosplay": 1088,
-                "Beauty Cosplay": 2112,
-                "Cute Cosplay": 4160,
-                "Smart Cosplay": 8256,
-                "Tough Cosplay": 16448,
-                "G-Max": 32832
+                "Red": 127,
+                "Yellow": 383,
+                "Orange": 639,
+                "Blue": 1151,
+                "White": 2175
             },
-            "Combined": 65984
+            "Combined": 4223
         },
         "676": {
             "Furfrou": {
-                "Normal": 192,
-                "Partner": 320,
-                "Cosplay": 576,
-                "Cool Cosplay": 1088,
-                "Beauty Cosplay": 2112,
-                "Cute Cosplay": 4160,
-                "Smart Cosplay": 8256,
-                "Tough Cosplay": 16448,
-                "G-Max": 32832
+                "Natural": 127,
+                "Heart": 383,
+                "Star": 639,
+                "Diamond": 1151,
+                "Debutante": 2175,
+                "Matron": 4223,
+                "Dandy": 8319,
+                "La Reine": 16511,
+                "Kabuki": 32895,
+                "Pharaoh": 65663
             },
-            "Combined": 65984
+            "Combined": 131199
         },
         "710": {
             "Pumpkaboo": {
-                "Normal": 192,
-                "Partner": 320,
-                "Cosplay": 576,
-                "Cool Cosplay": 1088,
-                "Beauty Cosplay": 2112,
-                "Cute Cosplay": 4160,
-                "Smart Cosplay": 8256,
-                "Tough Cosplay": 16448,
-                "G-Max": 32832
+                "Average": 127,
+                "Small": 383,
+                "Large": 639,
+                "Super Size": 1151
             },
-            "Combined": 65984
+            "Combined": 2175
         },
         "716": {
             "Xerneas": {
-                "Normal": 192,
-                "Partner": 320,
-                "Cosplay": 576,
-                "Cool Cosplay": 1088,
-                "Beauty Cosplay": 2112,
-                "Cute Cosplay": 4160,
-                "Smart Cosplay": 8256,
-                "Tough Cosplay": 16448,
-                "G-Max": 32832
+                "Neutral": 127,
+                "Active": 383
             },
-            "Combined": 65984
+            "Combined": 639
         },
         "718": {
             "Zygarde": {
-                "Normal": 192,
-                "Partner": 320,
-                "Cosplay": 576,
-                "Cool Cosplay": 1088,
-                "Beauty Cosplay": 2112,
-                "Cute Cosplay": 4160,
-                "Smart Cosplay": 8256,
-                "Tough Cosplay": 16448,
-                "G-Max": 32832
+                "50%": 127,
+                "10%": 383,
+                "50% Power": 639,
+                "10% Power": 1151,
+                "Complete": 2175
             },
-            "Combined": 65984
+            "Combined": 4223
         },
         "741": {
             "Oricorio": {
-                "Normal": 192,
-                "Partner": 320,
-                "Cosplay": 576,
-                "Cool Cosplay": 1088,
-                "Beauty Cosplay": 2112,
-                "Cute Cosplay": 4160,
-                "Smart Cosplay": 8256,
-                "Tough Cosplay": 16448,
-                "G-Max": 32832
+                "Baile": 127,
+                "Pom-Pom": 383,
+                "Pa'u": 639,
+                "Sensu": 1151
             },
-            "Combined": 65984
+            "Combined": 2175
         },
         "744": {
             "Rockruff": {
-                "Normal": 192,
-                "Partner": 320,
-                "Cosplay": 576,
-                "Cool Cosplay": 1088,
-                "Beauty Cosplay": 2112,
-                "Cute Cosplay": 4160,
-                "Smart Cosplay": 8256,
-                "Tough Cosplay": 16448,
-                "G-Max": 32832
+                "Normal": 127,
+                "Own Tempo": 383
             },
-            "Combined": 65984
+            "Combined": 639
         },
         "774": {
             "Minior": {
-                "Normal": 192,
-                "Partner": 320,
-                "Cosplay": 576,
-                "Cool Cosplay": 1088,
-                "Beauty Cosplay": 2112,
-                "Cute Cosplay": 4160,
-                "Smart Cosplay": 8256,
-                "Tough Cosplay": 16448,
-                "G-Max": 32832
+                "Red Meteor": 127,
+                "Orange Meteor": 383,
+                "Yellow Meteor": 639,
+                "Green Meteor": 1151,
+                "Blue Meteor": 2175,
+                "Indigo Meteor": 4223,
+                "Violet Meteor": 8319,
+                "Red Core": 16511,
+                "Orange Core": 32895,
+                "Yellow Core": 65663,
+                "Green Core": 131199,
+                "Blue Core": 262271,
+                "Indigo Core": 524415,
+                "Violet Core": 1048703
             },
-            "Combined": 65984
+            "Combined": 2097279
         },
         "801": {
             "Magearna": {
-                "Normal": 192,
-                "Partner": 320,
-                "Cosplay": 576,
-                "Cool Cosplay": 1088,
-                "Beauty Cosplay": 2112,
-                "Cute Cosplay": 4160,
-                "Smart Cosplay": 8256,
-                "Tough Cosplay": 16448,
-                "G-Max": 32832
+                "Normal": 127,
+                "Original": 383
             },
-            "Combined": 65984
+            "Combined": 639
         },
         "802": {
             "Marshadow": {
-                "Normal": 192,
-                "Partner": 320,
-                "Cosplay": 576,
-                "Cool Cosplay": 1088,
-                "Beauty Cosplay": 2112,
-                "Cute Cosplay": 4160,
-                "Smart Cosplay": 8256,
-                "Tough Cosplay": 16448,
-                "G-Max": 32832
+                "Normal": 127,
+                "Zenith": 383
             },
-            "Combined": 65984
+            "Combined": 639
         },
         "893": {
             "Zarude": {
-                "Normal": 192,
-                "Partner": 320,
-                "Cosplay": 576,
-                "Cool Cosplay": 1088,
-                "Beauty Cosplay": 2112,
-                "Cute Cosplay": 4160,
-                "Smart Cosplay": 8256,
-                "Tough Cosplay": 16448,
-                "G-Max": 32832
+                "Normal": 127,
+                "Dada": 383
             },
-            "Combined": 65984
+            "Combined": 639
         },
         "978": {
             "TATSUGIRI": {
-                "Normal": 192,
-                "Partner": 320,
-                "Cosplay": 576,
-                "Cool Cosplay": 1088,
-                "Beauty Cosplay": 2112,
-                "Cute Cosplay": 4160,
-                "Smart Cosplay": 8256,
-                "Tough Cosplay": 16448,
-                "G-Max": 32832
+                "Curly": 127,
+                "Droopy": 383,
+                "Stretchy": 639
             },
-            "Combined": 65984
+            "Combined": 1151
         },
         "931": {
             "Squawkabilly": {
-                "Normal": 192,
-                "Partner": 320,
-                "Cosplay": 576,
-                "Cool Cosplay": 1088,
-                "Beauty Cosplay": 2112,
-                "Cute Cosplay": 4160,
-                "Smart Cosplay": 8256,
-                "Tough Cosplay": 16448,
-                "G-Max": 32832
+                "Green": 127,
+                "Blue": 383,
+                "Yellow": 639,
+                "White": 1151
             },
-            "Combined": 65984
+            "Combined": 2175
         },
         "999": {
             "Gimmighoul": {
-                "Normal": 192,
-                "Partner": 320,
-                "Cosplay": 576,
-                "Cool Cosplay": 1088,
-                "Beauty Cosplay": 2112,
-                "Cute Cosplay": 4160,
-                "Smart Cosplay": 8256,
-                "Tough Cosplay": 16448,
-                "G-Max": 32832
+                "Chest": 127,
+                "Roaming": 383
             },
-            "Combined": 65984
+            "Combined": 639
         },
         "1007": {
             "Koraidon": {
-                "Normal": 192,
-                "Partner": 320,
-                "Cosplay": 576,
-                "Cool Cosplay": 1088,
-                "Beauty Cosplay": 2112,
-                "Cute Cosplay": 4160,
-                "Smart Cosplay": 8256,
-                "Tough Cosplay": 16448,
-                "G-Max": 32832
+                "Apex": 127,
+                "Limited": 383,
+                "Sprinting": 639,
+                "Swimming": 1151,
+                "Gliding": 2175
             },
-            "Combined": 65984
+            "Combined": 4223
         },
         "1008": {
             "Miraidon": {
-                "Normal": 192,
-                "Partner": 320,
-                "Cosplay": 576,
-                "Cool Cosplay": 1088,
-                "Beauty Cosplay": 2112,
-                "Cute Cosplay": 4160,
-                "Smart Cosplay": 8256,
-                "Tough Cosplay": 16448,
-                "G-Max": 32832
+                "Ultimate": 127,
+                "Low Drive": 383,
+                "Aquatic": 639,
+                "Glide": 1151
             },
-            "Combined": 65984
+            "Combined": 2175
         },
         "1012": {
             "Poltchageist": {
-                "Normal": 192,
-                "Partner": 320,
-                "Cosplay": 576,
-                "Cool Cosplay": 1088,
-                "Beauty Cosplay": 2112,
-                "Cute Cosplay": 4160,
-                "Smart Cosplay": 8256,
-                "Tough Cosplay": 16448,
-                "G-Max": 32832
+                "Counterfeit": 127,
+                "Artisan": 383
             },
-            "Combined": 65984
+            "Combined": 639
         },
         "8128": {
             "Tauros": {
-                "Normal": 192,
-                "Partner": 320,
-                "Cosplay": 576,
-                "Cool Cosplay": 1088,
-                "Beauty Cosplay": 2112,
-                "Cute Cosplay": 4160,
-                "Smart Cosplay": 8256,
-                "Tough Cosplay": 16448,
-                "G-Max": 32832
+                "Combat": 127,
+                "Blaze": 383,
+                "Aqua": 639
             },
-            "Combined": 65984
+            "Combined": 1151
         }
     }
 }

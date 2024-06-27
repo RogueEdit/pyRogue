@@ -730,7 +730,7 @@ class Rogue:
     def f_unlockStarters(self) -> None:
         """
         Unlock all starter options for the trainer, such as forms, IVs, passives, ribbons, natures, etc.
-        
+
         What it does:
         - Unlocks all forms of the Pokémon.
         - Sets perfect IVs if chosen.
@@ -752,12 +752,12 @@ class Rogue:
             '2': 'No'
         }
 
+        shinyChoice = False
         choice = fh_getChoiceInput('Do you want to unlock all forms of the pokemon? (All forms are Tier 3 shinies)', choices)
-        if choice == '1':
-            caughtAttr = self.__MAX_BIG_INT
-        else:
-            shinyChoice = self.fh_getChoiceInput('Do you want Tier 3 shinies?', choices)
-            caughtAttr = 255 if shinyChoice == '1' else 253
+
+        if choice == '2':
+            shinyChoice = fh_getChoiceInput('Do you want Tier 3 shinies?', choices) == 1
+
 
         iv = fh_getChoiceInput('Do you want the starters to have perfect IVs?', choices)
         passive = fh_getChoiceInput('Do you want the starters to have the passive unlocked?', choices)
@@ -771,9 +771,18 @@ class Rogue:
             abilityAttr = 0
 
         noPassives = {member.name: member for member in self.appData.noPassiveIDs}
+        combinedFormIDs = {key: member.value['Combined'] for key, member in self.appData.hasFormIDs.__members__.items() if 'Combined' in member.value}
+
         for entry in gameData['dexData'].keys():
+            if choice == '1' and entry in combinedFormIDs:
+                #caughtAttr = combinedFormIDs[entry]
+                caughtAttr = self.__MAX_BIG_INT
+                shinyChoice = True
+            else:
+                caughtAttr = 255 if shinyChoice else 253
+
             gameData['dexData'][entry].update({
-                'caughtAttr': caughtAttr if choice == '1' else caughtAttr,
+                'caughtAttr': caughtAttr,
                 'natureAttr': self.natureData.UNLOCK_ALL.value if nature == '1' else None,
                 'ivs': [31, 31, 31, 31, 31, 31] if iv == '1' else random.sample(range(20, 30), 6),
                 'friendship': random.randint(1, 300),
@@ -783,11 +792,9 @@ class Rogue:
                 'classicWinCount': 0 if ribbon == '2' else 1,
             })
 
-
         self.__fh_writeJSONData(gameData, 'trainer.json')
         fh_appendMessageBuffer(Color.GREEN, 'Data updated successfully.')
         raise OperationCancel('Written changes for all starters.')
-
 
     def f_editStarter(self, dexId: Optional[str] = None) -> None:
         """
