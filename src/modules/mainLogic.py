@@ -285,7 +285,7 @@ class Rogue:
         """
         try:
             while not self.slot or self.slot > 5 or self.slot < 1:
-                slot = int(input('Enter slot (1-5): '))
+                self.slot = fh_getIntegerInput('Enter Slot', 1, 5, True)
                 self.slot = slot
                 if self.slot > 5 or self.slot < 1:
                     cFormatter.print(Color.INFO, 'Invalid input. Slot number must be between 1 and 5.')
@@ -302,7 +302,8 @@ class Rogue:
 
             if slotData and gameData:
                 self.f_createBackup()
-
+        except KeyboardInterrupt:
+            exit()
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function __dump_data(): {e}', isLogging=True)
 
@@ -1041,7 +1042,7 @@ class Rogue:
 
         for key, name in voucherTypes.items():
             formattedName = f'{Fore.YELLOW}{name}{Style.RESET_ALL}'
-            currentAmount = gameData.get('pokeballCounts', {}).get(key, '0')
+            currentAmount = gameData.get('voucherCounts', {}).get(key, '0')
             prompt = f'How many {formattedName}? (Currently have {currentAmount})\n'
             maxBound = 999
             try:
@@ -1065,7 +1066,7 @@ class Rogue:
             fh_appendMessageBuffer(Color.YELLOW, 'Changes saved:')
             for item in changedItems:
                 fh_appendMessageBuffer(Color.YELLOW, item)
-            raise OperationSuccessful('Successfully written Pokeballs.')
+            raise OperationSuccessful('Successfully written Vouchers.')
         else:
             fh_appendMessageBuffer(Color.YELLOW, 'No changes made.')
 
@@ -1126,12 +1127,12 @@ class Rogue:
                 return
 
             if command == 1:
-                pokemon_completer: WordCompleter = WordCompleter(self.starterNamesById.__members__.keys(), ignore_case=True)
+                pokemon_completer: WordCompleter = WordCompleter(self.pokemonData.__members__.keys(), ignore_case=True)
                 cFormatter.print(Color.INFO, 'Write the name of the pokemon, it will recommend for auto-completion.')
                 dexId: str = prompt('Enter Pokemon (Name / ID): ', completer=pokemon_completer)
                 
                 try:
-                    dexId: str = self.starterNamesById[dexId.lower()].value
+                    dexId: str = self.pokemonData[dexId.lower()].value
                 except KeyError:
                     cFormatter.print(Color.INFO, f'No Pokemon with Name: {dexId}')
                     return
@@ -1453,14 +1454,21 @@ class Rogue:
         header = cFormatter.fh_centerText('Add Candy', 30, '-')
 
         cFormatter.print(Color.DEBUG, header)
-        inputValue = fh_getCompleterInput(
-            promptMessage='Write either the ID or the Name of the Pokemon: ',
-            choices={**{member.name.lower(): member for member in self.appData.starterNameByID}, 
-                     **{str(member.value): member for member in self.appData.starterNameByID}},
-            zeroCancel=False
-        )
-        pokeName = inputValue.name.lower()
-        currentCandies = gameData["starterData"][str(inputValue.value)]["candyCount"]
+        while True:
+            inputValue = fh_getCompleterInput(
+                promptMessage='Write either the ID or the Name of the Pokemon',
+                choices={**{member.name.lower(): member for member in self.appData.starterNameByID}, 
+                        **{str(member.value): member for member in self.appData.starterNameByID}},
+                zeroCancel=False
+            )
+            pokeName = inputValue.name.lower()
+            currentCandies = gameData["starterData"][str(inputValue.value)]["candyCount"]
+
+            if int(currentCandies) >= 999:
+                cFormatter.print(Color.WARNING, f'{inputValue.name.capitalize()} already has the maximum number of candies (999).')
+            else:
+                break  # Exit the loop if a valid Pokémon is selected
+
         # Prompt for number of candies using fh_getIntegerInput method
         candies = fh_getIntegerInput(
             promptMessage=f'How many candies do you want to add?\n You currently have {currentCandies} on {inputValue.name.capitalize()}. (0 to cancel):',
@@ -1468,7 +1476,7 @@ class Rogue:
             maxBound=999,  # Adjust maximum candies as needed
             zeroCancel=True
         )
-        
+
         # Update game data with the chosen Pokémon's candy count
         gameData["starterData"][str(inputValue.value)]["candyCount"] = candies
 
@@ -1556,6 +1564,9 @@ class Rogue:
         if gameData.get("gameMode") == 3:
             cFormatter.print(Color.CRITICAL, 'Cannot edit this property on daily runs!')
             return
+        
+        header = cFormatter.fh_centerText(' Edit Pokeballs ', 30, '-')
+        cFormatter.print(Color.DEBUG, header)
 
         pokeballTypes = {
             '0': 'Pokeball',
@@ -1571,6 +1582,9 @@ class Rogue:
         for key, name in pokeballTypes.items():
             formattedName = f'{Fore.YELLOW}{name}{Style.RESET_ALL}'
             currentAmount = gameData.get('pokeballCounts', {}).get(key, '0')
+            if currentAmount >= 999:
+                cFormatter.print(Color.INFO, f'Already max amount for {formattedName}.')
+                continue
             prompt = f'How many {formattedName}? (Currently have {currentAmount})\n'
             maxBound = 999
             try:
@@ -1589,6 +1603,7 @@ class Rogue:
                         break  # Break out of the inner loop after successful input
             except OperationSoftCancel:
                 break
+
         if changed:
             self.__fh_writeJSONData(gameData, f'slot_{self.slot}.json')
             fh_appendMessageBuffer(Color.YELLOW, 'Changes saved:')
@@ -1627,6 +1642,9 @@ class Rogue:
             cFormatter.print(Color.CRITICAL, 'Cannot edit this property on daily runs!')
             return
 
+        header = cFormatter.fh_centerText(' Edit Money ', 30, '-')
+        cFormatter.print(Color.DEBUG, header)
+
         prompt = 'How many Poke-Dollars do you want? '
         choice = fh_getIntegerInput(prompt, 0, float('inf'), zeroCancel=True)
         saveData["money"] = choice
@@ -1662,6 +1680,10 @@ class Rogue:
         trainerData = self.__fh_loadDataFromJSON('trainer.json')
         currentEggs = trainerData.get('eggs', [])
         currentAmount = len(currentEggs)
+
+        header = cFormatter.fh_centerText(' Egg Generator ', 30, '-')
+        cFormatter.print(Color.DEBUG, header)
+
 
         if currentAmount >= 99:
             userInput = fh_getChoiceInput(
@@ -1742,6 +1764,9 @@ class Rogue:
             >>> example_instance.f_editAccountStats()
         """
         gameData = self.__fh_loadDataFromJSON('trainer.json')
+
+        header = cFormatter.fh_centerText(' Edit Account Stats ', 30, '-')
+        cFormatter.print(Color.DEBUG, header)
 
         encounters = random.randint(100000, 200000)
         caught = round(encounters / 25)
@@ -1875,6 +1900,9 @@ class Rogue:
             >>> example_instance.f_editHatchWaves()
         """
         trainerData = self.__fh_loadDataFromJSON('trainer.json')
+
+        header = cFormatter.fh_centerText(' Edit Hatch Durations ', 30, '-')
+        cFormatter.print(Color.INFO, header)
 
         if 'eggs' in trainerData and trainerData['eggs']:
             minBound = 0

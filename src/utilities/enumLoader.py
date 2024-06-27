@@ -101,7 +101,7 @@ class EnumLoader:
                 self.achievementsData = json.load(f)
 
             with open(f'{dataDir}/pokemon.json') as f:
-                self.pokemonData = json.load(f)
+                self.pokemonNameByID = json.load(f)
 
             
         except Exception as e:
@@ -156,6 +156,6 @@ class EnumLoader:
         self.natureData = self.__f_createENUMFromDict(self.natureData['natures'], 'NaturesEnum')
         self.natureDataSlots = self.__f_createENUMFromDict(self.natureDataSlots['natureSlot'], 'NaturesSlotEnum')
         self.achievementsData = self.__f_createENUMFromDict(self.achievementsData['achvUnlocks'], 'AchievementsEnum')
-        self.pokemonData = self.__f_createENUMFromDict(self.pokemonData['dex'], 'PokemonEnum')
+        self.pokemonNameByID = self.__f_createENUMFromDict(self.pokemonNameByID['dex'], 'PokemonEnum')
 
-        return (self.starterNameByID, self.biomesByID, self.movesByID, self.voucherData, self.natureData, self.natureDataSlots, self.achievementsData, self.pokemonData)
+        return (self.starterNameByID, self.biomesByID, self.movesByID, self.voucherData, self.natureData, self.natureDataSlots, self.achievementsData, self.pokemonNameByID)
