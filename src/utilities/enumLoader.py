@@ -1,9 +1,10 @@
-# Authors
+# Authors https://github.com/JulianStiebler https://github.com/claudiunderthehood
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
-# Contributors: https://github.com/claudiunderthehood, https://github.com/JulianStiebler
+# Contributors: None except Authors
 # Date of release: 06.06.2024
-# Last edited: 20.06.2024
+# Last edited: 25.06.2024
+# Based on: https://github.com/pagefaultgames/pokerogue/
 
 """
 This script provides functionalities to load data from JSON files and convert them into Enums.
@@ -53,16 +54,18 @@ class EnumLoader:
         Modules:
             - typing: Provides type hints for better code clarity and type checking.
         """
-        self.pokemon_id_by_name: Optional[Dict[str, int]] = None
-        self.biomes_by_id: Optional[Dict[str, int]] = None
-        self.moves_by_id: Optional[Dict[str, int]] = None
-        self.natures_data: Optional[Dict[str, int]] = None
-        self.vouchers_data: Optional[Dict[str, int]] = None
-        self.natureSlot_data: Optional[Dict[str, int]] = None
+        self.starterNameByID: Optional[Dict[str, int]] = None
+        self.biomesByID: Optional[Dict[str, int]] = None
+        self.movesByID: Optional[Dict[str, int]] = None
+        self.natureData: Optional[Dict[str, int]] = None
+        self.voucherData: Optional[Dict[str, int]] = None
+        self.natureDataSlots: Optional[Dict[str, int]] = None
+        self.noPassiveIDs: Optional[Dict[str, int]] = None
+        self.hasFormIDs: Optional[Dict[str, int]] = None
 
-    def __load_data(self) -> None:
+    def __f_loadData(self) -> None:
         """
-        Load data from JSON files located in the directory specified by config.data_directory.
+        Load data from JSON files located in the directory specified by config.dataDirectory.
 
         Raises:
             Exception: If there is an error loading the data files.
@@ -77,28 +80,42 @@ class EnumLoader:
             - utilities.cFormatter: Custom formatter for colored printing and logging.
         """
         try:
-            data_dir: str = config.data_directory
-            with open(f'{data_dir}/pokemon.json') as f:
-                self.pokemon_id_by_name = json.load(f)
+            dataDir: str = config.dataDirectory
+            with open(f'{dataDir}/starter.json') as f:
+                self.starterNameByID = json.load(f)
 
-            with open(f'{data_dir}/biomes.json') as f:
-                self.biomes_by_id = json.load(f)
+            with open(f'{dataDir}/biomes.json') as f:
+                self.biomesByID = json.load(f)
 
-            with open(f'{data_dir}/moves.json') as f:
-                self.moves_by_id = json.load(f)
+            with open(f'{dataDir}/moves.json') as f:
+                self.movesByID = json.load(f)
 
-            with open(f'{data_dir}/natures.json') as f:
-                self.natures_data = json.load(f)
+            with open(f'{dataDir}/natures.json') as f:
+                self.natureData = json.load(f)
 
-            with open(f'{data_dir}/vouchers.json') as f:
-                self.vouchers_data = json.load(f)
+            with open(f'{dataDir}/vouchers.json') as f:
+                self.voucherData = json.load(f)
             
-            with open(f'{data_dir}/natureSlot.json') as f:
-                self.natureSlot_data = json.load(f)
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in enumLoader.__load_data(). {e}', isLogging=True)
+            with open(f'{dataDir}/natureSlot.json') as f:
+                self.natureDataSlots = json.load(f)
 
-    def __create_enum_from_dict(self, data_dict: Dict[str, int], enum_name: str) -> Enum:
+            with open(f'{dataDir}/achievements.json') as f:
+                self.achievementsData = json.load(f)
+
+            with open(f'{dataDir}/pokemon.json') as f:
+                self.pokemonNameByID = json.load(f)
+
+            with open(f'{dataDir}/noPassive.json') as f:
+                self.noPassiveIDs = json.load(f)
+
+            with open(f'{dataDir}/formIDs.json') as f:
+                self.hasFormIDs = json.load(f)
+
+            
+        except Exception as e:
+            cFormatter.print(Color.CRITICAL, f'Error in enumLoader.__f_loadData(). {e}', isLogging=True)
+
+    def __f_createENUMFromDict(self, data_dict: Dict[str, int], enum_name: str) -> Enum:
         """
         Create an Enum from a dictionary.
 
@@ -119,11 +136,12 @@ class EnumLoader:
         enum_cls: Enum = Enum(enum_name, {key: value for key, value in data_dict.items()})
         return enum_cls
 
-    def convert_to_enums(self) -> Tuple[Enum, Enum, Enum, Enum, Enum, Enum]:
+    def f_convertToEnums(self) -> Tuple[Enum, Enum, Enum, Enum, Enum, Enum]:
         """
         Convert loaded data to Enums.
 
         Returns:
+            self.pokemonIDByName, self.biomesByID, self.movesByID, self.voucherData, self.natureData, self.natureDataSlots, self.achievementsData
             tuple: A tuple containing the created Enums for Pokemon IDs, biomes, moves, natures, vouchers, and nature slots.
 
         Example:
@@ -137,13 +155,19 @@ class EnumLoader:
             - modules.config: Contains configuration settings, specifically for directory paths.
             - utilities.cFormatter: Custom formatter for colored printing and logging.
         """
-        self.__load_data()
+        self.__f_loadData()
 
-        self.pokemon_id_by_name = self.__create_enum_from_dict(self.pokemon_id_by_name['dex'], 'PokemonEnum')
-        self.biomes_by_id = self.__create_enum_from_dict(self.biomes_by_id['biomes'], 'BiomesEnum')
-        self.moves_by_id = self.__create_enum_from_dict(self.moves_by_id['moves'], 'MovesEnum')
-        self.natures_data = self.__create_enum_from_dict(self.natures_data['natures'], 'NaturesEnum')
-        self.vouchers_data = self.__create_enum_from_dict(self.vouchers_data['vouchers'], 'VouchersEnum')
-        self.natureSlot_data = self.__create_enum_from_dict(self.natureSlot_data['natureSlot'], 'NaturesSlotEnum')
+        self.starterNameByID = self.__f_createENUMFromDict(self.starterNameByID['dex'], 'StarterEnum')
+        self.biomesByID = self.__f_createENUMFromDict(self.biomesByID['biomes'], 'BiomesEnum')
+        self.movesByID = self.__f_createENUMFromDict(self.movesByID['moves'], 'MovesEnum')
+        self.voucherData = self.__f_createENUMFromDict(self.voucherData['vouchers'], 'VouchersEnum')
+        self.natureData = self.__f_createENUMFromDict(self.natureData['natures'], 'NaturesEnum')
+        self.natureDataSlots = self.__f_createENUMFromDict(self.natureDataSlots['natureSlot'], 'NaturesSlotEnum')
+        self.achievementsData = self.__f_createENUMFromDict(self.achievementsData['achvUnlocks'], 'AchievementsEnum')
+        self.pokemonNameByID = self.__f_createENUMFromDict(self.pokemonNameByID['dex'], 'PokemonEnum')
+        self.noPassiveIDs = self.__f_createENUMFromDict(self.noPassiveIDs['noPassive'], 'NoPassiveEnum')
+        self.hasFormIDs = self.__f_createENUMFromDict(self.hasFormIDs['hasForms'], 'HasFormsEnum')
 
-        return (self.pokemon_id_by_name, self.biomes_by_id, self.moves_by_id, self.natures_data, self.vouchers_data, self.natureSlot_data)
+        return (self.starterNameByID, self.biomesByID, self.movesByID, self.voucherData, 
+                self.natureData, self.natureDataSlots, self.achievementsData, self.pokemonNameByID,
+                self.noPassiveIDs, self.hasFormIDs)

@@ -1,0 +1,234 @@
+{
+    "hasForms": {
+        "25": {
+            "Pikachu": [
+                "Normal",
+                "Partner",
+                "Cosplay",
+                "Cool Cosplay",
+                "Beauty Cosplay",
+                "Cute Cosplay",
+                "Smart Cosplay",
+                "Tough Cosplay",
+                "G-Max"
+            ]
+        },
+        "133": {
+            "Eevee": [
+                "Normal",
+                "Partner",
+                "G-Max"
+            ]
+        },
+        "351": {
+            "Castform": [
+                "Normal",
+                "Sunny",
+                "Rainy",
+                "Snowy"
+            ]
+        },
+        "412": {
+            "Burmy": [
+                "Plant",
+                "Sandy",
+                "Trash"
+            ]
+        },
+        "422": {
+            "Shellos": [
+                "East Sea",
+                "West Sea"
+            ]
+        },
+        "479": {
+            "Rotom": [
+                "Normal",
+                "Heat",
+                "Wash",
+                "Frost",
+                "Fan",
+                "Mow"
+            ]
+        },
+        "550": {
+            "Basculin": [
+                "Red-Striped",
+                "Blue-Striped",
+                "White-Striped"
+            ]
+        },
+        "585": {
+            "Deerling": [
+                "Spring",
+                "Summer",
+                "Autumn",
+                "Winter"
+            ]
+        },
+        "656": {
+            "Froakie": [
+                "Normal",
+                "Battle Bond"
+            ]
+        },
+        "664": {
+            "Scatterbug": [
+                "Meadow",
+                "Icy Snow",
+                "Polar",
+                "Tundra",
+                "Continental",
+                "Garden",
+                "Elegant"
+            ]
+        },
+        "669": {
+            "Flabebe": [
+                "Red",
+                "Yellow",
+                "Orange",
+                "Blue",
+                "White"
+            ]
+        },
+        "676": {
+            "Furfrou": [
+                "Natural",
+                "Heart",
+                "Star",
+                "Diamond",
+                "Debutante",
+                "Matron",
+                "Dandy",
+                "La Reine",
+                "Kabuki",
+                "Pharaoh"
+            ]
+        },
+        "710": {
+            "Pumpkaboo": [
+                "Average",
+                "Small",
+                "Large",
+                "Super Size"
+            ]
+        },
+        "716": {
+            "Xerneas": [
+                "Neutral",
+                "Active"
+            ]
+        },
+        "718": {
+            "Zygarde": [
+                "50%",
+                "10%",
+                "50% Power",
+                "10% Power",
+                "Complete"
+            ]
+        },
+        "741": {
+            "Oricorio": [
+                "Baile",
+                "Pom-Pom",
+                "Pa'u",
+                "Sensu"
+            ]
+        },
+        "744": {
+            "Rockruff": [
+                "Normal",
+                "Own Tempo"
+            ]
+        },
+        "774": {
+            "Minior": [
+                "Red Meteor",
+                "Orange Meteor",
+                "Yellow Meteor",
+                "Green Meteor",
+                "Blue Meteor",
+                "Indigo Meteor",
+                "Violet Meteor",
+                "Red Core",
+                "Orange Core",
+                "Yellow Core",
+                "Green Core",
+                "Blue Core",
+                "Indigo Core",
+                "Violet Core"
+            ]
+        },
+        "801": {
+            "Magearna": [
+                "Normal",
+                "Original"
+            ]
+        },
+        "802": {
+            "Marshadow": [
+                "Normal",
+                "Zenith"
+            ]
+        },
+        "893": {
+            "Zarude": [
+                "Normal",
+                "Dada"
+            ]
+        },
+        "978": {
+            "TATSUGIRI": [
+                "Curly",
+                "Droopy",
+                "Stretchy"
+            ]
+        },
+        "931": {
+            "Squawkabilly": [
+                "Green",
+                "Blue",
+                "Yellow",
+                "White"
+            ]
+        },
+        "999": {
+            "Gimmighoul": [
+                "Chest",
+                "Roaming"
+            ]
+        },
+        "1007": {
+            "Koraidon": [
+                "Apex",
+                "Limited",
+                "Sprinting",
+                "Swimming",
+                "Gliding"
+            ]
+        },
+        "1008": {
+            "Miraidon": [
+                "Ultimate",
+                "Low Drive",
+                "Aquatic",
+                "Glide"
+            ]
+        },
+        "1012": {
+            "Poltchageist": [
+                "Counterfeit",
+                "Artisan"
+            ]
+        },
+        "8128": {
+            "Tauros": [
+                "Combat",
+                "Blaze",
+                "Aqua"
+            ]
+        }
+    }
+}

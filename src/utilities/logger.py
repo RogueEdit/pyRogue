@@ -1,9 +1,9 @@
-# Authors
+# Authors https://github.com/JulianStiebler/
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
-# Contributors: https://github.com/JulianStiebler/
+# Contributors: None except Author
 # Date of release: 06.06.2024
-# Last Edited: 20.06.2024
+# Last Edited: 25.06.2024
 
 """
 This script provides a custom logger that logs messages to a weekly rotating log file. It includes functionality to
@@ -86,33 +86,33 @@ class CustomLogger:
     def __init__(self):
         # Create and configure file handler
         # Define the path to the logs directory in the current working directory
-        logs_directory = config.logs_directory
+        logsDirectory = config.logsDirectory
 
-        formatter_file = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+        formatterFile = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 
         # Create file handler and set level to DEBUG for file output
-        log_filename = os.path.join(logs_directory, f'{datetime.now().strftime("%Y-%W")}.log')
-        fh = TimedRotatingFileHandler(log_filename, when='W0', backupCount=52)
+        logFilename = os.path.join(logsDirectory, f'{datetime.now().strftime("%Y-%W")}.log')
+        fh = TimedRotatingFileHandler(logFilename, when='W0', backupCount=52)
         fh.setLevel(logging.DEBUG)
-        fh.setFormatter(formatter_file)
+        fh.setFormatter(formatterFile)
 
         # Add custom filter to file handler
         fh.addFilter(CustomFilter())
 
         # Add file handler to the root logger
-        root_logger = logging.getLogger()
-        root_logger.propagate = False
-        root_logger.setLevel(logging.DEBUG)  # Ensure root logger level is set to DEBUG
-        if not any(isinstance(handler, TimedRotatingFileHandler) for handler in root_logger.handlers):
-            root_logger.addHandler(fh)
+        rootLogger = logging.getLogger()
+        rootLogger.propagate = False
+        rootLogger.setLevel(logging.DEBUG)  # Ensure root logger level is set to DEBUG
+        if not any(isinstance(handler, TimedRotatingFileHandler) for handler in rootLogger.handlers):
+            rootLogger.addHandler(fh)
 
         # Remove default console handler to avoid outputs since we want to display them colored with less information
-        for handler in root_logger.handlers:
+        for handler in rootLogger.handlers:
             if isinstance(handler, logging.StreamHandler):
-                root_logger.removeHandler(handler)
+                rootLogger.removeHandler(handler)
 
     @staticmethod
-    def deactivate_logging():
+    def fh_deactiveLogging():
         """
         Temporarily deactivate logging.
 
@@ -129,13 +129,13 @@ class CustomLogger:
             Temporarily deactivate logging:
             >>> CustomLogger.deactivate_logging()
         """
-        root_logger = logging.getLogger()
-        for handler in root_logger.handlers:
+        rootLogger = logging.getLogger()
+        for handler in rootLogger.handlers:
             if isinstance(handler, TimedRotatingFileHandler):
                 handler.setLevel(logging.NOTSET)
 
     @staticmethod
-    def reactivate_logging():
+    def fh_reactiveLogging():
         """
         Reactivate logging.
 
@@ -152,8 +152,8 @@ class CustomLogger:
             Reactivate logging:
             >>> CustomLogger.reactivate_logging()
         """
-        root_logger = logging.getLogger()
-        for handler in root_logger.handlers:
+        rootLogger = logging.getLogger()
+        for handler in rootLogger.handlers:
             if isinstance(handler, TimedRotatingFileHandler):
                 handler.setLevel(logging.DEBUG)
 

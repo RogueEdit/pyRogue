@@ -26,7 +26,7 @@ class Modifier:
             return None
         return [None if (isinstance(v, (int, float)) and v > 30) else v for v in values]
 
-    def to_dict(self) -> dict:
+    def fh_toDict(self) -> dict:
         data = {
             'args': self.args,
             'className': self.className,
@@ -38,30 +38,30 @@ class Modifier:
             data['typePregenArgs'] = self.typePregenArgs
         return data
 
-    def to_python_code(self, unique_name: str) -> str:
-        args_str = "None" if self.args is None else repr(self.args)
+    def fh_toPyCode(self, unique_name: str) -> str:
+        argsStr = "None" if self.args is None else repr(self.args)
         typePregenArgs_str = "" if self.typePregenArgs is None else f", typePregenArgs={repr(self.typePregenArgs)}"
-        return f"{unique_name} = Modifier(args={args_str}, className={repr(self.className)}, player={self.player}, stackCount={self.stackCount}, typeId={repr(self.typeId)}{typePregenArgs_str})"
+        return f"{unique_name} = Modifier(args={argsStr}, className={repr(self.className)}, player={self.player}, stackCount={self.stackCount}, typeId={repr(self.typeId)}{typePregenArgs_str})"
 
 # Function to parse the game save file and extract modifiers
-def parse_game_save(file_path: str) -> List[Modifier]:
+def parseGameSave(file_path: str) -> List[Modifier]:
     modifiers = []
     with open(file_path, 'r') as file:
         data = json.load(file)
         if 'modifiers' in data:
-            for modifier_data in data['modifiers']:
-                modifier = parse_modifier(modifier_data)
+            for modifierData in data['modifiers']:
+                modifier = parseModifier(modifierData)
                 if modifier:
                     modifiers.append(modifier)
         if 'EnemyModifiers' in data:
-            for modifier_data in data['EnemyModifiers']:
-                modifier = parse_modifier(modifier_data)
+            for modifierData in data['EnemyModifiers']:
+                modifier = parseModifier(modifierData)
                 if modifier:
                     modifiers.append(modifier)
     return modifiers
 
 # Function to parse individual modifier data
-def parse_modifier(data: dict) -> Optional[Modifier]:
+def parseModifier(data: dict) -> Optional[Modifier]:
     if 'typeId' in data and 'className' in data and 'player' in data and 'stackCount' in data:
         args = data.get('args', None)
         className = data['className']
@@ -74,8 +74,8 @@ def parse_modifier(data: dict) -> Optional[Modifier]:
     return None
 
 # Function to save extracted modifiers data to a JSON file
-def save_extracted_modifiers(modifiers: List[Modifier], output_file: str):
-    data = [modifier.to_dict() for modifier in modifiers]
+def saveExtracted(modifiers: List[Modifier], output_file: str):
+    data = [modifier.fh_toDict() for modifier in modifiers]
     with open(output_file, 'w') as file:
         json.dump(data, file, indent=4)
 
@@ -89,7 +89,7 @@ def sorting_key(item: tuple) -> tuple:
     return (name, 0)
 
 # Function to generate converted_.py with modifiers in Python code format
-def generate_converted_py(modifiers: List[Modifier], output_file: str):
+def f_generateConverted(modifiers: List[Modifier], output_file: str):
     unique_modifiers = {}
     for modifier in modifiers:
         typeId = modifier.typeId
@@ -98,48 +98,48 @@ def generate_converted_py(modifiers: List[Modifier], output_file: str):
             unique_modifiers[typeId] = set()
         unique_modifiers[typeId].add(typePregenArgs)
 
-    sorted_modifiers = []
+    sortedModifier = []
     for typeId, typePregenArgs_set in unique_modifiers.items():
         for typePregenArgs in typePregenArgs_set:
             modifier = next(m for m in modifiers if m.typeId == typeId and (tuple(m.typePregenArgs) if m.typePregenArgs is not None else None) == typePregenArgs)
-            unique_name = typeId.replace('-', '_').upper()
+            uniqueName = typeId.replace('-', '_').upper()
             if typePregenArgs is not None:
-                unique_name += "".join(str(arg) for arg in typePregenArgs if arg is not None)
-            sorted_modifiers.append((unique_name, modifier))
+                uniqueName += "".join(str(arg) for arg in typePregenArgs if arg is not None)
+            sortedModifier.append((uniqueName, modifier))
 
-    sorted_modifiers.sort(key=sorting_key)
+    sortedModifier.sort(key=sorting_key)
 
     with open(output_file, 'w') as file:
         file.write("# This file contains converted modifiers\n")
-        for unique_name, modifier in sorted_modifiers:
-            file.write(modifier.to_python_code(unique_name) + "\n")
+        for uniqueName, modifier in sortedModifier:
+            file.write(modifier.to_python_code(uniqueName) + "\n")
 
     print(f"Converted modifiers saved to '{output_file}'")
 
 # Function to process all JSON files in the current directory
-def process_all_json_files():
-    current_dir = os.getcwd()
-    json_files = [file for file in os.listdir(current_dir) if file.endswith('.json') and not file.startswith('extracted_')]
+def processJSONFiles():
+    currentDir = os.getcwd()
+    JSONFiles = [file for file in os.listdir(currentDir) if file.endswith('.json') and not file.startswith('extracted_')]
 
-    for json_file in json_files:
-        input_file = os.path.join(current_dir, json_file)
-        extracted_output_file = os.path.join(current_dir, f"extracted_{json_file}")
-        converted_output_file = os.path.join(current_dir, f"converted_{json_file.replace('.json', '.py')}")
+    for jsonFile in JSONFiles:
+        inputFIle = os.path.join(currentDir, jsonFile)
+        extractedOutputFile = os.path.join(currentDir, f"extracted_{jsonFile}")
+        converterOutputFile = os.path.join(currentDir, f"converted_{jsonFile.replace('.json', '.py')}")
 
         # Extract modifiers from input file
-        modifiers = parse_game_save(input_file)
+        modifiers = parseGameSave(inputFIle)
 
         # Save extracted modifiers to extracted_.json
-        save_extracted_modifiers(modifiers, extracted_output_file)
+        saveExtracted(modifiers, extractedOutputFile)
 
         # Generate converted_.py with modifiers in Python code format
-        generate_converted_py(modifiers, converted_output_file)
+        f_generateConverted(modifiers, converterOutputFile)
 
-        print(f"Modifiers data extracted from '{json_file}', saved to '{extracted_output_file}', and converted to '{converted_output_file}'")
+        print(f"Modifiers data extracted from '{jsonFile}', saved to '{extractedOutputFile}', and converted to '{converterOutputFile}'")
 
 # Entry point of the script
 def main():
-    process_all_json_files()
+    processJSONFiles()
 
 if __name__ == "__main__":
     main()

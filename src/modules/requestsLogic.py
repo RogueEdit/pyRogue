@@ -1,7 +1,7 @@
-# Authors
+# Authors https://github.com/JulianStiebler/
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
-# Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
+# Contributors: https://github.com/claudiunderthehood 
 # Date of release: 13.06.2024 
 # Last Edited: 20.06.2024
 
@@ -60,6 +60,9 @@ from utilities import Limiter, cFormatter, Color
 import pyuseragents
 from user_agents import parse
 import string
+from modules.config import useCaCert
+limiter = Limiter()
+
 
 def handle_error_response(response: requests.Response) -> Dict[str, str]:
     """
@@ -163,36 +166,36 @@ class HeaderGenerator:
     """
     @classmethod
     def generate_headers(cls, isAuthHeader: bool = False) -> Dict[str, str]:
-        user_agent_string = pyuseragents.random()
-        user_agent = parse(user_agent_string)
+        userAgentString = pyuseragents.random()
+        userAgent = parse(userAgentString)
 
-        browser_family = user_agent.browser.family
-        browser_version = user_agent.browser.version_string
-        os_family = user_agent.os.family
-        os_version = user_agent.os.version_string
-        is_mobile = user_agent.is_mobile
+        browserFamily = userAgent.browser.family
+        browserVersion = userAgent.browser.version_string
+        osFamily = userAgent.os.family
+        osVersion = userAgent.os.version_string
+        isMobile = userAgent.is_mobile
 
         headers = {
             "Accept": "application/x-www-form-urlencoded",
             "Content-Type": "application/x-www-form-urlencoded",
             "Origin": "https://pokerogue.net",
             "Referer": "https://pokerogue.net/",
-            "Sec-CH-UA-Mobile": "?1" if is_mobile else "?0",
+            "Sec-CH-UA-Mobile": "?1" if isMobile else "?0",
             "Sec-Fetch-Dest": "empty",
             "Sec-Fetch-Mode": "cors",
             "Sec-Fetch-Site": "same-site",
-            "User-Agent": user_agent_string,
+            "User-Agent": userAgentString,
         }
     
         # Define the optional headers
-        optional_headers = {
-            "Sec-CH-UA": f'"{browser_family}";v="{browser_version}"',
-            "Sec-CH-UA-Platform": os_family,
-            "Sec-CH-UA-Platform-Version": os_version,
+        optionalHeader = {
+            "Sec-CH-UA": f'"{browserFamily}";v="{browserVersion}"',
+            "Sec-CH-UA-Platform": osFamily,
+            "Sec-CH-UA-Platform-Version": osVersion,
         }
 
         # Randomly decide to add some or all of the optional headers
-        for header, value in optional_headers.items():
+        for header, value in optionalHeader.items():
             if random.choice([True, False]):
                 headers[header] = value
 
@@ -255,7 +258,7 @@ class requestsLogic:
         self.username = username
         self.password = password
         self.token: Optional[str] = None
-        self.session_id: Optional[str] = None
+        self.sessionId: Optional[str] = None
         self.session = requests.Session()
 
     def calcSessionId(self) -> str:
@@ -272,12 +275,10 @@ class requestsLogic:
         characters = string.ascii_letters + string.digits
         result = []
         for _ in range(32):
-            random_index = random.randint(0, len(characters) - 1)
-            result.append(characters[random_index])
+            randomIndex = random.randint(0, len(characters) - 1)
+            result.append(characters[randomIndex])
 
         return "".join(result)
-
-    limiter = Limiter(lockout_period=40, timestamp_file='./data/extra.json')
 
     @limiter.lockout
     def login(self) -> bool:
@@ -297,21 +298,21 @@ class requestsLogic:
             headers = HeaderGenerator.generate_headers()
             cFormatter.print(Color.DEBUG, 'Adding delay to appear more natural to the server. Please stand by...')
             cFormatter.print(Color.DEBUG, '(If it takes longer than 5 Seconds its not on us.)')
-            response = self.session.post(self.LOGIN_URL, headers=headers, data=data)
+            response = self.session.post(self.LOGIN_URL, headers=headers, data=data, verify=useCaCert)
             sleep(random.randint(3, 5))
             response.raise_for_status()
 
             login_response = response.json()
             self.token = login_response.get('token')
-            cFormatter.print_separators(30, '-')
-            self.session_id = self.calcSessionId()
+            cFormatter.fh_printSeperators(30, '-')
+            self.sessionId = self.calcSessionId()
             cFormatter.print(Color.GREEN, 'Login successful.')
             status_code_color = Color.BRIGHT_GREEN if response.status_code == 200 else Color.BRIGHT_RED
             cFormatter.print(status_code_color, f'HTTP Status Code: {response.status_code}')
             cFormatter.print(Color.CYAN, f'Response URL: {response.request.url}', isLogging=True)
             filtered_headers = {key: value for key, value in response.headers.items() if key != 'Report-To'}
             cFormatter.print(Color.CYAN, f'Response Headers: {filtered_headers}', isLogging=True)
-            cFormatter.print_separators(30, '-')
+            cFormatter.fh_printSeperators(30, '-')
             return True
 
         except requests.RequestException:

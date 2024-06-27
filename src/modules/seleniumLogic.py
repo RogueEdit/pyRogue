@@ -1,7 +1,7 @@
-# Authors
+# Authors https://github.com/JulianStiebler/
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
-# Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
+# Contributors: https://github.com/claudiunderthehood
 # Date of release: 06.06.2024
 # Last Edited: 20.06.2024
 
@@ -56,6 +56,7 @@ import time
 from typing import Optional, Tuple, Dict, Any
 from utilities import CustomLogger
 import random
+from modules.config import useCaCert
 
 class SeleniumLogic:
     """
@@ -105,7 +106,7 @@ class SeleniumLogic:
                 The session ID, token, and WebDriver instance if available, otherwise None.
         """
         # Deactivate logging because selenium clutters it extremely
-        CustomLogger.deactivate_logging()
+        CustomLogger.fh_deactiveLogging()
 
         # Set Browser options
         options = webdriver.ChromeOptions()
@@ -115,6 +116,8 @@ class SeleniumLogic:
         options.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
         options.add_argument("--disable-infobars")  # Disable infobars
         options.add_argument("--enable-javascript") # enable javascript explicitly
+        if useCaCert:
+            options.add_argument(f"--ca-certificate={useCaCert}")
 
         driver = webdriver.Chrome(options=options)
         url = "https://www.pokerogue.net/"
@@ -125,26 +128,26 @@ class SeleniumLogic:
 
         try:
             # Wait for the username field to be visible and input the username
-            username_field = WebDriverWait(driver, self.timeout).until(
+            usernameInput = WebDriverWait(driver, self.timeout).until(
                 EC.visibility_of_element_located((By.CSS_SELECTOR, "input[type='text']"))
             )
-            username_field.send_keys(self.username)
+            usernameInput.send_keys(self.username)
 
             # Wait for the password field to be visible and input the password
-            password_field = WebDriverWait(driver, self.timeout).until(
+            passwordInput = WebDriverWait(driver, self.timeout).until(
                 EC.visibility_of_element_located((By.CSS_SELECTOR, "input[type='password']"))
             )
-            password_field.send_keys(self.password)
+            passwordInput.send_keys(self.password)
 
             # Send RETURN key
-            password_field.send_keys(Keys.RETURN)
+            passwordInput.send_keys(Keys.RETURN)
 
             print('Waiting for login data...')
             time.sleep(random.randint(8,12))  # Fixed wait time to ensure data is there
 
             # Process the browser log
-            browser_log = driver.get_log('performance')
-            events = [self._process_browser_log_entry(entry) for entry in browser_log]
+            browserLogs = driver.get_log('performance')
+            events = [self._process_browser_log_entry(entry) for entry in browserLogs]
 
             # Extract session data such as sessionId, auth-token or headers etc
             for event in events:
@@ -159,18 +162,18 @@ class SeleniumLogic:
                 if 'method' in event and event['method'] == 'Network.responseReceived':
                     response = event['params']['response']
                     if response['url'] == 'https://api.pokerogue.net/account/login':
-                        request_id = event['params']['requestId']
-                        result = driver.execute_cdp_cmd('Network.getResponseBody', {'requestId': request_id})
-                        response_body = result.get('body', '')
-                        if response_body:
-                            token_data = json.loads(response_body)
-                            token = token_data.get('token')
+                        requestId = event['params']['requestId']
+                        result = driver.execute_cdp_cmd('Network.getResponseBody', {'requestId': requestId})
+                        responseBody = result.get('body', '')
+                        if responseBody:
+                            tokenData = json.loads(responseBody)
+                            token = tokenData.get('token')
 
         except TimeoutException as e:
             print(f"Timeout occurred: {e}")
 
         finally:
-            CustomLogger.reactivate_logging()
+            CustomLogger.fh_reactiveLogging()
             # If we are not using login method 3 we should close the driver already
             if not self.useScripts:
                 driver.close()
