@@ -534,28 +534,28 @@ class Rogue:
     @handle_operation_exceptions
     def f_restoreBackup(self) -> None:
         """
-        Restore a backup of JSON files and update the timestamp in trainer.json.
+        Restore a backup of JSON files and update the timestamp in trainer.json or slot_{slot}.json.
 
         What it does:
-        - Restores a selected backup file (`backup_{trainerid}_{timestamp}.json` or `backup_slot_{slot}_{trainerid}_{timestamp}.json`) to the appropriate target file.
+        - Restores a selected backup file to the appropriate target file.
         - Updates the timestamp in the target file with the current timestamp upon restoration.
         - Displays a numbered list of available backup files matching the current trainer ID for selection.
         - Prompts the user to choose a backup file to restore and handles user input validation.
-        - Prints 'Data restored.' upon successful restoration.
+        - Prints 'Data restored and timestamp updated' upon successful restoration.
 
         :args: None
         :params: None
 
         Usage Example:
-            instance.restore_backup()
+            instance.f_restoreBackup()
 
         Output Example:
             # Output:
             # 1: base_123.json         <- Created on first edit
-            # 2: backup_123_20230101_121212.json
-            # 3: backup_123_slot_1_090413.json
+            # 2: backup_gameData(2450)_27.06.2024_06.23.10.json
+            # 3: backup_slotData(1_2450)_27.06.2024_06.23.10.json
             # Enter the number of the file you want to restore: 2
-            # Data restored.
+            # Data restored and timestamp updated.
 
         Modules/Libraries used and for what purpose exactly in each function:
         - os: For directory listing and file handling operations.
@@ -567,23 +567,24 @@ class Rogue:
             backupDirectory = config.backupDirectory
             files = os.listdir(backupDirectory)
 
-            # Filter and sort files that match trainerId
-            trainerId = self.trainerId
-            baseFilePattern = re.compile(rf'base_{trainerId}_\d{{8}}_\d{{6}}\.json')
-            backupFilePattern = re.compile(rf'backup_(\d+_)?{trainerId}_\d{{8}}_\d{{6}}\.json')
+            # Pattern to match trainer ID in filenames
+            trainerPattern = re.compile(rf'\({self.trainerId}\)')
 
-            # Get base and backup files separately
-            baseFiles = sorted([f for f in files if baseFilePattern.match(f)], key=os.path.getmtime)
-            backupFiles = sorted([f for f in files if backupFilePattern.match(f)], key=os.path.getmtime)
+            # Filter and sort base and backup files separately
+            baseFiles = sorted([f for f in files if f.startswith('base_') and trainerPattern.search(f)])
+            backupFiles = sorted(
+                [f for f in files if f.startswith('backup_') and trainerPattern.search(f)],
+                key=lambda f: datetime.strptime(re.search(r'\d{2}\.\d{2}\.\d{4}_\d{2}\.\d{2}\.\d{2}', f).group(), '%d.%m.%Y_%H.%M.%S')
+            )
 
-            # Display files with base files first
+            # Combine base and backup files with base files on top
             displayFiles = baseFiles + backupFiles
 
             if not displayFiles:
                 cFormatter.print(Color.WARNING, 'No backup files found for your trainer ID.')
                 return
 
-            # Displaying sorted list with numbers
+            # Display sorted list with numbers
             for idx, file in enumerate(displayFiles, 1):
                 sidenote = '        <- Created on first edit' if file.startswith('base_') else ''
                 print(f'{idx}: {file} {sidenote}')
@@ -600,7 +601,7 @@ class Rogue:
                         parentDirectory = os.path.abspath(os.path.join(backupDirectory, os.pardir))
 
                         # If the chosen file has "slot_X" in its name, determine the slot number and the corresponding target file
-                        matchSlot = re.search(r'backup_(\d+)_', chosenFile)
+                        matchSlot = re.search(r'backup_slotData\((\d+)_', chosenFile)
                         if matchSlot:
                             dynSlot = matchSlot.group(1)
                             outputFilename = f'slot_{dynSlot}.json'
@@ -630,9 +631,10 @@ class Rogue:
                         cFormatter.print(Color.WARNING, 'Invalid choice. Please enter a number within range.')
                 except ValueError:
                     cFormatter.print(Color.WARNING, 'Invalid input. Please enter a valid number.')
-        
+
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function f_restoreBackup: {e}', isLogging=True)
+
 
     # TODO IMPORTANT: Simplify
     @limiter.lockout
