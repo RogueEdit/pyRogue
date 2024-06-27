@@ -285,7 +285,7 @@ class Rogue:
         """
         try:
             while not self.slot or self.slot > 5 or self.slot < 1:
-                self.slot = fh_getIntegerInput('Enter Slot', 1, 5, True)
+                self.slot = fh_getIntegerInput('Enter Slot', 1, 5, False)
                 self.slot = slot
                 if self.slot > 5 or self.slot < 1:
                     cFormatter.print(Color.INFO, 'Invalid input. Slot number must be between 1 and 5.')
@@ -1031,10 +1031,10 @@ class Rogue:
         gameData = self.__fh_loadDataFromJSON('trainer.json')
 
         voucherTypes = {
-            '0': 'common',
-            '1': 'rare',
-            '2': 'epic',
-            '3': 'legendary'
+            '0': 'Common Voucher',
+            '1': 'Rare Voucher',
+            '2': 'Epic Voucher',
+            '3': 'Legendary'
         }
 
         changed = False
@@ -1236,7 +1236,7 @@ class Rogue:
             fh_appendMessageBuffer(Color.INFO, 'You already had all gamemodes.')
 
     @handle_operation_exceptions
-    def f_editAchivements(self) -> None:
+    def f_unlockAchievements(self) -> None:
         """
         Unlocks all achievements for the player or a specific achievement with random unlock times.
 
@@ -1330,7 +1330,7 @@ class Rogue:
             fh_appendMessageBuffer(Color.YELLOW, 'No changes made.')
 
     @handle_operation_exceptions
-    def f_editVouchers(self) -> None:
+    def f_unlockVouchers(self) -> None:
         """
         Unlocks all vouchers for the player or a specific voucher with random unlock times.
 
@@ -1453,36 +1453,53 @@ class Rogue:
 
         header = cFormatter.fh_centerText('Add Candy', 30, '-')
 
+        changedItems = []
+        changed = False
+
         cFormatter.print(Color.DEBUG, header)
         while True:
-            inputValue = fh_getCompleterInput(
-                promptMessage='Write either the ID or the Name of the Pokemon',
-                choices={**{member.name.lower(): member for member in self.appData.starterNameByID}, 
-                        **{str(member.value): member for member in self.appData.starterNameByID}},
-                zeroCancel=False
-            )
-            pokeName = inputValue.name.lower()
-            currentCandies = gameData["starterData"][str(inputValue.value)]["candyCount"]
+            try:
+                while True:
+                    inputValue = fh_getCompleterInput(
+                        promptMessage='Write either the ID or the Name of the Pokemon',
+                        choices={**{member.name.lower(): member for member in self.appData.starterNameByID}, 
+                                **{str(member.value): member for member in self.appData.starterNameByID}},
+                        softCancel=True
+                    )
+                    pokeName = inputValue.name.lower()
+                    currentCandies = gameData["starterData"][str(inputValue.value)]["candyCount"]
 
-            if int(currentCandies) >= 999:
-                cFormatter.print(Color.WARNING, f'{inputValue.name.capitalize()} already has the maximum number of candies (999).')
-            else:
-                break  # Exit the loop if a valid Pokémon is selected
+                    if int(currentCandies) >= 999:
+                        cFormatter.print(Color.WARNING, f'{inputValue.name.capitalize()} already has the maximum number of candies (999).')
+                    else:
+                        break  # Exit the loop if a valid Pokémon is selected
 
-        # Prompt for number of candies using fh_getIntegerInput method
-        candies = fh_getIntegerInput(
-            promptMessage=f'How many candies do you want to add?\n You currently have {currentCandies} on {inputValue.name.capitalize()}. (0 to cancel):',
-            minBound=0,
-            maxBound=999,  # Adjust maximum candies as needed
-            zeroCancel=True
-        )
+                # Prompt for number of candies using fh_getIntegerInput method
+                candies = fh_getIntegerInput(
+                    promptMessage=f'How many candies do you want to add?\n You currently have {currentCandies} on {inputValue.name.capitalize()}. (0 to cancel):',
+                    minBound=0,
+                    maxBound=999,  # Adjust maximum candies as needed
+                    zeroCancel=True
+                )
 
-        # Update game data with the chosen Pokémon's candy count
-        gameData["starterData"][str(inputValue.value)]["candyCount"] = candies
+                # Update game data with the chosen Pokémon's candy count
+                gameData["starterData"][str(inputValue.value)]["candyCount"] = candies
+                changedItems.append(f"{inputValue.name.capitalize()}: {candies}")
+                changed = True
 
-        # Write updated data to JSON
-        self.__fh_writeJSONData(gameData, 'trainer.json', showSuccess=False)
-        raise OperationSuccessful(f'Added {candies} candies to {pokeName}.')
+                cFormatter.print(Color.DEBUG, f'Added {candies} candies to {pokeName}.')
+
+            except OperationSoftCancel:
+                break
+
+        if changed:
+            self.__fh_writeJSONData(gameData, 'trainer.json')
+            fh_appendMessageBuffer(Color.YELLOW, 'Changes saved:')
+            for item in changedItems:
+                fh_appendMessageBuffer(Color.INFO, item)
+            raise OperationSuccessful('Successfully added candies to Pokémon.')
+        else:
+            fh_appendMessageBuffer(Color.YELLOW, 'No changes made.')
 
     @handle_operation_exceptions
     def f_editBiome(self) -> None:
@@ -1732,8 +1749,8 @@ class Rogue:
     @handle_operation_exceptions
     def f_unlockAllCombined(self) -> None:
         self.f_unlockGamemodes()
-        self.f_editAchivements()
-        self.f_editVouchers()
+        self.f_unlockAchievements()
+        self.f_unlockVouchers()
         self.f_unlockStarters()
         self.f_editAccountStats()
 
