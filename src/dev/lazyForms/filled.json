@@ -11,7 +11,7 @@
             "Tough Cosplay": 16511,
             "G-Max": 32895
         },
-        "Combined": 65663
+        "Combined": 65535
     },
     "133": {
         "Eevee": {
@@ -19,7 +19,7 @@
             "Partner": 383,
             "G-Max": 639
         },
-        "Combined": 1151
+        "Combined": 1023
     },
     "351": {
         "Castform": {
@@ -28,7 +28,7 @@
             "Rainy": 639,
             "Snowy": 1151
         },
-        "Combined": 2175
+        "Combined": 2047
     },
     "412": {
         "Burmy": {
@@ -36,14 +36,14 @@
             "Sandy": 383,
             "Trash": 639
         },
-        "Combined": 1151
+        "Combined": 1023
     },
     "422": {
         "Shellos": {
             "East Sea": 127,
             "West Sea": 383
         },
-        "Combined": 639
+        "Combined": 511
     },
     "479": {
         "Rotom": {
@@ -54,7 +54,7 @@
             "Fan": 2175,
             "Mow": 4223
         },
-        "Combined": 8319
+        "Combined": 8191
     },
     "550": {
         "Basculin": {
@@ -62,7 +62,7 @@
             "Blue-Striped": 383,
             "White-Striped": 639
         },
-        "Combined": 1151
+        "Combined": 1023
     },
     "585": {
         "Deerling": {
@@ -71,14 +71,14 @@
             "Autumn": 639,
             "Winter": 1151
         },
-        "Combined": 2175
+        "Combined": 2047
     },
     "656": {
         "Froakie": {
             "Normal": 127,
             "Battle Bond": 383
         },
-        "Combined": 639
+        "Combined": 511
     },
     "664": {
         "Scatterbug": {
@@ -90,7 +90,7 @@
             "Garden": 4223,
             "Elegant": 8319
         },
-        "Combined": 16511
+        "Combined": 16383
     },
     "669": {
         "Flabebe": {
@@ -100,7 +100,7 @@
             "Blue": 1151,
             "White": 2175
         },
-        "Combined": 4223
+        "Combined": 4095
     },
     "676": {
         "Furfrou": {
@@ -115,7 +115,7 @@
             "Kabuki": 32895,
             "Pharaoh": 65663
         },
-        "Combined": 131199
+        "Combined": 131071
     },
     "710": {
         "Pumpkaboo": {
@@ -124,14 +124,14 @@
             "Large": 639,
             "Super Size": 1151
         },
-        "Combined": 2175
+        "Combined": 2047
     },
     "716": {
         "Xerneas": {
             "Neutral": 127,
             "Active": 383
         },
-        "Combined": 639
+        "Combined": 511
     },
     "718": {
         "Zygarde": {
@@ -141,7 +141,7 @@
             "10% Power": 1151,
             "Complete": 2175
         },
-        "Combined": 4223
+        "Combined": 4095
     },
     "741": {
         "Oricorio": {
@@ -150,14 +150,14 @@
             "Pa'u": 639,
             "Sensu": 1151
         },
-        "Combined": 2175
+        "Combined": 2047
     },
     "744": {
         "Rockruff": {
             "Normal": 127,
             "Own Tempo": 383
         },
-        "Combined": 639
+        "Combined": 511
     },
     "774": {
         "Minior": {
@@ -176,28 +176,28 @@
             "Indigo Core": 524415,
             "Violet Core": 1048703
         },
-        "Combined": 2097279
+        "Combined": 2097151
     },
     "801": {
         "Magearna": {
             "Normal": 127,
             "Original": 383
         },
-        "Combined": 639
+        "Combined": 511
     },
     "802": {
         "Marshadow": {
             "Normal": 127,
             "Zenith": 383
         },
-        "Combined": 639
+        "Combined": 511
     },
     "893": {
         "Zarude": {
             "Normal": 127,
             "Dada": 383
         },
-        "Combined": 639
+        "Combined": 511
     },
     "978": {
         "TATSUGIRI": {
@@ -205,7 +205,7 @@
             "Droopy": 383,
             "Stretchy": 639
         },
-        "Combined": 1151
+        "Combined": 1023
     },
     "931": {
         "Squawkabilly": {
@@ -214,14 +214,14 @@
             "Yellow": 639,
             "White": 1151
         },
-        "Combined": 2175
+        "Combined": 2047
     },
     "999": {
         "Gimmighoul": {
             "Chest": 127,
             "Roaming": 383
         },
-        "Combined": 639
+        "Combined": 511
     },
     "1007": {
         "Koraidon": {
@@ -231,7 +231,7 @@
             "Swimming": 1151,
             "Gliding": 2175
         },
-        "Combined": 4223
+        "Combined": 4095
     },
     "1008": {
         "Miraidon": {
@@ -240,14 +240,14 @@
             "Aquatic": 639,
             "Glide": 1151
         },
-        "Combined": 2175
+        "Combined": 2047
     },
     "1012": {
         "Poltchageist": {
             "Counterfeit": 127,
             "Artisan": 383
         },
-        "Combined": 639
+        "Combined": 511
     },
     "8128": {
         "Tauros": {
@@ -255,6 +255,6 @@
             "Blaze": 383,
             "Aqua": 639
         },
-        "Combined": 1151
+        "Combined": 1023
     }
 }

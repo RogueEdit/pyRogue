@@ -42,7 +42,7 @@ def compute_caught_attr_for_variant_3(pokemon_data, variant_flag, default_form_f
             pokemon_caught_attrs[pokemon_id][pokemon_name] = caught_attrs
 
             # Also add the combined_caught_attr at the top level of the Pokemon
-            pokemon_caught_attrs[pokemon_id]["Combined"] = combined_caught_attr
+            pokemon_caught_attrs[pokemon_id]["Combined"] = combined_caught_attr+-128
 
     return pokemon_caught_attrs
 
