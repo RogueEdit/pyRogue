@@ -746,6 +746,9 @@ class Rogue:
         """
         gameData: dict = self.__fh_loadDataFromJSON('trainer.json')
 
+        header = cFormatter.fh_centerText('Unlock All Starter', 30, '-')
+        cFormatter.print(Color.DEBUG, header)
+
         choices = {
             '1': 'Yes',
             '2': 'No'
@@ -793,7 +796,8 @@ class Rogue:
         self.__fh_writeJSONData(gameData, 'trainer.json')
         fh_appendMessageBuffer(Color.GREEN, 'Data updated successfully.')
         raise OperationCancel('Written changes for all starters.')
-
+    
+    @handle_operation_exceptions
     def f_editStarter(self, dexId: Optional[str] = None) -> None:
         """
         Allows the user to edit starter Pokemon data for a trainer.
@@ -820,91 +824,157 @@ class Rogue:
             >>> example_instance.edit_starter_separate()
 
         """
-        try:
-            trainer_data: dict = self.__fh_loadDataFromJSON('trainer.json')
-            
-            if not dexId:
+
+        gameData: dict = self.__fh_loadDataFromJSON('trainer.json')
+        header = cFormatter.fh_centerText('Edit Starter', 30, '-')
+        cFormatter.print(Color.DEBUG, header)
+        self.fh_completerInfo()
+
+        if not dexId:
+            inputValue = fh_getCompleterInput(
+                promptMessage='Write either the ID or the Name of the Pokemon',
+                choices={**{member.name.lower(): member for member in self.appData.starterNameByID}, 
+                        **{str(member.value): member for member in self.appData.starterNameByID}},
+                softCancel=True
+            )
+            dexId = inputValue.value
+
+        if str(dexId) not in gameData['starterData']:
+            cFormatter.print(Color.INFO, f'No pokemon with ID: {dexId}')
+            return
+
+        changed = False
+        changedItems = []
+
+        choices = {
+            'Unlock all forms': 'Unlock all forms',
+            'Set shininess': 'Set shininess',
+            'Set caught count': 'Set caught count',
+            'Set hatched count': 'Set hatched count',
+            'Set seen count': 'Set seen count',
+            'Set candies': 'Set candies',
+            'Set nature': 'Set nature',
+            'Set passive': 'Set passive',
+            'Set cost reduction': 'Set cost reduction',
+            'Set abilities': 'Set abilities',
+            'Set IVs': 'Set IVs'
+        }
+        
+        optionList = {str(index + 1): key for index, key in enumerate(choices.keys())}
+        nameToKey = {key.lower(): key for key in choices.keys()}
+
+        menuDisplay = "\n".join([f"{index}: {key}" for index, key in optionList.items()])
+        cFormatter.print(Color.INFO, menuDisplay)
+        self.fh_completerInfo()
+
+        while True:
+            try:
                 inputValue = fh_getCompleterInput(
-                        promptMessage='Write either the ID or the Name of the Pokemon',
-                        choices={**{member.name.lower(): member for member in self.appData.starterNameByID}, 
-                                **{str(member.value): member for member in self.appData.starterNameByID}},
-                        softCancel=True
-                    )
-                dexId = inputValue.value
+                    'Choose attribute to edit:',
+                    {**optionList, **nameToKey},
+                    softCancel=True
+                )
 
-                if str(dexId) not in trainer_data['starterData']:
-                    cFormatter.print(Color.INFO, f'No pokemon with ID: {dexId}')
-                    return
+                action = choices[nameToKey[inputValue.lower()]]
+                
+                if action == 'Unlock all forms':
+                    formChoice = fh_getChoiceInput('Do you want to unlock all forms of the pokemon? (All forms are Tier 3 shinies)', {1: 'Yes', 2: 'No'}, zeroCancel=True)
+                    combinedFormIDs = {key: member.value['Combined'] for key, member in self.appData.hasFormIDs.__members__.items() if 'Combined' in member.value}
 
-            choices = {1: 'Yes', 2: 'No'}
-            form_choice = fh_getChoiceInput('Do you want to unlock all forms of the pokemon? (All forms are Tier 3 shinies)', choices, zeroCancel=True)
-            
-            combinedFormIDs = {key: member.value['Combined'] for key, member in self.appData.hasFormIDs.__members__.items() if 'Combined' in member.value}
+                    if formChoice == '1' and dexId in combinedFormIDs:
+                        caughtAttr = combinedFormIDs[dexId]
+                        shinyChoice = True
+                    else:
+                        shinyChoice = fh_getChoiceInput('Do you want Tier 3 shinies?', {1: 'Yes', 2: 'No'}, zeroCancel=True) == '1'
+                        caughtAttr = 255 if shinyChoice else 253
 
-            if form_choice == '1' and dexId in combinedFormIDs:
-                caught_attr = combinedFormIDs[dexId]
-                shiny_choice = True
-            else:
-                shiny_choice = fh_getChoiceInput('Do you want Tier 3 shinies?', choices, zeroCancel=True) == '1'
-                caught_attr = 255 if shiny_choice else 253
+                    gameData['dexData'][str(dexId)]['caughtAttr'] = caughtAttr
+                    changedItems.append('Unlocked all forms')
+                    
+                elif action == 'Set shininess':
+                    shinyChoice = fh_getChoiceInput('Do you want Tier 3 shinies?', {1: 'Yes', 2: 'No'}, zeroCancel=True) == '1'
+                    caughtAttr = 255 if shinyChoice else 253
+                    gameData['dexData'][str(dexId)]['caughtAttr'] = caughtAttr
+                    changedItems.append(f'Tier 3 shinies: {"Yes" if shinyChoice else "No"}')
 
-            caught = fh_getIntegerInput('How many of this Pokemon have you caught?', 1, self.__MAX_BIG_INT, zeroCancel=True)
-            hatched = fh_getIntegerInput('How many of this Pokemon have hatched from eggs?', 0, self.__MAX_BIG_INT, zeroCancel=True)
-            seen_count = fh_getIntegerInput('How many of this Pokemon have you seen?', 0, self.__MAX_BIG_INT, zeroCancel=True)
-            candies = fh_getIntegerInput('How many candies do you want?', 0, self.__MAX_BIG_INT, zeroCancel=True)
-            
-            nature = fh_getCompleterInput(
-                        promptMessage='Write either the ID or the Name of the Pokemon',
+                elif action == 'Set caught count':
+                    caught = fh_getIntegerInput('How many of this Pokemon have you caught?', 1, self.__MAX_BIG_INT, zeroCancel=True)
+                    gameData['dexData'][str(dexId)]['caughtCount'] = caught
+                    changedItems.append(f'Caught count: {caught}')
+                    
+                elif action == 'Set hatched count':
+                    hatched = fh_getIntegerInput('How many of this Pokemon have hatched from eggs?', 0, self.__MAX_BIG_INT, zeroCancel=True)
+                    gameData['dexData'][str(dexId)]['hatchedCount'] = hatched
+                    changedItems.append(f'Hatched count: {hatched}')
+                    
+                elif action == 'Set seen count':
+                    seenCount = fh_getIntegerInput('How many of this Pokemon have you seen?', 0, self.__MAX_BIG_INT, zeroCancel=True)
+                    gameData['dexData'][str(dexId)]['seenCount'] = seenCount
+                    changedItems.append(f'Seen count: {seenCount}')
+                    
+                elif action == 'Set candies':
+                    candies = fh_getIntegerInput('How many candies do you want?', 0, self.__MAX_BIG_INT, zeroCancel=True)
+                    gameData['starterData'][dexId]['candyCount'] = candies
+                    changedItems.append(f'Candies: {candies}')
+                    
+                elif action == 'Set nature':
+                    nature = fh_getCompleterInput(
+                        promptMessage='Write either the ID or the Name of the Nature',
                         choices={**{member.name.lower(): member for member in self.appData.natureData}, 
                                 **{str(member.value): member for member in self.appData.natureData}},
                         softCancel=True
                     )
-            
-            passive_choice = fh_getChoiceInput('Do you want the starters to have the passive unlocked?', {1: 'Yes', 2: 'No'}, zeroCancel=True)
-            if passive_choice == '1' and dexId in self.passive_data['noPassive']:
-                cFormatter.print(Color.INFO, 'This pokemon has no passive.')
-                passiveAttr = 0
-            else:
-                passiveAttr = 3 if passive_choice == '1' else 0
+                    gameData['dexData'][str(dexId)]['natureAttr'] = nature.value
+                    changedItems.append(f'Nature: {nature.name}')
+                    
+                elif action == 'Set passive':
+                    passive = fh_getChoiceInput('Do you want the starters to have the passive unlocked?', {1: 'Yes', 2: 'No'}, zeroCancel=True)
+                    if passive == '1' and dexId in self.passive_data['noPassive']:
+                        cFormatter.print(Color.INFO, 'This pokemon has no passive.')
+                        passiveAttr = 0
+                    else:
+                        passiveAttr = 3 if passive == '1' else 0
+                    gameData['starterData'][dexId]['passiveAttr'] = passiveAttr
+                    changedItems.append(f'Passive: {"Unlocked" if passiveAttr == 3 else "Locked"}')
 
-            cost_reduce = fh_getIntegerInput('How much do you want to reduce the cost? (Number between 1 and 20)', 0, 20, zeroCancel=True)
+                elif action == 'Set cost reduction':
+                    cost_reduce = fh_getIntegerInput('How much do you want to reduce the cost? (Number between 1 and 20)', 0, 20, zeroCancel=True)
+                    gameData['starterData'][dexId]['valueReduction'] = cost_reduce
+                    changedItems.append(f'Cost reduction: {cost_reduce}')
+                    
+                elif action == 'Set abilities':
+                    ability = fh_getChoiceInput('Do you want to unlock all abilities?', {1: 'Yes, with hidden', 2: 'No'}, zeroCancel=True)
+                    abilityAttr = 7 if ability == '1' else 0
+                    gameData['starterData'][dexId]['abilityAttr'] = abilityAttr
+                    changedItems.append(f'Abilities: {"All unlocked" if abilityAttr == 7 else "Default"}')
+                    
+                elif action == 'Set IVs':
+                    cFormatter.print(Color.INFO, 'Choose a value between 1 and 31 for your IVs (Pokemon Stats).')
+                    ivs = [
+                        fh_getIntegerInput('SpA IVs', 1, 31, zeroCancel=True),
+                        fh_getIntegerInput('DEF IVs', 1, 31, zeroCancel=True),
+                        fh_getIntegerInput('Attack IVs', 1, 31, zeroCancel=True),
+                        fh_getIntegerInput('HP IVs', 1, 31, zeroCancel=True),
+                        fh_getIntegerInput('Spe IVs', 1, 31, zeroCancel=True),
+                        fh_getIntegerInput('Def IVs', 1, 31, zeroCancel=True)
+                    ]
+                    gameData['dexData'][str(dexId)]['ivs'] = ivs
+                    changedItems.append(f'IVs: {ivs}')
+                
+                changed = True
+                cFormatter.print(Color.DEBUG, f'{action} queued for update.')
+                
+            except OperationSoftCancel:
+                break
 
-            ability_choice = fh_getChoiceInput('Do you want to unlock all abilities?', {1: 'Yes, with hidden', 2: 'No'}, zeroCancel=True)
-            abilityAttr = 7 if ability_choice == '1' else 0
-            
-            cFormatter.print(Color.INFO, 'Choose a value between 1 and 31 for your IVs (Pokemon Stats).')
-            ivs = [
-                fh_getIntegerInput('SpA IVs', 1, 31, zeroCancel=True),
-                fh_getIntegerInput('DEF IVs', 1, 31, zeroCancel=True),
-                fh_getIntegerInput('Attack IVs', 1, 31, zeroCancel=True),
-                fh_getIntegerInput('HP IVs', 1, 31, zeroCancel=True),
-                fh_getIntegerInput('Spe IVs', 1, 31, zeroCancel=True),
-                fh_getIntegerInput('Def IVs', 1, 31, zeroCancel=True)
-            ]
-
-            trainer_data['dexData'][str(dexId)] = {
-                'seenAttr': 479,
-                'caughtAttr': caught_attr,
-                'natureAttr': nature.value,
-                'seenCount': seen_count,
-                'caughtCount': caught,
-                'hatchedCount': hatched,
-                'ivs': ivs  # Ensure ivs are defined appropriately in your code
-            }
-            trainer_data['starterData'][dexId] = {
-                'moveset': None,
-                'eggMoves': 15,
-                'candyCount': candies,
-                'abilityAttr': abilityAttr,
-                'passiveAttr': passiveAttr,
-                'valueReduction': cost_reduce
-            }
-
-            self.__fh_writeJSONData(trainer_data, 'trainer.json')
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function edit_starters(): {e}', isLogging=True)
-
-
+        if changed:
+            self.__fh_writeJSONData(gameData, 'trainer.json')
+            fh_appendMessageBuffer(Color.YELLOW, 'Changes saved:')
+            for item in changedItems:
+                fh_appendMessageBuffer(Color.INFO, item)
+            raise OperationSuccessful('Successfully written Starter Stats.')
+        else:
+            fh_appendMessageBuffer(Color.YELLOW, 'No changes made.')
 
     @handle_operation_exceptions
     def f_addTicket(self) -> None:
@@ -934,6 +1004,9 @@ class Rogue:
             >>> example_instance.f_addTicket()
         """
         gameData = self.__fh_loadDataFromJSON('trainer.json')
+
+        header = cFormatter.fh_centerText('Edit Egg-Tickets', 30, '-')
+        cFormatter.print(Color.DEBUG, header)
 
         voucherTypes = {
             '0': 'Common Voucher',
@@ -1437,8 +1510,11 @@ class Rogue:
         biomeData = self.appData.biomesByID
 
         # Prompt user for biome input
+        header = cFormatter.fh_centerText('Edit Biome', 30, '-')
+        cFormatter.print(Color.DEBUG, header)
         self.legacy_printBiomes()
         self.fh_completerInfo()
+
         cFormatter.print(Color.INFO, f'\nCurrent Biome {currentBiomeName}.')
         while True:
             try:
