@@ -1,7 +1,7 @@
-# Authors
+# Authors https://github.com/JulianStiebler/
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
-# Contributors: https://github.com/JulianStiebler/
+# Contributors: None except Authors
 # Date of release: 13.06.2024 
 # Last Edited: 25.06.2024
 # Based on: https://github.com/pagefaultgames/pokerogue/

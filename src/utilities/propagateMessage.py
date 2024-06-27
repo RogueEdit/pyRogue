@@ -1,3 +1,9 @@
+# Authors
+# Organization: https://github.com/rogueEdit/
+# Repository: https://github.com/rogueEdit/OnlineRogueEditor
+# Contributors: None except Author
+# Date of release: 25.06.2024
+# Last Edited: 25.06.2024
 
 from utilities import cFormatter, Color
 

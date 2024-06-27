@@ -1,4 +1,4 @@
-# Authors
+# Authors https://github.com/JulianStiebler/
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/claudiunderthehood
