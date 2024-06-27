@@ -40,13 +40,13 @@ from colorama import Fore, Style, init
 from utilities import cFormatter, Color, CustomLogger
 from datetime import datetime, timedelta
 from utilities import fh_printMessageBuffer
+from sys import exit
 
 init()
 logger = CustomLogger()
 
 if not config.debug:
     config.f_checkForUpdates(requests, datetime, timedelta, Style)
-    config.f_printWelcomeText()
 
 
 @handle_operation_exceptions
@@ -144,6 +144,7 @@ def main():
     else:
         while True:
             try:
+                config.f_printWelcomeText()
                 loginChoice = int(input('Please choose a method of logging in: '))
                 if loginChoice not in [1, 2, 3, 4]:
                     cFormatter.print(Color.DEBUG, 'Please choose a valid option.')

@@ -3125,33 +3125,43 @@ class Generator:
 
     def __natureToJSON(self) -> str:
         nature_dict: dict = {name: id for name, id in zip(self.natureNames, self.natureIDs)}
+        cFormatter.print(Color.GREEN,'Generated natures.json')
         return json.dumps({'natures': nature_dict}, indent=4)
     
     def __noPassiveToJSON(self) -> str:
+        cFormatter.print(Color.GREEN,'Generated noPassive.json')
         return json.dumps({'noPassive': NoPassive.NO_PASSIVE_DICT.value}, indent=4)
     
     def __biomesToJSON(self) -> str:
+        cFormatter.print(Color.GREEN, 'Generated biomes.json')
         return json.dumps({'biomes': Biome.BIOMES_DICT.value}, indent=4)
     
     def __vouchersToJSON(self) -> str:
+        cFormatter.print(Color.GREEN,'Generated vouchers.json')
         return json.dumps({'vouchers': Vouchers.VOUCHERS_DICT.value}, indent=4)
     
     def __natureSlotToJSON(self) -> str:
+        cFormatter.print(Color.GREEN,'Generated natureSlot.json')
         return json.dumps({'natureSlot': NatureSlot.NATURE_SLOT.value}, indent=4)
     
     def __achievmentsToJSON(self) -> str:
+        cFormatter.print(Color.GREEN,'Generated achievements.json')
         return json.dumps({'achvUnlocks': AchievementEnum.ACHIEVEMENTS_DICT.value}, indent=4)
     
     def __pokemonsToJSON(self) -> str:
+        cFormatter.print(Color.GREEN,'Generated pokemon.json')
         return json.dumps({'dex': PokemonEnum.POKEMON_DICT.value}, indent=4)
     
     def __startersToJSON(self) -> str:
+        cFormatter.print(Color.GREEN,'Generated starter.json')
         return json.dumps({'dex': StarterEnum.STARTER_DICT.value}, indent=4)
     
     def __movesToJSON(self) -> str:
+        cFormatter.print(Color.GREEN,'Generated moves.json')
         return json.dumps({'moves': MovesEnum.MOVES_DICT.value}, indent=4)
 
     def __formIDsToJSON(self) -> str:
+        cFormatter.print(Color.GREEN,'Generated formIDs.json')
         return json.dumps({'hasForms': formIDEnum.FORMID_DICT.value}, indent=4)
     
     def __fh_saveToFile(self, data: str, filename: str) -> None:
