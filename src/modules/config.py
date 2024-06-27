@@ -48,7 +48,7 @@ if not os.path.exists(dataDirectory):
     os.makedirs(dataDirectory)
     print(f'{Fore.GREEN}Created data directory: {dataDirectory}')
 
-debug: bool = False
+debug: bool = True
 debugDeactivateBackup: bool = True if debug else False
 debugEnableTraceback: bool = True if debug else False
 

@@ -157,9 +157,8 @@ class Rogue:
         self.backupDirectory = config.backupDirectory
         self.dataDirectory = config.dataDirectory
 
-        (self.starterNamesById, self.biomeNamesById, self.moveNamesById, self.vouchersData, self.natureData, 
+        (self.starterNameById, self.biomeNamesById, self.moveNamesById, self.vouchersData, self.natureData, 
             self.natureSlotData, self.achievementsData, self.pokemonData, self.noPassiveIDs, self.hasFormsIDs) = self.appData.f_convertToEnums()
-        
         self.editOffline = editOffline
         
         self.__fh_dump_data()
@@ -775,8 +774,7 @@ class Rogue:
 
         for entry in gameData['dexData'].keys():
             if choice == '1' and entry in combinedFormIDs:
-                #caughtAttr = combinedFormIDs[entry]
-                caughtAttr = self.__MAX_BIG_INT
+                caughtAttr = combinedFormIDs[entry]
                 shinyChoice = True
             else:
                 caughtAttr = 255 if shinyChoice else 253
@@ -826,102 +824,72 @@ class Rogue:
             trainer_data: dict = self.__fh_loadDataFromJSON('trainer.json')
             
             if not dexId:
-                pokemon_completer: WordCompleter = WordCompleter(self.starterNamesById.__members__.keys(), ignore_case=True)
+                inputValue = fh_getCompleterInput(
+                        promptMessage='Write either the ID or the Name of the Pokemon',
+                        choices={**{member.name.lower(): member for member in self.appData.starterNameByID}, 
+                                **{str(member.value): member for member in self.appData.starterNameByID}},
+                        softCancel=True
+                    )
+                dexId = inputValue.value
 
-                cFormatter.print(Color.INFO, 'Write the name of the pokemon, it will recommend for auto-completion.')
-                dexId: str = prompt('Enter Pokemon (Name / ID): ', completer=pokemon_completer)
-                
-                if dexId.isnumeric():
-                    if dexId not in trainer_data['starterData']:
-                        cFormatter.print(Color.INFO, f'No pokemon with ID: {dexId}')
-                        return
-                else:
-                    try:
-                        dexId: str = self.starterNamesById[dexId.lower()].value
-                    except KeyError:
-                        cFormatter.print(Color.INFO, f'No pokemon with ID: {dexId}')
-                        return
+                if str(dexId) not in trainer_data['starterData']:
+                    cFormatter.print(Color.INFO, f'No pokemon with ID: {dexId}')
+                    return
 
-            choice: int = int(input('Do you want to unlock all forms of the pokemon? (All forms are Tier 3 shinies. 1: Yes, 2: No): '))
-            if not 1 <= choice <= 2:
-                cFormatter.print(Color.INFO, f'No pokemon with ID: {dexId}')
-                return
-            elif choice == 1:
-                caught_attr: int = self.__MAX_BIG_INT
+            choices = {1: 'Yes', 2: 'No'}
+            form_choice = fh_getChoiceInput('Do you want to unlock all forms of the pokemon? (All forms are Tier 3 shinies)', choices, zeroCancel=True)
+            
+            combinedFormIDs = {key: member.value['Combined'] for key, member in self.appData.hasFormIDs.__members__.items() if 'Combined' in member.value}
+
+            if form_choice == '1' and dexId in combinedFormIDs:
+                caught_attr = combinedFormIDs[dexId]
+                shiny_choice = True
             else:
-                choice: int = int(input('Make the Pokemon shiny? (1: Yes, 2: No): '))
+                shiny_choice = fh_getChoiceInput('Do you want Tier 3 shinies?', choices, zeroCancel=True) == '1'
+                caught_attr = 255 if shiny_choice else 253
 
-                if not 1 <= choice <= 2:
-                    cFormatter.print(Color.INFO, 'Invalid choice. Setting to NO')
-                    choice
-                elif choice == 2:
-                    caught_attr = 253
-                else:
-                    choice: int = int(input('What tier shiny do you want? (1: Tier 1, 2: Tier 2, 3: Tier 3, 4: All shinies): '))
-                    if not 1 <= choice <= 4:
-                        cFormatter.print(Color.INFO, 'Invalid choice.')
-                        return
-                    elif choice == 1:
-                        caught_attr = 159
-                    elif choice == 2:
-                        caught_attr = 191
-                    elif choice == 3:
-                        caught_attr = 223
-                    else:
-                        caught_attr = 255
-                
-            caught: int = int(input('How many of this Pokemon have you caught?: '))
-            hatched: int = int(input('How many of this Pokemon have hatched from eggs?: '))
-            seen_count: int = int(input('How many of this Pokemon have you seen?: '))
-            candies: int = int(input('How many candies do you want?: '))
+            caught = fh_getIntegerInput('How many of this Pokemon have you caught?', 1, self.__MAX_BIG_INT, zeroCancel=True)
+            hatched = fh_getIntegerInput('How many of this Pokemon have hatched from eggs?', 0, self.__MAX_BIG_INT, zeroCancel=True)
+            seen_count = fh_getIntegerInput('How many of this Pokemon have you seen?', 0, self.__MAX_BIG_INT, zeroCancel=True)
+            candies = fh_getIntegerInput('How many candies do you want?', 0, self.__MAX_BIG_INT, zeroCancel=True)
+            
+            nature = fh_getCompleterInput(
+                        promptMessage='Write either the ID or the Name of the Pokemon',
+                        choices={**{member.name.lower(): member for member in self.appData.natureData}, 
+                                **{str(member.value): member for member in self.appData.natureData}},
+                        softCancel=True
+                    )
+            
+            passive_choice = fh_getChoiceInput('Do you want the starters to have the passive unlocked?', {1: 'Yes', 2: 'No'}, zeroCancel=True)
+            if passive_choice == '1' and dexId in self.passive_data['noPassive']:
+                cFormatter.print(Color.INFO, 'This pokemon has no passive.')
+                passiveAttr = 0
+            else:
+                passiveAttr = 3 if passive_choice == '1' else 0
+
+            cost_reduce = fh_getIntegerInput('How much do you want to reduce the cost? (Number between 1 and 20)', 0, 20, zeroCancel=True)
+
+            ability_choice = fh_getChoiceInput('Do you want to unlock all abilities?', {1: 'Yes, with hidden', 2: 'No'}, zeroCancel=True)
+            abilityAttr = 7 if ability_choice == '1' else 0
+            
             cFormatter.print(Color.INFO, 'Choose a value between 1 and 31 for your IVs (Pokemon Stats).')
-            ivs: list[int] = [int(input('SpA IVs: ')), int(input('DEF IVs: ')), int(input('Attack IVs: ')),
-                int(input('HP IVs: ')), int(input('Spe IVs: ')), int(input('Def IVs: '))]
-
-            passive: int = int(input('Do you want the starters to have the passive unlocked? (1: Yes | 2: No): '))
-            if not 1 <= passive <= 2:
-                cFormatter.print(Color.INFO, 'Invalid input. Setting to NO.')
-                passive = 2
-            elif passive == 1:
-                if dexId in self.passive_data['noPassive']:
-                    cFormatter.print(Color.INFO, 'This pokemon has no passive.')
-                    passiveAttr: int = 0
-                else:
-                    passiveAttr: int = 3
-            else:
-                passiveAttr: int = 0
-            
-            costReduce: int = int(input('How much do you want to reduce the cost? Yes lugia can cost nearly 0! (Number between 1 and 20): '))
-            if not 0 <= costReduce <= 20:
-                cFormatter.print(Color.INFO, 'Invalid input. Setting to 0.')
-                costReduce = 0
-
-            abilityAttr: int = int(input('Do you want to unlock all abilities? (1: Yes, with hidden | 2: No): '))
-            if not 1 <= abilityAttr <= 2:
-                cFormatter.print(Color.INFO, 'Invalid input. Setting to none.')
-                abilityAttr = 0
-            elif abilityAttr == 1:
-                abilityAttr = 7
-            else:
-                abilityAttr = 0
-            
-            self.legacy_natures()
-
-            nature_completer: WordCompleter = WordCompleter(self.natureData.__members__.keys(), ignore_case=True)
-            
-            cFormatter.print(Color.BRIGHT_YELLOW, 'Write the name of the nature, it will recommend for auto-completion.')
-            nature: str = prompt('What nature would you like?: ', completer=nature_completer)
-
-            nature: int = self.natureData[nature].value
+            ivs = [
+                fh_getIntegerInput('SpA IVs', 1, 31, zeroCancel=True),
+                fh_getIntegerInput('DEF IVs', 1, 31, zeroCancel=True),
+                fh_getIntegerInput('Attack IVs', 1, 31, zeroCancel=True),
+                fh_getIntegerInput('HP IVs', 1, 31, zeroCancel=True),
+                fh_getIntegerInput('Spe IVs', 1, 31, zeroCancel=True),
+                fh_getIntegerInput('Def IVs', 1, 31, zeroCancel=True)
+            ]
 
             trainer_data['dexData'][str(dexId)] = {
                 'seenAttr': 479,
                 'caughtAttr': caught_attr,
-                'natureAttr': nature,
+                'natureAttr': nature.value,
                 'seenCount': seen_count,
                 'caughtCount': caught,
                 'hatchedCount': hatched,
-                'ivs': ivs
+                'ivs': ivs  # Ensure ivs are defined appropriately in your code
             }
             trainer_data['starterData'][dexId] = {
                 'moveset': None,
@@ -929,12 +897,14 @@ class Rogue:
                 'candyCount': candies,
                 'abilityAttr': abilityAttr,
                 'passiveAttr': passiveAttr,
-                'valueReduction': costReduce
+                'valueReduction': cost_reduce
             }
 
             self.__fh_writeJSONData(trainer_data, 'trainer.json')
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function edit_starters(): {e}', isLogging=True)
+
+
 
     @handle_operation_exceptions
     def f_addTicket(self) -> None:
