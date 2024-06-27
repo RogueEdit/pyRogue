@@ -195,9 +195,9 @@ def main():
                 else:
                     cFormatter.print(Color.CRITICAL, 'Invalid choice. Please choose a valid method.')
 
-                m_mainMenu(rogue, editOffline=(loginChoice == 4))
             except KeyboardInterrupt:
                 exit()
+        m_mainMenu(rogue, editOffline=(loginChoice == 4))
 
 if __name__ == '__main__':
     while True:

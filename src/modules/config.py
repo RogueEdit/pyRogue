@@ -30,11 +30,12 @@ import requests
 # need to manually do it to avoid circular imports
 from colorama import Fore, Style, init
 init(autoreset=True)
+
+
 logsDirectory: str = os.path.join(os.getcwd(), 'logs')
 backupDirectory: str = os.path.join(os.getcwd(), 'backups')
 dataDirectory: str = os.path.join(os.getcwd(), 'data')
 timestampFile: str = os.path.join(dataDirectory, 'extra.json')
-
 
 if not os.path.exists(logsDirectory):
     os.makedirs(logsDirectory)
@@ -47,7 +48,6 @@ if not os.path.exists(dataDirectory):
     os.makedirs(dataDirectory)
     print(f'{Fore.GREEN}Created data directory: {dataDirectory}')
 
-
 debug: bool = True
 debugDeactivateBackup: bool = True if debug else False
 debugEnableTraceback: bool = True if debug else False
@@ -55,7 +55,7 @@ debugEnableTraceback: bool = True if debug else False
 cacertURL = 'https://curl.se/ca/cacert.pem'
 cacertPath = f'{dataDirectory}/cacert.pem'
 if not os.path.exists(cacertPath):
-    print(f'{Fore.RED}\n{cacertPath} not found. \nThis is needed for SSL Connections. \n Fetching from {cacertURL}...{Style.RESET_ALL}')
+    print(f'{Fore.RED}\ncacert.pem not found. This is needed for SSL Connections. \n Fetching from {cacertURL}...{Style.RESET_ALL}')
     print(f'{Fore.RED}\nIf it is your first time starting up that is normal.{Style.RESET_ALL}')
     # Fetch the file using requests library
     response = requests.get(cacertURL)

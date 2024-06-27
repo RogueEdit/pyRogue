@@ -24,7 +24,7 @@ def handle_operation_exceptions(func):
             fh_appendMessageBuffer(Color.DEBUG, str(oe), isLogging=True)
 
         except OperationCancel as oc:
-            fh_appendMessageBuffer(Color.DEBUG, f'\n{str(oc)}') # need \n cause it breaks on new lines
+            fh_appendMessageBuffer(Color.DEBUG, f'{str(oc)}') # need \n cause it breaks on new lines
 
         except OperationSoftCancel as sc:
             funcName = func.__name__

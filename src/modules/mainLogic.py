@@ -300,8 +300,8 @@ class Rogue:
                 self.trainerId = gameData.get('trainerId')
                 self.secretId = gameData.get('secretId')
 
-            if slotData and gameData:
-                self.f_createBackup()
+            self.f_createBackup(gameData, slotData)
+
         except KeyboardInterrupt:
             exit()
         except Exception as e:
@@ -474,83 +474,85 @@ class Rogue:
             cFormatter.print(Color.WARNING, f'Error logging out. {e}')
 
     @handle_operation_exceptions
-    def f_createBackup(self, offline: bool = False) -> None:
+    def f_createBackup(self, gameData=None, slotData=None, offline: bool = False) -> None:
         """
-        Create a backup of JSON files.
+        Create a backup of provided data or existing files if offline.
 
         What it does:
-        - Creates a backup of all JSON files in the current directory to `config.backupDirectory`.
-        - Uses a timestamped naming convention for backup files (`backup_{trainerid}_{timestamp}.json` and `backup_{slot}_{trainerid}_{timestamp}.json`).
+        - Creates a backup of gameData and/or slotData to `config.backupDirectory` if online.
+        - Creates a backup of existing files (trainer.json and slot_{self.slot}.json) if offline.
+        - Uses a timestamped naming convention for backup files:
+        - gameData: Checks for a base file and then uses backup prefix if base exists.
+        - slotData: Always uses the backup prefix.
         - Prints 'Backup created.' upon successful backup completion.
 
         :args: None
-        :params: None
+        :params: gameData, slotData, offline (optional)
 
         Usage Example:
-            instance.f_createBackup()
+            instance.f_createBackup(gameData=data, slotData=slot, offline=False)
 
         Output Example:
-            # Output: backup/backup_{trainerid}_{timestamp}.json
-            # Output: backup/backup_{slot}_{trainerid}_{timestamp}.json
+            # Output: backup/backup_gameData({trainerId})_{timestamp}.json
+            # Output: backup/backup_slotData({slot}_{trainerId})_{timestamp}.json
             # Backup created.
 
         Modules/Librarys used and for what purpose exactly in each function:
         - os: For directory creation and file handling operations.
         - json: For loading JSON data from files.
-        - shutil: For copying files from the current directory to the backup directory.
         - datetime: For generating timestamps for backup file names.
         """
-        if config.debugDeactivateBackup:
-            return
+
+        """if config.debugDeactivateBackup:
+            return"""
 
         backupDirectory = config.backupDirectory
-        if not os.path.exists(backupDirectory):
-            os.makedirs(backupDirectory)
 
-        # Extract trainerId from trainer.json
-        trainerId = None
-        if os.path.exists('trainer.json'):
-            with open('trainer.json', 'r') as f:
-                data = json.load(f)
-            trainerId = data.get('trainerId')
-
-        if trainerId is None:
-            cFormatter.print(Color.RED, 'No valid trainerId found in trainer.json.')
-            return
-
-        # Backup trainer.json
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        baseTrainerFilename = f'base_{trainerId}_{timestamp}.json'
-        baseTrainerFilepath = os.path.join(backupDirectory, baseTrainerFilename)
-
-        if os.path.exists(baseTrainerFilepath):
-            backupTrainerFilename = f'backup_{trainerId}_{timestamp}.json'
-            backupTrainerFilepath = os.path.join(backupDirectory, backupTrainerFilename)
-            shutil.copy('trainer.json', backupTrainerFilepath)
-            cFormatter.print(Color.GREEN, f'Backup {backupTrainerFilename} created.')
-        else:
-            shutil.copy('trainer.json', baseTrainerFilepath)
-            cFormatter.print(Color.GREEN, f'Backup {baseTrainerFilename} created.')
-
-         # Backup slot_X.json files
-        for file in os.listdir('.'):
-            if file.startswith('slot_') and file.endswith('.json'):
-                slot_filename = file
-                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-                baseSlotFilename = f'base_{slot_filename}'
-                baseSlotFilepath = os.path.join(backupDirectory, baseSlotFilename)
-
-                if os.path.exists(baseSlotFilepath):
-                    backupSlotFilename = f'backup_{slot_filename[:-5]}_{timestamp}.json'
-                    backupSlotFilepath = os.path.join(backupDirectory, backupSlotFilename)
-                    shutil.copy(file, backupSlotFilepath)
-                    cFormatter.print(Color.GREEN, f'Backup {backupSlotFilename} created.')
+        def __fh_backupData(data, dataType, is_slot=False):
+            timestamp = datetime.now().strftime('%d.%m.%Y_%H.%M.%S')
+            
+            if is_slot:
+                backupFilename = f'backup_{dataType}({self.slot}_{self.trainerId})_{timestamp}.json'
+            else:
+                baseFilename = f'base_{dataType}({self.trainerId})'
+                if any(f.startswith(baseFilename) for f in os.listdir(backupDirectory)):
+                    backupFilename = f'backup_{dataType}({self.trainerId})_{timestamp}.json'
                 else:
-                    shutil.copy(file, baseSlotFilepath)
-                    cFormatter.print(Color.GREEN, f'Backup {baseSlotFilename} created.')
+                    backupFilename = baseFilename + f'_{timestamp}.json'
+                
+            backupFilepath = os.path.join(backupDirectory, backupFilename)
+            self.__fh_writeJSONData(data, backupFilepath, showSuccess=False)
+            fh_appendMessageBuffer(Color.GREEN, f'Backup created: {backupFilename}')
 
+        def __fh_backupFile(sourceFilename, dstFilename):
+            timestamp = datetime.now().strftime('%Y.%m.%d_%H.%M.%S')
+            backupFilename = f'backup_{dstFilename}_{timestamp}.json'
+            backupFilepath = os.path.join(backupDirectory, backupFilename)
+            shutil.copy(sourceFilename, backupFilepath)
+            fh_appendMessageBuffer(Color.GREEN, f'Backup {backupFilename} created.')
 
-        cFormatter.print(Color.GREEN, 'Backup created.')
+        if offline:
+            # Backup trainer.json
+            if os.path.exists('trainer.json'):
+                __fh_backupFile('trainer.json', f'trainer({self.trainerId})')
+            else:
+                cFormatter.print(Color.RED, 'No trainer.json found to backup.')
+
+            # Backup slot_{self.slot}.json
+            slot_filename = f'slot_{self.slot}.json'
+            if os.path.exists(slot_filename):
+                __fh_backupFile(slot_filename, f'slot_{self.slot}({self.trainerId})')
+            else:
+                cFormatter.print(Color.RED, f'No {slot_filename} found to backup.')
+
+        else:
+            # Backup gameData
+            if gameData is not None:
+                __fh_backupData(gameData, 'gameData')
+
+            # Backup slotData
+            if slotData is not None:
+                __fh_backupData(slotData, 'slotData', is_slot=True)
 
     @handle_operation_exceptions
     def f_restoreBackup(self) -> None:
@@ -1652,11 +1654,10 @@ class Rogue:
             >>> example_instance = ExampleClass()
             >>> example_instance.f_editMoney()
         """
-        print('test')
         saveData = self.__fh_loadDataFromJSON(f'slot_{self.slot}.json')
 
         if saveData["gameMode"] == 3:
-            cFormatter.print(Color.CRITICAL, 'Cannot edit this property on daily runs!')
+            fh_appendMessageBuffer(Color.CRITICAL, 'Cannot edit this property on daily runs!')
             return
 
         header = cFormatter.fh_centerText(' Edit Money ', 30, '-')
@@ -1708,8 +1709,9 @@ class Rogue:
                 {'1': 'Replace'}, zeroCancel=True
             )
         else:
+            cFormatter.print(Color.INFO, f'You already have ({currentAmount}) eggs')
             userInput = fh_getChoiceInput(
-                f'You already have [{currentAmount}] eggs - should we add or replace?',
+                'Should we add or replace?',
                 {'1': 'Replace', '2': 'Add'}, zeroCancel=True
             )
 
@@ -1720,12 +1722,12 @@ class Rogue:
         tier = int(fh_getChoiceInput(
             'What tier should the eggs have?',
             {'1': 'Common', '2': 'Rare', '3': 'Epic', '4': 'Legendary', '5': 'Manaphy'},
-            zeroCancel=True
+            zeroCancel=True, renderMenu=True
         )) - 1
 
         gachaType = int(fh_getChoiceInput(
             'What gacha type do you want to have?',
-            {'1': 'MoveGacha', '2': 'LegendaryGacha', '3': 'ShinyGacha'}, zeroCancel=True
+            {'1': 'MoveGacha', '2': 'LegendaryGacha', '3': 'ShinyGacha'}, zeroCancel=True, rendermenu=True
         )) - 1  # Adjusting for 0-based index
 
         hatchWaves = fh_getIntegerInput('After how many waves should they hatch?', 0, 100, zeroCancel=True)
