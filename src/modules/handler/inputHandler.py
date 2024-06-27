@@ -95,7 +95,7 @@ def fh_getIntegerInput(promptMessage: str, minBound: int, maxBound: int, zeroCan
 
     while True:
         userInput = input(fullPrompt).strip()
-        if userInput.lower() == 'exit' or userInput.lower() == 'cancel' or userInput == '' or userInput == ' ':
+        if userInput.lower() == 'exit' or userInput.lower() == 'cancel' or userInput == '' or userInput == ' ' or userInput is None:
             raise OperationCancel()
         if userInput == '0':
             if zeroCancel:

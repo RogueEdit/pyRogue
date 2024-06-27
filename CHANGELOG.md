@@ -1,4 +1,3 @@
-Currently work in progres...
 # V0.3.3
 
 ## Naming Convention
@@ -54,32 +53,33 @@ Currently work in progres...
     - `f_editAccountStats(retested:works)` <Can now either random all, set one by choice (With AutoComplete by ID or Name) or loop over all one by one>
     - `f_editPokeballs(tested:works)` <Can now skip pokes, edit single ones or all> <Can now also skip choices>
     - `f_editTickets(tested:works)` <Works now same as pokeballs>
-    - `f_restoreBackup(tested:works)` 
+    - `f_restoreBackup(tested:works)` <Can now restore slot backups aswell>
     - `f_editMoney(tested:works)` <Adjusted to new input handlers>
     - `f_editHatchWaves(tested:works)` <Adjusted to new input handlers>
     - `f_changeSaveSlot(tested:works)` <Can now change Slots directly>
     - `f_submenuEditor(tested:works)` - <Can now use Autocomplete and 0Cancel>
     - `f_editBiome(tested:works)` <Can now type ID or Biome for autocomplete = case-insensitive, with autocompleter>
     - `f_addEggsGenerator(tested:works)` <Rewritten, fixed ID, better input logic>
-    - `f_addCandies(tested:works)` 
+    - `f_addCandies(tested:works)` <>
     - `f_editVouchers(tested:works)` <Can now either add single ones with autocomplete with ID/Name = case-insensitive, multiple in a loop or all at once.>
     - `f_editAchivements(tested:works)` <Can now either add single ones with autocomplete with ID/Name = case-insensitive, multiple in a loop or all at once.>
     - `f_editGamemodes(tested:works)` <Can now either add single ones with autocomplete with ID/Name = case-insensitive, multiple in a loop or all at once.>
-
-    - `edit_starter_separate(wip)` 
-    - `edit_pokemon_party(wip)`  https://github.com/RogueEdit/onlineRogueEditor/pull/152
+    - `f_editPokemonParty(tested:works)`  <Now can see stats and everything, prompted as other loops>
     - `f_unlockStarters(tested:works)` <Now assigning perfect calculated IDs for all forms>
+    - `f_editStarters(tested:works)`  <Same as above + new input logic>
     - `f_createBackup(tested:works)` <now creates backups for slots aswell>
     - `f_restoreBackup(tested:works)` <Should automatically recognize slot backups too>
-    - `f_logout()` 
 
     - Simplified:
       - `f_updateAllToServer(wip)`
       - `get_trainer_data(wip)`
       - `getSlotData(wip)`
-    - soon more.. all existing functions!
+      - `f_logout()`
+      ^ Postponed.
 
 
 # Removed
 - print_pokedex(), print_printBiomes(), print_moves(), print_natures(), print_vouchers(), print_natureSlot()
   - replaced with fh_printEnum(type)
+
+# And countless small bugfixes..

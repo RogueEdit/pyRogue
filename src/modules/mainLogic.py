@@ -285,20 +285,34 @@ class Rogue:
         """     
         while True:
             try:
-                self.slot = fh_getIntegerInput('Enter Slot', 1, 5, False)
+                slot = fh_getIntegerInput('Enter Slot', 1, 5, zeroCancel=False, softCancel=False, allowSkip=False)
 
                 if self.editOffline:
+
+                    if not os.path.exists('./trainer.json'):
+                        cFormatter.print(Color.INFO, 'Trainer.json does not exist.')
+                        continue
+                    
+                    if not os.path.exists(f'./slot_{slot}.json'):
+                        cFormatter.print(Color.INFO, f'slot_{slot} does not exist.')
+                        continue
+
                     gameData = self.__fh_loadDataFromJSON('trainer.json')
                     slotData = self.__fh_loadDataFromJSON(f'slot_{slot}.json')
+
                     self.trainerId = gameData.get('trainerId')
                     self.secretId = gameData.get('secretId')
+                    self.slot = slot
                 else:
                     gameData = self.f_getGameData()
                     slotData = self.f_getSlotData(slot)
+
                     self.trainerId = gameData.get('trainerId')
                     self.secretId = gameData.get('secretId')
+                    self.slot = slot
 
                 self.f_createBackup(gameData, slotData)
+                break
             except OperationCancel:
                 cFormatter.print(Color.INFO, 'Wrong input.')
                 continue
