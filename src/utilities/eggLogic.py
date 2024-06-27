@@ -159,10 +159,8 @@ from typing import List, Tuple, Dict
 
 # Constant from game source code
 EGG_SEED: int = 1073741824
-
-# List of possible gacha types & List of possible egg tiers
 GACHA_TYPES: List[str] = ['MoveGacha', 'LegendaryGacha', 'ShinyGacha', 'SAME_SPECIES_EGG', 'EVENT'],
-eggTiers: List[str] = ['Common', 'Rare', 'Epic', 'Legendary', 'Manaphy']
+EGG_TIERS: List[str] = ['Common', 'Rare', 'Epic', 'Legendary', 'Manaphy']
 
 #From Sourcecode
 def getIDBoundarys(tier: int) -> Tuple[int, int]:

@@ -746,7 +746,7 @@ class Rogue:
         """
         gameData: dict = self.__fh_loadDataFromJSON('trainer.json')
 
-        header = cFormatter.fh_centerText('Unlock All Starter', 30, '-')
+        header = cFormatter.fh_centerText('Unlock All Starter', 55, '-')
         cFormatter.print(Color.DEBUG, header)
 
         choices = {
@@ -794,8 +794,7 @@ class Rogue:
             })
 
         self.__fh_writeJSONData(gameData, 'trainer.json')
-        fh_appendMessageBuffer(Color.GREEN, 'Data updated successfully.')
-        raise OperationCancel('Written changes for all starters.')
+        raise OperationSuccessful('Written changes for all starters.')
     
     @handle_operation_exceptions
     def f_editStarter(self, dexId: Optional[str] = None) -> None:
@@ -826,7 +825,7 @@ class Rogue:
         """
 
         gameData: dict = self.__fh_loadDataFromJSON('trainer.json')
-        header = cFormatter.fh_centerText('Edit Starter', 30, '-')
+        header = cFormatter.fh_centerText('Edit Starter', 55, '-')
         cFormatter.print(Color.DEBUG, header)
         self.fh_completerInfo()
 
@@ -969,9 +968,9 @@ class Rogue:
 
         if changed:
             self.__fh_writeJSONData(gameData, 'trainer.json')
-            fh_appendMessageBuffer(Color.YELLOW, 'Changes saved:')
+            cFormatter.print(Color.YELLOW, 'Changes saved:')
             for item in changedItems:
-                fh_appendMessageBuffer(Color.INFO, item)
+                cFormatter.print(Color.INFO, item)
             raise OperationSuccessful('Successfully written Starter Stats.')
         else:
             fh_appendMessageBuffer(Color.YELLOW, 'No changes made.')
@@ -1005,7 +1004,7 @@ class Rogue:
         """
         gameData = self.__fh_loadDataFromJSON('trainer.json')
 
-        header = cFormatter.fh_centerText('Edit Egg-Tickets', 30, '-')
+        header = cFormatter.fh_centerText('Edit Egg-Tickets', 55, '-')
         cFormatter.print(Color.DEBUG, header)
 
         voucherTypes = {
@@ -1041,9 +1040,9 @@ class Rogue:
                 break
         if changed:
             self.__fh_writeJSONData(gameData, 'trainer.json')
-            fh_appendMessageBuffer(Color.YELLOW, 'Changes saved:')
+            cFormatter.print(Color.YELLOW, 'Changes saved:')
             for item in changedItems:
-                fh_appendMessageBuffer(Color.YELLOW, item)
+                cFormatter.print(Color.YELLOW, item)
             raise OperationSuccessful('Successfully written Vouchers.')
         else:
             fh_appendMessageBuffer(Color.YELLOW, 'No changes made.')
@@ -1243,11 +1242,11 @@ class Rogue:
         currentAmount = gameData.get('achvUnlocks', {})
 
         if len(currentAmount) >= len(keysToUpdate):
+            fh_appendMessageBuffer(Color.INFO, 'You already have all achievements.')
             cFormatter.print(Color.INFO, 'You already have all achievements.')
             return
         
-        fh_appendMessageBuffer(Color.INFO, 'You already have all achievements.')
-        header = cFormatter.fh_centerText('Edit Achievements', 30, '-')
+        header = cFormatter.fh_centerText('Edit Achievements', 55, '-')
         cFormatter.print(Color.DEBUG, header)
 
 
@@ -1300,9 +1299,9 @@ class Rogue:
 
         if changed:
             self.__fh_writeJSONData(gameData, 'trainer.json', showSuccess=False)
-            fh_appendMessageBuffer(Color.YELLOW, 'Changes saved:')
+            cFormatter.print(Color.YELLOW, 'Changes saved:')
             for key, value in changedItems:
-                fh_appendMessageBuffer(Color.INFO, f'Added {key} with timestamp {value}.')
+                cFormatter.print(Color.INFO, f'Added {key} with timestamp {value}.')
             raise OperationSuccessful('Successfully updated achievements.')
         else:
             fh_appendMessageBuffer(Color.YELLOW, 'No changes made.')
@@ -1336,11 +1335,12 @@ class Rogue:
         currentAmount = gameData.get('voucherUnlocks', {})
 
         if len(currentAmount) >= len(keysToUpdate):
+            fh_appendMessageBuffer(Color.INFO, 'You already have all vouchers.')
             cFormatter.print(Color.INFO, 'You already have all vouchers.')
             return
         
-        fh_appendMessageBuffer(Color.INFO, 'You already have all vouchers.')
-        header = cFormatter.fh_centerText('Edit Vouchers', 30, '-')
+        header = cFormatter.fh_centerText('Edit Vouchers', 55, '-')
+        cFormatter.print(Color.INFO, 'You already have all vouchers.')
         cFormatter.print(Color.DEBUG, header)
     
         
@@ -1393,10 +1393,10 @@ class Rogue:
 
         if changed:
             self.__fh_writeJSONData(gameData, 'trainer.json', showSuccess=False)
-            fh_appendMessageBuffer(Color.YELLOW, 'Changes saved:')
+            cFormatter.print(Color.YELLOW, 'Changes saved:')
             for key, value in changedItems:
-                fh_appendMessageBuffer(Color.INFO, f'Added {key} with timestamp {value}.')
-            raise OperationSuccessful('Successfully updated vouchers.')
+                cFormatter.print(Color.INFO, f'Added {key} with timestamp {value}.')
+            raise OperationSuccessful('Successfully updated vouchers.  For more information scroll up.')
         else:
             fh_appendMessageBuffer(Color.YELLOW, 'No changes made.')
 
@@ -1429,12 +1429,13 @@ class Rogue:
 
         gameData = self.__fh_loadDataFromJSON('trainer.json')
 
-        header = cFormatter.fh_centerText('Add Candy', 30, '-')
-
+        header = cFormatter.fh_centerText('Add Candy', 55, '-')
+        cFormatter.print(Color.DEBUG, header)
+        self.fh_completerInfo()
+        
         changedItems = []
         changed = False
 
-        cFormatter.print(Color.DEBUG, header)
         while True:
             try:
                 while True:
@@ -1510,7 +1511,7 @@ class Rogue:
         biomeData = self.appData.biomesByID
 
         # Prompt user for biome input
-        header = cFormatter.fh_centerText('Edit Biome', 30, '-')
+        header = cFormatter.fh_centerText('Edit Biome', 55, '-')
         cFormatter.print(Color.DEBUG, header)
         self.legacy_printBiomes()
         self.fh_completerInfo()
@@ -1563,7 +1564,7 @@ class Rogue:
             cFormatter.print(Color.CRITICAL, 'Cannot edit this property on daily runs!')
             return
         
-        header = cFormatter.fh_centerText(' Edit Pokeballs ', 30, '-')
+        header = cFormatter.fh_centerText(' Edit Pokeballs ', 55, '-')
         cFormatter.print(Color.DEBUG, header)
 
         pokeballTypes = {
@@ -1607,7 +1608,7 @@ class Rogue:
             fh_appendMessageBuffer(Color.YELLOW, 'Changes saved:')
             for item in changedItems:
                 fh_appendMessageBuffer(Color.INFO, item)
-            raise OperationSuccessful('Successfully written Pokeballs.')
+            raise OperationSuccessful('Successfully written Pokeballs. For more information scroll up.')
         else:
             fh_appendMessageBuffer(Color.YELLOW, 'No changes made.')
 
@@ -1639,7 +1640,7 @@ class Rogue:
             fh_appendMessageBuffer(Color.CRITICAL, 'Cannot edit this property on daily runs!')
             return
 
-        header = cFormatter.fh_centerText(' Edit Money ', 30, '-')
+        header = cFormatter.fh_centerText(' Edit Money ', 55, '-')
         cFormatter.print(Color.DEBUG, header)
 
         prompt = 'How many Poke-Dollars do you want? '
@@ -1678,7 +1679,7 @@ class Rogue:
         currentEggs = trainerData.get('eggs', [])
         currentAmount = len(currentEggs)
 
-        header = cFormatter.fh_centerText(' Egg Generator ', 30, '-')
+        header = cFormatter.fh_centerText(' Egg Generator ', 55, '-')
         cFormatter.print(Color.DEBUG, header)
 
 
@@ -1706,7 +1707,7 @@ class Rogue:
 
         gachaType = int(fh_getChoiceInput(
             'What gacha type do you want to have?',
-            {'1': 'MoveGacha', '2': 'LegendaryGacha', '3': 'ShinyGacha'}, zeroCancel=True, rendermenu=True
+            {'1': 'MoveGacha', '2': 'LegendaryGacha', '3': 'ShinyGacha'}, zeroCancel=True, renderMenu=True
         )) - 1  # Adjusting for 0-based index
 
         hatchWaves = fh_getIntegerInput('After how many waves should they hatch?', 0, 100, zeroCancel=True)
@@ -1763,7 +1764,7 @@ class Rogue:
         """
         gameData = self.__fh_loadDataFromJSON('trainer.json')
 
-        header = cFormatter.fh_centerText(' Edit Account Stats ', 30, '-')
+        header = cFormatter.fh_centerText(' Edit Account Stats ', 55, '-')
         cFormatter.print(Color.DEBUG, header)
 
         encounters = random.randint(100000, 200000)
@@ -1812,7 +1813,6 @@ class Rogue:
             'manual': 'Manually enter values for a single attribute',
             'loop': 'Manually enter values for all attributes in a loop'
         }
-        cFormatter.fh_printSeperators(30, '-')
         action = fh_getChoiceInput('Choose which attribute to modify. You can type either ID or Name.', choices, renderMenu=True, zeroCancel=True)
         cFormatter.fh_printSeperators(30, '-')
         changed = False
@@ -1866,10 +1866,10 @@ class Rogue:
 
         if changed:
             self.__fh_writeJSONData(gameData, 'trainer.json')
-            fh_appendMessageBuffer(Color.YELLOW, 'Changes saved:')
+            cFormatter.print(Color.YELLOW, 'Changes saved:')
             for item in changedItems:
-                fh_appendMessageBuffer(Color.INFO, item)
-            raise OperationSuccessful('Successfully written Account Stats.')
+                cFormatter.print(Color.INFO, item)
+            raise OperationSuccessful('Successfully written Account Stats. For more information scroll up.')
         else:
             fh_appendMessageBuffer(Color.YELLOW, 'No changes made.')
 
@@ -1899,8 +1899,9 @@ class Rogue:
         """
         trainerData = self.__fh_loadDataFromJSON('trainer.json')
 
-        header = cFormatter.fh_centerText(' Edit Hatch Durations ', 30, '-')
+        header = cFormatter.fh_centerText(' Edit Hatch Durations ', 55, '-')
         cFormatter.print(Color.INFO, header)
+        changed = False
 
         if 'eggs' in trainerData and trainerData['eggs']:
             minBound = 0
@@ -1914,11 +1915,16 @@ class Rogue:
 
             # Write updated trainer_data to 'trainer.json'
             self.__fh_writeJSONData(trainerData, 'trainer.json')
-            raise OperationSuccessful(f'Set hatch duration of your eggs to {hatchWaves}')
+            changed = True
         else:
             fh_appendMessageBuffer(Color.INFO, 'You have no eggs to hatch.')
             return
-
+        
+        if changed:
+            raise OperationSuccessful(f'Egg-hatchwaves set to {hatchWaves}')
+        else:
+            fh_appendMessageBuffer(Color.YELLOW, 'No changes made.')
+            
     @handle_operation_exceptions
     def f_submenuItemEditor(self):
         from modules import ModifierEditor
@@ -1942,13 +1948,11 @@ class Rogue:
                         
                         if os.path.exists(filename):
                             self.slot = newSlot
-                            raise OperationSuccessful(f'Changed slot to {newSlot}')
                         else:
                             cFormatter.print(Color.ERROR, f'File {filename} does not exist. Please select another slot.')
-                    else:
-                        self.f_getGameData(newSlot)
             else:
                 self.f_getSlotData(newSlot)
+            raise OperationSuccessful(f'Changed slot to slot_{newSlot}.json')
  
     @handle_operation_exceptions
     def fh_printEnums(self, enum_type: str) -> None:
@@ -2011,7 +2015,6 @@ class Rogue:
 
     @staticmethod
     def fh_completerInfo():
-        cFormatter.fh_printSeperators(30, '-')
         cFormatter.print(Color.DEBUG, 'You can type either the name or ID. 0 will cancel, but save done changes.')
         cFormatter.print(Color.DEBUG, 'Type `exit` or `cancel` or nothing to cancel without safes.')
 

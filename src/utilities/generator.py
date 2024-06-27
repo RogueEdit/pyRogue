@@ -3123,35 +3123,35 @@ class Generator:
 
         self.maxId: int = max(self.natureIDs)  # Calculate max ID
 
-    def __nature_to_json(self) -> str:
+    def __natureToJSON(self) -> str:
         nature_dict: dict = {name: id for name, id in zip(self.natureNames, self.natureIDs)}
         return json.dumps({'natures': nature_dict}, indent=4)
     
-    def __generate_no_passive_json(self) -> str:
+    def __noPassiveToJSON(self) -> str:
         return json.dumps({'noPassive': NoPassive.NO_PASSIVE_DICT.value}, indent=4)
     
-    def __generate_biomes_json(self) -> str:
+    def __biomesToJSON(self) -> str:
         return json.dumps({'biomes': Biome.BIOMES_DICT.value}, indent=4)
     
-    def __generate_vouchers_json(self) -> str:
+    def __vouchersToJSON(self) -> str:
         return json.dumps({'vouchers': Vouchers.VOUCHERS_DICT.value}, indent=4)
     
-    def __natureSlot_to_json(self) -> str:
+    def __natureSlotToJSON(self) -> str:
         return json.dumps({'natureSlot': NatureSlot.NATURE_SLOT.value}, indent=4)
     
-    def __achievments_to_json(self) -> str:
+    def __achievmentsToJSON(self) -> str:
         return json.dumps({'achvUnlocks': AchievementEnum.ACHIEVEMENTS_DICT.value}, indent=4)
     
-    def __pokemons_to_json(self) -> str:
+    def __pokemonsToJSON(self) -> str:
         return json.dumps({'dex': PokemonEnum.POKEMON_DICT.value}, indent=4)
     
-    def __starters_to_json(self) -> str:
+    def __startersToJSON(self) -> str:
         return json.dumps({'dex': StarterEnum.STARTER_DICT.value}, indent=4)
     
-    def __moves_to_json(self) -> str:
+    def __movesToJSON(self) -> str:
         return json.dumps({'moves': MovesEnum.MOVES_DICT.value}, indent=4)
 
-    def __formIDs_to_json(self) -> str:
+    def __formIDsToJSON(self) -> str:
         return json.dumps({'hasForms': formIDEnum.FORMID_DICT.value}, indent=4)
     
     def __fh_saveToFile(self, data: str, filename: str) -> None:
@@ -3193,34 +3193,34 @@ class Generator:
             - utilities: Custom module for colored printing and logging functionalities.
         """
         try:
-            natureJSON: str = self.__nature_to_json()
+            natureJSON: str = self.__natureToJSON()
             self.__fh_saveToFile(natureJSON, 'natures.json')
 
-            noPassiveJSON: str = self.__generate_no_passive_json()
+            noPassiveJSON: str = self.__noPassiveToJSON()
             self.__fh_saveToFile(noPassiveJSON, 'noPassive.json')
 
-            biomesJSON: str = self.__generate_biomes_json()
+            biomesJSON: str = self.__biomesToJSON()
             self.__fh_saveToFile(biomesJSON, 'biomes.json')
 
-            vouchersJSON: str = self.__generate_vouchers_json()
+            vouchersJSON: str = self.__vouchersToJSON()
             self.__fh_saveToFile(vouchersJSON, 'vouchers.json')
 
-            natureSlotJSON: str = self.__natureSlot_to_json()
+            natureSlotJSON: str = self.__natureSlotToJSON()
             self.__fh_saveToFile(natureSlotJSON, 'natureSlot.json')
 
-            achivementJSON: str = self.__achievments_to_json()
+            achivementJSON: str = self.__achievmentsToJSON()
             self.__fh_saveToFile(achivementJSON, 'achievements.json')
 
-            pokemonJSON: str = self.__pokemons_to_json()
+            pokemonJSON: str = self.__pokemonsToJSON()
             self.__fh_saveToFile(pokemonJSON, 'pokemon.json')
 
-            starterJSON: str = self.__starters_to_json()
+            starterJSON: str = self.__startersToJSON()
             self.__fh_saveToFile(starterJSON, 'starter.json')
 
-            movesJSON: str = self.__moves_to_json()
+            movesJSON: str = self.__movesToJSON()
             self.__fh_saveToFile(movesJSON, 'moves.json')
 
-            formIDJSON: str = self.__formIDs_to_json()
+            formIDJSON: str = self.__formIDsToJSON()
             self.__fh_saveToFile(formIDJSON, 'formIDs.json')
 
         except Exception as e:

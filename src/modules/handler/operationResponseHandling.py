@@ -18,7 +18,7 @@ def handle_operation_exceptions(func):
         except OperationSuccessful as os:
             funcName = func.__name__
             customMessage = os.args[0] if os.args else ""
-            fh_appendMessageBuffer(Color.GREEN, f'Operation {funcName} finished. {customMessage}')
+            fh_appendMessageBuffer(Color.DEBUG, f'Operation {funcName} finished. {customMessage}')
 
         except OperationError as oe:
             fh_appendMessageBuffer(Color.DEBUG, str(oe), isLogging=True)
