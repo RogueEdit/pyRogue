@@ -33,7 +33,6 @@ def handle_operation_exceptions(func):
 
         except KeyboardInterrupt:
             fh_appendMessageBuffer(Color.DEBUG, 'Keyboard-interrupt detected.')
-            raise OperationCancel()
         
         except JSONDecodeError as jde:
             funcName = func.__name__
@@ -42,7 +41,7 @@ def handle_operation_exceptions(func):
 
         except IOError as ioe:
             funcName = func.__name__
-            customMessage = f'JSON decoding error in function {funcName}: {ioe}'
+            customMessage = f'{funcName}: {ioe}'
             fh_appendMessageBuffer(Color.CRITICAL, f'Error loading data: {customMessage}', isLogging=True)
 
         except Exception as e:

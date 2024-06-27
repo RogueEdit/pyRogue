@@ -64,13 +64,7 @@ Modules/Librarys used and for what purpose exactly in each function:
 - prompt_toolkit: Building interactive command-line interfaces for user interactions.
 """
 # Import custom Exceptions
-from modules.handler import handle_operation_exceptions, OperationError, OperationSuccessful, OperationCancel, PropagateResponse, OperationSoftCancel  # noqa: F401
-from modules.handler import handle_http_exceptions, HTTPEmptyResponse  # noqa: F401
 
-from modules import handle_error_response, HeaderGenerator, config
-from utilities import Generator, EnumLoader, cFormatter, Color, Limiter, eggLogic
-
-from enum import Enum
 import json
 import random
 import os
@@ -88,6 +82,12 @@ from sys import exit
 import re
 #import zstandard as zstd
 from colorama import Style, Fore
+from modules.handler import handle_operation_exceptions, OperationError, OperationSuccessful, OperationCancel, PropagateResponse, OperationSoftCancel  # noqa: F401
+from modules.handler import handle_http_exceptions, HTTPEmptyResponse  # noqa: F401
+from modules.handler import fh_getIntegerInput, fh_getCompleterInput, fh_getChoiceInput
+from modules import handle_error_response, HeaderGenerator, config
+from utilities import Generator, EnumLoader, cFormatter, Color, Limiter, eggLogic, fh_appendMessageBuffer
+
 limiter = Limiter()
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -158,7 +158,6 @@ class Rogue:
 
         self.starterNamesById, self.biomeNamesById, self.moveNamesById, self.vouchersData, self.natureData, self.natureSlotData, self.achievementsData, self.pokemonData = self.appData.f_convertToEnums()
         self.editOffline = editOffline
-
         
         self.__fh_dump_data()
 
@@ -1047,7 +1046,7 @@ class Rogue:
             maxBound = 999
             try:
                 while True:
-                    value = self.fh_getIntegerInput(prompt, 0, maxBound, softCancel=True, allowSkip=True)
+                    value = fh_getIntegerInput(prompt, 0, maxBound, softCancel=True, allowSkip=True)
                     if value == '0':
                         raise OperationSoftCancel()  # Raise OperationSoftCancel to continue the loop
                     elif value == 'skip':
@@ -1063,12 +1062,12 @@ class Rogue:
                 break
         if changed:
             self.__fh_writeJSONData(gameData, 'trainer.json')
-            cFormatter.print(Color.YELLOW, 'Changes saved:')
+            fh_appendMessageBuffer(Color.YELLOW, 'Changes saved:')
             for item in changedItems:
-                cFormatter.print(Color.INFO, item)
+                fh_appendMessageBuffer(Color.YELLOW, item)
             raise OperationSuccessful('Successfully written Pokeballs.')
         else:
-            cFormatter.print(Color.YELLOW, 'No changes made.')
+            fh_appendMessageBuffer(Color.YELLOW, 'No changes made.')
 
     # Await response
     def f_editPokemonParty(self) -> None:
@@ -1260,7 +1259,7 @@ class Rogue:
 
 
         # Ask the user if they want to unlock all vouchers or a specific one
-        choice = self.fh_getChoiceInput(
+        choice = fh_getChoiceInput(
             promptMesage='Do you want to unlock all achievements or unlock a specific voucher?',
             choices={'1': 'All', '2': 'Specific'},
             zeroCancel=True
@@ -1287,7 +1286,7 @@ class Rogue:
             self.fh_completerInfo()
             while True:
                 try:
-                    inputValue = self.fh_getCompleterInput(
+                    inputValue = fh_getCompleterInput(
                         promptMessage='What achievement would you like?',
                         choices={**{member.name.lower(): member for member in achievementsData}, 
                                 **{str(member.value): member for member in achievementsData}},
@@ -1307,12 +1306,12 @@ class Rogue:
 
         if changed:
             self.__fh_writeJSONData(gameData, 'trainer.json')
-            cFormatter.print(Color.YELLOW, 'Changes saved:')
+            fh_appendMessageBuffer(Color.YELLOW, 'Changes saved:')
             for key, value in changedItems:
-                cFormatter.print(Color.INFO, f'Added {key} with timestamp {value}.')
+                fh_appendMessageBuffer(Color.INFO, f'Added {key} with timestamp {value}.')
             raise OperationSuccessful('Successfully updated achievements.')
         else:
-            cFormatter.print(Color.YELLOW, 'No changes made.')
+            fh_appendMessageBuffer(Color.YELLOW, 'No changes made.')
 
     @handle_operation_exceptions
     def f_editVouchers(self) -> None:
@@ -1350,7 +1349,7 @@ class Rogue:
         # Initialize keysToUpdate with entries from your enum
 
         # Ask the user if they want to unlock all vouchers or a specific one
-        choice = self.fh_getChoiceInput(
+        choice = fh_getChoiceInput(
             promptMesage='Do you want to unlock all vouchers or unlock a specific voucher?\n',
             choices={'1': 'All', '2': 'Specific'},
             zeroCancel=True
@@ -1378,7 +1377,7 @@ class Rogue:
 
             while True:
                 try:
-                    inputValue = self.fh_getCompleterInput(
+                    inputValue = fh_getCompleterInput(
                         promptMessage='What voucher would you like?',
                         choices={**{member.name.lower(): member for member in voucherData}, 
                                 **{str(member.value): member for member in voucherData}},
@@ -1398,12 +1397,12 @@ class Rogue:
 
         if changed:
             self.__fh_writeJSONData(gameData, 'trainer.json')
-            cFormatter.print(Color.YELLOW, 'Changes saved:')
+            fh_appendMessageBuffer(Color.YELLOW, 'Changes saved:')
             for key, value in changedItems:
-                cFormatter.print(Color.INFO, f'Added {key} with timestamp {value}.')
+                fh_appendMessageBuffer(Color.INFO, f'Added {key} with timestamp {value}.')
             raise OperationSuccessful('Successfully updated vouchers.')
         else:
-            cFormatter.print(Color.YELLOW, 'No changes made.')
+            fh_appendMessageBuffer(Color.YELLOW, 'No changes made.')
 
     @handle_operation_exceptions
     def f_addCandies(self) -> None:
@@ -1434,7 +1433,7 @@ class Rogue:
 
         gameData = self.__fh_loadDataFromJSON('trainer.json')
 
-        inputValue = self.fh_getCompleterInput(
+        inputValue = fh_getCompleterInput(
             promptMessage='Write either the ID or the Name of the Pokemon: ',
             choices={**{member.name.lower(): member for member in self.appData.starterNameByID}, 
                      **{str(member.value): member for member in self.appData.starterNameByID}},
@@ -1443,7 +1442,7 @@ class Rogue:
         pokeName = inputValue.name.lower()
         currentCandies = gameData["starterData"][inputValue.value]["candyCount"]
         # Prompt for number of candies using fh_getIntegerInput method
-        candies = self.fh_getIntegerInput(
+        candies = fh_getIntegerInput(
             promptMessage=f'How many candies do you want to add?\n You currently have {currentCandies} on {inputValue.name.capitalize()}. (0 to cancel):',
             minBound=0,
             maxBound=999,  # Adjust maximum candies as needed
@@ -1493,7 +1492,7 @@ class Rogue:
         cFormatter.print(Color.INFO, f'\nCurrent Biome {currentBiomeName}.')
         while True:
             try:
-                inputValue = self.fh_getCompleterInput(
+                inputValue = fh_getCompleterInput(
                     promptMessage='Choose which Biome you like. You can either type the ID or Name',
                     choices={**{member.name.lower(): member for member in biomeData}, 
                             **{str(member.value): member for member in biomeData}},
@@ -1556,7 +1555,7 @@ class Rogue:
             maxBound = 999
             try:
                 while True:
-                    value = self.fh_getIntegerInput(prompt, 0, maxBound, softCancel=True, allowSkip=True)
+                    value = fh_getIntegerInput(prompt, 0, maxBound, softCancel=True, allowSkip=True)
                     if value == '0':
                         raise OperationSoftCancel()  # Raise OperationSoftCancel to continue the loop
                     elif value == 'skip':
@@ -1572,12 +1571,12 @@ class Rogue:
                 break
         if changed:
             self.__fh_writeJSONData(gameData, f'slot_{self.slot}.json')
-            cFormatter.print(Color.YELLOW, 'Changes saved:')
+            fh_appendMessageBuffer(Color.YELLOW, 'Changes saved:')
             for item in changedItems:
-                cFormatter.print(Color.INFO, item)
+                fh_appendMessageBuffer(Color.INFO, item)
             raise OperationSuccessful('Successfully written Pokeballs.')
         else:
-            cFormatter.print(Color.YELLOW, 'No changes made.')
+            fh_appendMessageBuffer(Color.YELLOW, 'No changes made.')
 
     @handle_operation_exceptions
     def f_editMoney(self) -> None:
@@ -1609,7 +1608,7 @@ class Rogue:
             return
 
         prompt = 'How many Poke-Dollars do you want? '
-        choice = self.fh_getIntegerInput(prompt, 0, float('inf'), zeroCancel=True)
+        choice = fh_getIntegerInput(prompt, 0, float('inf'), zeroCancel=True)
         saveData["money"] = choice
         self.__fh_writeJSONData(saveData, f'slot_{self.slot}.json')
         raise OperationSuccessful(f'Written {choice} as money value to to local .json.')
@@ -1645,38 +1644,38 @@ class Rogue:
         currentAmount = len(currentEggs)
 
         if currentAmount >= 99:
-            userInput = self.fh_getChoiceInput(
+            userInput = fh_getChoiceInput(
                 'You already have the total max of eggs, replace eggs?',
                 {'1': 'Replace'}, zeroCancel=True
             )
         else:
-            userInput = self.fh_getChoiceInput(
+            userInput = fh_getChoiceInput(
                 f'You already have [{currentAmount}] eggs - should we add or replace?',
                 {'1': 'Replace', '2': 'Add'}, zeroCancel=True
             )
 
         maxAmount = 99 - currentAmount if userInput == '2' else 99
 
-        count = int(self.fh_getIntegerInput('How many eggs do you want to generate?', 0, maxAmount, zeroCancel=True))
+        count = int(fh_getIntegerInput('How many eggs do you want to generate?', 0, maxAmount, zeroCancel=True))
 
-        tier = int(self.fh_getChoiceInput(
+        tier = int(fh_getChoiceInput(
             'What tier should the eggs have?',
             {'1': 'Common', '2': 'Rare', '3': 'Epic', '4': 'Legendary', '5': 'Manaphy'},
             zeroCancel=True
         )) - 1
 
-        gachaType = int(self.fh_getChoiceInput(
+        gachaType = int(fh_getChoiceInput(
             'What gacha type do you want to have?',
             {'1': 'MoveGacha', '2': 'LegendaryGacha', '3': 'ShinyGacha'}, zeroCancel=True
         )) - 1  # Adjusting for 0-based index
 
-        hatchWaves = self.fh_getIntegerInput('After how many waves should they hatch?', 0, 100, zeroCancel=True)
+        hatchWaves = fh_getIntegerInput('After how many waves should they hatch?', 0, 100, zeroCancel=True)
         
         # Get hidden ability preference as boolean
-        isShiny: bool = self.fh_getChoiceInput('Do you want it to be shiny?', {'1': 'Yes', '2': 'No'}, zeroCancel=True) == '1'
+        isShiny: bool = fh_getChoiceInput('Do you want it to be shiny?', {'1': 'Yes', '2': 'No'}, zeroCancel=True) == '1'
 
         # Get hidden ability preference as boolean
-        variantTier: bool = self.fh_getChoiceInput('Do you want the hidden ability to be unlocked?', {'1': 'Yes', '2': 'No'}, zeroCancel=True) == '1'
+        variantTier: bool = fh_getChoiceInput('Do you want the hidden ability to be unlocked?', {'1': 'Yes', '2': 'No'}, zeroCancel=True) == '1'
 
         eggDictionary = eggLogic.constructEggs(tier, gachaType, hatchWaves, count, isShiny, variantTier)
 
@@ -1771,7 +1770,7 @@ class Rogue:
             'loop': 'Manually enter values for all attributes in a loop'
         }
         cFormatter.fh_printSeperators(30, '-')
-        action = self.fh_getChoiceInput('Choose which attribute to modify. You can type either ID or Name.', choices, renderMenu=True, zeroCancel=True)
+        action = fh_getChoiceInput('Choose which attribute to modify. You can type either ID or Name.', choices, renderMenu=True, zeroCancel=True)
         cFormatter.fh_printSeperators(30, '-')
         changed = False
         changedItems = []
@@ -1792,14 +1791,14 @@ class Rogue:
             self.fh_completerInfo()
             while True:
                 try:
-                    inputValue = self.fh_getCompleterInput(
+                    inputValue = fh_getCompleterInput(
                         'Choose attribute to edit:',
                         {**optionList, **nameToKey},
                         softCancel=True
                     )
 
                     promptMessage = f'Enter new value for {inputValue} (Current: {gameData["gameStats"].get(inputValue, 0)}): '
-                    newValue = self.fh_getIntegerInput(promptMessage, 0, 999999, softCancel=True)
+                    newValue = fh_getIntegerInput(promptMessage, 0, 999999, softCancel=True)
 
                     gameData["gameStats"][inputValue] = newValue
                     changedItems.append(f"{inputValue}: {newValue}")
@@ -1814,7 +1813,7 @@ class Rogue:
                 try:
                     while True:
                         promptMessage = f'Enter new value for {key} ({gameData["gameStats"].get(key, 0)}): '
-                        newValue = self.fh_getIntegerInput(promptMessage, 0, 999999, softCancel=True)
+                        newValue = fh_getIntegerInput(promptMessage, 0, 999999, softCancel=True)
                         gameData["gameStats"][key] = newValue
                         changedItems.append(f"{key}: {newValue}")
                         changed = True
@@ -1824,12 +1823,12 @@ class Rogue:
 
         if changed:
             self.__fh_writeJSONData(gameData, 'trainer.json')
-            cFormatter.print(Color.YELLOW, 'Changes saved:')
+            fh_appendMessageBuffer(Color.YELLOW, 'Changes saved:')
             for item in changedItems:
-                cFormatter.print(Color.INFO, item)
+                fh_appendMessageBuffer(Color.INFO, item)
             raise OperationSuccessful('Successfully written Account Stats.')
         else:
-            cFormatter.print(Color.YELLOW, 'No changes made.')
+            fh_appendMessageBuffer(Color.YELLOW, 'No changes made.')
 
     @handle_operation_exceptions
     def f_editHatchWaves(self) -> None:
@@ -1862,7 +1861,7 @@ class Rogue:
             maxBound = 99
             eggAmount = len(trainerData['eggs'])
             prompt = f'You currently have [{eggAmount}] eggs - after how many waves should they hatch?'
-            hatchWaves = self.fh_getIntegerInput(prompt, minBound, maxBound, zeroCancel=True)
+            hatchWaves = fh_getIntegerInput(prompt, minBound, maxBound, zeroCancel=True)
 
             for egg in trainerData['eggs']:
                 egg["hatchWaves"] = hatchWaves
@@ -1883,7 +1882,7 @@ class Rogue:
     @handle_operation_exceptions
     def f_changeSaveSlot(self):
         while True:
-            newSlot = self.fh_getIntegerInput(
+            newSlot = fh_getIntegerInput(
                 'Select a slot: ', 1, 5,
                 zeroCancel=True
             )
@@ -1905,163 +1904,6 @@ class Rogue:
             else:
                 self.f_getSlotData(newSlot)
 
-    @staticmethod
-    def fh_getChoiceInput(promptMesage: str, choices: dict, renderMenu: bool = False, zeroCancel: bool=False, softCancel:bool = False) -> str:
-        """
-        Args:
-        - promptMesage (str): The prompt message to display.
-        - choices (dict): The dictionary containing choice options.
-        - renderMenu (bool): If True, render the menu with line breaks for readability.
-        - zeroCancel (bool): If True, allow raise cancellation with '0' interrupting the operation and save.
-        - softCancel (bool): If True, allow soft cancellation with '0' interrupting the operation but allow saving.
-
-        Helper method to get a validated choice input from the user.
-
-        Raises:
-        - OperationCancel()
-        - OperationSoftCancel()
-        - ValueError()
-
-        Returns:
-        - str: The validated choice key.
-        - or any Raise depending on setup.
-        """
-        if renderMenu:
-            actions = "\n".join([f'{idx + 1}: {desc}' for idx, desc in enumerate(choices.values())])
-            fullPrompt = f'{promptMesage}\n{actions}\nSelect a option (0: Cancel): '
-        else:
-            actions = " | ".join([f'{idx + 1}: {desc}' for idx, desc in enumerate(choices.values())])
-            if zeroCancel or softCancel:
-                fullPrompt = f'{promptMesage} (0: Cancel | {actions}): '
-            else:
-                fullPrompt = f'{promptMesage} ({actions}): '
-
-        while True:
-            userInput = input(fullPrompt).strip()
-            if userInput.lower() == 'exit' or userInput.lower() == 'cancel' or userInput == '':
-                raise OperationCancel()
-            if userInput == '0':
-                if zeroCancel:
-                    raise OperationCancel()
-                if softCancel:
-                    raise OperationSoftCancel()
-                
-            # If no cancel or skip is requested
-            if userInput.isdigit():
-                idx = int(userInput) - 1
-                if 0 <= idx < len(choices):
-                    return list(choices.keys())[idx]
-                
-            raise ValueError(f'{userInput}')
-
-    @staticmethod
-    def fh_getIntegerInput(promptMessage: str, minBound: int, maxBound: int, zeroCancel: bool=False, softCancel: bool=False, allowSkip: bool=False) -> int:
-        """
-        Args:
-        - prompt (str): The prompt message to display.
-        - minBound (int): The minimum valid value.
-        - maxBound (int): The maximum valid value.
-        - zeroCancel (bool): If True, allow raise cancellation with '0' interrupting the operation and save.
-        - softCancel (bool): If True, allow soft cancellation with '0' interrupting the operation but allow saving.
-        - allowSkip (bool): If True, returns 'skip' 
-        Helper method to get a validated integer input from the user.
-
-
-        Raises:
-        - OperationCancel()
-        - OperationSoftCancel()
-        - ValueError()
-            
-        Returns:
-        - int: The validated integer input.
-        - or any Raise depending on setup.
-        """
-        if zeroCancel or softCancel or allowSkip:
-            minBound = 0
-            fullPrompt = f'{promptMessage} (0: Cancel | 1 - {maxBound} | "skip"): ' if allowSkip else f'{promptMessage} (0: Cancel | 1 - {maxBound}): '
-        else:
-            fullPrompt = f'{promptMessage} ({minBound} - {maxBound}): '
-
-        while True:
-            userInput = input(fullPrompt).strip()
-            if userInput.lower() == 'exit' or userInput.lower() == 'cancel' or userInput == '':
-                raise OperationCancel()
-            if userInput == '0':
-                if zeroCancel:
-                    raise OperationCancel()
-                elif softCancel:
-                    raise OperationSoftCancel()
-            if allowSkip and userInput.lower() == 'skip':
-                return 'skip'
-            
-            # If no cancel or skip is requested
-            if userInput.isdigit():
-                value = int(userInput)
-                if minBound <= value <= maxBound:
-                    return str(value)
-                
-            raise ValueError(f'{userInput}')
-
-    @staticmethod
-    def fh_getCompleterInput(promptMessage: str, choices: dict, zeroCancel: bool = False, softCancel: bool = False, allowSkip: bool = False) -> str:
-        """
-        Args:
-        - prompt_message (str): The prompt message to display.
-        - choices (dict): A dictionary mapping input choices to their corresponding values.
-        - zeroCancel (bool): If True, allow raise cancellation with '0' interrupting the operation and save.
-        - softCancel (bool): If True, allow soft cancellation with '0' interrupting the operation but allow saving.
-
-        Helper method to get input from the user with auto-completion support.
-
-        Raises:
-        - OperationSoftCancel()
-        - OperationCancel()
-        - ValueError()
-
-        Returns:
-        - str: The value corresponding to the validated input choice, or raises OperationCancel if the user cancels.
-        - or any Raise depending on setup.
-        """
-        fullPrompt = f'{promptMessage}: '
-        if zeroCancel or softCancel:
-            fullPrompt = f'{promptMessage} (0: Cancel): '
-
-        # Create a WordCompleter from the keys of choices dictionary
-        completer = WordCompleter(choices.keys(), ignore_case=True)
-    
-        while True:
-            try:
-                userInput = prompt(fullPrompt, completer=completer).strip()  # Ensure prompt is the correct callable
-
-                if userInput.lower() == 'exit' or userInput.lower() == 'cancel' or userInput == '':
-                    raise OperationCancel()
-                if userInput == '0':
-                    if softCancel:
-                        raise OperationSoftCancel()
-                    if zeroCancel:
-                        raise OperationCancel()
-                if allowSkip and userInput.lower() == 'skip':
-                    return 'skip'
-                
-                ## Validate the input
-                if userInput in choices:
-                    return choices[userInput]
-    
-                # Ensure inputValue is a string
-                inputValue = str(userInput).strip().lower()
-                enumMember: Optional[Enum] = None
-                if inputValue.isdigit():
-                    # Input is an ID
-                    enumMember = next((member for member in choices.values() if isinstance(member, Enum) and member.value == int(inputValue)))
-                else:
-                    # Input is a name
-                    enumMember = next((member for member in choices.values() if isinstance(member, Enum) and member.name() == inputValue))
-
-                if enumMember is not None:
-                    return enumMember
-            # only except that here, this indicates invalid input for choicecompleter
-            except StopIteration:
-                cFormatter.print(Color.INFO, 'Invalid input.')
             
     @handle_operation_exceptions
     def fh_printEnums(self, enum_type: str) -> None:

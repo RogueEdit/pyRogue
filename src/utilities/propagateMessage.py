@@ -10,17 +10,17 @@ def fh_clearMessageBuffer():
     messageBuffer = []
 
 # Function to append messages to the message buffer
-def fh_appendMessageBuffer(type, message):
+def fh_appendMessageBuffer(type, message, isLogging=False):
     global messageBuffer
-    messageBuffer.append((type, message))
+    messageBuffer.append((type, message, isLogging))
 
 # Function to print messages from the message buffer
 def fh_printMessageBuffer():
     global messageBuffer
-    for color, text in messageBuffer:
+    for color, text, isLogging in messageBuffer:
         if isinstance(color, Color):  # Check if color is a valid Color enum
             cFormatter.fh_centerText(text, length=55, fillChar='>')
-            cFormatter.print(color, f'{text}')
+            cFormatter.print(color, f'{text}', isLogging)
         else:
             print(text)
     messageBuffer = []  # Clear buffer after printing
