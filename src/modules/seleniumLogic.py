@@ -106,7 +106,7 @@ class SeleniumLogic:
                 The session ID, token, and WebDriver instance if available, otherwise None.
         """
         # Deactivate logging because selenium clutters it extremely
-        CustomLogger.deactivate_logging()
+        CustomLogger.fh_deactiveLogging()
 
         # Set Browser options
         options = webdriver.ChromeOptions()
@@ -173,7 +173,7 @@ class SeleniumLogic:
             print(f"Timeout occurred: {e}")
 
         finally:
-            CustomLogger.reactivate_logging()
+            CustomLogger.fh_reactiveLogging()
             # If we are not using login method 3 we should close the driver already
             if not self.useScripts:
                 driver.close()

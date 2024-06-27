@@ -42,6 +42,8 @@ from functools import wraps
 from utilities import cFormatter, Color
 # Custom module for colored printing and logging functionalities.
 
+from modules.config import timestampFile
+
 class Limiter:
     """
     A class to handle lockout mechanism for functions to limit their execution frequency.
@@ -52,7 +54,6 @@ class Limiter:
 
     :arguments:
     - lockout_period (int): The lockout period in seconds.
-    - timestamp_file (str, optional): The file path to store the timestamps. Default is './data/extra.json'.
 
     :params:
     None
@@ -76,7 +77,7 @@ class Limiter:
         - utilities.cFormatter: Custom formatter for colored printing and logging.
     """
     
-    def __init__(self, lockoutPeriod: int = 40, timestampFile: str = './data/extra.json'):
+    def __init__(self, lockoutPeriod: int = 40):
         """
         Initialize the Limiter object.
 
@@ -88,12 +89,13 @@ class Limiter:
             - os: Provides a way to interact with the operating system, particularly for file and directory operations.
             - json: Provides functionalities to work with JSON data for reading and writing timestamps.
         """
-        self.lockout_period = lockoutPeriod
-        self.timestamp_file = timestampFile
-        if not os.path.exists(os.path.dirname(self.timestamp_file)):
-            os.makedirs(os.path.dirname(self.timestamp_file))
-        if not os.path.exists(self.timestamp_file):
-            with open(self.timestamp_file, 'w') as f:
+        
+        self.lockoutPeriod = lockoutPeriod
+        self.timestampFile = timestampFile
+        if not os.path.exists(os.path.dirname(self.timestampFile)):
+            os.makedirs(os.path.dirname(self.timestampFile))
+        if not os.path.exists(self.timestampFile):
+            with open(self.timestampFile, 'w') as f:
                 json.dump({}, f)
 
     def lockout(self, func):
@@ -120,19 +122,19 @@ class Limiter:
         """
         @wraps(func)
         def wrapper(*args, **kwargs):
-            func_name = func.__name__
-            last_exec_time = self._get_last_exec_time(func_name)
-            current_time = time.time()
-            if current_time - last_exec_time < self.lockout_period:
-                cFormatter.print(Color.RED, f'{func_name} is rate limited. You can only do this every {self.lockout_period} seconds!', isLogging=True)
+            funcName = func.__name__
+            laxtExecTime = self._fh_getLastExecTime(funcName)
+            currentTime = time.time()
+            if currentTime - laxtExecTime < self.lockoutPeriod:
+                cFormatter.print(Color.RED, f'{funcName} is rate limited. You can only do this every {self.lockoutPeriod} seconds!', isLogging=True)
                 return None
             else:
                 result = func(*args, **kwargs)
-                self._update_last_exec_time(func_name, current_time)
+                self._fh_updateLastExecTime(funcName, currentTime)
                 return result
         return wrapper
 
-    def _get_last_exec_time(self, func_name: str) -> float:
+    def _fh_getLastExecTime(self, func_name: str) -> float:
         """
         Get the timestamp of the last execution of a function.
 
@@ -149,11 +151,11 @@ class Limiter:
         Modules:
             - json: Provides functionalities to work with JSON data for reading and writing timestamps.
         """
-        with open(self.timestamp_file, 'r') as f:
+        with open(self.timestampFile, 'r') as f:
             timestamps = json.load(f)
         return timestamps.get(func_name, 0)
 
-    def _update_last_exec_time(self, func_name: str, timestamp: float) -> None:
+    def _fh_updateLastExecTime(self, func_name: str, timestamp: float) -> None:
         """
         Update the timestamp of the last execution of a function.
 
@@ -168,7 +170,7 @@ class Limiter:
         Modules:
             - json: Provides functionalities to work with JSON data for reading and writing timestamps.
         """
-        with open(self.timestamp_file, 'r+') as f:
+        with open(self.timestampFile, 'r+') as f:
             try:
                 timestamps = json.load(f)
             except json.decoder.JSONDecodeError:

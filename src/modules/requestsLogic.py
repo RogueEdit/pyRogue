@@ -61,6 +61,7 @@ import pyuseragents
 from user_agents import parse
 import string
 from modules.config import useCaCert
+limiter = Limiter()
 
 
 def handle_error_response(response: requests.Response) -> Dict[str, str]:
@@ -278,8 +279,6 @@ class requestsLogic:
             result.append(characters[randomIndex])
 
         return "".join(result)
-
-    limiter = Limiter()
 
     @limiter.lockout
     def login(self) -> bool:

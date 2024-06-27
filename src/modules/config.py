@@ -33,6 +33,7 @@ init(autoreset=True)
 logsDirectory: str = os.path.join(os.getcwd(), 'logs')
 backupDirectory: str = os.path.join(os.getcwd(), 'backups')
 dataDirectory: str = os.path.join(os.getcwd(), 'data')
+timestampFile: str = os.path.join(dataDirectory, 'extra.json')
 
 
 if not os.path.exists(logsDirectory):

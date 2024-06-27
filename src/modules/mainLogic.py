@@ -1212,18 +1212,27 @@ class Rogue:
             >>> example_instance.unlock_all_gamemodes()
 
         """
-        trainer_data = self.__fh_loadDataFromJSON('trainer.json')
+        gameData = self.__fh_loadDataFromJSON('trainer.json')
 
-        unlocked_modes = trainer_data.get('unlocks', {})
-        if not unlocked_modes:
+        unlockedModes = gameData.get('unlocks', {})
+        if not unlockedModes:
             cFormatter.print(Color.INFO, 'Unable to find data entry: unlocks')
             return
 
-        for mode in unlocked_modes:
-            unlocked_modes[mode] = True
+        changed = False
 
-        self.__fh_writeJSONData(trainer_data, 'trainer.json')
-        raise OperationSuccessful('Unlocked all gamemodes.')
+        for mode, is_unlocked in unlockedModes.items():
+            if not is_unlocked:
+                unlockedModes[mode] = True
+                changed = True
+
+
+        if changed:
+            self.__fh_writeJSONData(gameData, 'trainer.json')
+            raise OperationSuccessful('Unlocked all gamemodes.')
+        else:
+            cFormatter.print(Color.INFO, 'You already had all gamemodes.')
+            fh_appendMessageBuffer(Color.INFO, 'You already had all gamemodes.')
 
     @handle_operation_exceptions
     def f_editAchivements(self) -> None:
@@ -1252,17 +1261,23 @@ class Rogue:
         gameData = self.__fh_loadDataFromJSON('trainer.json')
         achievementsData = self.appData.achievementsData
         keysToUpdate = {member.name: member for member in achievementsData}
-
         currentAmount = gameData.get('achvUnlocks', {})
+
         if len(currentAmount) >= len(keysToUpdate):
             cFormatter.print(Color.INFO, 'You already have all achievements.')
+            return
+        
+        fh_appendMessageBuffer(Color.INFO, 'You already have all achievements.')
+        header = cFormatter.fh_centerText('Edit Achievements', 30, '-')
+        cFormatter.print(Color.DEBUG, header)
 
 
         # Ask the user if they want to unlock all vouchers or a specific one
         choice = fh_getChoiceInput(
-            promptMesage='Do you want to unlock all achievements or unlock a specific voucher?',
+            promptMesage='Do you want to unlock all achievements or a specific one?',
             choices={'1': 'All', '2': 'Specific'},
-            zeroCancel=True
+            zeroCancel=True,
+            renderMenu=True
         )
 
         currentTime = int(time.time() * 1000)
@@ -1305,7 +1320,7 @@ class Rogue:
                     break
 
         if changed:
-            self.__fh_writeJSONData(gameData, 'trainer.json')
+            self.__fh_writeJSONData(gameData, 'trainer.json', showSuccess=False)
             fh_appendMessageBuffer(Color.YELLOW, 'Changes saved:')
             for key, value in changedItems:
                 fh_appendMessageBuffer(Color.INFO, f'Added {key} with timestamp {value}.')
@@ -1340,19 +1355,21 @@ class Rogue:
         voucherData = self.appData.voucherData
         keysToUpdate = {member.name: member for member in voucherData}
         currentAmount = gameData.get('voucherUnlocks', {})
+
         if len(currentAmount) >= len(keysToUpdate):
             cFormatter.print(Color.INFO, 'You already have all vouchers.')
-
-
+            return
+        
+        fh_appendMessageBuffer(Color.INFO, 'You already have all vouchers.')
+        header = cFormatter.fh_centerText('Edit Vouchers', 30, '-')
+        cFormatter.print(Color.DEBUG, header)
     
-
-        # Initialize keysToUpdate with entries from your enum
-
-        # Ask the user if they want to unlock all vouchers or a specific one
+        
         choice = fh_getChoiceInput(
-            promptMesage='Do you want to unlock all vouchers or unlock a specific voucher?\n',
+            promptMesage='Do you want to unlock all vouchers or unlock a specific voucher?',
             choices={'1': 'All', '2': 'Specific'},
-            zeroCancel=True
+            zeroCancel=True,
+            renderMenu=True
         )
 
         currentTime = int(time.time() * 1000)
@@ -1396,7 +1413,7 @@ class Rogue:
                     break
 
         if changed:
-            self.__fh_writeJSONData(gameData, 'trainer.json')
+            self.__fh_writeJSONData(gameData, 'trainer.json', showSuccess=False)
             fh_appendMessageBuffer(Color.YELLOW, 'Changes saved:')
             for key, value in changedItems:
                 fh_appendMessageBuffer(Color.INFO, f'Added {key} with timestamp {value}.')
@@ -1433,6 +1450,9 @@ class Rogue:
 
         gameData = self.__fh_loadDataFromJSON('trainer.json')
 
+        header = cFormatter.fh_centerText('Add Candy', 30, '-')
+
+        cFormatter.print(Color.DEBUG, header)
         inputValue = fh_getCompleterInput(
             promptMessage='Write either the ID or the Name of the Pokemon: ',
             choices={**{member.name.lower(): member for member in self.appData.starterNameByID}, 
@@ -1440,7 +1460,7 @@ class Rogue:
             zeroCancel=False
         )
         pokeName = inputValue.name.lower()
-        currentCandies = gameData["starterData"][inputValue.value]["candyCount"]
+        currentCandies = gameData["starterData"][str(inputValue.value)]["candyCount"]
         # Prompt for number of candies using fh_getIntegerInput method
         candies = fh_getIntegerInput(
             promptMessage=f'How many candies do you want to add?\n You currently have {currentCandies} on {inputValue.name.capitalize()}. (0 to cancel):',
@@ -1448,12 +1468,12 @@ class Rogue:
             maxBound=999,  # Adjust maximum candies as needed
             zeroCancel=True
         )
-
+        
         # Update game data with the chosen Pokémon's candy count
-        gameData["starterData"][inputValue.value]["candyCount"] = candies
+        gameData["starterData"][str(inputValue.value)]["candyCount"] = candies
 
         # Write updated data to JSON
-        self.__fh_writeJSONData(gameData, 'trainer.json')
+        self.__fh_writeJSONData(gameData, 'trainer.json', showSuccess=False)
         raise OperationSuccessful(f'Added {candies} candies to {pokeName}.')
 
     @handle_operation_exceptions
@@ -1860,7 +1880,7 @@ class Rogue:
             minBound = 0
             maxBound = 99
             eggAmount = len(trainerData['eggs'])
-            prompt = f'You currently have [{eggAmount}] eggs - after how many waves should they hatch?'
+            prompt = f'You currently have ({eggAmount}) eggs, after how many waves should they hatch?'
             hatchWaves = fh_getIntegerInput(prompt, minBound, maxBound, zeroCancel=True)
 
             for egg in trainerData['eggs']:
@@ -1870,7 +1890,7 @@ class Rogue:
             self.__fh_writeJSONData(trainerData, 'trainer.json')
             raise OperationSuccessful(f'Set hatch duration of your eggs to {hatchWaves}')
         else:
-            cFormatter.print(Color.GREEN, 'You have no eggs to hatch.')
+            fh_appendMessageBuffer(Color.INFO, 'You have no eggs to hatch.')
             return
 
     @handle_operation_exceptions
@@ -1903,27 +1923,29 @@ class Rogue:
                         self.f_getGameData(newSlot)
             else:
                 self.f_getSlotData(newSlot)
-
-            
+ 
     @handle_operation_exceptions
     def fh_printEnums(self, enum_type: str) -> None:
         """
         enums_mapping = {
-            'pokedex': self.pokemon_id_by_name,
+            'starter': self.starterNameByID,
             'biomes': self.biomesByID,
-            'moves': self.moves_by_id,
-            'natures': self.natureData,
-            'vouchers': self.vouchers_data,
-            'natureSlot': self.natureSlot_data,
-        }
+            'moves': self.movesByID,
+            'vouchers': self.voucherData,
+            'natureData': self.natureData,
+            'natureDataSlots': self.natureSlot_data,
+            'achievementsData': self.achievementsData,
+            'pokemonData': self.pokemonData
         """
         enums_mapping = {
-            'pokedex': self.starterNamesById,
-            'biomes': self.biomeNamesById,
-            'moves': self.moveNamesById,
+            'starter': self.starterNameByID,
+            'biomes': self.biomesByID,
+            'moves': self.movesByID,
+            'vouchers': self.voucherData,
             'natures': self.natureData,
-            'vouchers': self.vouchersData,
-            'natureSlot': self.natureSlotData,
+            'natureSlots': self.natureSlot_data,
+            'achievements': self.achievementsData,
+            'pokemon': self.pokemonData
         }
 
         if enum_type not in enums_mapping:

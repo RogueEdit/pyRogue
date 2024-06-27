@@ -3032,7 +3032,7 @@ class Generator:
     def __moves_to_json(self) -> str:
         return json.dumps({'moves': MovesEnum.MOVES_DICT.value}, indent=4)
     
-    def __save_to_file(self, data: str, filename: str) -> None:
+    def __fh_saveToFile(self, data: str, filename: str) -> None:
         """
         Save data to a file.
 
@@ -3071,32 +3071,32 @@ class Generator:
             - utilities: Custom module for colored printing and logging functionalities.
         """
         try:
-            nature_json: str = self.__nature_to_json()
-            self.__save_to_file(nature_json, 'natures.json')
+            natureJSON: str = self.__nature_to_json()
+            self.__fh_saveToFile(natureJSON, 'natures.json')
 
-            no_passive_json: str = self.__generate_no_passive_json()
-            self.__save_to_file(no_passive_json, 'passive.json')
+            noPassiveJSON: str = self.__generate_no_passive_json()
+            self.__fh_saveToFile(noPassiveJSON, 'passive.json')
 
-            biomes_json: str = self.__generate_biomes_json()
-            self.__save_to_file(biomes_json, 'biomes.json')
+            biomesJSON: str = self.__generate_biomes_json()
+            self.__fh_saveToFile(biomesJSON, 'biomes.json')
 
-            vouchers_json: str = self.__generate_vouchers_json()
-            self.__save_to_file(vouchers_json, 'vouchers.json')
+            vouchersJSON: str = self.__generate_vouchers_json()
+            self.__fh_saveToFile(vouchersJSON, 'vouchers.json')
 
-            natureSlot: str = self.__natureSlot_to_json()
-            self.__save_to_file(natureSlot, 'natureSlot.json')
+            natureSlotJSON: str = self.__natureSlot_to_json()
+            self.__fh_saveToFile(natureSlotJSON, 'natureSlot.json')
 
-            achvs: str = self.__achievments_to_json()
-            self.__save_to_file(achvs, 'achievements.json')
+            achivementJSON: str = self.__achievments_to_json()
+            self.__fh_saveToFile(achivementJSON, 'achievements.json')
 
-            pokemon: str = self.__pokemons_to_json()
-            self.__save_to_file(pokemon, 'pokemon.json')
+            pokemonJSON: str = self.__pokemons_to_json()
+            self.__fh_saveToFile(pokemonJSON, 'pokemon.json')
 
-            starter: str = self.__starters_to_json()
-            self.__save_to_file(starter, 'starter.json')
+            starterJSON: str = self.__starters_to_json()
+            self.__fh_saveToFile(starterJSON, 'starter.json')
 
-            moves: str = self.__moves_to_json()
-            self.__save_to_file(moves, 'moves.json')
+            movesJSON: str = self.__moves_to_json()
+            self.__fh_saveToFile(movesJSON, 'moves.json')
 
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Generating data on initializing startup failed. {e}', isLogging=True)
