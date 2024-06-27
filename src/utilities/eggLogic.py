@@ -211,7 +211,7 @@ def generateRandomID(start: int, end: int, manaphy: bool = False) -> int:
 
     return max(result, 1)
 
-def constructEggs(tier: int, gachaType: int, hatchWaveCount: int, eggAmount: int, isShiny: bool, variantTier: bool) -> List[Dict[str, int]]:
+def constructEggs(tier: int, gachaType: int, hatchWaveCount: int, eggAmount: int, isShiny: bool = False, variantTier: int = 0) -> List[Dict[str, int]]:
     """
     Generate eggs with the given properties.
 
@@ -240,14 +240,13 @@ def constructEggs(tier: int, gachaType: int, hatchWaveCount: int, eggAmount: int
         egg: Dict[str, int] = {
             'id': eggID,
             'gachaType': gachaType,
-            'hatchWaves': hatchWaveCount,
+            'hatchWaves': int(hatchWaveCount),
             'timestamp': timestamp,
-            'tier': tier,
+            'tier': tier-1,
         }
-        if variantTier:
-            egg['variantTier'] = 3
         if isShiny:
             egg['isShiny'] = isShiny
+            egg['variantTier'] = int(variantTier)
         eggs.append(egg)
     
     return eggs

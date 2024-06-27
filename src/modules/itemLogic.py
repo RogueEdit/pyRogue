@@ -17,6 +17,7 @@ from typing import Any, List, Optional
 from modules.config import version
 from collections import defaultdict
 from modules.handler import handle_operation_exceptions, OperationCancel, OperationSoftCancel, OperationSuccessful  # noqa: F401
+from modules.handler import fh_getChoiceInput, fh_getCompleterInput, fh_getIntegerInput  # noqa: F401
 
 
 @dataclass
@@ -148,9 +149,49 @@ class ModifierType(Enum):
     
 @handle_operation_exceptions
 class ModifierEditor:
-    def __init__(self):
+    def __init__(self, pokemonNameByID=None, moveNamesById=None, natureData=None, slot=1):
         self.menuItems = self.m_createItemMenu()
         self.notifyMessage = None
+        self.pokemonNameByIDHelper = {str(member.value): member.name for member in pokemonNameByID}
+        self.slot = slot
+
+        self.slotData = self.__fh_loadJSON(f'slot_{self.slot}.json')
+        if self.slotData['gameMode'] == 3:
+                cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot edit this property on Daily Runs.')
+                return
+        self.currentParty = []
+
+        for pokemon in self.slotData['party']:
+            pokeID = str(pokemon.get('species', None))
+            pokeName = self.pokemonNameByIDHelper.get(pokeID, f'UnknownID {pokeID}').capitalize()
+            pokeIsShiny = pokemon.get('shiny', False)
+            pokeShinyType = pokemon.get('variant', "None")
+            pokeLuck = pokemon.get('luck', 0)
+            pokeLevel = pokemon.get('level', 1)
+
+
+            # Create a dictionary to hold all relevant information for the current Pokémon
+            pokeInfoDict = {
+                'name': pokeName.capitalize(),
+                'shiny': pokeIsShiny,
+                'variant': pokeShinyType,
+                'luck': pokeLuck,
+                'level': pokeLevel,
+            }
+
+            # Append the dictionary to the current party list
+            self.currentParty.append(pokeInfoDict)
+
+        
+
+    def fh_printParty(self):
+        # Print the current party with detailed information
+        cFormatter.print(Color.WHITE, f'Current Pokemon-Party in Slot {self.slot}:')
+        cFormatter.fh_printSeperators(55, '-', Color.DEBUG)
+        for i, pokeInfoDict in enumerate(self.currentParty, start=1):
+            shinyStatus = f"Shiny {pokeInfoDict['variant']}" if pokeInfoDict["shiny"] else "Not Shiny"
+            cFormatter.print(Color.WHITE, f'{i}: {Fore.YELLOW}{pokeInfoDict["name"]}{Style.RESET_ALL} | Level: {pokeInfoDict["level"]} | Luck: {pokeInfoDict["luck"]} | {shinyStatus} |')
+        cFormatter.fh_printSeperators(55, '-', Color.DEBUG)
 
     def m_createItemMenu(self):
         m_itemMenuItems = [(f'{version}', 'title')]
@@ -326,15 +367,11 @@ class ModifierEditor:
                     cFormatter.print(Color.DEBUG, f'Item Description: {Style.RESET_ALL}{selectedModifier.value.description}')
                     cFormatter.print(Color.DEBUG, f'Max Stacks: {Style.RESET_ALL}{selectedModifier.value.maxStack}')
                     
-                    partySlot = int(input('Select the party slot of the Pokémon you want to edit (0-5): '))
-                    try:
-                        if partySlot < 0 or partySlot > 5:
-                            raise ValueError
-                    except ValueError:
-                        cFormatter.print(Color.DEBUG, 'Returning to the menu...')
-                        continue
-                    
-                    pokeId = slotData["party"][partySlot]["id"]
+                    self.fh_printParty()
+                    selectedPartySlot = int(fh_getIntegerInput('Select the party slot of the Pokemon you want to edit', 1, 6, zeroCancel=True)) -1
+                    pokeId = int(slotData["party"][selectedPartySlot]["id"])
+                    header = cFormatter.fh_centerText(f'Editing {self.currentParty[selectedPartySlot]['name']} and Trainer', 55, '-')
+                    cFormatter.print(Color.DEBUG, header)
                     
                     existingStackCount = self.__fh_ensureModifiersBlock(slotData, selectedModifier.value.typeId, selectedModifier.value.typePregenArgs, pokeId)
                     
@@ -342,7 +379,7 @@ class ModifierEditor:
                         if existingStackCount is not None:
                             stackCountInput = input(f'You already have {existingStackCount} of {selectedModifier.value.customName}. Set new value to: ')
                         else:
-                            stackCountInput = input(f'How many {selectedModifier.value.customName} do you want? or enter any invalid input to retry: ')
+                            stackCountInput = input(f'How many {selectedModifier.value.customName} do you want? or enter any invalid input to retreat: ')
                         try:
                             newStackCount = int(stackCountInput)
                             break
@@ -358,20 +395,20 @@ class ModifierEditor:
 
     def __fh_doAllModifiers(self, sessionSlot):
         try:
-            partySlot = None
-            while partySlot is None:
-                try:
-                    partySlot = int(input('Select the party slot of the Pokémon you want to edit (0-5): '))
-                    if partySlot < 0 or partySlot > 5:
-                        raise ValueError('Invalid party slot, please enter a number between 0 and 5.')
-                except ValueError as ve:
-                    cFormatter.print(Color.ERROR, str(ve))
-                    self.notifyMessage = (str(ve), 'error')
-                    return
+            slotData = self.__fh_loadJSON(f'slot_{sessionSlot}.json')
+
+            if slotData['gameMode'] == 3:
+                cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot edit this property on Daily Runs.')
+                return
+
+            self.fh_printParty()
+            cFormatter.print(Color.DEBUG, 'You can always go back to the menu by typing anything not 0-5.')
+            selectedPartySlot = int(fh_getIntegerInput('Select the party slot of the Pokemon you want to edit', 1, 6, zeroCancel=True)) -1
+            header = cFormatter.fh_centerText(f'Editing {self.currentParty[selectedPartySlot]['name']} and Trainer', 55, '-')
+            cFormatter.print(Color.DEBUG, header)
 
             stackCountInput = int(input('Enter the stack count for the modifiers: '))
-            slotData = self.__fh_loadJSON(f'slot_{sessionSlot}.json')
-            pokeId = slotData["party"][partySlot]["id"]
+            pokeId = slotData["party"][selectedPartySlot]["id"]
             try:
                 for modType in ModifierType:
                     if modType.value.customType == 'Danger':

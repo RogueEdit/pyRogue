@@ -897,7 +897,7 @@ class Rogue:
                         caughtAttr = 255 if shinyChoice else 253
 
                     gameData['dexData'][str(dexId)]['caughtAttr'] = caughtAttr
-                    changedItems.append('Unlocked all forms')
+                    changedItems.append('Unlocked all forms.')
                     
                 elif action == 'Set shininess':
                     shinyChoice = fh_getChoiceInput('Do you want Tier 3 shinies?', {1: 'Yes', 2: 'No'}, zeroCancel=True) == '1'
@@ -1818,12 +1818,11 @@ class Rogue:
         )) - 1  # Adjusting for 0-based index
 
         hatchWaves = fh_getIntegerInput('After how many waves should they hatch?', 0, 100, zeroCancel=True)
-        
+        variantTier = 0
         # Get hidden ability preference as boolean
         isShiny: bool = fh_getChoiceInput('Do you want it to be shiny?', {'1': 'Yes', '2': 'No'}, zeroCancel=True) == '1'
-
-        # Get hidden ability preference as boolean
-        variantTier: bool = fh_getChoiceInput('Do you want the hidden ability to be unlocked?', {'1': 'Yes', '2': 'No'}, zeroCancel=True) == '1'
+        if isShiny:
+            variantTier: int = int(fh_getIntegerInput('Which shiny tier?', 0, 3))
 
         eggDictionary = eggLogic.constructEggs(tier, gachaType, hatchWaves, count, isShiny, variantTier)
 
@@ -2035,8 +2034,8 @@ class Rogue:
     @handle_operation_exceptions
     def f_submenuItemEditor(self):
         from modules import ModifierEditor
-        edit = ModifierEditor()
-        edit.m_itemMenuPresent(self.slot)
+        edit = ModifierEditor(self.appData.pokemonNameByID, self.moveNamesById, self.natureData, int(self.slot))
+        edit.m_itemMenuPresent(int(self.slot))
 
     @handle_operation_exceptions
     def f_changeSaveSlot(self):
@@ -2058,7 +2057,7 @@ class Rogue:
                         else:
                             cFormatter.print(Color.ERROR, f'File {filename} does not exist. Please select another slot.')
             else:
-                self.f_getSlotData(newSlot)
+                self.f_getSlotData(int(newSlot))
             raise OperationSuccessful(f'Changed slot to slot_{newSlot}.json')
  
     @handle_operation_exceptions
