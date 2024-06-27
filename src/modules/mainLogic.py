@@ -492,7 +492,7 @@ class Rogue:
         Usage Example:
             instance.f_createBackup(gameData=data, slotData=slot, offline=False)
 
-        Output Example:
+        Output Example: backup_slotData(1_2450)_27.06.2024_06.09.27
             # Output: backup/backup_gameData({trainerId})_{timestamp}.json
             # Output: backup/backup_slotData({slot}_{trainerId})_{timestamp}.json
             # Backup created.
@@ -506,53 +506,30 @@ class Rogue:
         """if config.debugDeactivateBackup:
             return"""
 
-        backupDirectory = config.backupDirectory
-
-        def __fh_backupData(data, dataType, is_slot=False):
+        def __fh_backupData(data, dataType):
             timestamp = datetime.now().strftime('%d.%m.%Y_%H.%M.%S')
             
-            if is_slot:
+            if dataType == 'slotData':
                 backupFilename = f'backup_{dataType}({self.slot}_{self.trainerId})_{timestamp}.json'
             else:
                 baseFilename = f'base_{dataType}({self.trainerId})'
-                if any(f.startswith(baseFilename) for f in os.listdir(backupDirectory)):
+                if any(f.startswith(baseFilename) for f in os.listdir(self.backupDirectory)):
                     backupFilename = f'backup_{dataType}({self.trainerId})_{timestamp}.json'
                 else:
                     backupFilename = baseFilename + f'_{timestamp}.json'
                 
-            backupFilepath = os.path.join(backupDirectory, backupFilename)
+            backupFilepath = os.path.join(self.backupDirectory, backupFilename)
             self.__fh_writeJSONData(data, backupFilepath, showSuccess=False)
             fh_appendMessageBuffer(Color.GREEN, f'Backup created: {backupFilename}')
 
-        def __fh_backupFile(sourceFilename, dstFilename):
-            timestamp = datetime.now().strftime('%Y.%m.%d_%H.%M.%S')
-            backupFilename = f'backup_{dstFilename}_{timestamp}.json'
-            backupFilepath = os.path.join(backupDirectory, backupFilename)
-            shutil.copy(sourceFilename, backupFilepath)
-            fh_appendMessageBuffer(Color.GREEN, f'Backup {backupFilename} created.')
+        if gameData is None:
+            gameData = self.__fh_loadDataFromJSON('trainer.json')
+        if slotData is None:
+            slotData = self.__fh_loadDataFromJSON(f'slot_{self.slot}.json')
 
-        if offline:
-            # Backup trainer.json
-            if os.path.exists('trainer.json'):
-                __fh_backupFile('trainer.json', f'trainer({self.trainerId})')
-            else:
-                cFormatter.print(Color.RED, 'No trainer.json found to backup.')
+        __fh_backupData(gameData, 'gameData')
+        __fh_backupData(slotData, 'slotData')
 
-            # Backup slot_{self.slot}.json
-            slot_filename = f'slot_{self.slot}.json'
-            if os.path.exists(slot_filename):
-                __fh_backupFile(slot_filename, f'slot_{self.slot}({self.trainerId})')
-            else:
-                cFormatter.print(Color.RED, f'No {slot_filename} found to backup.')
-
-        else:
-            # Backup gameData
-            if gameData is not None:
-                __fh_backupData(gameData, 'gameData')
-
-            # Backup slotData
-            if slotData is not None:
-                __fh_backupData(slotData, 'slotData', is_slot=True)
 
     @handle_operation_exceptions
     def f_restoreBackup(self) -> None:
@@ -2064,7 +2041,7 @@ class Rogue:
                     cFormatter.print(Color.BRIGHT_GREEN, 'Written to local data. Do not forget to apply to server when done!')
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function __write_data(): {e}', isLogging=True)
-
+        
     def __fh_loadDataFromJSON(self, file_path: str) -> Dict[str, Any]:
         """
         Load data from a specified file path.
