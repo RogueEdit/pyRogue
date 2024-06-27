@@ -1070,9 +1070,9 @@ class Rogue:
         try:
             slot = self.slot
             filename = f'slot_{slot}.json'
-            game_data = self.__fh_loadDataFromJSON(filename)
+            slotData = self.__fh_loadDataFromJSON(filename)
 
-            if game_data['gameMode'] == 3:
+            if slotData['gameMode'] == 3:
                 cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot edit this property on Daily Runs.')
                 return
 
@@ -1090,52 +1090,52 @@ class Rogue:
             pokemnonNameByIDHelper = {str(member.value): member.name for member in self.appData.pokemonNameByID}
             moveNamesByIDHelper = {str(member.value): member.name for member in self.moveNamesById}
 
-            current_party = []
+            currentParty = []
             changedItems = []
             changed = False
 
             # Iterate over the party to get the species IDs and map to names
-            for pokemon in game_data['party']:
-                species_id = str(pokemon.get('species', None))
-                species_name = pokemnonNameByIDHelper.get(species_id, "Unknown").capitalize()
-                shiny = pokemon.get('shiny', False)
-                variant = pokemon.get('variant', "None")
-                luck = pokemon.get('luck', 0)
-                level = pokemon.get('level', 1)
-                moves = [moveNamesByIDHelper[str(move["moveId"])] for move in pokemon['moveset']]
+            for pokemon in slotData['party']:
+                pokeID = str(pokemon.get('species', None))
+                pokeName = pokemnonNameByIDHelper.get(pokeID, f'UnknownID {pokeID}').capitalize()
+                pokeIsShiny = pokemon.get('shiny', False)
+                pokeShinyType = pokemon.get('variant', "None")
+                pokeLuck = pokemon.get('luck', 0)
+                pokeLevel = pokemon.get('level', 1)
+                pokeMoves = [moveNamesByIDHelper[str(move["moveId"])] for move in pokemon['moveset']]
 
                 # Create a dictionary to hold all relevant information for the current Pokémon
-                pokemon_info = {
-                    'name': species_name,
-                    'shiny': shiny,
-                    'variant': variant,
-                    'luck': luck,
-                    'level': level,
-                    'moves': moves
+                pokeInfoDict = {
+                    'name': pokeName.capitalize(),
+                    'shiny': pokeIsShiny,
+                    'variant': pokeShinyType,
+                    'luck': pokeLuck,
+                    'level': pokeLevel,
+                    'moves': pokeMoves
                 }
 
                 # Append the dictionary to the current party list
-                current_party.append(pokemon_info)
+                currentParty.append(pokeInfoDict)
 
             # Print the current party with detailed information
             cFormatter.print(Color.WHITE, 'Current Pokemon (species):')
             cFormatter.fh_printSeperators(55, '-', Color.DEBUG)
-            for i, pokemon_info in enumerate(current_party, start=1):
-                shiny_status = f"Shiny {pokemon_info['variant']}" if pokemon_info['shiny'] else "Not Shiny"
-                cFormatter.print(Color.WHITE, f"{i}: {pokemon_info['name']} | Level: {pokemon_info['level']} | Luck: {pokemon_info['luck']} | {shiny_status}")
+            for i, pokeInfoDict in enumerate(currentParty, start=1):
+                shinyStatus = f"Shiny {pokeInfoDict['variant']}" if pokeInfoDict["shiny"] else "Not Shiny"
+                cFormatter.print(Color.WHITE, f'{i}: {Fore.YELLOW}{pokeInfoDict["name"]}{Style.RESET_ALL} | Level: {pokeInfoDict["level"]} | Luck: {pokeInfoDict["luck"]} | {shinyStatus} |')
             cFormatter.fh_printSeperators(55, '-', Color.DEBUG)
 
 
             # Select a pokemon
-            party_num = int(fh_getIntegerInput('Select the party slot of the Pokemon you want to edit', 1, 6, zeroCancel=True)) -1
-            selectedPokemon = current_party[party_num]
+            selectedPartySlot = int(fh_getIntegerInput('Select the party slot of the Pokemon you want to edit', 1, 6, zeroCancel=True)) -1
+            selectedPokemon = currentParty[selectedPartySlot]
             #selectedPokemonMoves = [moveNamesByIDHelper[str(move["moveId"])] for move in game_data['party'][party_num]['moveset']]
 
             # Start loop and present options
             while True:
                 try:
                     header = cFormatter.fh_centerText(f' Selected Pokemon: {selectedPokemon['name']} ', length=55, fillChar='-')
-                    cFormatter.print(Color.DEBUG, header)
+                    cFormatter.print(Color.INFO, header)
                     cFormatter.print(Color.WHITE, '\n'.join(options))
                     cFormatter.fh_printSeperators(55, '-', Color.DEBUG)
 
@@ -1154,26 +1154,35 @@ class Rogue:
                                 softCancel=True
                             )
                         dexId = inputValue.value
+
+                        slotData['party'][selectedPartySlot]['species'] = int(dexId)
+                        cFormatter.print(Color.DEBUG, f'Changed Shiny from {pokeInfoDict["shiny"]}{pokeInfoDict["variant"]} to Shiny {pokeShinyType}.')
+                        changedItems.append(f'Changed {pokeInfoDict['name']} to {inputValue.name}')
                         changed = True
-                        game_data['party'][party_num]['species'] = int(dexId)
 
                     elif command == 2:
                         header = cFormatter.fh_centerText(' Change Shiny Status ', length=55, fillChar='-')
-                        variant = fh_getIntegerInput('Choose the shiny variant', 1, 3, softCancel=True)
-                        game_data['party'][party_num]['shiny'] = True
-                        game_data['party'][party_num]['variant'] = variant
+                        pokeShinyType = fh_getIntegerInput('Choose the shiny variant', 1, 3, softCancel=True)
+                        slotData['party'][selectedPartySlot]['shiny'] = True
+                        slotData['party'][selectedPartySlot]['variant'] = pokeShinyType
+                        cFormatter.print(Color.DEBUG, f'Changed Shiny from {pokeInfoDict["shiny"]}{pokeInfoDict["variant"]} to Shiny {pokeShinyType}.')
+                        changedItems.append(f'Changed Level from {pokeInfoDict['level']} to {pokeLevel}.')
                         changed = True
 
                     elif command == 3:
                         header = cFormatter.fh_centerText(' Change Level ', length=55, fillChar='-')
-                        level = fh_getIntegerInput('Choose what level', 1, 100000, softCancel=True)
-                        game_data['party'][party_num]['level'] = level
+                        pokeLevel = fh_getIntegerInput('Choose what level', 1, 100000, softCancel=True)
+                        slotData['party'][selectedPartySlot]['level'] = pokeLevel
+                        cFormatter.print(Color.DEBUG, f'Changed Level from {pokeInfoDict["level"]} to {pokeLevel}.')
+                        changedItems.append(f'Changed Level from {pokeInfoDict["level"]} to {pokeLevel}.')
                         changed = True
 
                     elif command == 4:
-                        header = cFormatter.fh_centerText(' Change Level ', length=55, fillChar='-')
-                        luck = fh_getIntegerInput('Choose what level', 1, 14, softCancel=True)
-                        game_data['party'][party_num]['luck'] = luck
+                        header = cFormatter.fh_centerText(' Change Luck ', length=55, fillChar='-')
+                        pokeLuck = fh_getIntegerInput('Choose what level', 1, 14, softCancel=True)
+                        slotData['party'][selectedPartySlot]['luck'] = pokeLuck
+                        cFormatter.print(Color.DEBUG, f'Changed luck from {pokeInfoDict["luck"]} to {pokeLuck}.')
+                        changedItems.append(f'Changed luck from {pokeInfoDict["luck"]} to {pokeLuck}.')
                         changed = True
 
                     elif command == 5:
@@ -1186,7 +1195,9 @@ class Rogue:
                                 fh_getIntegerInput('Spe IVs', 1, 31, softCancel=True),
                                 fh_getIntegerInput('Def IVs', 1, 31, softCancel=True)
                             ]
-                        game_data['party'][party_num]['ivs'] = ivs
+                        slotData['party'][selectedPartySlot]['ivs'] = ivs
+                        cFormatter.print(Color.DEBUG, f'Changed IVs to {ivs}.')
+                        changedItems.append(f'Changed IVs to {ivs}.')
                         changed = True
 
                     elif command == 6:
@@ -1194,14 +1205,14 @@ class Rogue:
                         header = cFormatter.fh_centerText('Current moves on {s}')
                         cFormatter.print(Color.WHITE, f"Current moves on {selectedPokemon['name']}")
                         cFormatter.fh_printSeperators(65, '-', Color.WHITE)
-                        for i, move_name in enumerate(pokemon_info['moves'], start=1):
+                        for i, move_name in enumerate(pokeInfoDict['moves'], start=1):
                             cFormatter.print(Color.WHITE, f'{i}: {move_name}')
                         cFormatter.fh_printSeperators(65, '-', Color.WHITE)
 
                         # Prompt user to select a move slot to change
-                        move_slot = int(fh_getIntegerInput('Select the move you want to change (0-4):', 1, 4, softCancel=True))
+                        selectedMoveIndex = int(fh_getIntegerInput('Select the move you want to change (0-4):', 1, 4, softCancel=True))
 
-                        cFormatter.print(Color.GREEN, f"You are editing {pokemon_info['moves'][move_slot]} in slot {move_slot} on {selectedPokemon}")
+                        cFormatter.print(Color.GREEN, f"editing {pokeInfoDict['moves'][selectedMoveIndex]} in Slot({selectedMoveIndex}) on {pokeInfoDict['name']}")
                         newMove = fh_getCompleterInput(
                             promptMessage='Write either the ID or the Name of the Move',
                             choices={**{member.name.lower(): member for member in self.appData.movesByID}, 
@@ -1211,9 +1222,10 @@ class Rogue:
                         moveId = newMove.value
                         moveName = newMove.name
 
-                        game_data['party'][int(party_num)]['moveset'][move_slot]['moveId'] = moveId
+                        slotData['party'][int(selectedPartySlot)]['moveset'][selectedMoveIndex]['moveId'] = moveId
 
-                        cFormatter.print(Color.GREEN, f"Replaced {pokemon_info['moves'][move_slot]} in slot {move_slot} on {pokemon_info['name']} with {moveName}")
+                        changedItems.append(f'Replaced {pokeInfoDict["moves"][selectedMoveIndex]} in slot {selectedMoveIndex} on {pokeInfoDict["name"]} with {moveName}.')
+                        cFormatter.print(Color.DEBUG, f'Replaced {pokeInfoDict["moves"][selectedMoveIndex]} in slot {selectedMoveIndex} on {pokeInfoDict["name"]} with {moveName}.')
                         changed = True
 
                     elif command == 7:
@@ -1226,14 +1238,15 @@ class Rogue:
                             softCancel=True
                         )
 
-                        game_data['party'][party_num]['nature'] = natureSlot.value
-                        changedItems.append(f'Nature: {natureSlot.name}')
+                        slotData['party'][selectedPartySlot]['nature'] = natureSlot.value
+                        cFormatter.print(Color.DEBUG, f'Nature changed from {pokeInfoDict['nature']} to {natureSlot.name}.')
+                        changedItems.append(f'Nature changed from {pokeInfoDict['nature']} to {natureSlot.name}.')
                         changed = True
 
                 except OperationSoftCancel:
                     break
 
-            self.__fh_writeJSONData(game_data, filename, showSuccess=True)
+            self.__fh_writeJSONData(slotData, filename, showSuccess=True)
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error: {str(e)}')
 
