@@ -567,13 +567,22 @@ class Rogue:
             backupDirectory = config.backupDirectory
             files = os.listdir(backupDirectory)
 
-            # Pattern to match trainer ID in filenames
-            trainerPattern = re.compile(rf'\({self.trainerId}\)')
+            # Prompt the user to choose between restoring slot data or game data
+            choices = {
+                '1': 'Restore game data',
+                '2': 'Restore slot data'
+            }
+            userChoice = fh_getChoiceInput("Do you want to restore game data or slot data?", choices, renderMenu=True, zeroCancel=True)
+            
+            if userChoice == '1':
+                pattern = re.compile(rf'gameData\({self.trainerId}\)')
+            elif userChoice == '2':
+                pattern = re.compile(rf'slotData\(\d+_{self.trainerId}\)')
 
             # Filter and sort base and backup files separately
-            baseFiles = sorted([f for f in files if f.startswith('base_') and trainerPattern.search(f)])
+            baseFiles = sorted([f for f in files if f.startswith('base_') and pattern.search(f)])
             backupFiles = sorted(
-                [f for f in files if f.startswith('backup_') and trainerPattern.search(f)],
+                [f for f in files if f.startswith('backup_') and pattern.search(f)],
                 key=lambda f: datetime.strptime(re.search(r'\d{2}\.\d{2}\.\d{4}_\d{2}\.\d{2}\.\d{2}', f).group(), '%d.%m.%Y_%H.%M.%S')
             )
 
@@ -591,8 +600,10 @@ class Rogue:
 
             # Getting user's choice
             while True:
-                try:
-                    choice = int(input('Enter the number of the file you want to restore: '))
+                    choice = fh_getIntegerInput(
+                        'What file do you want to restore?', 1, len(displayFiles),
+                        zeroCancel=True
+                    )
                     if 1 <= choice <= len(displayFiles):
                         chosenFile = displayFiles[choice - 1]
                         chosenFilepath = os.path.join(backupDirectory, chosenFile)
@@ -600,11 +611,15 @@ class Rogue:
                         # Determine the output filepath
                         parentDirectory = os.path.abspath(os.path.join(backupDirectory, os.pardir))
 
-                        # If the chosen file has "slot_X" in its name, determine the slot number and the corresponding target file
-                        matchSlot = re.search(r'backup_slotData\((\d+)_', chosenFile)
-                        if matchSlot:
-                            dynSlot = matchSlot.group(1)
-                            outputFilename = f'slot_{dynSlot}.json'
+                        # Determine if the chosen file is for slot data or game data
+                        if 'slotData' in chosenFile:
+                            matchSlot = re.search(r'backup_slotData\((\d+)_', chosenFile)
+                            if matchSlot:
+                                dynSlot = matchSlot.group(1)
+                                outputFilename = f'slot_{dynSlot}.json'
+                            else:
+                                cFormatter.print(Color.CRITICAL, 'Error: Slot number not found in filename.', isLogging=True)
+                                return
                         else:
                             outputFilename = 'trainer.json'
 
@@ -627,13 +642,13 @@ class Rogue:
 
                         cFormatter.print(Color.GREEN, 'Data restored and timestamp updated.')
                         break
-                    else:
-                        cFormatter.print(Color.WARNING, 'Invalid choice. Please enter a number within range.')
-                except ValueError:
-                    cFormatter.print(Color.WARNING, 'Invalid input. Please enter a valid number.')
 
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function f_restoreBackup: {e}', isLogging=True)
+
+
+
+
 
 
     # TODO IMPORTANT: Simplify
