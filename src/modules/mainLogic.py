@@ -285,7 +285,7 @@ class Rogue:
         """     
         while True:
             try:
-                slot = fh_getIntegerInput('Enter Slot', 1, 5, zeroCancel=False, softCancel=False, allowSkip=False)
+                slot = int(fh_getIntegerInput('Enter Slot', 1, 5, zeroCancel=False, softCancel=False, allowSkip=False))
 
                 if self.editOffline:
 
@@ -425,6 +425,7 @@ class Rogue:
                         data = json.loads(response)
                         self.__fh_writeJSONData(data, f'slot_{slot}.json', False)
                         self.slot = slot
+                        cFormatter.print(Color.GREEN, f'Successfully fetched data for slot {self.slot}.')
                         return data
                     except json.JSONDecodeError as e:
                         cFormatter.print(Color.WARNING, f'Error decoding JSON: {e}', isLogging=True)

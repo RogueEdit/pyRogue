@@ -48,7 +48,9 @@ if not os.path.exists(dataDirectory):
     os.makedirs(dataDirectory)
     print(f'{Fore.GREEN}Created data directory: {dataDirectory}')
 
-debug: bool = True
+
+# Settings this to true will deactivate backups, skip prompts and use offline mode automatically
+debug: bool = False
 debugDeactivateBackup: bool = True if debug else False
 debugEnableTraceback: bool = True if debug else False
 
@@ -67,16 +69,16 @@ if not os.path.exists(cacertPath):
             f.write(response.content)
         print(f'{Fore.GREEN}Successfully fetched {cacertURL} and saved as {cacertPath}.{Style.RESET_ALL}')
     else:
-        print(f'Failed to fetch {cacertURL}. \n Status code: {response.status_code}. \n Cannot use SSL.')
+        print(f'Failed to fetch {cacertURL}. \n Status code: {response.status_code}. \n Cannot use SSL but the program might work.')
         cacertPath = False
 
 useCaCert = False if debug else cacertPath
-version: str = 'v0.3.3-wip'
+version: str = 'v0.4'
 title: str = f'<(^.^(< pyRogue {version} >)^.^)>'
 owner: str = 'rogueEdit'
 repo: str = 'onlineRogueEditor'
 repoURL: str = f'https://github.com/{owner}/{repo}/'
-releaseDate: str = '23.06.2024 10:30'
+releaseDate: str = '27.06.2024 23:00' # releaed 20:30 roughly but setting ahead in case some small fixes needed
 
 
 def f_checkForUpdates(requests: requests, datetime: datetime, timedelta: timedelta, Style: object) -> None:
