@@ -70,7 +70,7 @@ import random
 import os
 import shutil
 import time
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional
 from time import sleep
 import logging
 from datetime import datetime
@@ -112,7 +112,8 @@ class Rogue:
     UPDATE_ALL_URL = 'https://api.pokerogue.net/savedata/updateall'
     LOGOUT_URL = 'https://api.pokerogue.net/account/logout'
 
-    def __init__(self, session: requests.Session, auth_token: str, clientSessionId: str = None, driver: dict = None, useScripts: Optional[bool] = None, editOffline: bool=False) -> None:
+    def __init__(self, session: requests.Session, auth_token: str, clientSessionId: str = None, 
+                 driver: dict = None, useScripts: Optional[bool] = None, editOffline: bool=False) -> None:
         """
         Initializes the Rogue class instance.
 
@@ -156,7 +157,9 @@ class Rogue:
         self.backupDirectory = config.backupDirectory
         self.dataDirectory = config.dataDirectory
 
-        self.starterNamesById, self.biomeNamesById, self.moveNamesById, self.vouchersData, self.natureData, self.natureSlotData, self.achievementsData, self.pokemonData = self.appData.f_convertToEnums()
+        (self.starterNamesById, self.biomeNamesById, self.moveNamesById, self.vouchersData, self.natureData, 
+            self.natureSlotData, self.achievementsData, self.pokemonData, self.noPassiveIDs, self.hasFormsIDs) = self.appData.f_convertToEnums()
+        
         self.editOffline = editOffline
         
         self.__fh_dump_data()
@@ -282,7 +285,7 @@ class Rogue:
         Exceptions:
         - If the specified slot is out of range (1-5), an "Invalid input" message is printed.
 
-        """
+        """     
         try:
             while not self.slot or self.slot > 5 or self.slot < 1:
                 self.slot = fh_getIntegerInput('Enter Slot', 1, 5, False)
@@ -503,8 +506,8 @@ class Rogue:
         - datetime: For generating timestamps for backup file names.
         """
 
-        """if config.debugDeactivateBackup:
-            return"""
+        if config.debugDeactivateBackup:
+            return
 
         def __fh_backupData(data, dataType):
             timestamp = datetime.now().strftime('%d.%m.%Y_%H.%M.%S')
@@ -529,7 +532,6 @@ class Rogue:
 
         __fh_backupData(gameData, 'gameData')
         __fh_backupData(slotData, 'slotData')
-
 
     @handle_operation_exceptions
     def f_restoreBackup(self) -> None:
@@ -646,11 +648,6 @@ class Rogue:
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function f_restoreBackup: {e}', isLogging=True)
 
-
-
-
-
-
     # TODO IMPORTANT: Simplify
     @limiter.lockout
     def f_updateAllToServer(self) -> None:
@@ -729,133 +726,68 @@ class Rogue:
         except requests.exceptions.RequestException as e:
            cFormatter.print(Color.WARNING, f'Error occurred during request: {e}', isLogging=True)
 
+    @handle_operation_exceptions
     def f_unlockStarters(self) -> None:
         """
-        Allows to unlock various options for starters and updates the local .json file.
+        Unlock all starter options for the trainer, such as forms, IVs, passives, ribbons, natures, etc.
+        
+        What it does:
+        - Unlocks all forms of the Pokémon.
+        - Sets perfect IVs if chosen.
+        - Unlocks the passive ability if chosen.
+        - Unlocks win-ribbons if chosen.
+        - Unlocks all natures if chosen.
+        - Reduces the cost as specified by the user.
+        - Unlocks all abilities if chosen.
+        - Randomly sets the seen, caught, and hatched counts for the dex entries.
+        - Updates the trainer data with these options.
 
-        Args:
-            None
-
-        Raises:
-            Exception: If any error occurs during the process.
-
-        Modules Used:
-        - random: For generating random values for attributes like caught and seen counts, hatched counts, and IVs.
-        - json: For parsing and manipulating JSON data, specifically 'trainer.json'.
-        - .cFormatter: For printing formatted messages to the console, including colorized output.
-
-        Workflow:
-        1. Loads existing data from 'trainer.json'.
-        2. Prompts the user to specify various options for starters, including forms, shininess, IVs, passive attributes,
-           win ribbons, natures, cost reduction, and abilities.
-        3. Uses random values for 'seenCount', 'caughtCount', 'hatchedCount', and IVs if not specified by the user.
-        4. Updates 'trainer.json' with the modified starter data.
-
-        Usage Example:
-            >>> example_instance = ExampleClass()
-            >>> example_instance.unlock_all_starters()
-
-        Output Example:
-            - Updates 'trainer.json' with new starter data based on user inputs.
-            - Prints status messages and errors using cFormatter.
-
+        :args: None
+        :params: None
         """
-        try:
-            trainer_data: dict = self.__fh_loadDataFromJSON('trainer.json')
+        gameData: dict = self.__fh_loadDataFromJSON('trainer.json')
 
-            choice: int = int(input('Do you want to unlock all forms of the pokemon? (All forms are Tier 3 shinies. 1: Yes | 2: No): '))
-            if not 1 <= choice <= 2:
-                cFormatter.print(Color.INFO, 'Incorrect command. Setting to NO')
-                choice = 2
-            caught_attr: int = self.__MAX_BIG_INT if choice == 1 else 253 if choice == 2 else \
-                               int(input('Make the Pokemon shiny? (1: Yes, 2: No): '))
+        choices = {
+            '1': 'Yes',
+            '2': 'No'
+        }
 
-            if not 1 <= choice <= 2:
-                cFormatter.print(Color.INFO, 'Invalid choice. Setting to NO')
-                choice = 2
-            elif choice == 2:
-                caught_attr = 253
-            else:
-                choice: int = int(input('What tier shiny do you want? (1: Tier 1, 2: Tier 2, 3: Tier 3, 4: All shinies): '))
-                if not 1 <= choice <= 4:
-                    cFormatter.print(Color.INFO, 'Invalid choice.')
-                    return
-                elif choice == 1:
-                    caught_attr = 159
-                elif choice == 2:
-                    caught_attr = 191
-                elif choice == 3:
-                    caught_attr = 223
-                else:
-                    caught_attr = 255
-            
-            iv: int = int(input('Do you want the starters to have perfect IVs? (1: Yes | 2: No): '))
-            if not 1 <= iv <= 2:
-                cFormatter.print(Color.INFO, 'Invalid input. Setting to NO.')
-                iv = 2
-            
-            passive: int = int(input('Do you want the starters to have the passive unlocked? (1: Yes | 2: No): '))
-            if not 1 <= passive <= 2:
-                cFormatter.print(Color.INFO, 'Invalid input. Setting to NO.')
-                passive = 2
-            
-            ribbon: int = int(input('Do you want to unlock win-ribbons?: (1: Yes | 2: No): '))
-            if not 1 <= ribbon <= 2:
-                cFormatter.print(Color.INFO, 'Invalid input. Setting to NO.')
-                ribbon = 2
+        choice = fh_getChoiceInput('Do you want to unlock all forms of the pokemon? (All forms are Tier 3 shinies)', choices)
+        if choice == '1':
+            caughtAttr = self.__MAX_BIG_INT
+        else:
+            shinyChoice = self.fh_getChoiceInput('Do you want Tier 3 shinies?', choices)
+            caughtAttr = 255 if shinyChoice == '1' else 253
 
-            nature: int = int(input('Do you want to unlock all natures?: (1: Yes | 2: No): '))
-            if not 1 <= nature <= 2:
-                cFormatter.print(Color.INFO, 'Invalid input. Setting to NO.')
-                nature = 2
+        iv = fh_getChoiceInput('Do you want the starters to have perfect IVs?', choices)
+        passive = fh_getChoiceInput('Do you want the starters to have the passive unlocked?', choices)
+        ribbon = fh_getChoiceInput('Do you want to unlock win-ribbons?', choices)
+        nature = fh_getChoiceInput('Do you want to unlock all natures?', choices)
+        costReduce = int(fh_getIntegerInput('How much do you want to reduce the cost? Yes, Lugia can cost nearly 0!', 1, 20))
+        abilityAttr = fh_getChoiceInput('Do you want to unlock all abilities?', choices)
+        if abilityAttr == '1':
+            abilityAttr = 7
+        else:
+            abilityAttr = 0
 
-            costReduce: int = int(input('How much do you want to reduce the cost? Yes lugia can cost nearly 0! (Number between 1 and 20): '))
-            if not 0 <= costReduce <= 20:
-                cFormatter.print(Color.INFO, 'Invalid input. Setting to 0.')
-                costReduce = 0
+        noPassives = {member.name: member for member in self.appData.noPassiveIDs}
+        for entry in gameData['dexData'].keys():
+            gameData['dexData'][entry].update({
+                'caughtAttr': caughtAttr if choice == '1' else caughtAttr,
+                'natureAttr': self.natureData.UNLOCK_ALL.value if nature == '1' else None,
+                'ivs': [31, 31, 31, 31, 31, 31] if iv == '1' else random.sample(range(20, 30), 6),
+                'friendship': random.randint(1, 300),
+                'abilityAttr': abilityAttr,
+                'passiveAttr': 0 if (entry in noPassives.values()) or (passive == '2') else 3,
+                'valueReduction': costReduce,
+                'classicWinCount': 0 if ribbon == '2' else 1,
+            })
 
-            abilityAttr: int = int(input('Do you want to unlock all abilities? (1: Yes | 2: No): '))
-            if not 1 <= abilityAttr <= 2:
-                cFormatter.print(Color.INFO, 'Invalid input. Setting to none.')
-                abilityAttr = 0
-            elif abilityAttr == 1:
-                abilityAttr = 7
-            else:
-                abilityAttr = 0
 
-            total_caught: int = 0
-            total_seen: int = 0
-            for entry in trainer_data['dexData'].keys():
-                caught: int = random.randint(100, 200)
-                seen: int = random.randint(300, 400)
-                hatched: int = random.randint(30, 50)
-                total_caught += caught
-                total_seen += seen
-                randIv: List[int] = random.sample(range(20, 30), 6)
+        self.__fh_writeJSONData(gameData, 'trainer.json')
+        fh_appendMessageBuffer(Color.GREEN, 'Data updated successfully.')
+        raise OperationCancel('Written changes for all starters.')
 
-                trainer_data['dexData'][entry] = {
-                    'seenAttr': 479,
-                    'caughtAttr': self.__MAX_BIG_INT if choice == 1 else caught_attr,
-                    'natureAttr': self.natureData.UNLOCK_ALL.value if nature == 1 else None,
-                    'seenCount': seen,
-                    'caughtCount': caught,
-                    'hatchedCount': hatched,
-                    'ivs': randIv if iv == 2 else [31, 31, 31, 31, 31, 31]
-                }
-                trainer_data['starterData'][entry] = {
-                    'moveset': None,
-                    'eggMoves': 15,
-                    'candyCount': caught + 20,
-                    'friendship': random.randint(1, 300),
-                    'abilityAttr': abilityAttr,
-                    'passiveAttr': 0 if (entry in self.passive_data['noPassive']) or (passive == 2) else 3,
-                    'valueReduction': costReduce,
-                    'classicWinCount': None if ribbon == 2 else 1,
-                }
-
-            self.__fh_writeJSONData(trainer_data, 'trainer.json')
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function unlock_all_starter(): {e}', isLogging=True)
 
     def f_editStarter(self, dexId: Optional[str] = None) -> None:
         """
@@ -2030,7 +1962,7 @@ class Rogue:
         cFormatter.print(Color.DEBUG, 'You can type either the name or ID. 0 will cancel, but save done changes.')
         cFormatter.print(Color.DEBUG, 'Type `exit` or `cancel` or nothing to cancel without safes.')
 
-    def __fh_writeJSONData(self, data: Dict[str, Any], filename: str, showSuccess: bool = True) -> None:
+    def __fh_writeJSONData(self, data: Dict[str, Any], filename: str, showSuccess: bool = False) -> None:
         """
         Write data to a JSON file.
 

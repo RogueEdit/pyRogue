@@ -2980,8 +2980,43 @@ class MovesEnum(Enum):
         'MALIGNANT_CHAIN': 919,
     }
 
+class hasFormsEnum(Enum):
+    HASFORMS_DICT = {
+        'Pikachu': 25,
+        'Eevee': 133,
+        'Castform': 351,
+        'Burmy': 412,
+        'Shellos': 422,
+        'Rotom': 479,
+        'Basculin': 550,
+        'Deerling': 585,
+        'Froaki': 656,
+        'Scatterbug': 664,
+        'Flabebe': 669,
+        'Furfrou': 676,
+        'Pumpkaboo': 710,
+        'Xerneas': 716,
+        'Zygarde': 718,
+        'Oricorio': 741,
+        'Rockruff': 744,
+        'Minior': 774,
+        'Magearna': 801,
+        'Marshadow': 802,
+        'Indeedee': 893,
+        'Cramorant': 845,
+        'Sinistea': 854,
+        'Zarude': 893,
+        'Tatsugiri': 978,
+        'Squawkabilly': 931,
+        'Gimmighoul': 999,
+        'Koraidon': 1007,
+        'Miraidon': 1008,
+        'Poltchageist': 1012,
+        'Tauros': 8128,
+    }
+
 class Generator:
-    def __init__(self, nature_names: Optional[List[str]] = None) -> None:
+    def __init__(self, natureNames: Optional[List[str]] = None) -> None:
         """
         Initialize the Generator object.
 
@@ -2992,20 +3027,20 @@ class Generator:
         Modules:
             - typing: Provides type hints for function signatures and variable declarations.
         """
-        if nature_names is not None:
-            self.nature_names: List[str] = nature_names
+        if natureNames is not None:
+            self.natureNames: List[str] = natureNames
         else:
-            self.nature_names: List[str] = [nature.name for nature in Nature]  # Include all natures
-        self.nature_ids: List[int] = [2 ** i for i in range(1, len(self.nature_names) + 1)]
+            self.natureNames: List[str] = [nature.name for nature in Nature]  # Include all natures
+        self.natureIDs: List[int] = [2 ** i for i in range(1, len(self.natureNames) + 1)]
 
         # Reduce the last ID by 2
-        if len(self.nature_ids) > 0:
-            self.nature_ids[-1] -= 2
+        if len(self.natureIDs) > 0:
+            self.natureIDs[-1] -= 2
 
-        self.max_id: int = max(self.nature_ids)  # Calculate max ID
+        self.maxId: int = max(self.natureIDs)  # Calculate max ID
 
     def __nature_to_json(self) -> str:
-        nature_dict: dict = {name: id for name, id in zip(self.nature_names, self.nature_ids)}
+        nature_dict: dict = {name: id for name, id in zip(self.natureNames, self.natureIDs)}
         return json.dumps({'natures': nature_dict}, indent=4)
     
     def __generate_no_passive_json(self) -> str:
@@ -3031,6 +3066,9 @@ class Generator:
     
     def __moves_to_json(self) -> str:
         return json.dumps({'moves': MovesEnum.MOVES_DICT.value}, indent=4)
+    
+    def __hasForms_to_json(self) -> str:
+        return json.dumps({'hasForms': hasFormsEnum.HASFORMS_DICT.value}, indent=4)
     
     def __fh_saveToFile(self, data: str, filename: str) -> None:
         """
@@ -3075,7 +3113,7 @@ class Generator:
             self.__fh_saveToFile(natureJSON, 'natures.json')
 
             noPassiveJSON: str = self.__generate_no_passive_json()
-            self.__fh_saveToFile(noPassiveJSON, 'passive.json')
+            self.__fh_saveToFile(noPassiveJSON, 'noPassive.json')
 
             biomesJSON: str = self.__generate_biomes_json()
             self.__fh_saveToFile(biomesJSON, 'biomes.json')
@@ -3097,6 +3135,9 @@ class Generator:
 
             movesJSON: str = self.__moves_to_json()
             self.__fh_saveToFile(movesJSON, 'moves.json')
+
+            hasFormsJSON: str = self.__hasForms_to_json()
+            self.__fh_saveToFile(hasFormsJSON, 'hasForms.json')
 
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Generating data on initializing startup failed. {e}', isLogging=True)

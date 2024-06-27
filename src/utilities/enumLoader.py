@@ -60,6 +60,7 @@ class EnumLoader:
         self.natureData: Optional[Dict[str, int]] = None
         self.voucherData: Optional[Dict[str, int]] = None
         self.natureDataSlots: Optional[Dict[str, int]] = None
+        self.noPassiveIDs: Optional[Dict[str, int]] = None
 
     def __f_loadData(self) -> None:
         """
@@ -102,6 +103,12 @@ class EnumLoader:
 
             with open(f'{dataDir}/pokemon.json') as f:
                 self.pokemonNameByID = json.load(f)
+
+            with open(f'{dataDir}/noPassive.json') as f:
+                self.noPassiveIDs = json.load(f)
+
+            with open(f'{dataDir}/hasForms.json') as f:
+                self.hasFormsIDs = json.load(f)
 
             
         except Exception as e:
@@ -157,5 +164,9 @@ class EnumLoader:
         self.natureDataSlots = self.__f_createENUMFromDict(self.natureDataSlots['natureSlot'], 'NaturesSlotEnum')
         self.achievementsData = self.__f_createENUMFromDict(self.achievementsData['achvUnlocks'], 'AchievementsEnum')
         self.pokemonNameByID = self.__f_createENUMFromDict(self.pokemonNameByID['dex'], 'PokemonEnum')
+        self.noPassiveIDs = self.__f_createENUMFromDict(self.noPassiveIDs['noPassive'], 'NoPassiveEnum')
+        self.hasFormsIDs = self.__f_createENUMFromDict(self.hasFormsIDs['hasForms'], 'HasFormsEnum')
 
-        return (self.starterNameByID, self.biomesByID, self.movesByID, self.voucherData, self.natureData, self.natureDataSlots, self.achievementsData, self.pokemonNameByID)
+        return (self.starterNameByID, self.biomesByID, self.movesByID, self.voucherData, 
+                self.natureData, self.natureDataSlots, self.achievementsData, self.pokemonNameByID,
+                self.noPassiveIDs, self.hasFormsIDs)
