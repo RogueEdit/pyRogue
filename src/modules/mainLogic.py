@@ -1047,7 +1047,7 @@ class Rogue:
         else:
             fh_appendMessageBuffer(Color.YELLOW, 'No changes made.')
 
-    # Await response
+    @handle_operation_exceptions
     def f_editPokemonParty(self) -> None:
         """
         Allows the user to edit the Pokemon party.
@@ -1072,7 +1072,6 @@ class Rogue:
         try:
             slot = self.slot
             filename = f'slot_{slot}.json'
-
             game_data = self.__fh_loadDataFromJSON(filename)
 
             if game_data['gameMode'] == 3:
@@ -1089,14 +1088,44 @@ class Rogue:
                 '7: Change nature of a pokemon in your team'
             ]
 
+            # Reverse the pokemonNameByID dictionary to map IDs to names
+            id_to_name = {str(member.value): member.name for member in self.appData.pokemonNameByID}
+
+            current_party = []
+            changedItems = []
+
+            # Iterate over the party to get the species IDs and map to names
+            for pokemon in game_data['party']:
+                species_id = str(pokemon.get('species', None))
+                species_name = id_to_name.get(species_id, "Unknown")
+                current_party.append(species_name.capitalize())
+
+            # Print the current party
+            cFormatter.print(Color.WHITE, 'Current Pokemon (species):')
+            cFormatter.fh_printSeperators(65, '-', Color.WHITE)
+            for i, pokemon_name in enumerate(current_party):
+                cFormatter.print(Color.WHITE, f'{i}: {pokemon_name}')
+            cFormatter.fh_printSeperators(65, '-', Color.WHITE)
+
             party_num = int(input('Select the party slot of the Pokémon you want to edit (0-5): '))
-            if party_num < 0 or party_num > 5:
+            if party_num < 0 or party_num > len(current_party) - 1:
                 cFormatter.print(Color.BRIGHT_YELLOW, 'Invalid party slot.')
                 return
+
+            selected_pokemon = current_party[party_num]
+            cFormatter.print(Color.GREEN, f'Selected Pokemon: {selected_pokemon}')
 
             cFormatter.fh_printSeperators(65, '-', Color.WHITE)
             cFormatter.print(Color.WHITE, '\n'.join(options))
             cFormatter.fh_printSeperators(65, '-', Color.WHITE)
+
+
+
+
+
+
+
+
 
             command = int(input('Option: '))
             if command < 1 or command > 7:
@@ -1104,41 +1133,53 @@ class Rogue:
                 return
 
             if command == 1:
-                pokemon_completer: WordCompleter = WordCompleter(self.pokemonData.__members__.keys(), ignore_case=True)
-                cFormatter.print(Color.INFO, 'Write the name of the pokemon, it will recommend for auto-completion.')
-                dexId: str = prompt('Enter Pokemon (Name / ID): ', completer=pokemon_completer)
-                
-                try:
-                    dexId: str = self.pokemonData[dexId.lower()].value
-                except KeyError:
-                    cFormatter.print(Color.INFO, f'No Pokemon with Name: {dexId}')
-                    return
+                inputValue = fh_getCompleterInput(
+                        promptMessage='Write either the ID or the Name of the Pokemon',
+                        choices={**{member.name.lower(): member for member in self.appData.pokemonNameByID}, 
+                                **{str(member.value): member for member in self.appData.pokemonNameByID}},
+                        softCancel=True
+                    )
+                dexId = inputValue.value
                 game_data['party'][party_num]['species'] = int(dexId)
 
             elif command == 2:
+                variant = fh_getIntegerInput('Choose the shiny variant', 1, 3, softCancel=True)
                 game_data['party'][party_num]['shiny'] = True
-                variant = int(input('Choose the shiny variant (from 0 to 2): '))
-                if variant < 0 or variant > 2:
-                    cFormatter.print(Color.INFO, 'Invalid input.')
-                    return
                 game_data['party'][party_num]['variant'] = variant
+
+
             elif command == 3:
-                level = int(input('Choose the level: '))
-                if level < 1:
-                    cFormatter.print(Color.INFO, 'Invalid input.')
-                    return
+                level = fh_getIntegerInput('Choose what level', 1, 100000, softCancel=True)
                 game_data['party'][party_num]['level'] = level
+
+
             elif command == 4:
-                luck = int(input('What luck level do you desire? (from 1 to 14): '))
-                if luck < 1 or luck > 14:
-                    cFormatter.print(Color.INFO, 'Invalid input.')
-                    return
+                luck = fh_getIntegerInput('Choose what level', 1, 14, softCancel=True)
                 game_data['party'][party_num]['luck'] = luck
+
             elif command == 5:
-                ivs = [int(input('SpA IVs: ')), int(input('DEF IVs: ')), int(input('Attack IVs: ')),
-                    int(input('HP IVs: ')), int(input('Spe IVs: ')), int(input('Def IVs: '))]
+                ivs = [
+                        fh_getIntegerInput('SpA IVs', 1, 31, zeroCancel=True),
+                        fh_getIntegerInput('DEF IVs', 1, 31, zeroCancel=True),
+                        fh_getIntegerInput('Attack IVs', 1, 31, zeroCancel=True),
+                        fh_getIntegerInput('HP IVs', 1, 31, zeroCancel=True),
+                        fh_getIntegerInput('Spe IVs', 1, 31, zeroCancel=True),
+                        fh_getIntegerInput('Def IVs', 1, 31, zeroCancel=True)
+                    ]
                 game_data['party'][party_num]['ivs'] = ivs
+
+
             elif command == 6:
+                # Grab current moves
+                current_moves = [self.moveNamesById[str(move["moveId"])] for move in game_data['party'][party_num]['moveset']]
+                
+                # Print moves before prompting
+                cFormatter.print(Color.WHITE, f"Current moves on {selected_pokemon}")
+                cFormatter.fh_printSeperators(65, '-', Color.WHITE)
+                for i, move in enumerate(current_moves):
+                    cFormatter.print(Color.WHITE, f'{i}: {move}')
+                cFormatter.fh_printSeperators(65, '-', Color.WHITE)
+
                 move_slot = int(input('Select the move you want to change (from 0 to 3): '))
                 if move_slot < 0 or move_slot > 3:
                     cFormatter.print(Color.INFO, 'Invalid input.')
@@ -1146,28 +1187,33 @@ class Rogue:
                 
                 self.legacy_moves()
 
-                move_completer: WordCompleter = WordCompleter(self.moveNamesById.__members__.keys(), ignore_case=True)
+                cFormatter.print(Color.GREEN, f"You are editing {current_moves[move_slot]} in slot {move_slot}")
+                move_completer: WordCompleter = WordCompleter(self.moveNamesById.keys(), ignore_case=True)
                 
                 cFormatter.print(Color.INFO, 'Write the name of the move, it will recommend for auto completion.')
                 move: str = prompt('What move would you like?: ', completer=move_completer)
 
-                move: int = int(self.moveNamesById[move].value)
+                move: int = int(self.moveNamesById[move])
             
                 game_data['party'][party_num]['moveset'][move_slot]['moveId'] = move
-            else:
+
+            elif command == 7:
                 self.legacy_natureSlot()
 
-                natureSlot_completer: WordCompleter = WordCompleter(self.natureSlotData.__members__.keys(), ignore_case=True)
-                cFormatter.print(Color.INFO, 'Write the name of the nature, it will recommend for auto-completion.')
-                natureSlot: str = prompt('What nature would you like?: ', completer=natureSlot_completer)
-
-                natureSlot: int = int(self.natureSlotData[natureSlot].value)
+                natureSlot = fh_getCompleterInput(
+                    promptMessage='Write either the ID or the Name of the Nature',
+                    choices={**{member.name.lower(): member for member in self.appData.natureDataSlots}, 
+                            **{str(member.value): member for member in self.appData.natureDataSlots}},
+                    softCancel=True
+                )
             
-                game_data['party'][party_num]['nature'] = natureSlot
+                game_data['party'][party_num]['nature'] = natureSlot.value
+                changedItems.append(f'Nature: {natureSlot.name}')
 
-            self.__fh_writeJSONData(game_data, filename)
+
+            self.__fh_writeJSONData(game_data, filename, showSuccess=True)
         except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function edit_pokemon_party(): {e}', isLogging=True)
+            cFormatter.print(Color.CRITICAL, f'Error: {str(e)}')
 
     @handle_operation_exceptions
     def f_unlockGamemodes(self) -> None:
