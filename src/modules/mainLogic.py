@@ -1087,7 +1087,8 @@ class Rogue:
             ]
 
             # Reverse the pokemonNameByID dictionary to map IDs to names
-            id_to_name = {str(member.value): member.name for member in self.appData.pokemonNameByID}
+            pokemnonNameByIDHelper = {str(member.value): member.name for member in self.appData.pokemonNameByID}
+            moveNamesByIDHelper = {str(member.value): member.name for member in self.moveNamesById}
 
             current_party = []
             changedItems = []
@@ -1096,31 +1097,42 @@ class Rogue:
             # Iterate over the party to get the species IDs and map to names
             for pokemon in game_data['party']:
                 species_id = str(pokemon.get('species', None))
-                species_name = id_to_name.get(species_id, "Unknown")
-                current_party.append(species_name.capitalize())
+                species_name = pokemnonNameByIDHelper.get(species_id, "Unknown").capitalize()
+                shiny = pokemon.get('shiny', False)
+                variant = pokemon.get('variant', "None")
+                luck = pokemon.get('luck', 0)
+                level = pokemon.get('level', 1)
 
-            # Print the current party
+                # Create a dictionary to hold all relevant information for the current Pokémon
+                pokemon_info = {
+                    'species_name': species_name,
+                    'shiny': shiny,
+                    'variant': variant,
+                    'luck': luck,
+                    'level': level,
+                }
+
+                # Append the dictionary to the current party list
+                current_party.append(pokemon_info)
+
+            # Print the current party with detailed information
             cFormatter.print(Color.WHITE, 'Current Pokemon (species):')
             cFormatter.fh_printSeperators(65, '-', Color.WHITE)
-            for i, pokemon_name in enumerate(current_party, start=1):
-                cFormatter.print(Color.WHITE, f'{i}: {pokemon_name}')
+            for i, pokemon_info in enumerate(current_party, start=1):
+                shiny_status = f"Shiny {pokemon_info['variant']}" if pokemon_info['shiny'] else "Not Shiny"
+                cFormatter.print(Color.WHITE, f"{i}: {pokemon_info['species_name']} | Level: {pokemon_info['level']} | Luck: {pokemon_info['luck']} | {shiny_status}")
             cFormatter.fh_printSeperators(65, '-', Color.WHITE)
 
             party_num = int(fh_getIntegerInput('Select the party slot of the Pokemon you want to edit', 1, 6, zeroCancel=True)) -1
 
-            IDtoNameHelper = {str(member.value): member.name for member in self.moveNamesById}
-
             selectedPokemon = current_party[party_num]
-            selectedPokemonShiny = game_data['party'][party_num]['shiny']
-            selectedPokemonVariant = game_data['party'][party_num]['variant']
-            selectedPokemonLuck = game_data['party'][party_num]['luck']
-            selectedPokemonLevel = game_data['party'][party_num]['level']
-            selectedPokemonIVs = game_data['party'][party_num]['ivs']
+            selectedPokemonMoves = [moveNamesByIDHelper[str(move["moveId"])] for move in game_data['party'][party_num]['moveset']]
 
             while True:
                 try:
-                    cFormatter.print(Color.GREEN, f'Selected Pokemon: {selectedPokemon}')
-                    cFormatter.fh_printSeperators(65, '-', Color.WHITE)
+                    header = cFormatter.fh_centerText(f'Selected Pokemon: {selectedPokemon}', length=55, fillChar='-')
+                    cFormatter.print(Color.INFO, header)
+
                     cFormatter.print(Color.WHITE, '\n'.join(options))
                     cFormatter.fh_printSeperators(65, '-', Color.WHITE)
 
@@ -1171,7 +1183,6 @@ class Rogue:
                     elif command == 6:
                         # Reverse the moveNamesById dictionary to map IDs to names
 
-                        selectedPokemonMoves = [IDtoNameHelper[str(move["moveId"])] for move in game_data['party'][party_num]['moveset']]
                         cFormatter.print(Color.WHITE, f"Current moves on {selectedPokemon}")
                         cFormatter.fh_printSeperators(65, '-', Color.WHITE)
                         for i, move_name in enumerate(selectedPokemonMoves):
