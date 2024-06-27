@@ -13,6 +13,7 @@ Currently work in progres...
 - Fixed maxStacks in itemLogic
   - Berry Pouch from `(1)` to `(3)`
   - Vitamin Stacks from `(20)` to `(31)`
+  - Hidden Ability Charm from `(3)` to `(4)`
 
 ## Additions
 - Added Autocompleter Bidirectional functionality
@@ -38,12 +39,15 @@ Currently work in progres...
   - Added 2 more options; randomize all - manual type all - manual choose one
     - Added functionality to save just some, exit out of loops with saving just some etc
 - Added 4th "login" option which is just edit locally existing json without server connection (for Offline)
+- Added all data as enums and generated to jsons so user can modify data
+- Added specific calculated formIDs rather than setting MaxBigInt
 
 ## Rewrites
 - Added functionality and decorators to handle error responses centralized
 - Renamed  variable and function to comply with naming convention
 - Rewritten input to use functionHelpers(`fh_`-definitions) to remove redundant code
-- Added (0: Cancel) everywhere aswell as you can type `cancel` or press `STRG+C` to escape from subMenus
+- Rewritten save logic to key by key, allowing skip out of functions aswell just changing partials
+- Added (0: Cancel) everywhere aswell as you can type `cancel`, `exit` or press `STRG+C` to escape from subMenus
   - Menus that present multiple options before saving will allow to type 0 to cancel+save;
   - or type exit / cancel to Abort without saves
   - All rewrites affect mentioned above affect those functions so far:
@@ -64,8 +68,8 @@ Currently work in progres...
 
     - `edit_starter_separate(wip)` 
     - `edit_pokemon_party(wip)`  https://github.com/RogueEdit/onlineRogueEditor/pull/152
-    - `f_unlockStarters(wip)` 
-    - `f_createBackup()` <- need to backup slots
+    - `f_unlockStarters(tested:works)` <Now assigning perfect calculated IDs for all forms>
+    - `f_createBackup(tested:works)` <now creates backups for slots aswell>
     - `f_restoreBackup(tested:works)` <Should automatically recognize slot backups too>
     - `f_logout()` 
 
