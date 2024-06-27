@@ -76,8 +76,6 @@ import logging
 from datetime import datetime
 from requests.exceptions import SSLError, ConnectionError, Timeout
 import requests
-from prompt_toolkit import prompt
-from prompt_toolkit.completion import WordCompleter
 from sys import exit
 import re
 #import zstandard as zstd
@@ -1020,11 +1018,11 @@ class Rogue:
         for key, name in voucherTypes.items():
             formattedName = f'{Fore.YELLOW}{name}{Style.RESET_ALL}'
             currentAmount = gameData.get('voucherCounts', {}).get(key, '0')
-            prompt = f'How many {formattedName}? (Currently have {currentAmount})\n'
+            promptMessage = f'How many {formattedName}? (Currently have {currentAmount})\n'
             maxBound = 999
             try:
                 while True:
-                    value = fh_getIntegerInput(prompt, 0, maxBound, softCancel=True, allowSkip=True)
+                    value = fh_getIntegerInput(promptMessage, 0, maxBound, softCancel=True, allowSkip=True)
                     if value == '0':
                         raise OperationSoftCancel()  # Raise OperationSoftCancel to continue the loop
                     elif value == 'skip':
@@ -1103,14 +1101,11 @@ class Rogue:
             # Print the current party
             cFormatter.print(Color.WHITE, 'Current Pokemon (species):')
             cFormatter.fh_printSeperators(65, '-', Color.WHITE)
-            for i, pokemon_name in enumerate(current_party):
+            for i, pokemon_name in enumerate(current_party, start=1):
                 cFormatter.print(Color.WHITE, f'{i}: {pokemon_name}')
             cFormatter.fh_printSeperators(65, '-', Color.WHITE)
 
-            party_num = int(input('Select the party slot of the Pokémon you want to edit (0-5): '))
-            if party_num < 0 or party_num > len(current_party) - 1:
-                cFormatter.print(Color.BRIGHT_YELLOW, 'Invalid party slot.')
-                return
+            party_num = int(fh_getIntegerInput('Select the party slot of the Pokemon you want to edit', 1, 5, zeroCancel=True)) -1
 
             selected_pokemon = current_party[party_num]
             cFormatter.print(Color.GREEN, f'Selected Pokemon: {selected_pokemon}')
@@ -1119,15 +1114,7 @@ class Rogue:
             cFormatter.print(Color.WHITE, '\n'.join(options))
             cFormatter.fh_printSeperators(65, '-', Color.WHITE)
 
-
-
-
-
-
-
-
-
-            command = int(input('Option: '))
+            command = int(fh_getIntegerInput('Choose an action', 1, len(options), zeroCancel=True))
             if command < 1 or command > 7:
                 cFormatter.print(Color.INFO, 'Invalid input.')
                 return
@@ -1170,32 +1157,35 @@ class Rogue:
 
 
             elif command == 6:
-                # Grab current moves
-                current_moves = [self.moveNamesById[str(move["moveId"])] for move in game_data['party'][party_num]['moveset']]
+                # Reverse the moveNamesById dictionary to map IDs to names
+                id_to_move_name = {str(member.value): member.name for member in self.moveNamesById}
+
+                # Get current moves from game_data
+                current_moves = [id_to_move_name[str(move["moveId"])] for move in game_data['party'][party_num]['moveset']]
                 
-                # Print moves before prompting
+                # Print current moves
                 cFormatter.print(Color.WHITE, f"Current moves on {selected_pokemon}")
                 cFormatter.fh_printSeperators(65, '-', Color.WHITE)
-                for i, move in enumerate(current_moves):
-                    cFormatter.print(Color.WHITE, f'{i}: {move}')
+                for i, move_name in enumerate(current_moves):
+                    cFormatter.print(Color.WHITE, f'{i}: {move_name}')
                 cFormatter.fh_printSeperators(65, '-', Color.WHITE)
 
-                move_slot = int(input('Select the move you want to change (from 0 to 3): '))
-                if move_slot < 0 or move_slot > 3:
-                    cFormatter.print(Color.INFO, 'Invalid input.')
-                    return
-                
-                self.legacy_moves()
+                # Prompt user to select a move slot to change
+                move_slot = int(fh_getIntegerInput('Select the move you want to change (0-4):', 1, 4, softCancel=True))
 
-                cFormatter.print(Color.GREEN, f"You are editing {current_moves[move_slot]} in slot {move_slot}")
-                move_completer: WordCompleter = WordCompleter(self.moveNamesById.keys(), ignore_case=True)
-                
-                cFormatter.print(Color.INFO, 'Write the name of the move, it will recommend for auto completion.')
-                move: str = prompt('What move would you like?: ', completer=move_completer)
+                cFormatter.print(Color.GREEN, f"You are editing {current_moves[move_slot]} in slot {move_slot} on {selected_pokemon}")
+                newMove = fh_getCompleterInput(
+                    promptMessage='Write either the ID or the Name of the Move',
+                    choices={**{member.name.lower(): member for member in self.appData.movesByID}, 
+                            **{str(member.value): member for member in self.appData.movesByID}},
+                    softCancel=True
+                )
+                moveId = newMove.value
+                moveName = newMove.name
 
-                move: int = int(self.moveNamesById[move])
-            
-                game_data['party'][party_num]['moveset'][move_slot]['moveId'] = move
+                game_data['party'][int(party_num)]['moveset'][move_slot]['moveId'] = moveId
+
+                cFormatter.print(Color.GREEN, f"Replaced {current_moves[move_slot]} in slot {move_slot} on {selected_pokemon} with {moveName}")
 
             elif command == 7:
                 self.legacy_natureSlot()
@@ -1209,7 +1199,6 @@ class Rogue:
             
                 game_data['party'][party_num]['nature'] = natureSlot.value
                 changedItems.append(f'Nature: {natureSlot.name}')
-
 
             self.__fh_writeJSONData(game_data, filename, showSuccess=True)
         except Exception as e:
@@ -1631,11 +1620,11 @@ class Rogue:
             if currentAmount >= 999:
                 cFormatter.print(Color.INFO, f'Already max amount for {formattedName}.')
                 continue
-            prompt = f'How many {formattedName}? (Currently have {currentAmount})\n'
+            promptMessage = f'How many {formattedName}? (Currently have {currentAmount})\n'
             maxBound = 999
             try:
                 while True:
-                    value = fh_getIntegerInput(prompt, 0, maxBound, softCancel=True, allowSkip=True)
+                    value = fh_getIntegerInput(promptMessage, 0, maxBound, softCancel=True, allowSkip=True)
                     if value == '0':
                         raise OperationSoftCancel()  # Raise OperationSoftCancel to continue the loop
                     elif value == 'skip':
@@ -1691,8 +1680,8 @@ class Rogue:
         cFormatter.print(Color.DEBUG, header)
         self.fh_completerInfo(False)
 
-        prompt = 'How many Poke-Dollars do you want? '
-        choice = fh_getIntegerInput(prompt, 0, float('inf'), zeroCancel=True)
+        promptMessage = 'How many Poke-Dollars do you want? '
+        choice = fh_getIntegerInput(promptMessage, 0, float('inf'), zeroCancel=True)
         saveData["money"] = choice
         self.__fh_writeJSONData(saveData, f'slot_{self.slot}.json')
         raise OperationSuccessful(f'Written {choice} as money value to to local .json.')
