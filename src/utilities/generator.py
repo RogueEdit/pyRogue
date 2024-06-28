@@ -3,7 +3,7 @@
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/claudiunderthehood
 # Date of release: 06.06.2024
-# Last Edited: 25.06.2024
+# Last Edited: 28.06.2024
 # Based on: https://github.com/pagefaultgames/pokerogue/
 
 """
@@ -42,7 +42,7 @@ import os
 
 from utilities import cFormatter, Color
 # Custom module for colored printing and logging functionalities.
-
+from modules.config import dataDirectory
 
 class StarterEnum(Enum):
     STARTER_DICT = {
@@ -3123,46 +3123,44 @@ class Generator:
 
         self.maxId: int = max(self.natureIDs)  # Calculate max ID
 
+
+    def __writeJSON(self, file_path: str, json_data: str):
+        if not os.path.exists(file_path):
+            with open(file_path, 'w') as file:
+                file.write(json_data)
+            cFormatter.print(Color.GREEN, f'Generated {os.path.basename(file_path)}')
+
     def __natureToJSON(self) -> str:
-        nature_dict: dict = {name: id for name, id in zip(self.natureNames, self.natureIDs)}
-        cFormatter.print(Color.GREEN,'Generated natures.json')
+        nature_dict = {name: id for name, id in zip(self.natureNames, self.natureIDs)}
         return json.dumps({'natures': nature_dict}, indent=4)
     
     def __noPassiveToJSON(self) -> str:
-        cFormatter.print(Color.GREEN,'Generated noPassive.json')
         return json.dumps({'noPassive': NoPassive.NO_PASSIVE_DICT.value}, indent=4)
     
     def __biomesToJSON(self) -> str:
-        cFormatter.print(Color.GREEN, 'Generated biomes.json')
         return json.dumps({'biomes': Biome.BIOMES_DICT.value}, indent=4)
     
     def __vouchersToJSON(self) -> str:
-        cFormatter.print(Color.GREEN,'Generated vouchers.json')
         return json.dumps({'vouchers': Vouchers.VOUCHERS_DICT.value}, indent=4)
     
     def __natureSlotToJSON(self) -> str:
-        cFormatter.print(Color.GREEN,'Generated natureSlot.json')
         return json.dumps({'natureSlot': NatureSlot.NATURE_SLOT.value}, indent=4)
     
     def __achievmentsToJSON(self) -> str:
-        cFormatter.print(Color.GREEN,'Generated achievements.json')
         return json.dumps({'achvUnlocks': AchievementEnum.ACHIEVEMENTS_DICT.value}, indent=4)
     
     def __pokemonsToJSON(self) -> str:
-        cFormatter.print(Color.GREEN,'Generated pokemon.json')
         return json.dumps({'dex': PokemonEnum.POKEMON_DICT.value}, indent=4)
     
     def __startersToJSON(self) -> str:
-        cFormatter.print(Color.GREEN,'Generated starter.json')
         return json.dumps({'dex': StarterEnum.STARTER_DICT.value}, indent=4)
     
     def __movesToJSON(self) -> str:
-        cFormatter.print(Color.GREEN,'Generated moves.json')
         return json.dumps({'moves': MovesEnum.MOVES_DICT.value}, indent=4)
 
     def __formIDsToJSON(self) -> str:
-        cFormatter.print(Color.GREEN,'Generated formIDs.json')
         return json.dumps({'hasForms': formIDEnum.FORMID_DICT.value}, indent=4)
+    
     
     def __fh_saveToFile(self, data: str, filename: str) -> None:
         """
@@ -3202,36 +3200,21 @@ class Generator:
             - os: Provides a way to interact with the operating system, particularly for file and directory operations.
             - utilities: Custom module for colored printing and logging functionalities.
         """
-        try:
-            natureJSON: str = self.__natureToJSON()
-            self.__fh_saveToFile(natureJSON, 'natures.json')
 
-            noPassiveJSON: str = self.__noPassiveToJSON()
-            self.__fh_saveToFile(noPassiveJSON, 'noPassive.json')
+        appData = [
+            (self.__natureToJSON, 'natures.json'),
+            (self.__noPassiveToJSON, 'noPassive.json'),
+            (self.__biomesToJSON, 'biomes.json'),
+            (self.__vouchersToJSON, 'vouchers.json'),
+            (self.__natureSlotToJSON, 'natureSlot.json'),
+            (self.__achievmentsToJSON, 'achievements.json'),
+            (self.__pokemonsToJSON, 'pokemon.json'),
+            (self.__startersToJSON, 'starter.json'),
+            (self.__movesToJSON, 'moves.json'),
+            (self.__formIDsToJSON, 'formIDs.json'),
+        ]
 
-            biomesJSON: str = self.__biomesToJSON()
-            self.__fh_saveToFile(biomesJSON, 'biomes.json')
-
-            vouchersJSON: str = self.__vouchersToJSON()
-            self.__fh_saveToFile(vouchersJSON, 'vouchers.json')
-
-            natureSlotJSON: str = self.__natureSlotToJSON()
-            self.__fh_saveToFile(natureSlotJSON, 'natureSlot.json')
-
-            achivementJSON: str = self.__achievmentsToJSON()
-            self.__fh_saveToFile(achivementJSON, 'achievements.json')
-
-            pokemonJSON: str = self.__pokemonsToJSON()
-            self.__fh_saveToFile(pokemonJSON, 'pokemon.json')
-
-            starterJSON: str = self.__startersToJSON()
-            self.__fh_saveToFile(starterJSON, 'starter.json')
-
-            movesJSON: str = self.__movesToJSON()
-            self.__fh_saveToFile(movesJSON, 'moves.json')
-
-            formIDJSON: str = self.__formIDsToJSON()
-            self.__fh_saveToFile(formIDJSON, 'formIDs.json')
-
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Generating data on initializing startup failed. {e}', isLogging=True)
+        for JSONFunc, filename in appData:
+            JSONData = JSONFunc()
+            filePath = os.path.join(dataDirectory, filename)
+            self.__writeJSON(filePath, JSONData)

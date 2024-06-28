@@ -3,7 +3,7 @@
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: None except Authors
 # Date of release: 06.06.2024 
-# Last Edited: 20.06.2024
+# Last Edited: 28.06.2024
 
 """
 Online Rogue Editor Update Checker and Initialization
@@ -29,8 +29,8 @@ from datetime import datetime, timedelta
 import requests
 # need to manually do it to avoid circular imports
 from colorama import Fore, Style, init
-init(autoreset=True)
 
+init(autoreset=True)
 
 logsDirectory: str = os.path.join(os.getcwd(), 'logs')
 backupDirectory: str = os.path.join(os.getcwd(), 'backups')
@@ -78,7 +78,7 @@ title: str = f'<(^.^(< pyRogue {version} >)^.^)>'
 owner: str = 'rogueEdit'
 repo: str = 'onlineRogueEditor'
 repoURL: str = f'https://github.com/{owner}/{repo}/'
-releaseDate: str = '27.06.2024 23:45' # releaed 21:30 roughly but setting ahead in case some small fixes needed
+releaseDate: str = '28.06.2024 3:59' # releaed 1:30 roughly but setting ahead in case some stuff pops up
 
 
 def f_checkForUpdates(requests: requests, datetime: datetime, timedelta: timedelta, Style: object) -> None:
