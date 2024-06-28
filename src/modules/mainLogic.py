@@ -763,58 +763,98 @@ class Rogue:
         }
 
         shinyChoice = False
+        #dexData
         choice = fh_getChoiceInput('Do you want to unlock all forms of the pokemon? (All forms are Tier 3 shinies)', choices, zeroCancel=True) == '1'
         shinyChoice = fh_getChoiceInput('Do you want Tier 3 shinies?', choices, zeroCancel=True) == '1'
         iv = fh_getChoiceInput('Do you want the starters to have perfect IVs?', choices, zeroCancel=True) == '1'
+        nature = fh_getChoiceInput('Do you want to unlock all natures?', choices, zeroCancel=True) == '1'
+
         passive = fh_getChoiceInput('Do you want the starters to have the passive unlocked?', choices, zeroCancel=True) == '1'
         ribbon = fh_getChoiceInput('Do you want to unlock win-ribbons?', choices, zeroCancel=True) == '1'
-        nature = fh_getChoiceInput('Do you want to unlock all natures?', choices, zeroCancel=True) == '1'
         costReduce = int(fh_getIntegerInput('How much do you want to reduce the cost? (0 for none)', 0, 20))
         abilityAttr = fh_getChoiceInput('Do you want to unlock all abilities?', choices, zeroCancel=True) == '1'
 
         noPassives = {member.name: member for member in self.appData.noPassiveIDs}
         combinedFormIDs = {key: member.value['Combined'] for key, member in self.appData.hasFormIDs.__members__.items() if 'Combined' in member.value}
 
-        for entry in gameData['dexData'].keys():
+        # Default template for dexData
+        defaultDexData = {
+            "seenAttr": 0,
+            "caughtAttr": 0,
+            "natureAttr": 0,
+            "seenCount": 0,
+            "caughtCount": 0,
+            "hatchedCount": 0,
+            "ivs": [0, 0, 0, 0, 0, 0]
+        }
+
+
+        for entry in gameData["dexData"].keys():
             caughtAttr = 255 if shinyChoice else 253
             if choice and entry in combinedFormIDs:
                 caughtAttr = combinedFormIDs[entry]
             if not choice:
                 caughtAttr = 255 if shinyChoice else 253
 
-
-            dexDataToUpdate = { #dexData
-                'caughtAttr': caughtAttr
+            dexDataToUpdate = {
+                "caughtAttr": caughtAttr
             }
             if iv:
-                dexDataToUpdate['ivs'] = [31, 31, 31, 31, 31, 31] if iv else random.sample(range(20, 30), 6)
+                dexDataToUpdate["ivs"] = [31, 31, 31, 31, 31, 31] if iv else random.sample(range(20, 30), 6)
             if nature:
-                dexDataToUpdate['natureAttr'] = self.natureData.UNLOCK_ALL.value
-            
+                dexDataToUpdate["natureAttr"] = self.natureData.UNLOCK_ALL.value
 
+            # Ensure full block for dexData
+            fullDexData = {**defaultDexData, **dexDataToUpdate}
+
+            if entry in gameData["dexData"]:
+                gameData["dexData"][entry].update({key: value for key, value in fullDexData.items() if value is not None})
+            else:
+                print(f'Key {entry} not found in gameData["dexData"]. Initializing.')
+                gameData["dexData"][entry] = fullDexData
+
+        # Default template for starterData
+        defaultStarterData = {
+            "moveset": None,
+            "eggMoves": 0,
+            "candyCount": 0,
+            "friendship": 0,
+            "abilityAttr": 1,
+            "passiveAttr": 0,
+            "valueReduction": 0,
+            "classicWinCount": 0
+        }
+
+        for entry in gameData['starterData'].keys():
             starterDataToUpdate = {
-                'friendship': random.randint(100, 300),
+                "friendship": random.randint(100, 300),
                 "candyCount": random.randint(100, 300),
             }
             if abilityAttr:
-                starterDataToUpdate['abilityAttr'] = 7 
+                starterDataToUpdate["abilityAttr"] = 7 
 
             if ribbon:
-                starterDataToUpdate['classicWinCount'] = 1 
+                starterDataToUpdate["classicWinCount"] = 1 
             if entry in noPassives.values() or not passive:
-                starterDataToUpdate['passiveAttr'] = 0
+                starterDataToUpdate["passiveAttr"] = 0
             elif passive:
-                starterDataToUpdate['passiveAttr'] = 3
+                starterDataToUpdate["passiveAttr"] = 3
             if costReduce > 0:
-                starterDataToUpdate['valueReduction'] = costReduce
+                starterDataToUpdate["valueReduction"] = costReduce
 
+            # Ensure full block for starterData
+            fullStarterData = {**defaultStarterData, **starterDataToUpdate}
 
+            if entry in gameData["starterData"]:
+                gameData['starterData'][entry].update({key: value for key, value in fullStarterData.items() if value is not None})
+            else:
+                cFormatter.print(Color.INFO, f'Key {entry} not found in gameData["starterData"]. Initializing.')
+                gameData['starterData'][entry] = fullStarterData
 
-
-            gameData['dexData'][entry].update({key: value for key, value in dexDataToUpdate.items() if value is not None})
-            gameData['starterData'][entry].update({key: value for key, value in starterDataToUpdate.items() if value is not None})
-
+        # Save changes to JSON file
         self.__fh_writeJSONData(gameData, 'trainer.json')
+
+        # Raise success message
         raise OperationSuccessful('Written changes for all starters.')
         
     @handle_operation_exceptions
