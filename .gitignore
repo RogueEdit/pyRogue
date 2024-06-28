@@ -18,3 +18,4 @@ src/dev/slot_2.json
 /src/modules/handler/__pycache__
 src/data/extra.json
 /src/data
+*.pyc
