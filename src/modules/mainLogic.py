@@ -3,7 +3,7 @@
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/claudiunderthehood
 # Date of release: 13.06.2024 
-# Last Edited: 25.06.2024
+# Last Edited: 28.06.2024
 # Based on: https://github.com/pagefaultgames/pokerogue/
 
 """
@@ -84,7 +84,7 @@ from modules.handler import handle_operation_exceptions, OperationError, Operati
 from modules.handler import handle_http_exceptions, HTTPEmptyResponse  # noqa: F401
 from modules.handler import fh_getIntegerInput, fh_getCompleterInput, fh_getChoiceInput
 from modules import handle_error_response, HeaderGenerator, config
-from utilities import Generator, EnumLoader, cFormatter, Color, Limiter, eggLogic, fh_appendMessageBuffer
+from utilities import EnumLoader, cFormatter, Color, Limiter, eggLogic, fh_appendMessageBuffer
 
 limiter = Limiter()
 logger = logging.getLogger(__name__)
@@ -148,8 +148,6 @@ class Rogue:
         self.secretId = None
         self.trainerId = None
 
-        self.generator = Generator()
-        self.generator.generate()
         self.appData = EnumLoader()
 
         self.backupDirectory = config.backupDirectory
@@ -765,43 +763,60 @@ class Rogue:
         }
 
         shinyChoice = False
-        choice = fh_getChoiceInput('Do you want to unlock all forms of the pokemon? (All forms are Tier 3 shinies)', choices) == 1
-
-        if not choice:
-            shinyChoice = fh_getChoiceInput('Do you want Tier 3 shinies?', choices) == 1
-
-
-        iv = fh_getChoiceInput('Do you want the starters to have perfect IVs?', choices) == 1
-        passive = fh_getChoiceInput('Do you want the starters to have the passive unlocked?', choices) == 1
-        ribbon = fh_getChoiceInput('Do you want to unlock win-ribbons?', choices) == 1
-        nature = fh_getChoiceInput('Do you want to unlock all natures?', choices) == 1
+        choice = fh_getChoiceInput('Do you want to unlock all forms of the pokemon? (All forms are Tier 3 shinies)', choices, zeroCancel=True) == '1'
+        shinyChoice = fh_getChoiceInput('Do you want Tier 3 shinies?', choices, zeroCancel=True) == '1'
+        iv = fh_getChoiceInput('Do you want the starters to have perfect IVs?', choices, zeroCancel=True) == '1'
+        passive = fh_getChoiceInput('Do you want the starters to have the passive unlocked?', choices, zeroCancel=True) == '1'
+        ribbon = fh_getChoiceInput('Do you want to unlock win-ribbons?', choices, zeroCancel=True) == '1'
+        nature = fh_getChoiceInput('Do you want to unlock all natures?', choices, zeroCancel=True) == '1'
         costReduce = int(fh_getIntegerInput('How much do you want to reduce the cost? (0 for none)', 0, 20))
-        abilityAttr = fh_getChoiceInput('Do you want to unlock all abilities?', choices) == 1
+        abilityAttr = fh_getChoiceInput('Do you want to unlock all abilities?', choices, zeroCancel=True) == '1'
 
         noPassives = {member.name: member for member in self.appData.noPassiveIDs}
         combinedFormIDs = {key: member.value['Combined'] for key, member in self.appData.hasFormIDs.__members__.items() if 'Combined' in member.value}
 
         for entry in gameData['dexData'].keys():
+            caughtAttr = 255 if shinyChoice else 253
             if choice and entry in combinedFormIDs:
                 caughtAttr = combinedFormIDs[entry]
-                shinyChoice = True
-            else:
+            if not choice:
                 caughtAttr = 255 if shinyChoice else 253
 
-            gameData['dexData'][entry].update({
-                'caughtAttr': caughtAttr,
-                'natureAttr': self.natureData.UNLOCK_ALL.value if nature else None,
-                'ivs': [31, 31, 31, 31, 31, 31] if iv else random.sample(range(20, 30), 6),
-                'friendship': random.randint(1, 300),
-                'abilityAttr': 7 if abilityAttr else 0,
-                'passiveAttr': 0 if (entry in noPassives.values()) or (not passive) else 3,
-                'valueReduction': costReduce,
-                'classicWinCount': 0 if ribbon else 1,
-            })
+
+            dexDataToUpdate = { #dexData
+                'caughtAttr': caughtAttr
+            }
+            if iv:
+                dexDataToUpdate['ivs'] = [31, 31, 31, 31, 31, 31] if iv else random.sample(range(20, 30), 6)
+            if nature:
+                dexDataToUpdate['natureAttr'] = self.natureData.UNLOCK_ALL.value
+            
+
+            starterDataToUpdate = {
+                'friendship': random.randint(100, 300),
+                "candyCount": random.randint(100, 300),
+            }
+            if abilityAttr:
+                starterDataToUpdate['abilityAttr'] = 7 
+
+            if ribbon:
+                starterDataToUpdate['classicWinCount'] = 1 
+            if entry in noPassives.values() or not passive:
+                starterDataToUpdate['passiveAttr'] = 0
+            elif passive:
+                starterDataToUpdate['passiveAttr'] = 3
+            if costReduce > 0:
+                starterDataToUpdate['valueReduction'] = costReduce
+
+
+
+
+            gameData['dexData'][entry].update({key: value for key, value in dexDataToUpdate.items() if value is not None})
+            gameData['starterData'][entry].update({key: value for key, value in starterDataToUpdate.items() if value is not None})
 
         self.__fh_writeJSONData(gameData, 'trainer.json')
         raise OperationSuccessful('Written changes for all starters.')
-    
+        
     @handle_operation_exceptions
     def f_editStarter(self, dexId: Optional[str] = None) -> None:
         """
@@ -884,23 +899,27 @@ class Rogue:
                 )
 
                 action = choices[nameToKey[inputValue.lower()]]
-                
-                if action == 'Unlock all forms':
-                    formChoice = fh_getChoiceInput('Do you want to unlock all forms of the pokemon? (All forms are Tier 3 shinies)', {1: 'Yes', 2: 'No'}, zeroCancel=True)
-                    combinedFormIDs = {key: member.value['Combined'] for key, member in self.appData.hasFormIDs.__members__.items() if 'Combined' in member.value}
+                choices = {
+                    '1': 'Yes',
+                    '2': 'No'
+                }
 
-                    if formChoice == '1' and dexId in combinedFormIDs:
-                        caughtAttr = combinedFormIDs[dexId]
-                        shinyChoice = True
+                combinedFormIDs = {key: member.value['Combined'] for key, member in self.appData.hasFormIDs.__members__.items() if 'Combined' in member.value}
+
+                if action == 'Unlock all forms':
+                    formChoice = fh_getChoiceInput('Do you want to unlock all forms of the pokemon? (All forms are Tier 3 shinies)', choices, zeroCancel=True) == '1'
+                    shinyChoice = fh_getChoiceInput('Do you want Tier 3 shinies?', choices, zeroCancel=True) == '1'
+
+                    if formChoice and str(dexId) in combinedFormIDs:
+                        caughtAttr = combinedFormIDs[str(dexId)]
                     else:
-                        shinyChoice = fh_getChoiceInput('Do you want Tier 3 shinies?', {1: 'Yes', 2: 'No'}, zeroCancel=True) == '1'
                         caughtAttr = 255 if shinyChoice else 253
 
                     gameData['dexData'][str(dexId)]['caughtAttr'] = caughtAttr
-                    changedItems.append('Unlocked all forms.')
+                    changedItems.append(f'Changed caughtAttr to {caughtAttr}')
                     
                 elif action == 'Set shininess':
-                    shinyChoice = fh_getChoiceInput('Do you want Tier 3 shinies?', {1: 'Yes', 2: 'No'}, zeroCancel=True) == '1'
+                    shinyChoice = fh_getChoiceInput('Do you want Tier 3 shinies?', choices, zeroCancel=True) == '1'
                     caughtAttr = 255 if shinyChoice else 253
                     gameData['dexData'][str(dexId)]['caughtAttr'] = caughtAttr
                     changedItems.append(f'Tier 3 shinies: {"Yes" if shinyChoice else "No"}')
@@ -936,7 +955,7 @@ class Rogue:
                     changedItems.append(f'Nature: {nature.name}')
                     
                 elif action == 'Set passive':
-                    passive = fh_getChoiceInput('Do you want the starters to have the passive unlocked?', {1: 'Yes', 2: 'No'}, zeroCancel=True)
+                    passive = fh_getChoiceInput('Do you want the starters to have the passive unlocked?', choices, zeroCancel=True)
                     if passive == '1' and dexId in self.passive_data['noPassive']:
                         cFormatter.print(Color.INFO, 'This pokemon has no passive.')
                         passiveAttr = 0
@@ -951,7 +970,7 @@ class Rogue:
                     changedItems.append(f'Cost reduction: {cost_reduce}')
                     
                 elif action == 'Set abilities':
-                    ability = fh_getChoiceInput('Do you want to unlock all abilities?', {1: 'Yes, with hidden', 2: 'No'}, zeroCancel=True)
+                    ability = fh_getChoiceInput('Do you want to unlock all abilities?', choices, zeroCancel=True)
                     abilityAttr = 7 if ability == '1' else 0
                     gameData['starterData'][str(dexId)]['abilityAttr'] = abilityAttr
                     changedItems.append(f'Abilities: {"All unlocked" if abilityAttr == 7 else "Default"}')
@@ -1143,7 +1162,7 @@ class Rogue:
 
 
         # Select a pokemon
-        selectedPartySlot = int(fh_getIntegerInput('Select the party slot of the Pokemon you want to edit', 1, 6, zeroCancel=True)) -1
+        selectedPartySlot = int(fh_getIntegerInput('Select the party slot of the Pokemon you want to edit', 1, len(currentParty), zeroCancel=True)) -1
         selectedPokemon = currentParty[selectedPartySlot]
         #selectedPokemonMoves = [moveNamesByIDHelper[str(move["moveId"])] for move in game_data['party'][party_num]['moveset']]
 
@@ -1783,6 +1802,8 @@ class Rogue:
             >>> example_instance.f_addEggsGenerator()
         """
         trainerData = self.__fh_loadDataFromJSON('trainer.json')
+        if "eggs" not in trainerData:
+            trainerData["eggs"] = []
         currentEggs = trainerData.get('eggs', [])
         currentAmount = len(currentEggs)
 

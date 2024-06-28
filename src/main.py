@@ -3,7 +3,7 @@
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/claudiunderthehood 
 # Date of release: 13.06.2024
-# Last Edited: 25.06.2024
+# Last Edited: 28.06.2024
 # Based on: https://github.com/pagefaultgames/pokerogue/
 
 """
@@ -41,7 +41,9 @@ from utilities import cFormatter, Color, CustomLogger
 from datetime import datetime, timedelta
 from utilities import fh_printMessageBuffer
 from sys import exit
-
+from utilities import Generator
+generator = Generator()
+generator.generate()
 init()
 logger = CustomLogger()
 
@@ -62,7 +64,6 @@ def m_executeOptions(choice_index, valid_choices):
 def m_mainMenu(rogue, editOffline: bool = False):
     title = f'{config.title}>'
     useWhenDone = f'{Fore.LIGHTYELLOW_EX}(Use when Done)'
-    untouched = f'{Fore.LIGHTYELLOW_EX}(UNTOUCHED)'
     reworked = f'{Fore.GREEN}(REWORKED)'
 
     term = [

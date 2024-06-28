@@ -3,7 +3,7 @@
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: None except Authors
 # Date of release: 06.06.2024
-# Last edited: 25.06.2024
+# Last Edited: 28.06.2024
 # Based on: https://github.com/pagefaultgames/pokerogue/
 
 """
@@ -81,6 +81,7 @@ class EnumLoader:
         """
         try:
             dataDir: str = config.dataDirectory
+
             with open(f'{dataDir}/starter.json') as f:
                 self.starterNameByID = json.load(f)
 

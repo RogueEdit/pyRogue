@@ -3,7 +3,7 @@
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: None except Author
 # Date of release: 06.06.2024
-# Last Edited: 25.06.2024
+# Last Edited: 28.06.2024
 
 """
 This script provides a custom logger that logs messages to a weekly rotating log file. It includes functionality to
