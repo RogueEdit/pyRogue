@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>AES Encryption/Decryption</title>
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Your Name">
+    <meta name="description" content="A simple online AES encryption/decryption tool.">
+    <meta name="keywords" content="cryptography, encryption, decryption, AES, AES 256, Rijndael">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <link rel="icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <form id="form" action="">
+        <h1>AES Encryption/Decryption</h1>
+        <p>The Advanced Encryption Standard.</p>
+        <fieldset id="input">
+            <label for="file">Select .json or .prsv file:</label>
+            <input type="file" id="file" accept=".json, .prsv" required>
+            <input type="checkbox" id="nullCheckbox">
+            <label for="nullCheckbox">Removes starters moveset</label>
+            <input type="checkbox" id="binaryCheckbox">
+            <label for="binaryCheckbox">Convert to Binary</label>
+            <button type="button" id="encryptBtn">Encrypt and Download</button>
+            <button type="button" id="decryptBtn">Decrypt and Download</button>
+        </fieldset>
+    </form>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.min.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
