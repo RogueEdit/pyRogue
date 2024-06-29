@@ -1,3 +1,10 @@
+# Authors https://github.com/JulianStiebler/
+# Organization: https://github.com/rogueEdit/
+# Repository: https://github.com/rogueEdit/OnlineRogueEditor
+# Contributors: None except Author
+# Date of release: 24.06.2024 
+# Last Edited: 28.06.2024
+
 import json
 from enum import Enum
 
@@ -17,45 +24,40 @@ with open('raw.json', 'r') as f:
     data = json.load(f)
 
 # Function to compute caughtAttr for specific forms with VARIANT_3
-def compute_caught_attr_for_variant_3(pokemon_data, variant_flag, default_form_flag):
-    pokemon_caught_attrs = {}
+def computeVariant3(pokeData, variantFlag, defaultFlag):
+    caughtAttr = {}
 
-    for pokemon_id, pokemon_info in pokemon_data['hasForms'].items():
-        pokemon_caught_attrs[pokemon_id] = {}
+    for pokeID, pokeInfo in pokeData['hasForms'].items():
+        caughtAttr[pokeID] = {}
 
-        for pokemon_name, forms in pokemon_info.items():
-            caught_attrs = {}
-            combined_caught_attr = 0
+        for pokemon_name, forms in pokeInfo.items():
+            caughtAttributes = {}
+            combinedCaughtAttr = 0
 
-            for form_name in forms:
-                form_flag = default_form_flag | (1 << (forms.index(form_name) + 7))
-                caught_attr = 255 | form_flag | variant_flag
-                caught_attrs[form_name] = caught_attr - 128  # Adjust caught_attr to remove the extra 128
+            for formName in forms:
+                formFlag = defaultFlag | (1 << (forms.index(formName) + 7))
+                caughtAttr = 255 | formFlag | variantFlag
+                caughtAttributes[formName] = caughtAttr - 128  # Adjust caught_attr to remove the extra 128
 
                 # Update combined_caught_attr by ORing with the current form's caughtAttr
-                combined_caught_attr |= caught_attrs[form_name] + 128  # Add 128 back before ORing
+                combinedCaughtAttr |= caughtAttributes[formName] + 128  # Add 128 back before ORing
 
             # Assign the combined_caught_attr with an additional 128
-            combined_caught_attr += 128
+            combinedCaughtAttr += 128
 
             # Add the entire caught_attrs dictionary directly
-            pokemon_caught_attrs[pokemon_id][pokemon_name] = caught_attrs
+            caughtAttr[pokeID][pokemon_name] = caughtAttributes
 
             # Also add the combined_caught_attr at the top level of the Pokemon
-            pokemon_caught_attrs[pokemon_id]["Combined"] = combined_caught_attr+-128
+            caughtAttr[pokeID]["Combined"] = combinedCaughtAttr+-128
 
-    return pokemon_caught_attrs
+    return caughtAttr
 
 # Compute caughtAttr for each pokemon with VARIANT_3
-pokemon_caught_attrs_variant_3 = compute_caught_attr_for_variant_3(data, DexAttr.VARIANT_3.value, DexAttr.DEFAULT_FORM.value)
-
-# Print the caughtAttr values for Pikachu
-pikachu_data = pokemon_caught_attrs_variant_3["25"]["Pikachu"]
-for form_name, caught_attr in pikachu_data.items():
-    print(f"{form_name}: {caught_attr}")
+flag3IDs = computeVariant3(data, DexAttr.VARIANT_3.value, DexAttr.DEFAULT_FORM.value)
 
 # Write computed results to filled.json
 with open('filled.json', 'w') as f:
-    json.dump(pokemon_caught_attrs_variant_3, f, indent=4)
+    json.dump(flag3IDs, f, indent=4)
 
 print("Data has been computed and saved to filled.json.")

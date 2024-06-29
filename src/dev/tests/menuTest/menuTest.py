@@ -1,3 +1,10 @@
+# Authors https://github.com/JulianStiebler/
+# Organization: https://github.com/rogueEdit/
+# Repository: https://github.com/rogueEdit/OnlineRogueEditor
+# Contributors: None except Author
+# Date of release: 24.06.2024 
+# Last Edited: 28.06.2024
+
 from colorama import Fore, Style, init
 import functions as rogue
 import re

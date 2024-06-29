@@ -1,11 +1,9 @@
-# Authors
+# Authors https://github.com/JulianStiebler/
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
-# Contributors: https://github.com/JulianStiebler/
-# Date of release: 13.06.2024 
+# Contributors: None except Author
+# Date of release: 24.06.2024 
 # Last Edited: 28.06.2024
-
-# Unlike the other code, reusing this in your own project is forbidden.
 
 import os
 import json

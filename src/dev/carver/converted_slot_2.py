@@ -1,3 +1,10 @@
+# Authors https://github.com/JulianStiebler/
+# Organization: https://github.com/rogueEdit/
+# Repository: https://github.com/rogueEdit/OnlineRogueEditor
+# Contributors: None except Author
+# Date of release: 24.06.2024 
+# Last Edited: 28.06.2024
+
 # This file contains converted modifiers
 ABILITY_CHARM = Modifier(args=None, className='HiddenAbilityRateBoosterModifier', player=True, stackCount=100, typeId='ABILITY_CHARM')
 AMULET_COIN = Modifier(args=None, className='MoneyMultiplierModifier', player=True, stackCount=100, typeId='AMULET_COIN')
