@@ -1293,7 +1293,7 @@ class Rogue:
                     # Prompt user to select a move slot to change
                     selectedMoveIndex = int(fh_getIntegerInput('Select the move you want to change (0-4):', 1, 4, softCancel=True))-1
                     self.fh_completerInfo()
-                    cFormatter.print(Color.GREEN, f"editing {pokeInfoDict['moves'][selectedMoveIndex]} in Slot({selectedMoveIndex}) on {pokeInfoDict['name']}")
+                    cFormatter.print(Color.GREEN, f"editing {selectedPokemon['moves'][selectedMoveIndex]} in Slot({selectedMoveIndex}) on {selectedPokemon['name']}") # how to print selected move name
                     newMove = fh_getCompleterInput(
                         promptMessage='Write either the ID or the Name of the Move',
                         choices={**{member.name.lower(): member for member in self.appData.movesByID}, 
