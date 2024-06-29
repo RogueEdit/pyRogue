@@ -1630,7 +1630,7 @@ class Rogue:
                 )
 
                 # Update game data with the chosen Pokémon's candy count
-                gameData["starterData"][str(inputValue.value)]["candyCount"] = candies
+                gameData["starterData"][str(inputValue.value)]["candyCount"] = int(candies)
                 changedItems.append(f"{inputValue.name.capitalize()}: {candies}")
                 changed = True
 
