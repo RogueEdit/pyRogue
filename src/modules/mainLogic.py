@@ -1165,7 +1165,7 @@ class Rogue:
             pokeLevel = pokemon.get('level', 1)
             pokeMoves = [moveNamesByIDHelper[str(move["moveId"])] for move in pokemon['moveset']]
             pokeNatureID = str(pokemon.get('nature', 0))  # Assuming nature key is "nature" and default ID is 0
-            pokeNature = natureNamesByIDHelper.get(pokeNatureID, "Unknown Nature")
+            pokeNature = natureNamesByIDHelper.get(pokeNatureID, "None")
             pokeIVs = pokemon.get('ivs', 0)
 
             # Create a dictionary to hold all relevant information for the current Pokémon
@@ -1186,10 +1186,10 @@ class Rogue:
             currentParty.append(pokeInfoDict)
 
         # Print the current party with detailed information
-        cFormatter.print(Color.WHITE, 'Current Pokemon (species):')
+        cFormatter.print(Color.WHITE, 'Current Pokemon Party')
         cFormatter.fh_printSeperators(55, '-', Color.DEBUG)
         for i, pokeInfoDict in enumerate(currentParty, start=1):
-            shinyStatus = f"Shiny {pokeInfoDict['variant']}" if pokeInfoDict["shiny"] else "Not Shiny"
+            shinyStatus = f'Shiny {pokeInfoDict["variant"]}' if pokeInfoDict["shiny"] else 'Not Shiny'
             cFormatter.print(Color.WHITE, f'{i}: {Fore.YELLOW}{pokeInfoDict["name"]}{Style.RESET_ALL} | Level: {pokeInfoDict["level"]} | Luck: {pokeInfoDict["luck"]} | {shinyStatus} |')
         cFormatter.fh_printSeperators(55, '-', Color.DEBUG)
 
@@ -1197,34 +1197,36 @@ class Rogue:
         # Select a pokemon
         selectedPartySlot = int(fh_getIntegerInput('Select the party slot of the Pokemon you want to edit', 1, len(currentParty), zeroCancel=True)) -1
         selectedPokemon = currentParty[selectedPartySlot]
-        selectedPokemonData = selectedPokemon['data_ref']
+        selectedPokemonData = selectedPokemon["data_ref"]
 
+        shinyStatus = f'Shiny {selectedPokemon["variant"]}' if selectedPokemon["shiny"] else 'Not Shiny'
         options = [
             '1: Change pokemon',
-            '2: Set it shiny',
-            '3: Set Level',
-            '4: Set Luck',
-            f'5: Set IVs {selectedPokemon['ivs']}',
-            '6: Change moves',
-            '7: Change nature'
+            f'2: {Fore.YELLOW}Set it shiny {Style.RESET_ALL}| Current: {shinyStatus}',
+            f'3: {Fore.YELLOW}Set Level {Style.RESET_ALL}| Current: Level {selectedPokemon["level"]}',
+            f'4: {Fore.YELLOW}Set Luck {Style.RESET_ALL}| Current: Luck {selectedPokemon["luck"]}',
+            f'5: {Fore.YELLOW}Set IVs {Style.RESET_ALL}| Current:  {selectedPokemon["ivs"]}',
+            f'6: {Fore.YELLOW}Change moves {Style.RESET_ALL}| {selectedPokemon["moves"]}',
+            f'7: {Fore.YELLOW}Change nature {Style.RESET_ALL}| Current: {selectedPokemon["nature"]}'
         ]
 
         # Start loop and present options
         while True:
             try:
-                header = cFormatter.fh_centerText(f' Selected Pokemon: {selectedPokemon['name']} ', length=55, fillChar='-')
-                cFormatter.print(Color.INFO, header)
+                header = cFormatter.fh_centerText(f' Selected Pokemon: {selectedPokemon["name"]} ', length=55, fillChar='-')
+                cFormatter.print(Color.BRIGHT_YELLOW, header)
                 cFormatter.print(Color.WHITE, '\n'.join(options))
                 cFormatter.fh_printSeperators(55, '-', Color.DEBUG)
 
-                command = int(fh_getIntegerInput('Choose an action', 1, len(options), softCancel=True))
+                command = int(fh_getIntegerInput(f'Choose an action for {selectedPokemon["name"]}', 1, len(options), softCancel=True))
                 if command < 1 or command > len(options):
                     cFormatter.print(Color.INFO, 'Invalid input.')
                     return
 
+                # Change Pokemon
                 if command == 1:
                     header = cFormatter.fh_centerText(' Change to another pokemon ', length=55, fillChar='-')
-                    cFormatter.print(Color.DEBUG, header)
+                    cFormatter.print(Color.YELLOW, header)
                     self.fh_completerInfo()
                     inputValue = fh_getCompleterInput(
                             promptMessage='Write either the ID or the Name of the Pokemon',
@@ -1234,41 +1236,49 @@ class Rogue:
                         )
                     dexId = inputValue.value
 
-                    selectedPokemonData['species'] = int(dexId)
+                    selectedPokemonData["species"] = int(dexId)
                     cFormatter.print(Color.DEBUG, f'Changed Pokemon from {selectedPokemon["name"]} to {inputValue.name}.')
                     changedItems.append(f'Changed {selectedPokemon["name"]} to {inputValue.name}')
                     changed = True
 
+                # Change Shiny Status
                 elif command == 2:
                     header = cFormatter.fh_centerText(' Change Shiny Status ', length=55, fillChar='-')
+                    cFormatter.print(Color.YELLOW, header)
                     pokeShinyType = fh_getIntegerInput('Choose the shiny variant', 1, 3, softCancel=True)
                     
-                    selectedPokemonData['shiny'] = True
-                    selectedPokemonData['variant'] = int(pokeShinyType)
+                    selectedPokemonData["shiny"] = True
+                    selectedPokemonData["variant"] = int(pokeShinyType)
                     cFormatter.print(Color.DEBUG, f'Changed Shiny from {selectedPokemon["variant"]} to Shiny {pokeShinyType}.')
                     changedItems.append(f'Changed Shiny status of {selectedPokemon["name"]} to Shiny {pokeShinyType}.')
                     changed = True
 
+                # Change Level
                 elif command == 3:
                     header = cFormatter.fh_centerText(' Change Level ', length=55, fillChar='-')
+                    cFormatter.print(Color.YELLOW, header)
                     pokeLevel = fh_getIntegerInput('Choose what level', 1, 100000, softCancel=True)
 
-                    selectedPokemonData['level'] = int(pokeLevel)
+                    selectedPokemonData["level"] = int(pokeLevel)
                     cFormatter.print(Color.DEBUG, f'Changed Level from {selectedPokemon["level"]} to {pokeLevel}.')
                     changedItems.append(f'Changed Level of {selectedPokemon["name"]} from {selectedPokemon["level"]} to {pokeLevel}.')
                     changed = True
 
+                # Change Luck
                 elif command == 4:
                     header = cFormatter.fh_centerText(' Change Luck ', length=55, fillChar='-')
+                    cFormatter.print(Color.YELLOW, header)
                     pokeLuck = fh_getIntegerInput('Choose what level', 1, 14, softCancel=True)
 
-                    selectedPokemonData['luck'] = int(pokeLuck)
+                    selectedPokemonData["luck"] = int(pokeLuck)
                     cFormatter.print(Color.DEBUG, f'Changed Luck from {selectedPokemon["luck"]} to {pokeLuck}.')
                     changedItems.append(f'Changed Luck of {selectedPokemon["name"]} from {selectedPokemon["luck"]} to {pokeLuck}.')
                     changed = True
 
+                # Change IVs
                 elif command == 5:
                     header = cFormatter.fh_centerText(' Change IVs ', length=55, fillChar='-')
+                    cFormatter.print(Color.YELLOW, header)
                     ivs = [
                             int(fh_getIntegerInput('SpA IVs', 1, 31, softCancel=True)),
                             int(fh_getIntegerInput('DEF IVs', 1, 31, softCancel=True)),
@@ -1277,16 +1287,16 @@ class Rogue:
                             int(fh_getIntegerInput('Spe IVs', 1, 31, softCancel=True)),
                             int(fh_getIntegerInput('Def IVs', 1, 31, softCancel=True))
                         ]
-                    selectedPokemonData['ivs'] = ivs
+                    selectedPokemonData["ivs"] = ivs
                     cFormatter.print(Color.DEBUG, f'Changed IVs to {ivs}.')
                     changedItems.append(f'Changed IVs of {selectedPokemon["name"]} to {ivs}.')
                     changed = True
 
+                # Change moves
                 elif command == 6:
-                    
-                    header = cFormatter.fh_centerText(f'Current moves on {selectedPokemon['name']}', 55, '-')
-                    cFormatter.print(Color.WHITE, header)
-                    for i, move in enumerate(selectedPokemon['moves'], start=1):
+                    header = cFormatter.fh_centerText(f'Current moves on {selectedPokemon["name"]}', 55, '-')
+                    cFormatter.print(Color.YELLOW, header)
+                    for i, move in enumerate(selectedPokemon["moves"], start=1):
                         cFormatter.print(Color.WHITE, f'{i}: {move}')
                     cFormatter.fh_printSeperators(55, '-', Color.WHITE)
 
@@ -1295,7 +1305,7 @@ class Rogue:
                     self.fh_completerInfo()
                     cFormatter.print(Color.GREEN, f'Editing {selectedPokemon['moves'][selectedMoveIndex]} in Slot({selectedMoveIndex+1}) on {selectedPokemon['name']}') # how to print selected move name
                     newMove = fh_getCompleterInput(
-                        promptMessage='Write either the ID or the Name of the Move',
+                        promptMessage='Write either the ID or the Name of the Move.',
                         choices={**{member.name.lower(): member for member in self.appData.movesByID}, 
                                 **{str(member.value): member for member in self.appData.movesByID}},
                         softCancel=True
@@ -1303,22 +1313,24 @@ class Rogue:
                     moveId = newMove.value
                     moveName = newMove.name
 
-                    selectedPokemonData['moveset'][selectedMoveIndex]['moveId'] = moveId
+                    selectedPokemonData["moveset"][selectedMoveIndex]["moveId"] = moveId
                     changedItems.append(f'Replaced move in slot {selectedMoveIndex + 1} on {selectedPokemon["name"]} with {moveName}.')
-                    cFormatter.print(Color.DEBUG, f'Replaced move {selectedPokemon['moves'][selectedMoveIndex]} in slot {selectedMoveIndex + 1} on {selectedPokemon["name"]} with {moveName}.')
+                    cFormatter.print(Color.DEBUG, f'Replaced move {selectedPokemon["moves"][selectedMoveIndex]} in slot {selectedMoveIndex + 1} on {selectedPokemon["name"]} with {moveName}.')
                     changed = True
 
+                # Change Nature
                 elif command == 7:
                     self.legacy_natureSlot()
                     self.fh_completerInfo()
+                    cFormatter.print(Color.DEBUG, f'Current Nature: {selectedPokemon["nature"]}')
                     natureSlot = fh_getCompleterInput(
-                        promptMessage='Write either the ID or the Name of the Nature',
+                        promptMessage='Write either the ID or the Name of the Nature.',
                         choices={**{member.name.lower(): member for member in self.appData.natureDataSlots}, 
                                 **{str(member.value): member for member in self.appData.natureDataSlots}},
                         softCancel=True
                     )
 
-                    selectedPokemonData['nature'] = natureSlot.value
+                    selectedPokemonData["nature"] = natureSlot.value
                     cFormatter.print(Color.DEBUG, f'Nature changed from {selectedPokemon["nature"]} to {natureSlot.name}.')
                     changedItems.append(f'Nature changed from {selectedPokemon["nature"]} to {natureSlot.name}.')
                     changed = True
@@ -1334,8 +1346,6 @@ class Rogue:
         else:
             cFormatter.print(Color.INFO, 'No changes made.')
             fh_appendMessageBuffer(Color.INFO, 'No changes made.')
-
-            
 
     @handle_operation_exceptions
     def f_unlockGamemodes(self) -> None:
