@@ -1244,7 +1244,7 @@ class Rogue:
                     pokeShinyType = fh_getIntegerInput('Choose the shiny variant', 1, 3, softCancel=True)
                     
                     selectedPokemonData['shiny'] = True
-                    selectedPokemonData['variant'] = pokeShinyType
+                    selectedPokemonData['variant'] = int(pokeShinyType)
                     cFormatter.print(Color.DEBUG, f'Changed Shiny from {selectedPokemon["variant"]} to Shiny {pokeShinyType}.')
                     changedItems.append(f'Changed Shiny status of {selectedPokemon["name"]} to Shiny {pokeShinyType}.')
                     changed = True
@@ -1253,7 +1253,7 @@ class Rogue:
                     header = cFormatter.fh_centerText(' Change Level ', length=55, fillChar='-')
                     pokeLevel = fh_getIntegerInput('Choose what level', 1, 100000, softCancel=True)
 
-                    selectedPokemonData['level'] = pokeLevel
+                    selectedPokemonData['level'] = int(pokeLevel)
                     cFormatter.print(Color.DEBUG, f'Changed Level from {selectedPokemon["level"]} to {pokeLevel}.')
                     changedItems.append(f'Changed Level of {selectedPokemon["name"]} from {selectedPokemon["level"]} to {pokeLevel}.')
                     changed = True
@@ -1262,7 +1262,7 @@ class Rogue:
                     header = cFormatter.fh_centerText(' Change Luck ', length=55, fillChar='-')
                     pokeLuck = fh_getIntegerInput('Choose what level', 1, 14, softCancel=True)
 
-                    selectedPokemonData['luck'] = pokeLuck
+                    selectedPokemonData['luck'] = int(pokeLuck)
                     cFormatter.print(Color.DEBUG, f'Changed Luck from {selectedPokemon["luck"]} to {pokeLuck}.')
                     changedItems.append(f'Changed Luck of {selectedPokemon["name"]} from {selectedPokemon["luck"]} to {pokeLuck}.')
                     changed = True
@@ -1270,12 +1270,12 @@ class Rogue:
                 elif command == 5:
                     header = cFormatter.fh_centerText(' Change IVs ', length=55, fillChar='-')
                     ivs = [
-                            fh_getIntegerInput('SpA IVs', 1, 31, softCancel=True),
-                            fh_getIntegerInput('DEF IVs', 1, 31, softCancel=True),
-                            fh_getIntegerInput('Attack IVs', 1, 31, softCancel=True),
-                            fh_getIntegerInput('HP IVs', 1, 31, softCancel=True),
-                            fh_getIntegerInput('Spe IVs', 1, 31, softCancel=True),
-                            fh_getIntegerInput('Def IVs', 1, 31, softCancel=True)
+                            int(fh_getIntegerInput('SpA IVs', 1, 31, softCancel=True)),
+                            int(fh_getIntegerInput('DEF IVs', 1, 31, softCancel=True)),
+                            int(fh_getIntegerInput('Attack IVs', 1, 31, softCancel=True)),
+                            int(fh_getIntegerInput('HP IVs', 1, 31, softCancel=True)),
+                            int(fh_getIntegerInput('Spe IVs', 1, 31, softCancel=True)),
+                            int(fh_getIntegerInput('Def IVs', 1, 31, softCancel=True))
                         ]
                     selectedPokemonData['ivs'] = ivs
                     cFormatter.print(Color.DEBUG, f'Changed IVs to {ivs}.')
@@ -1291,7 +1291,7 @@ class Rogue:
                     cFormatter.fh_printSeperators(55, '-', Color.WHITE)
 
                     # Prompt user to select a move slot to change
-                    selectedMoveIndex = int(fh_getIntegerInput('Select the move you want to change (0-4):', 1, 4, softCancel=True))
+                    selectedMoveIndex = int(fh_getIntegerInput('Select the move you want to change (0-4):', 1, 4, softCancel=True))-1
                     self.fh_completerInfo()
                     cFormatter.print(Color.GREEN, f"editing {pokeInfoDict['moves'][selectedMoveIndex]} in Slot({selectedMoveIndex}) on {pokeInfoDict['name']}")
                     newMove = fh_getCompleterInput(
