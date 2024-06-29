@@ -1293,7 +1293,7 @@ class Rogue:
                     # Prompt user to select a move slot to change
                     selectedMoveIndex = int(fh_getIntegerInput('Select the move you want to change (0-4):', 1, 4, softCancel=True))-1
                     self.fh_completerInfo()
-                    cFormatter.print(Color.GREEN, f"editing {selectedPokemon['name'][selectedMoveIndex]} in Slot({selectedMoveIndex}+1) on {selectedPokemon['name']}") # how to print selected move name
+                    cFormatter.print(Color.GREEN, f'Editing {selectedPokemon['moves'][selectedMoveIndex]} in Slot({selectedMoveIndex+1}) on {selectedPokemon['name']}') # how to print selected move name
                     newMove = fh_getCompleterInput(
                         promptMessage='Write either the ID or the Name of the Move',
                         choices={**{member.name.lower(): member for member in self.appData.movesByID}, 
@@ -1305,7 +1305,7 @@ class Rogue:
 
                     selectedPokemonData['moveset'][selectedMoveIndex]['moveId'] = moveId
                     changedItems.append(f'Replaced move in slot {selectedMoveIndex + 1} on {selectedPokemon["name"]} with {moveName}.')
-                    cFormatter.print(Color.DEBUG, f'Replaced move in slot {selectedMoveIndex + 1} on {selectedPokemon["name"]} with {moveName}.')
+                    cFormatter.print(Color.DEBUG, f'Replaced move {selectedPokemon['moves'][selectedMoveIndex]} in slot {selectedMoveIndex + 1} on {selectedPokemon["name"]} with {moveName}.')
                     changed = True
 
                 elif command == 7:
