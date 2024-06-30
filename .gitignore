@@ -5,7 +5,7 @@ src/utilities/__pycache__/*
 src/backups/*
 src/logs/*.log
 src/trainer.json
-src/slot_1.json
+src/slot_*.json
 /src/tests/menuTest/__pycache__
 /src/backup
 .vs/*
