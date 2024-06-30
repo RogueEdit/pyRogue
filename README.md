@@ -104,7 +104,9 @@ We will not use the tool 24/7 - this means we will not see when it breaks due to
   - This was reverted; https://github.com/pagefaultgames/rogueserver/commit/0526c7a0f197ecec009cbd59b9e07cab00b01a44 but we still keep it limited.
 
 - Edit a pokemon in your party
-  - Let's you edit moves, species and level of a Pokemon in your team. It let's you set it shiny and its variant and makes it 6 IVs
+  - Let's you edit moves, species, level, luck, fusion etc...
+  ![grafik](https://github.com/RogueEdit/onlineRogueEditor/assets/68881884/da716066-6a4a-461c-9fd2-4d9aa5743e08)
+
 
 - Unlock all achievements
 - Unlock all game modes
