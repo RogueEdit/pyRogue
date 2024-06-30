@@ -100,7 +100,9 @@ Attention: When ever this tool detects you are trying to manipulate a daily seed
   - This allows you to set the amount of egg gacha tickets you have of every tier
 
 - Edit a pokemon in your party
-  - Let's you edit moves, species and level of a Pokemon in your team. It let's you set it shiny and its variant and makes it 6 IVs
+  - Let's you edit moves, species, level, luck, fusion etc...
+  ![grafik](https://github.com/RogueEdit/onlineRogueEditor/assets/68881884/da716066-6a4a-461c-9fd2-4d9aa5743e08)
+
 
 - Unlock all achievements
 - Unlock all game modes
