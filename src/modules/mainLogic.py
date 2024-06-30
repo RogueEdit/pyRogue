@@ -1232,7 +1232,7 @@ class Rogue:
             'changeNature': f'{Fore.YELLOW}Change nature {Style.RESET_ALL}| Current: {selectedPokemon["nature"]}',
             'changeIV': f'{Fore.YELLOW}Set IVs {Style.RESET_ALL}| Current:  {selectedPokemon["ivs"]}',
             'changeMoves': f'{Fore.YELLOW}Change moves {Style.RESET_ALL}| {selectedPokemon["moves"]}',
-            'changeFusion': f'{Fore.YELLOW}Fuse with another mon {Style.RESET_ALL}| Curent: {selectedPokemon["fusion"]}'
+            #'changeFusion': f'{Fore.YELLOW}Fuse with another mon {Style.RESET_ALL}| Curent: {selectedPokemon["fusion"]}'
         }
 
         def __fh_redundantMesage(pokemon, message):
@@ -1386,7 +1386,7 @@ class Rogue:
                     message = f'Changed HP from {selectedPokemon["hp"]} to {pokeHP}.'
                     __fh_redundantMesage(selectedPokemon["name"], message)
 
-                # Change Fusion
+                """# Change Fusion
                 if action == 'changeFusion':
                     header = cFormatter.fh_centerText(' Fuse with another mon ', length=55, fillChar='-')
                     cFormatter.print(Color.YELLOW, header)
@@ -1412,7 +1412,7 @@ class Rogue:
                     
 
                     message = f'Fused {selectedPokemon["name"]} with {fusionName}.'
-                    __fh_redundantMesage(selectedPokemon["name"], message)
+                    __fh_redundantMesage(selectedPokemon["name"], message)"""
 
             except OperationSoftCancel:
                 break
