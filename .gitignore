@@ -20,3 +20,4 @@ src/data/extra.json
 /src/data
 *.pyc
 /src/modules/handler/__pycache__
+/src/dev/*
