@@ -1258,18 +1258,19 @@ class Rogue:
                     header = cFormatter.fh_centerText(' Change to another mon ', length=55, fillChar='-')
                     cFormatter.print(Color.YELLOW, header)
                     self.fh_completerInfo()
-                    fusionID = fh_getCompleterInput(
+                    inputValue = fh_getCompleterInput(
                             promptMessage='Write either the ID or the Name of the Pokemon',
                             choices={**{member.name.lower(): member for member in self.appData.pokemonNameByID}, 
                                     **{str(member.value): member for member in self.appData.pokemonNameByID}},
                             softCancel=True
                         )
-                    dexId = fusionID.value
+                    dexId = inputValue.value
+                    dexName = inputValue.name
 
                     selectedPokemonData["species"] = int(dexId)
                     changed = True
 
-                    message = f'Changed Species to {fusionID.name.capitalize()}.'
+                    message = f'Changed Species to {dexName.capitalize()}.'
                     __fh_redundantMesage(selectedPokemon["name"], message)
 
 
@@ -1385,19 +1386,19 @@ class Rogue:
                     message = f'Changed HP from {selectedPokemon["hp"]} to {pokeHP}.'
                     __fh_redundantMesage(selectedPokemon["name"], message)
 
-                # Change Pokemon
+                # Change Fusion
                 if action == 'changeFusion':
                     header = cFormatter.fh_centerText(' Fuse with another mon ', length=55, fillChar='-')
                     cFormatter.print(Color.YELLOW, header)
                     self.fh_completerInfo()
-                    fusionID = fh_getCompleterInput(
+                    inputValue = fh_getCompleterInput(
                             promptMessage='Write either the ID or the Name of the Target Fusion',
                             choices={**{member.name.lower(): member for member in self.appData.pokemonNameByID}, 
                                     **{str(member.value): member for member in self.appData.pokemonNameByID}},
                             softCancel=True
                         )
-                    fusionID = fusionID.value
-                    fusionName = fusionID.name
+                    fusionID = inputValue.value
+                    fusionName = inputValue.name
                     selectedPokemonData["fusionSpecies"] = int(fusionID)
                     changed = True
 
