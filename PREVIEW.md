@@ -1,5 +1,6 @@
 ![Preview Image](.github/previews/backup.png) 
 ![Preview Image](.github/previews/autocomplete.png)
+![Preview Image](.github/previews/partyedit.png)
 ![Preview Image](.github/previews/tool.png) 
 ![Preview Image](.github/previews/itemEditor.png)
 ![Preview Image](.github/previews/egg_list.png)

@@ -1185,7 +1185,7 @@ class Rogue:
             selectedSpeciesName = pokemonNameByIDHelper.get(str(selectedSpeciesData.get("species")), "Unknown").capitalize()
             selectedSpeciesNature = natureNamesByIDHelper.get(str(selectedSpeciesData.get("nature")), "None").capitalize()
             selectedSpeciesMoves = [moveNamesByIDHelper[str(move["moveId"])] for move in selectedSpeciesData["moveset"]]
-            selectedSpeciesFusionName = pokemonNameByIDHelper.get(str(selectedSpeciesData.get("fusionSpecies")), "None").capitalize()
+            selectedSpeciesFusionName = pokemonNameByIDHelper.get(str(selectedSpeciesData.get("fusionSpecies", 0)), "None").capitalize()
 
             # Since we use that multiple times
             def __fh_redundantMesage(message):
@@ -1206,10 +1206,8 @@ class Rogue:
                 'changeFusion': f'{Fore.YELLOW}Fuse with another mon{Style.RESET_ALL} | Fused with: {selectedSpeciesFusionName}'
             }
             try:
-                if selectedSpeciesData["fusionSpecies"]:
-                    header = cFormatter.fh_centerText(f' Selected: {selectedSpeciesName} - Fused with: {selectedSpeciesFusionName}', length=55, fillChar='-')
-                else:
-                    header = cFormatter.fh_centerText(f' Selected: {selectedSpeciesName} ', length=55, fillChar='-')
+                
+                header = cFormatter.fh_centerText(f' Selected: {selectedSpeciesName} - Fused with: {selectedSpeciesFusionName}', length=55, fillChar='-')
 
                 cFormatter.print(Color.BRIGHT_YELLOW, header)
                 action = fh_getChoiceInput('Choose which action', choices, renderMenu=True, softCancel=True)
@@ -1368,7 +1366,7 @@ class Rogue:
                     selectedSpeciesData["fusionSpecies"] = int(fusionID)
                     changed = True
                     
-                    message = f'Fused {selectedSpecies["fusion"]} with {fusionName}.'
+                    message = f'Fused {selectedSpeciesName} with {fusionName}.'
                     __fh_redundantMesage(message)
 
                 elif action == 'changePassive':
