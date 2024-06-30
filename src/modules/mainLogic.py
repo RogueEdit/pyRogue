@@ -573,88 +573,83 @@ class Rogue:
         - shutil: For copying files from the backup directory to the target file.
         - datetime: For generating timestamps and updating timestamps in the target file.
         """
-        try:
-            backupDirectory = config.backupDirectory
-            files = os.listdir(backupDirectory)
+        backupDirectory = config.backupDirectory
+        files = os.listdir(backupDirectory)
 
-            # Prompt the user to choose between restoring slot data or game data
-            choices = {
-                '1': 'Restore game data',
-                '2': 'Restore slot data'
-            }
-            userChoice = fh_getChoiceInput("Do you want to restore game data or slot data?", choices, renderMenu=True, zeroCancel=True)
-            
-            if userChoice == '1':
-                pattern = re.compile(rf'gameData\({self.trainerId}\)')
-            elif userChoice == '2':
-                pattern = re.compile(rf'slotData\(\d+_{self.trainerId}\)')
+        # Prompt the user to choose between restoring slot data or game data
+        choices = {
+            '1': 'Restore game data',
+            '2': 'Restore slot data'
+        }
+        userChoice = fh_getChoiceInput("Do you want to restore game data or slot data?", choices, renderMenu=True, zeroCancel=True)
+        
+        if userChoice == '1':
+            pattern = re.compile(rf'gameData\({self.trainerId}\)')
+        elif userChoice == '2':
+            pattern = re.compile(rf'slotData\(\d+_{self.trainerId}\)')
 
-            # Filter and sort base and backup files separately
-            baseFiles = sorted([f for f in files if f.startswith('base_') and pattern.search(f)])
-            backupFiles = sorted(
-                [f for f in files if f.startswith('backup_') and pattern.search(f)],
-                key=lambda f: datetime.strptime(re.search(r'\d{2}\.\d{2}\.\d{4}_\d{2}\.\d{2}\.\d{2}', f).group(), '%d.%m.%Y_%H.%M.%S')
-            )
+        # Filter and sort base and backup files separately
+        baseFiles = sorted([f for f in files if f.startswith('base_') and pattern.search(f)])
+        backupFiles = sorted(
+            [f for f in files if f.startswith('backup_') and pattern.search(f)],
+            key=lambda f: datetime.strptime(re.search(r'\d{2}\.\d{2}\.\d{4}_\d{2}\.\d{2}\.\d{2}', f).group(), '%d.%m.%Y_%H.%M.%S')
+        )
 
-            # Combine base and backup files with base files on top
-            displayFiles = baseFiles + backupFiles
+        # Combine base and backup files with base files on top
+        displayFiles = baseFiles + backupFiles
 
-            if not displayFiles:
-                cFormatter.print(Color.WARNING, 'No backup files found for your trainer ID.')
-                return
+        if not displayFiles:
+            cFormatter.print(Color.WARNING, 'No backup files found for your trainer ID.')
+            return
 
-            # Display sorted list with numbers
-            for idx, file in enumerate(displayFiles, 1):
-                sidenote = '        <- Created on first edit' if file.startswith('base_') else ''
-                print(f'{idx}: {file} {sidenote}')
+        # Display sorted list with numbers
+        for idx, file in enumerate(displayFiles, 1):
+            sidenote = '        <- Created on first edit' if file.startswith('base_') else ''
+            print(f'{idx}: {file} {sidenote}')
 
-            # Getting user's choice
-            while True:
-                    choice = fh_getIntegerInput(
-                        'What file do you want to restore?', 1, len(displayFiles),
-                        zeroCancel=True
-                    )
-                    if 1 <= choice <= len(displayFiles):
-                        chosenFile = displayFiles[choice - 1]
-                        chosenFilepath = os.path.join(backupDirectory, chosenFile)
+        # Getting user's choice
+        while True:
+            choice = int(fh_getIntegerInput(
+                'What file do you want to restore?', 1, len(displayFiles),
+                zeroCancel=True
+            ))
+            chosenFile = displayFiles[choice - 1]
+            chosenFilepath = os.path.join(backupDirectory, chosenFile)
 
-                        # Determine the output filepath
-                        parentDirectory = os.path.abspath(os.path.join(backupDirectory, os.pardir))
+            # Determine the output filepath
+            parentDirectory = os.path.abspath(os.path.join(backupDirectory, os.pardir))
 
-                        # Determine if the chosen file is for slot data or game data
-                        if 'slotData' in chosenFile:
-                            matchSlot = re.search(r'backup_slotData\((\d+)_', chosenFile)
-                            if matchSlot:
-                                dynSlot = matchSlot.group(1)
-                                outputFilename = f'slot_{dynSlot}.json'
-                            else:
-                                cFormatter.print(Color.CRITICAL, 'Error: Slot number not found in filename.', isLogging=True)
-                                return
-                        else:
-                            outputFilename = 'trainer.json'
+            # Determine if the chosen file is for slot data or game data
+            if 'slotData' in chosenFile:
+                matchSlot = re.search(r'backup_slotData\((\d+)_', chosenFile)
+                if matchSlot:
+                    dynSlot = matchSlot.group(1)
+                    outputFilename = f'slot_{dynSlot}.json'
+                else:
+                    cFormatter.print(Color.CRITICAL, 'Error: Slot number not found in filename.', isLogging=True)
+                    return
+            else:
+                outputFilename = 'trainer.json'
 
-                        outputFilepath = os.path.join(parentDirectory, outputFilename)
+            outputFilepath = os.path.join(parentDirectory, outputFilename)
 
-                        # Copy the chosen file to the output filepath
-                        shutil.copyfile(chosenFilepath, outputFilepath)
+            # Copy the chosen file to the output filepath
+            shutil.copyfile(chosenFilepath, outputFilepath)
 
-                        # Read the restored file
-                        with open(outputFilepath, 'r') as file:
-                            data = json.load(file)
+            # Read the restored file
+            with open(outputFilepath, 'r') as file:
+                data = json.load(file)
 
-                        # Update the timestamp
-                        curTimestamp = int(datetime.now().timestamp() * 1000)
-                        data['timestamp'] = curTimestamp
+            # Update the timestamp
+            curTimestamp = int(datetime.now().timestamp() * 1000)
+            data['timestamp'] = curTimestamp
 
-                        # Write the updated data back to the file
-                        with open(outputFilepath, 'w') as file:
-                            json.dump(data, file, indent=4)
+            # Write the updated data back to the file
+            with open(outputFilepath, 'w') as file:
+                json.dump(data, file, indent=4)
 
-                        cFormatter.print(Color.GREEN, 'Data restored and timestamp updated.')
-                        break
-
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Error in function f_restoreBackup: {e}', isLogging=True)
+            cFormatter.print(Color.GREEN, 'Data restored and timestamp updated.')
+            break
 
     # TODO IMPORTANT: Simplify
     @limiter.lockout
