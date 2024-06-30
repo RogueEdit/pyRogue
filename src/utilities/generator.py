@@ -635,7 +635,7 @@ class StarterEnum(Enum):
         'ursaluna-bloodmoon': 8901,
     }
 
-class PokemonEnum(Enum):
+class SpeciesEnum(Enum):
     POKEMON_DICT = {
         'bulbasaur': 1,
         'ivysaur': 2,
@@ -3124,15 +3124,15 @@ class Generator:
         self.maxId: int = max(self.natureIDs)  # Calculate max ID
 
 
-    def __writeJSON(self, file_path: str, json_data: str):
-        if not os.path.exists(file_path):
-            with open(file_path, 'w') as file:
+    def __writeJSON(self, filePath: str, json_data: str):
+        if not os.path.exists(filePath):
+            with open(filePath, 'w') as file:
                 file.write(json_data)
-            cFormatter.print(Color.GREEN, f'Generated {os.path.basename(file_path)}')
+            cFormatter.print(Color.GREEN, f'Generated {os.path.basename(filePath)}')
 
     def __natureToJSON(self) -> str:
-        nature_dict = {name: id for name, id in zip(self.natureNames, self.natureIDs)}
-        return json.dumps({'natures': nature_dict}, indent=4)
+        natureDict = {name: id for name, id in zip(self.natureNames, self.natureIDs)}
+        return json.dumps({'natures': natureDict}, indent=4)
     
     def __noPassiveToJSON(self) -> str:
         return json.dumps({'noPassive': NoPassive.NO_PASSIVE_DICT.value}, indent=4)
@@ -3149,8 +3149,8 @@ class Generator:
     def __achievmentsToJSON(self) -> str:
         return json.dumps({'achvUnlocks': AchievementEnum.ACHIEVEMENTS_DICT.value}, indent=4)
     
-    def __pokemonsToJSON(self) -> str:
-        return json.dumps({'dex': PokemonEnum.POKEMON_DICT.value}, indent=4)
+    def __speciesToJSON(self) -> str:
+        return json.dumps({'dex': SpeciesEnum.POKEMON_DICT.value}, indent=4)
     
     def __startersToJSON(self) -> str:
         return json.dumps({'dex': StarterEnum.STARTER_DICT.value}, indent=4)
@@ -3161,31 +3161,6 @@ class Generator:
     def __formIDsToJSON(self) -> str:
         return json.dumps({'hasForms': formIDEnum.FORMID_DICT.value}, indent=4)
     
-    
-    def __fh_saveToFile(self, data: str, filename: str) -> None:
-        """
-        Save data to a file.
-
-        Args:
-            data (str): The data to be saved.
-            filename (str): The name of the file.
-
-        Example:
-            __save_to_file('{"key": "value"}', 'example.json')
-
-        Modules:
-            - os: Provides a way to interact with the operating system, particularly for file and directory operations.
-            - utilities: Custom module for colored printing and logging functionalities.
-        """
-        try:
-            directory: str = './data/'
-            if not os.path.exists(directory):
-                os.makedirs(directory)
-            filepath: os.path = os.path.join(directory, filename)
-            with open(filepath, 'w') as file:
-                file.write(data)
-        except Exception as e:
-            cFormatter.print(Color.CRITICAL, f'Something went wrong. {e}', isLogging=True)
     
     def generate(self) -> None:
         """
@@ -3208,7 +3183,7 @@ class Generator:
             (self.__vouchersToJSON, 'vouchers.json'),
             (self.__natureSlotToJSON, 'natureSlot.json'),
             (self.__achievmentsToJSON, 'achievements.json'),
-            (self.__pokemonsToJSON, 'pokemon.json'),
+            (self.__speciesToJSON, 'species.json'),
             (self.__startersToJSON, 'starter.json'),
             (self.__movesToJSON, 'moves.json'),
             (self.__formIDsToJSON, 'formIDs.json'),

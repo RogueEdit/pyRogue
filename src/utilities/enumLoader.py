@@ -62,6 +62,8 @@ class EnumLoader:
         self.natureDataSlots: Optional[Dict[str, int]] = None
         self.noPassiveIDs: Optional[Dict[str, int]] = None
         self.hasFormIDs: Optional[Dict[str, int]] = None
+        self.speciesNameByID: Optional[Dict[str, int]] = None
+        self.achievementsData: Optional[Dict[str, int]] = None
 
     def __f_loadData(self) -> None:
         """
@@ -103,8 +105,8 @@ class EnumLoader:
             with open(f'{dataDir}/achievements.json') as f:
                 self.achievementsData = json.load(f)
 
-            with open(f'{dataDir}/pokemon.json') as f:
-                self.pokemonNameByID = json.load(f)
+            with open(f'{dataDir}/species.json') as f:
+                self.speciesNameByID = json.load(f)
 
             with open(f'{dataDir}/noPassive.json') as f:
                 self.noPassiveIDs = json.load(f)
@@ -116,7 +118,7 @@ class EnumLoader:
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in enumLoader.__f_loadData(). {e}', isLogging=True)
 
-    def __f_createENUMFromDict(self, data_dict: Dict[str, int], enum_name: str) -> Enum:
+    def __f_createENUMFromDict(self, dataDict: Dict[str, int], enumName: str) -> Enum:
         """
         Create an Enum from a dictionary.
 
@@ -134,8 +136,8 @@ class EnumLoader:
         Modules:
             - enum: Provides support for enumerations, a set of symbolic names bound to unique, constant values.
         """
-        enum_cls: Enum = Enum(enum_name, {key: value for key, value in data_dict.items()})
-        return enum_cls
+        enumClass: Enum = Enum(enumName, {key: value for key, value in dataDict.items()})
+        return enumClass
 
     def f_convertToEnums(self) -> Tuple[Enum, Enum, Enum, Enum, Enum, Enum]:
         """
@@ -165,10 +167,10 @@ class EnumLoader:
         self.natureData = self.__f_createENUMFromDict(self.natureData['natures'], 'NaturesEnum')
         self.natureDataSlots = self.__f_createENUMFromDict(self.natureDataSlots['natureSlot'], 'NaturesSlotEnum')
         self.achievementsData = self.__f_createENUMFromDict(self.achievementsData['achvUnlocks'], 'AchievementsEnum')
-        self.pokemonNameByID = self.__f_createENUMFromDict(self.pokemonNameByID['dex'], 'PokemonEnum')
+        self.speciesNameByID = self.__f_createENUMFromDict(self.speciesNameByID['dex'], 'PokemonEnum')
         self.noPassiveIDs = self.__f_createENUMFromDict(self.noPassiveIDs['noPassive'], 'NoPassiveEnum')
         self.hasFormIDs = self.__f_createENUMFromDict(self.hasFormIDs['hasForms'], 'HasFormsEnum')
 
         return (self.starterNameByID, self.biomesByID, self.movesByID, self.voucherData, 
-                self.natureData, self.natureDataSlots, self.achievementsData, self.pokemonNameByID,
+                self.natureData, self.natureDataSlots, self.achievementsData, self.speciesNameByID,
                 self.noPassiveIDs, self.hasFormIDs)

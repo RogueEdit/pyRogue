@@ -16,7 +16,7 @@ def data_iteratePokemon(species, pokemonNameByIDHelper, moveNamesByIDHelper, nat
     speciesShinyVariant = species.get('variant', 0)
     speciesLuck = species.get('luck', 1)
     speciesLevel = species.get('level', 1)
-    speciesMoves = [moveNamesByIDHelper[str(move["moveId"])] for move in species['moveset']]
+    speciesMoves = [moveNamesByIDHelper[str(move["moveId"])] for move in species["moveset"]]
     speciesNatureID = str(species.get('nature', 0))  # Assuming nature key is "nature" and default ID is 0
     speciesNatureName = natureNamesByIDHelper.get(speciesNatureID, "None")
     speciesIVs = species.get('ivs', 1)
@@ -42,8 +42,8 @@ def data_iteratePokemon(species, pokemonNameByIDHelper, moveNamesByIDHelper, nat
         'level': speciesLevel,
         'moves': speciesMoves,
         'natureID': speciesNatureID,
-        'ivs': speciesIVs,
         'nature': speciesNatureName,
+        'ivs': speciesIVs,
         'hp': speciesHP,
         'passive': speciesPassive,
         'data_ref': species

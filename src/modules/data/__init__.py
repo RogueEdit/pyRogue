@@ -1,4 +1,4 @@
-from .renderMenus import data_iterateParty, data_iteratePokemon
+from .dataHandler import data_iterateParty, data_iteratePokemon
 
 __all__ = [
     'data_iterateParty', 'data_iteratePokemon'
