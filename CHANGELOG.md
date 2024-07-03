@@ -1,6 +1,0 @@
-- Fixed Input Length in Pokemon Party
-- Ensured egg block
-- Fixed broken caughtAttr in 2 places
-- Fixed redundant generations of .json's
-- Fixed partyEdit problems
-- Fixed candy problems
