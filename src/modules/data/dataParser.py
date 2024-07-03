@@ -3,6 +3,7 @@ from enum import Enum
 from dataclasses import dataclass, field
 from typing import List, Optional, Any, Dict, Union
 from modules.config import dataDirectory
+from colorama import Fore, Style
 
 def __createEnum(name, values):
     return Enum(name, values)
@@ -385,7 +386,7 @@ def data_iterateParty(slotData, pokemonNameByIDHelper, moveNamesByIDHelper, natu
             'fusionLuck': speciesFusionLuck,
             'fusionIsShiny': speciesFusionisShiny,
             'fusionVariant': speciesFusionVariant,
-            'fusionStatus': 'Not fused' if speciesFusionID == '0' else f'Fused with {speciesFusionName.title()}',
+            'fusionStatus': '' if speciesFusionID == '0' else f'Fused with {Fore.YELLOW}{speciesFusionName.title()}{Style.RESET_ALL}',
             'shiny': speciesIsShiny,
             'variant': speciesShinyVariant,
             'shinyStatus': f'Shiny {speciesShinyVariant}' if speciesIsShiny else 'Not Shiny',

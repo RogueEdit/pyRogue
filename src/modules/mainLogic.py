@@ -1217,7 +1217,6 @@ class Rogue:
             
         # Start loop and present options
         while True:
-
             choices = {
                 'changePokemon': f'{Fore.YELLOW}Change mon{Style.RESET_ALL}',
                 'changeShiny': f'{Fore.YELLOW}Set it shiny{Style.RESET_ALL} | Current: {selectedSpecies["variant"]}',
@@ -1231,34 +1230,64 @@ class Rogue:
                 'changeFusion': f'{Fore.YELLOW}Fuse with another mon{Style.RESET_ALL} | {selectedSpecies["fusionStatus"]}'
             }
             try:
-                
-                header = cFormatter.fh_centerText(f' {selectedSpecies["name"]} + {selectedSpecies["fusion"]}', length=55, fillChar='-')
+                header = cFormatter.fh_centerText(f' {selectedSpecies["name"]} {selectedSpecies["fusionStatus"]} ', length=55, fillChar='-')
 
                 cFormatter.print(Color.BRIGHT_YELLOW, header)
                 action = fh_getChoiceInput('Choose which action', choices, renderMenu=True, softCancel=True)
                 cFormatter.fh_printSeperators(55, '-', Color.DEBUG)
 
 
-                # Change Pokemon
                 if action == 'changePokemon':
                     header = cFormatter.fh_centerText(' Change to another mon ', length=55, fillChar='-')
                     cFormatter.print(Color.YELLOW, header)
                     self.fh_completerInfo()
                     inputValue = fh_getCompleterInput(
-                            promptMessage='Write either the ID or the Name of the Pokemon',
-                            choices={**{member.name.lower(): member for member in self.appData.speciesNameByID}, 
-                                    **{str(member.value): member for member in self.appData.speciesNameByID}},
-                            softCancel=True
-                        )
+                        promptMessage='Write either the ID or the Name of the Pokemon',
+                        choices={**{member.name.lower(): member for member in self.appData.speciesNameByID},
+                                **{str(member.value): member for member in self.appData.speciesNameByID}},
+                        softCancel=True
+                    )
                     dexId = inputValue.value
                     dexName = inputValue.name
 
                     selectedSpeciesData["species"] = int(dexId)
+                    selectedId = dataParser.speciesDict.get(int(dexId))
+
+                    # Check if the selected species has forms
+                    if selectedId and selectedId.forms:
+                        formChoices = {form.name.lower(): form for form in selectedId.forms if form.name != "Combined"}
+                        print("Available forms:")
+                        for form in formChoices.values():
+                            print(f'- {form.name}')
+                        if formChoices:
+                            formInput = fh_getCompleterInput(
+                                promptMessage=f'Select a form for {dexName.capitalize()}',
+                                choices=formChoices,
+                                softCancel=True
+                            )
+                            selectedFormName = formInput.name.lower()
+                            print("Selected form name:", selectedFormName)  # Debugging line
+                            if selectedFormName in formChoices:
+                                selectedForm = formChoices[selectedFormName]
+                                selectedSpeciesData["formIndex"] = selectedForm.index
+                                message = f'Changed Species to {dexName.title()} with form {selectedForm.name.title()}.'
+                            else:
+                                # Handle case where selected form name is not found
+                                print("Form name not found in choices")  # Debugging line
+                                selectedSpeciesData["formIndex"] = 0
+                                message = f'Changed Species to {dexName.capitalize()}.'
+                        else:
+                            # No forms available, reset formIndex
+                            selectedSpeciesData["formIndex"] = 0
+                            message = f'Changed Species to {dexName.capitalize()}.'
+                    else:
+                        # No forms available, reset formIndex
+                        selectedSpeciesData["formIndex"] = 0
+                        message = f'Changed Species to {dexName.capitalize()}.'
+
                     changed = True
-
-                    message = f'Changed Species from {selectedSpecies["name"]} to {dexName.capitalize()}.'
-                    __fh_redundantMesage(message)
-
+                    # Correctly access the name attribute
+                    __fh_redundantMesage(f'{message}')
 
                 # Change Shiny Status
                 elif action == 'changeShiny':
@@ -1372,27 +1401,60 @@ class Rogue:
                     message = f'Changed HP from {selectedSpecies["hp"]} to {pokeHP}.'
                     __fh_redundantMesage(message)
 
-                # Change Fusion
                 elif action == 'changeFusion':
                     header = cFormatter.fh_centerText(' Fuse with another mon ', length=55, fillChar='-')
                     cFormatter.print(Color.YELLOW, header)
                     self.fh_completerInfo()
                     inputValue = fh_getCompleterInput(
-                            promptMessage='Write either the ID or the Name of the Target Fusion',
-                            choices={**{member.name.lower(): member for member in self.appData.speciesNameByID}, 
-                                    **{str(member.value): member for member in self.appData.speciesNameByID}},
-                            softCancel=True
-                        )
+                        promptMessage='Write either the ID or the Name of the Target Fusion',
+                        choices={**{member.name.lower(): member for member in self.appData.speciesNameByID},
+                                **{str(member.value): member for member in self.appData.speciesNameByID}},
+                        softCancel=True
+                    )
                     fusionID = inputValue.value
                     fusionName = inputValue.name
-                    selectedSpeciesData["fusionFormIndex"] = 0
+                    selectedFusion = dataParser.speciesDict.get(int(fusionID))
+
+                    # Check if the selected fusion species has forms
+                    if selectedFusion and selectedFusion.forms:
+                        formChoices = {form.name.lower(): form for form in selectedFusion.forms if form.name != "Combined"}
+                        print("Available forms:")
+                        for form in formChoices.values():
+                            print(f'- {form.name}')
+                        if formChoices:
+                            formInput = fh_getCompleterInput(
+                                promptMessage=f'Select a form for {fusionName.capitalize()}',
+                                choices=formChoices,
+                                softCancel=True
+                            )
+                            selectedFormName = formInput.name.lower()
+                            print("Selected form name:", selectedFormName)  # Debugging line
+                            if selectedFormName in formChoices:
+                                selectedForm = formChoices[selectedFormName]
+                                selectedSpeciesData["fusionFormIndex"] = selectedForm.index
+                                message = f'Fused {selectedSpecies["name"].title()} with {selectedForm.name.title()} {fusionName.title()}.'
+                            else:
+                                # Handle case where selected form name is not found
+                                print("Form name not found in choices")  # Debugging line
+                                selectedSpeciesData["fusionFormIndex"] = 0
+                                message = f'Fused {selectedSpecies["name"].title()} with {fusionName.title()}.'
+                        else:
+                            # No forms available, reset formIndex
+                            selectedSpeciesData["fusionFormIndex"] = 0
+                            message = f'Fused {selectedSpecies["name"].title()} with {fusionName.title()}.'
+                    else:
+                        # No forms available, reset formIndex
+                        selectedSpeciesData["fusionFormIndex"] = 0
+                        message = f'Fused {selectedSpecies["name"].title()} with {fusionName.title()}.'
+
+                    # Set other fusion data
                     selectedSpeciesData["fusionShiny"] = 1
                     selectedSpeciesData["fusionVariant"] = 1
                     selectedSpeciesData["fusionSpecies"] = int(fusionID)
                     changed = True
-                    
-                    message = f'Fused {selectedSpecies["name"]} with {fusionName}.'
-                    __fh_redundantMesage(message)
+
+                    # Correctly access the name attribute
+                    __fh_redundantMesage(f'{message}')
 
                 elif action == 'changePassive':
                     if selectedSpecies.get('id') in noPassives:
