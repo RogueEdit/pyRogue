@@ -3031,7 +3031,7 @@ class hasFormsEnum(Enum):
         '381': {'Latios': ['Normal', 'Mega'], 'isNormalForm': False},
         '382': {'Kyogre': ['Normal', 'Primal'], 'isNormalForm': False},
         '383': {'Groudon': ['Normal', 'Primal'], 'isNormalForm': False},
-        '384': {'Rayquaza': ['Normal', 'Primal'], 'isNormalForm': False},
+        '384': {'Rayquaza': ['Normal', 'Mega'], 'isNormalForm': False},
         '386': {'Deoxys': ['Normal', 'Attack', 'Defense', 'Speed'], 'isNormalForm': False},
         '412': {'Burmy': ['Plant', 'Sandy', 'Trash'], 'isNormalForm': True},
         '413': {'Wormadam': ['Plant', 'Sandy', 'Trash'], 'isNormalForm': False},
