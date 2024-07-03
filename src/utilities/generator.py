@@ -2983,7 +2983,7 @@ class MovesEnum(Enum):
 class hasFormsEnum(Enum):
     FORMID_DICT = {
         '3': {'Venusaur': ['Normal', 'Mega', 'G-Max'], 'isNormalForm': False},
-        '6': {'Charizard': ['Normal', 'Mega', 'G-Max'], 'isNormalForm': False},
+        '6': {'Charizard': ['Normal', 'Mega-X', 'Mega-Y', 'G-Max'], 'isNormalForm': False},
         '9': {'Blastoise': ['Normal', 'Mega', 'G-Max'], 'isNormalForm': False},
         '12': {'Butterfree': ['Normal', 'G-Max'], 'isNormalForm': False},
         '18': {'Pidgeot': ['Normal', 'Mega'], 'isNormalForm': False},
@@ -3000,7 +3000,7 @@ class hasFormsEnum(Enum):
         '133': {'Eevee': ['Normal', 'Partner', 'G-Max'], 'isNormalForm': True},
         '142': {'Aerodactyl': ['Normal', 'Mega'], 'isNormalForm': False},
         '143': {'Snorlax': ['Normal', 'G-Max'], 'isNormalForm': False},
-        '150': {'Mewtwo': ['Normal', 'MegaX', 'MegaY'], 'isNormalForm': False},
+        '150': {'Mewtwo': ['Normal', 'Mega-X', 'Mega-Y'], 'isNormalForm': False},
         '172': {'Pichu': ['Normal', 'Spiky-Eared'], 'isNormalForm': False},
         '181': {'Ampharos': ['Normal', 'Mega'], 'isNormalForm': False},
         '201': {'Unown': ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '!', '?'], 'isNormalForm': False},
