@@ -326,7 +326,7 @@ def fh_getCombinedIDs(includeStarter=True, onlyNormalForms=True):
                     combinedFormIds.append({
                         "speciesID": species.dex,
                         "speciesName": species.name,
-                        "formName": forms.name,
+                        "formName": form.name,
                         "caughtAttr": form.variant3,
                         "formIndex": form.index
                     })
