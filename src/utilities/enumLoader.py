@@ -111,7 +111,7 @@ class EnumLoader:
             with open(f'{dataDir}/noPassive.json') as f:
                 self.noPassiveIDs = json.load(f)
 
-            with open(f'{dataDir}/formIDs.json') as f:
+            with open(f'{dataDir}/hasForms.json') as f:
                 self.hasFormIDs = json.load(f)
 
             

@@ -78,18 +78,24 @@ from requests.exceptions import SSLError, ConnectionError, Timeout
 import requests
 from sys import exit
 import re
+
 #import zstandard as zstd
 from colorama import Style, Fore
 from modules.handler import handle_operation_exceptions, OperationError, OperationSuccessful, OperationCancel, PropagateResponse, OperationSoftCancel  # noqa: F401
 from modules.handler import handle_http_exceptions, HTTPEmptyResponse  # noqa: F401
 from modules.handler import fh_getIntegerInput, fh_getCompleterInput, fh_getChoiceInput
 from modules import handle_error_response, HeaderGenerator, config
-from modules.data import data_iterateParty
 from utilities import EnumLoader, cFormatter, Color, Limiter, eggLogic, fh_appendMessageBuffer
+from utilities import Generator
+generator = Generator()
+generator.generate()
+
+from modules.data import dataParser, data_iterateParty  # noqa: E402
 
 limiter = Limiter()
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
+
 #global_compressor = zstd.ZstdCompressor()
 #global_decompressor = zstd.ZstdDecompressor()
 
@@ -157,8 +163,9 @@ class Rogue:
         (self.starterNameById, self.biomeNamesById, self.moveNamesById, self.vouchersData, self.natureData, 
             self.natureSlotData, self.achievementsData, self.speciesNameByID, self.noPassiveIDs, self.hasFormsIDs) = self.appData.f_convertToEnums()
         self.editOffline = editOffline
-        
+          
         self.__fh_dump_data()
+
 
     
     """    This might be needed 
@@ -771,7 +778,7 @@ class Rogue:
         abilityAttr = fh_getChoiceInput('Do you want to unlock all abilities including egg-moves?', choices, zeroCancel=True) == '1'
 
         noPassives = {member.name: member for member in self.appData.noPassiveIDs}
-        combinedFormIDs = {key: member.value['Combined'] for key, member in self.appData.hasFormIDs.__members__.items() if 'Combined' in member.value}
+        combinedFormIDs = dataParser.fh_getCombinedIDs(includeStarter=True, onlyNormalForms=True)
 
         # Default template for dexData
         defaultDexData = {
@@ -784,11 +791,16 @@ class Rogue:
             "ivs": [0, 0, 0, 0, 0, 0]
         }
 
-
         for entry in gameData["dexData"].keys():
             caughtAttr = 255 if shinyChoice else 253
-            if choice and entry in combinedFormIDs:
-                caughtAttr = combinedFormIDs[entry]
+            
+            # Check if entry_int (dexId) is in combinedFormIDs
+            if (choice and any(int(entry) == form["speciesID"] for form in combinedFormIDs)):
+                for form in combinedFormIDs:
+                    if int(entry) == form["speciesID"]:
+                        caughtAttr = form["caughtAttr"]
+                        break  # Exit loop once matched
+
             if not choice:
                 caughtAttr = 255 if shinyChoice else 253
 
@@ -938,7 +950,7 @@ class Rogue:
         menuDisplay = "\n".join([f"{index}: {key}" for index, key in optionList.items()])
 
         noPassives = {member.name: member for member in self.appData.noPassiveIDs}
-        combinedFormIDs = {key: member.value['Combined'] for key, member in self.appData.hasFormIDs.__members__.items() if 'Combined' in member.value}
+        combinedFormIDs = dataParser.fh_getCombinedIDs(includeStarter=True, onlyNormalForms=True)
 
         self.fh_completerInfo()
         cFormatter.print(Color.INFO, f'Editing {dexName}')
@@ -962,8 +974,11 @@ class Rogue:
                     formChoice = fh_getChoiceInput('Do you want to unlock all forms of the pokemon? (All forms are Tier 3 shinies)', {'1': 'Yes', '2': 'No'}, zeroCancel=True) == '1'
                     shinyChoice = fh_getChoiceInput('Do you want Tier 3 shinies?', {'1': 'Yes', '2': 'No'}, zeroCancel=True) == '1'
 
-                    if formChoice and str(dexId) in combinedFormIDs:
-                        caughtAttr = combinedFormIDs[str(dexId)]
+                    if formChoice and any(str(dexId) == str(form["speciesID"]) for form in combinedFormIDs):
+                        for form in combinedFormIDs:
+                            if str(dexId) == str(form["speciesID"]):
+                                caughtAttr = form["caughtAttr"]
+                                break
                     else:
                         caughtAttr = 255 if shinyChoice else 253
 

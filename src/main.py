@@ -41,9 +41,6 @@ from utilities import cFormatter, Color, CustomLogger
 from datetime import datetime, timedelta
 from utilities import fh_printMessageBuffer
 from sys import exit
-from utilities import Generator
-generator = Generator()
-generator.generate()
 init()
 logger = CustomLogger()
 
