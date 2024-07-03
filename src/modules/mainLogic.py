@@ -1183,40 +1183,37 @@ class Rogue:
             cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot edit this property on Daily Runs.')
             return
 
-        # Reverse Names to IDs
+        # TODO 
         pokemonNameByIDHelper = {str(member.value): member.name for member in self.appData.speciesNameByID}
         moveNamesByIDHelper = {str(member.value): member.name for member in self.moveNamesById}
         natureNamesByIDHelper = {str(member.value): member.name for member in self.natureSlotData}
 
             
         noPassives = {member.name: member for member in self.appData.noPassiveIDs}
-        # Iterate over the party
         currentParty = dataParser.data_iterateParty(slotData, pokemonNameByIDHelper, moveNamesByIDHelper, natureNamesByIDHelper)
 
-        # Print the current party with detailed information
         cFormatter.print(Color.WHITE, 'Current Party')
         cFormatter.fh_printSeperators(55, '-', Color.DEBUG)
         for i, pokeInfoDict in enumerate(currentParty, start=1):
             cFormatter.print(Color.WHITE, f'{i}: {Fore.YELLOW}{pokeInfoDict["name"]}{Style.RESET_ALL} | Level: {pokeInfoDict["level"]} | Luck: {pokeInfoDict["luck"]} | {pokeInfoDict["shinyStatus"]} | HP {pokeInfoDict["hp"]} | {pokeInfoDict["fusionStatus"]}')
         cFormatter.fh_printSeperators(55, '-', Color.DEBUG)
 
-        # Select a pokemon
         selectedPartySlot = int(fh_getIntegerInput('Select the party slot of the Pokemon you want to edit', 1, len(currentParty), zeroCancel=True)) -1
-        selectedSpecies = currentParty[selectedPartySlot] # raw data
-        selectedSpeciesData = selectedSpecies["data_ref"] # updated data
 
         # Define loop relevant information
         changedItems = []
         changed = False
 
-        # Since we use that multiple times
-        def __fh_redundantMesage(message):
-            changedItems.append(message)
-            cFormatter.print(Color.INFO, f'{selectedSpecies["name"]}: {message}')
-            fh_appendMessageBuffer(Color.INFO, f'{selectedSpecies["name"]}: {message}')
-            
         # Start loop and present options
         while True:
+            selectedSpecies = currentParty[selectedPartySlot] # raw data
+            selectedSpeciesData = selectedSpecies["data_ref"] # updated data
+            # Since we use that multiple times
+            def __fh_redundantMesage(message):
+                changedItems.append(message)
+                cFormatter.print(Color.INFO, f'{selectedSpecies["name"]}: {message}')
+                fh_appendMessageBuffer(Color.INFO, f'{selectedSpecies["name"]}: {message}')
+                
             choices = {
                 'changePokemon': f'{Fore.YELLOW}Change mon{Style.RESET_ALL}',
                 'changeShiny': f'{Fore.YELLOW}Set it shiny{Style.RESET_ALL} | Current: {selectedSpecies["variant"]}',
@@ -1470,6 +1467,9 @@ class Rogue:
 
                         changed = True
                         __fh_redundantMesage(message)
+
+                # Refresh the current party data after making changes
+                currentParty = dataParser.data_iterateParty(slotData, pokemonNameByIDHelper, moveNamesByIDHelper, natureNamesByIDHelper)
 
             except OperationSoftCancel:
                 break
