@@ -332,3 +332,60 @@ def fh_getCombinedIDs(includeStarter=True, onlyNormalForms=True):
                     })
 
     return combinedFormIds
+
+@staticmethod
+def data_iterateParty(slotData, pokemonNameByIDHelper, moveNamesByIDHelper, natureNamesByIDHelper):
+    currentParty = []
+    for object in slotData['party']:
+        speciesDexID = str(object.get('species', 1)) # Needs to be string for comparison
+        speciesDexName = pokemonNameByIDHelper.get(speciesDexID, f'Unknown Dex ID {speciesDexID}')
+        speciesFormIndex = str(object.get('formIndex', None))
+        # Fusions
+        speciesFusionID = str(object.get('fusionSpecies', 0)) # Needs to be string for comparison
+        speciesFusionName = pokemonNameByIDHelper.get(speciesFusionID, f'Unknown Fuse ID {speciesFusionID}')
+        speciesFusionFormIndex = object.get('fusionFormIndex', None)
+        speciesFusionLuck = object.get('fusionLuck', None)
+        speciesFusionisShiny = object.get('fusionShiny', None)
+        speciesFusionVariant = object.get('fusionVariant', None)
+
+        # General info
+        speciesIsShiny = object.get('shiny', False)
+        speciesShinyVariant = object.get('variant', 0)
+        speciesLuck = object.get('luck', 1)
+        speciesLevel = object.get('level', 1)
+        speciesMoves = [moveNamesByIDHelper[str(move["moveId"])] for move in object["moveset"]]
+        speciesNatureID = str(object.get('nature', 0))  # Assuming nature key is "nature" and default ID is 0
+        speciesNatureName = natureNamesByIDHelper.get(speciesNatureID, "None")
+        speciesIVs = object.get('ivs', 1)
+        speciesHP = object.get('hp', 1)
+        speciesPassive = object.get('passive', False)
+
+        # Create a dictionary to hold all relevant information for the current Pokémon
+        speciesInfo = {
+            'id': speciesDexID,
+            'name': speciesDexName.capitalize(),
+            'formIndex': speciesFormIndex,
+            'fusionID': speciesFusionID,
+            'fusion': speciesFusionName,
+            'fusionFormIndex': speciesFusionFormIndex,
+            'fusionLuck': speciesFusionLuck,
+            'fusionIsShiny': speciesFusionisShiny,
+            'fusionVariant': speciesFusionVariant,
+            'fusionStatus': 'Not fused' if speciesFusionID == '0' else f'Fused with {speciesFusionName}',
+            'shiny': speciesIsShiny,
+            'variant': speciesShinyVariant,
+            'shinyStatus': f'Shiny {speciesShinyVariant}' if speciesIsShiny else 'Not Shiny',
+            'luck': speciesLuck,
+            'level': speciesLevel,
+            'moves': speciesMoves,
+            'natureID': speciesNatureID,
+            'nature': speciesNatureName,
+            'ivs': speciesIVs,
+            'hp': speciesHP,
+            'passive': speciesPassive,
+            'data_ref': object
+        }
+
+        currentParty.append(speciesInfo)
+        
+    return currentParty

@@ -50,7 +50,7 @@ if not os.path.exists(dataDirectory):
 
 
 # Settings this to true will deactivate backups, skip prompts and use offline mode automatically
-debug: bool = False
+debug: bool = True
 debugDeactivateBackup: bool = True if debug else False
 debugEnableTraceback: bool = True if debug else False
 

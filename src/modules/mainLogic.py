@@ -90,7 +90,7 @@ from utilities import Generator
 generator = Generator()
 generator.generate()
 
-from modules.data import dataParser, data_iterateParty  # noqa: E402
+from modules.data import dataParser  # noqa: E402
 
 limiter = Limiter()
 logger = logging.getLogger(__name__)
@@ -1190,7 +1190,7 @@ class Rogue:
 
             
         # Iterate over the party
-        currentParty = data_iterateParty(slotData, pokemonNameByIDHelper, moveNamesByIDHelper, natureNamesByIDHelper)
+        currentParty = dataParser.data_iterateParty(slotData, pokemonNameByIDHelper, moveNamesByIDHelper, natureNamesByIDHelper)
 
         # Print the current party with detailed information
         cFormatter.print(Color.WHITE, 'Current Party')
@@ -1229,7 +1229,7 @@ class Rogue:
                 'changeLuck': f'{Fore.YELLOW}Set Luck{Style.RESET_ALL} | Current: Luck {selectedSpeciesData["luck"]}',
                 'changeLevel': f'{Fore.YELLOW}Set Level{Style.RESET_ALL} | Current: Level {selectedSpeciesData["level"]}',
                 'changeHP': f'{Fore.YELLOW}Change HP{Style.RESET_ALL} | Curent: {selectedSpeciesData["hp"]}',
-                'changePassive': f'{Fore.YELLOW}Activate/Deactivate passive{Style.RESET_ALL} | Curent: {selectedSpeciesData["passive"]}',
+                'changePassive': f'{Fore.YELLOW}Activate/Deactivate passive{Style.RESET_ALL} | Curent: {selectedSpeciesData.get("passive", "Not available")}',
                 'changeNature': f'{Fore.YELLOW}Change nature{Style.RESET_ALL} | Current: {selectedSpeciesNature}',
                 'changeIV': f'{Fore.YELLOW}Set IVs{Style.RESET_ALL} | Current:  {selectedSpeciesData["ivs"]}',
                 'changeMoves': f'{Fore.YELLOW}Change moves{Style.RESET_ALL} | {selectedSpeciesMoves}',
