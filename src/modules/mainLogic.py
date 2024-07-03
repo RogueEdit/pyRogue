@@ -1189,6 +1189,7 @@ class Rogue:
         natureNamesByIDHelper = {str(member.value): member.name for member in self.natureSlotData}
 
             
+        noPassives = {member.name: member for member in self.appData.noPassiveIDs}
         # Iterate over the party
         currentParty = dataParser.data_iterateParty(slotData, pokemonNameByIDHelper, moveNamesByIDHelper, natureNamesByIDHelper)
 
@@ -1204,40 +1205,34 @@ class Rogue:
         selectedSpecies = currentParty[selectedPartySlot] # raw data
         selectedSpeciesData = selectedSpecies["data_ref"] # updated data
 
-
         # Define loop relevant information
         changedItems = []
         changed = False
 
+        # Since we use that multiple times
+        def __fh_redundantMesage(message):
+            changedItems.append(message)
+            cFormatter.print(Color.INFO, f'{selectedSpecies["name"]}: {message}')
+            fh_appendMessageBuffer(Color.INFO, f'{selectedSpecies["name"]}: {message}')
             
         # Start loop and present options
         while True:
-            selectedSpeciesName = pokemonNameByIDHelper.get(str(selectedSpeciesData.get("species")), "Unknown").capitalize()
-            selectedSpeciesNature = natureNamesByIDHelper.get(str(selectedSpeciesData.get("nature")), "None").capitalize()
-            selectedSpeciesMoves = [moveNamesByIDHelper[str(move["moveId"])] for move in selectedSpeciesData["moveset"]]
-            selectedSpeciesFusionName = pokemonNameByIDHelper.get(str(selectedSpeciesData.get("fusionSpecies", 0)), "None").capitalize()
-
-            # Since we use that multiple times
-            def __fh_redundantMesage(message):
-                changedItems.append(message)
-                cFormatter.print(Color.INFO, f'{selectedSpeciesName}: {message}')
-                fh_appendMessageBuffer(Color.INFO, f'{selectedSpeciesName}: {message}')
 
             choices = {
                 'changePokemon': f'{Fore.YELLOW}Change mon{Style.RESET_ALL}',
-                'changeShiny': f'{Fore.YELLOW}Set it shiny{Style.RESET_ALL} | Current: {selectedSpeciesData["variant"]}',
-                'changeLuck': f'{Fore.YELLOW}Set Luck{Style.RESET_ALL} | Current: Luck {selectedSpeciesData["luck"]}',
-                'changeLevel': f'{Fore.YELLOW}Set Level{Style.RESET_ALL} | Current: Level {selectedSpeciesData["level"]}',
-                'changeHP': f'{Fore.YELLOW}Change HP{Style.RESET_ALL} | Curent: {selectedSpeciesData["hp"]}',
-                'changePassive': f'{Fore.YELLOW}Activate/Deactivate passive{Style.RESET_ALL} | Curent: {selectedSpeciesData.get("passive", "Not available")}',
-                'changeNature': f'{Fore.YELLOW}Change nature{Style.RESET_ALL} | Current: {selectedSpeciesNature}',
-                'changeIV': f'{Fore.YELLOW}Set IVs{Style.RESET_ALL} | Current:  {selectedSpeciesData["ivs"]}',
-                'changeMoves': f'{Fore.YELLOW}Change moves{Style.RESET_ALL} | {selectedSpeciesMoves}',
-                'changeFusion': f'{Fore.YELLOW}Fuse with another mon{Style.RESET_ALL} | Fused with: {selectedSpeciesFusionName}'
+                'changeShiny': f'{Fore.YELLOW}Set it shiny{Style.RESET_ALL} | Current: {selectedSpecies["variant"]}',
+                'changeLuck': f'{Fore.YELLOW}Set Luck{Style.RESET_ALL} | Current: Luck {selectedSpecies["luck"]}',
+                'changeLevel': f'{Fore.YELLOW}Set Level{Style.RESET_ALL} | Current: Level {selectedSpecies["level"]}',
+                'changeHP': f'{Fore.YELLOW}Change HP{Style.RESET_ALL} | Curent: {selectedSpecies["hp"]}',
+                'changePassive': f'{Fore.YELLOW}Activate/Deactivate passive{Style.RESET_ALL} | Curent: {selectedSpecies.get("passive", "Not available")}',
+                'changeNature': f'{Fore.YELLOW}Change nature{Style.RESET_ALL} | Current: {selectedSpecies["nature"]}',
+                'changeIV': f'{Fore.YELLOW}Set IVs{Style.RESET_ALL} | Current:  {selectedSpecies["ivs"]}',
+                'changeMoves': f'{Fore.YELLOW}Change moves{Style.RESET_ALL} | {selectedSpecies["moves"]}',
+                'changeFusion': f'{Fore.YELLOW}Fuse with another mon{Style.RESET_ALL} | {selectedSpecies["fusionStatus"]}'
             }
             try:
                 
-                header = cFormatter.fh_centerText(f' Selected: {selectedSpeciesName} - Fused with: {selectedSpeciesFusionName}', length=55, fillChar='-')
+                header = cFormatter.fh_centerText(f' {selectedSpecies["name"]} + {selectedSpecies["fusion"]}', length=55, fillChar='-')
 
                 cFormatter.print(Color.BRIGHT_YELLOW, header)
                 action = fh_getChoiceInput('Choose which action', choices, renderMenu=True, softCancel=True)
@@ -1322,16 +1317,16 @@ class Rogue:
 
                 # Change moves
                 elif action == 'changeMoves':
-                    header = cFormatter.fh_centerText(f'Current moves on {selectedSpeciesName}', 55, '-')
+                    header = cFormatter.fh_centerText(f'Current moves on {selectedSpecies["name"]}', 55, '-')
                     cFormatter.print(Color.YELLOW, header)
-                    for i, move in enumerate(selectedSpeciesMoves, start=1):
+                    for i, move in enumerate(selectedSpecies["moves"], start=1):
                         cFormatter.print(Color.WHITE, f'{i}: {move}')
                     cFormatter.fh_printSeperators(55, '-', Color.WHITE)
 
                     # Prompt user to select a move slot to change
                     selectedMoveIndex = int(fh_getIntegerInput('Select the move you want to change (0-4):', 1, 4, softCancel=True))-1
                     self.fh_completerInfo()
-                    cFormatter.print(Color.GREEN, f'Editing {selectedSpecies['moves'][selectedMoveIndex]} in Slot({selectedMoveIndex+1}) on {selectedSpeciesName}') # how to print selected move name
+                    cFormatter.print(Color.GREEN, f'Editing {selectedSpecies['moves'][selectedMoveIndex]} in Slot({selectedMoveIndex+1}) on {selectedSpecies["name"]}') # how to print selected move name
                     newMove = fh_getCompleterInput(
                         promptMessage='Write either the ID or the Name of the Move.',
                         choices={**{member.name.lower(): member for member in self.appData.movesByID}, 
@@ -1351,7 +1346,7 @@ class Rogue:
                 elif action == 'changeNature':
                     self.legacy_natureSlot()
                     self.fh_completerInfo()
-                    cFormatter.print(Color.DEBUG, f'Current Nature: {selectedSpeciesNature}')
+                    cFormatter.print(Color.DEBUG, f'Current Nature: {selectedSpecies["nature"]}')
                     natureSlot = fh_getCompleterInput(
                         promptMessage='Write either the ID or the Name of the Nature.',
                         choices={**{member.name.lower(): member for member in self.appData.natureDataSlots}, 
@@ -1396,19 +1391,23 @@ class Rogue:
                     selectedSpeciesData["fusionSpecies"] = int(fusionID)
                     changed = True
                     
-                    message = f'Fused {selectedSpeciesName} with {fusionName}.'
+                    message = f'Fused {selectedSpecies["name"]} with {fusionName}.'
                     __fh_redundantMesage(message)
 
                 elif action == 'changePassive':
-                    if selectedSpecies["passive"]:
+                    if selectedSpecies.get('id') in noPassives:
+                        cFormatter.print(Color.INFO, 'This pokemon has no passive.')
                         selectedSpeciesData["passive"] = False
-                        message = 'Deactivated passive.'
                     else:
-                        selectedSpeciesData["passive"] = True
-                        message = 'Activated passive.'
+                        if selectedSpeciesData["passive"]:
+                            selectedSpeciesData["passive"] = False
+                            message = 'Deactivated passive.'
+                        else:
+                            selectedSpeciesData["passive"] = True
+                            message = 'Activated passive.'
 
-                    changed = True
-                    __fh_redundantMesage(message)
+                        changed = True
+                        __fh_redundantMesage(message)
 
             except OperationSoftCancel:
                 break

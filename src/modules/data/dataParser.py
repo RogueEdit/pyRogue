@@ -337,13 +337,26 @@ def fh_getCombinedIDs(includeStarter=True, onlyNormalForms=True):
 def data_iterateParty(slotData, pokemonNameByIDHelper, moveNamesByIDHelper, natureNamesByIDHelper):
     currentParty = []
     for object in slotData['party']:
-        speciesDexID = str(object.get('species', 1)) # Needs to be string for comparison
+        # Define IDs and indices
+        speciesDexID = str(object.get('species', 1))
+        speciesFusionID = str(object.get('fusionSpecies', 0))
+        speciesFormIndex = int(object.get('formIndex', 0))  # Convert to int
+        speciesFusionFormIndex = int(object.get('fusionFormIndex', 0))  # Convert to int
+
+        # Get base names
         speciesDexName = pokemonNameByIDHelper.get(speciesDexID, f'Unknown Dex ID {speciesDexID}')
-        speciesFormIndex = str(object.get('formIndex', None))
-        # Fusions
-        speciesFusionID = str(object.get('fusionSpecies', 0)) # Needs to be string for comparison
         speciesFusionName = pokemonNameByIDHelper.get(speciesFusionID, f'Unknown Fuse ID {speciesFusionID}')
-        speciesFusionFormIndex = object.get('fusionFormIndex', None)
+
+        # Modify names based on form index
+        if speciesFormIndex > 0:
+            speciesFormName = speciesDict[int(speciesDexID)].forms[speciesFormIndex].name
+            speciesDexName = f"{speciesFormName} {speciesDexName}"
+
+        if speciesFusionFormIndex > 0 and speciesFusionID != '0':
+            speciesFusionFormName = speciesDict[int(speciesFusionID)].forms[speciesFusionFormIndex].name
+            speciesFusionName = f"{speciesFusionFormName} {speciesFusionName}"
+
+        # Fusions
         speciesFusionLuck = object.get('fusionLuck', None)
         speciesFusionisShiny = object.get('fusionShiny', None)
         speciesFusionVariant = object.get('fusionVariant', None)
@@ -360,18 +373,19 @@ def data_iterateParty(slotData, pokemonNameByIDHelper, moveNamesByIDHelper, natu
         speciesHP = object.get('hp', 1)
         speciesPassive = object.get('passive', False)
 
+
         # Create a dictionary to hold all relevant information for the current Pokémon
         speciesInfo = {
             'id': speciesDexID,
-            'name': speciesDexName.capitalize(),
+            'name': speciesDexName.title(),
             'formIndex': speciesFormIndex,
             'fusionID': speciesFusionID,
-            'fusion': speciesFusionName,
+            'fusion': speciesFusionName.title(),
             'fusionFormIndex': speciesFusionFormIndex,
             'fusionLuck': speciesFusionLuck,
             'fusionIsShiny': speciesFusionisShiny,
             'fusionVariant': speciesFusionVariant,
-            'fusionStatus': 'Not fused' if speciesFusionID == '0' else f'Fused with {speciesFusionName}',
+            'fusionStatus': 'Not fused' if speciesFusionID == '0' else f'Fused with {speciesFusionName.title()}',
             'shiny': speciesIsShiny,
             'variant': speciesShinyVariant,
             'shinyStatus': f'Shiny {speciesShinyVariant}' if speciesIsShiny else 'Not Shiny',
