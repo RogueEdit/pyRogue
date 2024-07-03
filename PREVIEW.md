@@ -1,6 +1,6 @@
 ![Preview Image](.github/previews/backup.png) 
 ![Preview Image](.github/previews/autocomplete.png)
-![Preview Image](.github/previews/partyedit.png)
+![Preview Image](.github/previews/editParty.png)
 ![Preview Image](.github/previews/tool.png) 
 ![Preview Image](.github/previews/itemEditor.png)
 ![Preview Image](.github/previews/egg_list.png)
@@ -11,4 +11,6 @@
 ![Preview Image](.github/previews/stats.png)
 ![Preview Image](.github/previews/field1.png)
 ![Preview Image](.github/previews/field2.png)
-
+![Preview Image](.github/previews/editStarter.png)
+![Preview Image](.github/previews/editAchievements.png)
+![Preview Image](.github/previews/editBiome.png)
