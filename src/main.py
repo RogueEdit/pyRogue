@@ -87,14 +87,14 @@ def m_mainMenu(rogue, editOffline: bool = False):
         ((f'Unlock {Fore.YELLOW}Everything', reworked), rogue.f_unlockAllCombined),
 
         ('Session Data Actions', 'category'),
-        ((f'Edit {Fore.YELLOW}current Pokemon Party', reworked), rogue.f_editPokemonParty),
+        ((f'Edit {Fore.YELLOW}current Party', reworked), rogue.f_editParty),
         ((f'Edit {Fore.YELLOW}money amount', reworked), rogue.f_editMoney),
         ((f'Edit {Fore.YELLOW}pokeballs amount', reworked), rogue.f_editPokeballs),
         ((f'Edit {Fore.YELLOW}current biome', reworked), rogue.f_editBiome),
         ((f'Edit {Fore.YELLOW}Items', reworked), rogue.f_submenuItemEditor),
 
         ('Print game information', 'category'),
-        (('Show all Pokemon ID', reworked), rogue.legacy_pokedex),
+        (('Show all Species ID', reworked), rogue.legacy_pokedex),
         (('Show all Biome IDs', reworked), rogue.legacy_printBiomes),
         (('Show all Move IDs', reworked), rogue.legacy_moves),
         (('Show all Vouchers IDs', reworked), rogue.legacy_vouchers),
@@ -123,11 +123,13 @@ def m_mainMenu(rogue, editOffline: bool = False):
 
             if userInput == 'exit':
                 raise KeyboardInterrupt
+            if userInput == 'lb':
+                rogue.f_lb()
+
             if userInput.isdigit() and int(userInput) <= len(validChoices):
                 choiceIndex = int(userInput)
                 m_executeOptions(choiceIndex, validChoices)
-            else:
-                cFormatter.print(Color.INFO, 'Invalid input. Please enter a number.')
+
     except OperationSuccessful as os:
         cFormatter.print(Color.DEBUG, f'Operation successful: {os}')
     except KeyboardInterrupt:

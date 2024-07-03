@@ -335,7 +335,7 @@ def fh_getCombinedIDs(includeStarter=True, onlyNormalForms=True):
     return combinedFormIds
 
 @staticmethod
-def data_iterateParty(slotData, pokemonNameByIDHelper, moveNamesByIDHelper, natureNamesByIDHelper):
+def data_iterateParty(slotData, speciesNameByIDHelper, moveNamesByIDHelper, natureNamesByIDHelper):
     currentParty = []
     for object in slotData['party']:
         # Define IDs and indices
@@ -345,8 +345,8 @@ def data_iterateParty(slotData, pokemonNameByIDHelper, moveNamesByIDHelper, natu
         speciesFusionFormIndex = int(object.get('fusionFormIndex', 0))  # Convert to int
 
         # Get base names
-        speciesDexName = pokemonNameByIDHelper.get(speciesDexID, f'Unknown Dex ID {speciesDexID}')
-        speciesFusionName = pokemonNameByIDHelper.get(speciesFusionID, f'Unknown Fuse ID {speciesFusionID}')
+        speciesDexName = speciesNameByIDHelper.get(speciesDexID, f'Unknown Dex ID {speciesDexID}')
+        speciesFusionName = speciesNameByIDHelper.get(speciesFusionID, f'Unknown Fuse ID {speciesFusionID}')
 
         # Modify names based on form index
         if speciesFormIndex > 0:

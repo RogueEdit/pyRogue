@@ -163,6 +163,10 @@ class Rogue:
         (self.starterNameById, self.biomeNamesById, self.moveNamesById, self.vouchersData, self.natureData, 
             self.natureSlotData, self.achievementsData, self.speciesNameByID, self.noPassiveIDs, self.hasFormsIDs) = self.appData.f_convertToEnums()
         self.editOffline = editOffline
+
+        self.speciesNameByIDHelper = {str(member.value): member.name for member in self.appData.speciesNameByID}
+        self.moveNamesByIDHelper = {str(member.value): member.name for member in self.moveNamesById}
+        self.natureNamesByIDHelper = {str(member.value): member.name for member in self.natureSlotData}
           
         self.__fh_dump_data()
 
@@ -407,7 +411,7 @@ class Rogue:
             # Output:
             # {
             #   "slotId": 2,
-            #   "pokemonData": [...],
+            #   "speciesData": [...],
             #   "itemData": [...],
             #   ...
             # }
@@ -767,7 +771,7 @@ class Rogue:
 
         shinyChoice = False
         #dexData
-        choice = fh_getChoiceInput('Do you want to unlock all forms of the pokemon? (All forms are Tier 3 shinies)', choices, zeroCancel=True) == '1'
+        choice = fh_getChoiceInput('Do you want to unlock all forms of the species? (All forms are Tier 3 shinies)', choices, zeroCancel=True) == '1'
         shinyChoice = fh_getChoiceInput('Do you want Tier 3 shinies?', choices, zeroCancel=True) == '1'
         iv = fh_getChoiceInput('Do you want the starters to have perfect IVs?', choices, zeroCancel=True) == '1'
         nature = fh_getChoiceInput('Do you want to unlock all natures?', choices, zeroCancel=True) == '1'
@@ -876,10 +880,10 @@ class Rogue:
     @handle_operation_exceptions
     def f_editStarter(self, dexId: Optional[str] = None) -> None:
         """
-        Allows the user to edit starter Pokemon data for a trainer.
+        Allows the user to edit starter Species data for a trainer.
 
         Args:
-        - dexId (Optional[str]): The ID or name of the Pokemon. If None, the user will be prompted to enter it.
+        - dexId (Optional[str]): The ID or name of the Species. If None, the user will be prompted to enter it.
 
         Raises:
         - None
@@ -891,8 +895,8 @@ class Rogue:
 
         Workflow:
         1. Loads existing data from 'trainer.json'.
-        2. Allows user to input or select a Pokemon name or ID with auto-completion.
-        3. Prompts user to specify various options for the selected Pokemon (forms, shininess, IVs, etc.).
+        2. Allows user to input or select a Species name or ID with auto-completion.
+        3. Prompts user to specify various options for the selected Species (forms, shininess, IVs, etc.).
         4. Updates 'trainer.json' with the modified starter data.
 
         Usage Example:
@@ -902,13 +906,13 @@ class Rogue:
         """
 
         gameData: dict = self.__fh_loadDataFromJSON('trainer.json')
-        header = cFormatter.fh_centerText('Edit Starter', 55, '-')
+        header = cFormatter.fh_centerText(' Edit Starter ', 55, '-')
         cFormatter.print(Color.DEBUG, header)
         self.fh_completerInfo()
 
         if not dexId:
             inputValue = fh_getCompleterInput(
-                promptMessage='Write either the ID or the Name of the Pokemon',
+                promptMessage='Write either the ID or the Name of the Species',
                 choices={**{member.name.lower(): member for member in self.appData.starterNameByID}, 
                         **{str(member.value): member for member in self.appData.starterNameByID}},
                 softCancel=True
@@ -917,7 +921,7 @@ class Rogue:
             dexName = inputValue.name
 
         if str(dexId) not in gameData['starterData']:
-            cFormatter.print(Color.INFO, f'No pokemon with ID: {dexId}')
+            cFormatter.print(Color.INFO, f'No Species with ID: {dexId}')
             return
 
         changed = False
@@ -970,8 +974,9 @@ class Rogue:
 
                 action = choices[nameToKey[action_key]]
                 cFormatter.fh_printSeperators(55, '-', Color.INFO)
+
                 if action == 'Unlock all forms':
-                    formChoice = fh_getChoiceInput('Do you want to unlock all forms of the pokemon? (All forms are Tier 3 shinies)', {'1': 'Yes', '2': 'No'}, zeroCancel=True) == '1'
+                    formChoice = fh_getChoiceInput('Do you want to unlock all forms of the Species? (All forms are Tier 3 shinies)', {'1': 'Yes', '2': 'No'}, zeroCancel=True) == '1'
                     shinyChoice = fh_getChoiceInput('Do you want Tier 3 shinies?', {'1': 'Yes', '2': 'No'}, zeroCancel=True) == '1'
 
                     if formChoice and any(str(dexId) == str(form["speciesID"]) for form in combinedFormIDs):
@@ -983,23 +988,23 @@ class Rogue:
                         caughtAttr = 255 if shinyChoice else 253
 
                     gameData['dexData'][str(dexId)]['caughtAttr'] = caughtAttr
-                    changedItems.append(f'Changed caughtAttr to {caughtAttr}')
+                    changedItems.append('Unlocked forms.')
                     changed = True
 
                 elif action == 'Set caught count':
-                    caught = fh_getIntegerInput('How many of this Pokemon have you caught?', 1, self.__MAX_BIG_INT, zeroCancel=True)
+                    caught = fh_getIntegerInput('How many of this Species have you caught?', 1, self.__MAX_BIG_INT, zeroCancel=True)
                     gameData['dexData'][str(dexId)]['caughtCount'] = int(caught)
                     changedItems.append(f'Caught count: {caught}')
                     changed = True
 
                 elif action == 'Set hatched count':
-                    hatched = fh_getIntegerInput('How many of this Pokemon have hatched from eggs?', 0, self.__MAX_BIG_INT, zeroCancel=True)
+                    hatched = fh_getIntegerInput('How many of this Species have hatched from eggs?', 0, self.__MAX_BIG_INT, zeroCancel=True)
                     gameData['dexData'][str(dexId)]['hatchedCount'] = int(hatched)
                     changedItems.append(f'Hatched count: {hatched}')
                     changed = True
 
                 elif action == 'Set seen count':
-                    seenCount = fh_getIntegerInput('How many of this Pokemon have you seen?', 0, self.__MAX_BIG_INT, zeroCancel=True)
+                    seenCount = fh_getIntegerInput('How many of this Species have you seen?', 0, self.__MAX_BIG_INT, zeroCancel=True)
                     gameData['dexData'][str(dexId)]['seenCount'] = int(seenCount)
                     changedItems.append(f'Seen count: {seenCount}')
                     changed = True
@@ -1023,7 +1028,7 @@ class Rogue:
 
                 elif action == 'Toggle passive':
                     if str(dexId) in noPassives:
-                        cFormatter.print(Color.INFO, 'This pokemon has no passive.')
+                        cFormatter.print(Color.INFO, 'This Species has no passive.')
                     else:
                         if gameData['starterData'][str(dexId)]['passiveAttr'] == 3:
                             gameData['starterData'][str(dexId)]['passiveAttr'] = 0
@@ -1052,7 +1057,7 @@ class Rogue:
                     changedItems.append(f'Abilities: {"All unlocked" if abilityAttr == 7 else "Default"}')
 
                 elif action == 'Set IVs':
-                    cFormatter.print(Color.INFO, 'Choose a value between 1 and 31 for your IVs (Pokemon Stats).')
+                    cFormatter.print(Color.INFO, 'Choose a value between 1 and 31 for your IVs (Species Stats).')
                     ivs = [
                         int(fh_getIntegerInput('SpA IVs', 1, 31, zeroCancel=True)),
                         int(fh_getIntegerInput('DEF IVs', 1, 31, zeroCancel=True)),
@@ -1154,9 +1159,9 @@ class Rogue:
             fh_appendMessageBuffer(Color.YELLOW, 'No changes made.')
 
     @handle_operation_exceptions
-    def f_editPokemonParty(self) -> None:
+    def f_editParty(self) -> None:
         """
-        Allows the user to edit the Pokemon party.
+        Allows the user to edit the Species party.
 
         Raises:
         - None
@@ -1167,12 +1172,12 @@ class Rogue:
 
         Workflow:
         1. Loads game data based on the current slot.
-        2. Allows the user to select a party slot and choose from various options to edit a Pokemon's attributes.
-        3. Updates the game data with the modified Pokemon attributes.
+        2. Allows the user to select a party slot and choose from various options to edit a Species's attributes.
+        3. Updates the game data with the modified Species attributes.
 
         Usage Example:
             >>> example_instance = ExampleClass()
-            >>> example_instance.edit_pokemon_party()
+            >>> example_instance.f_editParty()
 
         """
         slot = self.slot
@@ -1183,14 +1188,9 @@ class Rogue:
             cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot edit this property on Daily Runs.')
             return
 
-        # TODO 
-        pokemonNameByIDHelper = {str(member.value): member.name for member in self.appData.speciesNameByID}
-        moveNamesByIDHelper = {str(member.value): member.name for member in self.moveNamesById}
-        natureNamesByIDHelper = {str(member.value): member.name for member in self.natureSlotData}
-
-            
+        # TODO      
         noPassives = {member.name: member for member in self.appData.noPassiveIDs}
-        currentParty = dataParser.data_iterateParty(slotData, pokemonNameByIDHelper, moveNamesByIDHelper, natureNamesByIDHelper)
+        currentParty = dataParser.data_iterateParty(slotData, self.speciesNameByIDHelper, self.moveNamesByIDHelper, self.natureNamesByIDHelper)
 
         cFormatter.print(Color.WHITE, 'Current Party')
         cFormatter.fh_printSeperators(55, '-', Color.DEBUG)
@@ -1198,7 +1198,7 @@ class Rogue:
             cFormatter.print(Color.WHITE, f'{i}: {Fore.YELLOW}{pokeInfoDict["name"]}{Style.RESET_ALL} | Level: {pokeInfoDict["level"]} | Luck: {pokeInfoDict["luck"]} | {pokeInfoDict["shinyStatus"]} | HP {pokeInfoDict["hp"]} | {pokeInfoDict["fusionStatus"]}')
         cFormatter.fh_printSeperators(55, '-', Color.DEBUG)
 
-        selectedPartySlot = int(fh_getIntegerInput('Select the party slot of the Pokemon you want to edit', 1, len(currentParty), zeroCancel=True)) -1
+        selectedPartySlot = int(fh_getIntegerInput('Select the party slot of the Species you want to edit', 1, len(currentParty), zeroCancel=True)) -1
 
         # Define loop relevant information
         changedItems = []
@@ -1215,7 +1215,7 @@ class Rogue:
                 fh_appendMessageBuffer(Color.INFO, f'{selectedSpecies["name"]}: {message}')
                 
             choices = {
-                'changePokemon': f'{Fore.YELLOW}Change mon{Style.RESET_ALL}',
+                'changeSpecies': f'{Fore.YELLOW}Change mon{Style.RESET_ALL}',
                 'changeShiny': f'{Fore.YELLOW}Set it shiny{Style.RESET_ALL} | Current: {selectedSpecies["variant"]}',
                 'changeLuck': f'{Fore.YELLOW}Set Luck{Style.RESET_ALL} | Current: Luck {selectedSpecies["luck"]}',
                 'changeLevel': f'{Fore.YELLOW}Set Level{Style.RESET_ALL} | Current: Level {selectedSpecies["level"]}',
@@ -1234,12 +1234,12 @@ class Rogue:
                 cFormatter.fh_printSeperators(55, '-', Color.DEBUG)
 
 
-                if action == 'changePokemon':
+                if action == 'changeSpecies':
                     header = cFormatter.fh_centerText(' Change to another mon ', length=55, fillChar='-')
                     cFormatter.print(Color.YELLOW, header)
                     self.fh_completerInfo()
                     inputValue = fh_getCompleterInput(
-                        promptMessage='Write either the ID or the Name of the Pokemon',
+                        promptMessage='Write either the ID or the Name of the Species',
                         choices={**{member.name.lower(): member for member in self.appData.speciesNameByID},
                                 **{str(member.value): member for member in self.appData.speciesNameByID}},
                         softCancel=True
@@ -1258,7 +1258,7 @@ class Rogue:
                             print(f'- {form.name}')
                         if formChoices:
                             formInput = fh_getCompleterInput(
-                                promptMessage=f'Select a form for {dexName.capitalize()}',
+                                promptMessage=f'Select a form for {dexName.title()}',
                                 choices=formChoices,
                                 softCancel=True
                             )
@@ -1272,15 +1272,15 @@ class Rogue:
                                 # Handle case where selected form name is not found
                                 print("Form name not found in choices")  # Debugging line
                                 selectedSpeciesData["formIndex"] = 0
-                                message = f'Changed Species to {dexName.capitalize()}.'
+                                message = f'Changed Species to {dexName.title()}.'
                         else:
                             # No forms available, reset formIndex
                             selectedSpeciesData["formIndex"] = 0
-                            message = f'Changed Species to {dexName.capitalize()}.'
+                            message = f'Changed Species to {dexName.title()}.'
                     else:
                         # No forms available, reset formIndex
                         selectedSpeciesData["formIndex"] = 0
-                        message = f'Changed Species to {dexName.capitalize()}.'
+                        message = f'Changed Species to {dexName.title()}.'
 
                     changed = True
                     # Correctly access the name attribute
@@ -1420,7 +1420,7 @@ class Rogue:
                             print(f'- {form.name}')
                         if formChoices:
                             formInput = fh_getCompleterInput(
-                                promptMessage=f'Select a form for {fusionName.capitalize()}',
+                                promptMessage=f'Select a form for {fusionName.title()}',
                                 choices=formChoices,
                                 softCancel=True
                             )
@@ -1455,7 +1455,7 @@ class Rogue:
 
                 elif action == 'changePassive':
                     if selectedSpecies.get('id') in noPassives:
-                        cFormatter.print(Color.INFO, 'This pokemon has no passive.')
+                        cFormatter.print(Color.INFO, 'This Species has no passive.')
                         selectedSpeciesData["passive"] = False
                     else:
                         if selectedSpeciesData["passive"]:
@@ -1469,7 +1469,7 @@ class Rogue:
                         __fh_redundantMesage(message)
 
                 # Refresh the current party data after making changes
-                currentParty = dataParser.data_iterateParty(slotData, pokemonNameByIDHelper, moveNamesByIDHelper, natureNamesByIDHelper)
+                currentParty = dataParser.data_iterateParty(slotData, self.speciesNameByIDHelper, self.moveNamesByIDHelper, self.natureNamesByIDHelper)
 
             except OperationSoftCancel:
                 break
@@ -1754,7 +1754,7 @@ class Rogue:
             try:
                 while True:
                     inputValue = fh_getCompleterInput(
-                        promptMessage='Write either the ID or the Name of the Pokemon',
+                        promptMessage='Write either the ID or the Name of the Species',
                         choices={**{member.name.lower(): member for member in self.appData.starterNameByID}, 
                                 **{str(member.value): member for member in self.appData.starterNameByID}},
                         softCancel=True
@@ -1763,13 +1763,13 @@ class Rogue:
                     currentCandies = gameData["starterData"][str(inputValue.value)]["candyCount"]
 
                     if int(currentCandies) >= 999:
-                        cFormatter.print(Color.WARNING, f'{inputValue.name.capitalize()} already has the maximum number of candies (999).')
+                        cFormatter.print(Color.WARNING, f'{inputValue.name.title()} already has the maximum number of candies (999).')
                     else:
                         break  # Exit the loop if a valid Pokémon is selected
 
                 # Prompt for number of candies using fh_getIntegerInput method
                 candies = fh_getIntegerInput(
-                    promptMessage=f'How many candies do you want to add?\n You currently have {currentCandies} on {inputValue.name.capitalize()}. (0 to cancel):',
+                    promptMessage=f'How many candies do you want to add?\n You currently have {currentCandies} on {inputValue.name.title()}. (0 to cancel):',
                     minBound=0,
                     maxBound=999,  # Adjust maximum candies as needed
                     zeroCancel=True
@@ -1777,7 +1777,7 @@ class Rogue:
 
                 # Update game data with the chosen Pokémon's candy count
                 gameData["starterData"][str(inputValue.value)]["candyCount"] = int(candies)
-                changedItems.append(f"{inputValue.name.capitalize()}: {candies}")
+                changedItems.append(f"{inputValue.name.title()}: {candies}")
                 changed = True
 
                 cFormatter.print(Color.DEBUG, f'Added {candies} candies to {pokeName}.')
@@ -2132,6 +2132,7 @@ class Rogue:
             'subLegendaryPokemonSeen': random.randint(10, 100),
             'trainersDefeated': random.randint(100, 200)
         }
+        
         changed = False
         changedItems = []
         if action == 'random':
@@ -2245,7 +2246,7 @@ class Rogue:
     @handle_operation_exceptions
     def f_submenuItemEditor(self):
         from modules import ModifierEditor
-        edit = ModifierEditor(self.appData.speciesNameByID, self.moveNamesById, self.natureData, int(self.slot))
+        edit = ModifierEditor(self.speciesNameByIDHelper, self.moveNamesByIDHelper, self.natureNamesByIDHelper, int(self.slot))
         edit.m_itemMenuPresent(int(self.slot))
 
     @handle_operation_exceptions
@@ -2270,41 +2271,10 @@ class Rogue:
             else:
                 self.f_getSlotData(int(newSlot))
             raise OperationSuccessful(f'Changed slot to slot_{newSlot}.json')
- 
-    @handle_operation_exceptions
-    def fh_printEnums(self, enum_type: str) -> None:
-        """
-        enums_mapping = {
-            'starter': self.starterNameByID,
-            'biomes': self.biomesByID,
-            'moves': self.movesByID,
-            'vouchers': self.voucherData,
-            'natureData': self.natureData,
-            'natureDataSlots': self.natureSlot_data,
-            'achievementsData': self.achievementsData,
-            'pokemonData': self.pokemonData
-        """
-        enums_mapping = {
-            'starter': self.starterNameByID,
-            'biomes': self.biomesByID,
-            'moves': self.movesByID,
-            'vouchers': self.voucherData,
-            'natures': self.natureData,
-            'natureSlots': self.natureSlot_data,
-            'achievements': self.achievementsData,
-            'pokemon': self.speciesNameByID
-        }
-
-        if enum_type not in enums_mapping:
-            raise ValueError(f"Invalid enum_type: {enum_type}. Valid types are: {', '.join(enums_mapping.keys())}")
-
-        enums = enums_mapping[enum_type]
-        formatted_enums = [f'{member.value}: {member.name}' for member in enums]
-        cFormatter.print(Color.WHITE, '\n'.join(formatted_enums))
 
     def legacy_pokedex(self) -> None:
-        pokemons = [f'{member.value}: {member.name}' for member in self.starterNamesById]
-        cFormatter.print(Color.WHITE, '\n'.join(pokemons))
+        species = [f'{member.value}: {member.name}' for member in self.speciesNameByID]
+        cFormatter.print(Color.WHITE, '\n'.join(species))
         
     def legacy_moves(self) -> None:
         moves = [f'{member.value}: {member.name}' for member in self.moveNamesById]
@@ -2392,3 +2362,70 @@ class Rogue:
                 return json.load(f)
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function __load_data(): {e}', isLogging=True)
+
+    @handle_operation_exceptions
+    def f_lb(self):
+        gameData: dict = self.__fh_loadDataFromJSON('trainer.json')
+        slotData: dict = self.__fh_loadDataFromJSON(f'slot_{self.slot}.json')
+
+        header = cFormatter.fh_centerText(' LB\'s Secrets ', 55, '-')
+        cFormatter.print(Color.INFO, header)
+
+        choices = {
+            'secretStarter': 'Set non avaiable starter forms',
+            'enemyModifier': 'Remove enemy modifier'
+        }
+        action = fh_getChoiceInput('Choose which action', choices, renderMenu=True, zeroCancel=True)
+
+        if action == 'secretStarter':
+            header = cFormatter.fh_centerText(' Easter Egg ', 55, '-')
+            cFormatter.print(Color.DEBUG, header)
+            self.fh_completerInfo()
+
+            inputValue = fh_getCompleterInput(
+                promptMessage='Write either the ID or the Name of the Species',
+                choices={**{member.name.lower(): member for member in self.appData.starterNameByID}, 
+                        **{str(member.value): member for member in self.appData.starterNameByID}},
+                softCancel=True
+            )
+            dexId = inputValue.value
+            dexName = inputValue.name
+
+            if str(dexId) not in gameData['starterData']:
+                cFormatter.print(Color.INFO, f'No Species with ID: {dexId}')
+                return
+
+            selectedSpeciesData = dataParser.speciesDict.get(int(dexId))
+            if selectedSpeciesData:
+                cFormatter.print(Color.INFO, f'Available forms for {dexName.title()}:')
+                availableForms = [form for form in selectedSpeciesData.forms if form.name != "Combined"]
+                for form in availableForms:
+                    cFormatter.print(Color.INFO, f'- {form.name}')
+
+                formInput = fh_getCompleterInput(
+                    promptMessage=f'Select a form for {dexName.title()}',
+                    choices={form.name.lower(): form for form in availableForms},
+                    softCancel=True
+                )
+                selectedFormName = formInput.name.lower()
+
+                selectedForm = selectedSpeciesData.getFormAttribute(selectedFormName.title(), "variant3")  # Adjust the attribute as per your data structure
+                if selectedForm is not None:
+                    caughtAttr = selectedForm
+                    gameData['dexData'][str(dexId)]['caughtAttr'] = caughtAttr
+                else:
+                    cFormatter.print(Color.INFO, f'Form {selectedFormName} not found for {dexName.title()}.')
+
+                self.__fh_writeJSONData(gameData, 'trainer.json', showSuccess=False)
+                fh_appendMessageBuffer(Color.INFO, f'Form {selectedFormName} not found for {dexName.title()}.')
+                cFormatter.print(Color.INFO, 'Changes saved. Easter Egg completed.')
+
+            else:
+                cFormatter.print(Color.INFO, f'No data found for {dexName.title()}.')
+
+
+        if action == 'enemyModifier':
+            slotData["enemyModifiers"] = None
+            self.__fh_writeJSONData(slotData, f'slot_{self.slot}.json', showSuccess=False)
+            cFormatter.print(Color.INFO, 'Changes saved. Easter Egg completed.')
+            fh_appendMessageBuffer(Color.INFO, 'Removed enemy modifiers.')

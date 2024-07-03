@@ -18,6 +18,7 @@ from modules.config import version
 from collections import defaultdict
 from modules.handler import handle_operation_exceptions, OperationCancel, OperationSoftCancel, OperationSuccessful  # noqa: F401
 from modules.handler import fh_getChoiceInput, fh_getCompleterInput, fh_getIntegerInput  # noqa: F401
+from modules.data import dataParser
 
 
 @dataclass
@@ -149,49 +150,20 @@ class ModifierType(Enum):
     
 @handle_operation_exceptions
 class ModifierEditor:
-    def __init__(self, pokemonNameByID=None, moveNamesById=None, natureData=None, slot=1):
+    def __init__(self, speciesNameByIDHelper, moveNamesByIDHelper, natureNamesByIDHelper, slot=1):
         self.menuItems = self.m_createItemMenu()
         self.notifyMessage = None
-        self.pokemonNameByIDHelper = {str(member.value): member.name for member in pokemonNameByID}
+
         self.slot = slot
 
         self.slotData = self.__fh_loadJSON(f'slot_{self.slot}.json')
         if self.slotData['gameMode'] == 3:
                 cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot edit this property on Daily Runs.')
                 return
-        self.currentParty = []
 
-        for pokemon in self.slotData['party']:
-            pokeID = str(pokemon.get('species', None))
-            pokeName = self.pokemonNameByIDHelper.get(pokeID, f'UnknownID {pokeID}').capitalize()
-            pokeIsShiny = pokemon.get('shiny', False)
-            pokeShinyType = pokemon.get('variant', "None")
-            pokeLuck = pokemon.get('luck', 0)
-            pokeLevel = pokemon.get('level', 1)
-
-
-            # Create a dictionary to hold all relevant information for the current Pokémon
-            pokeInfoDict = {
-                'name': pokeName.capitalize(),
-                'shiny': pokeIsShiny,
-                'variant': pokeShinyType,
-                'luck': pokeLuck,
-                'level': pokeLevel,
-            }
-
-            # Append the dictionary to the current party list
-            self.currentParty.append(pokeInfoDict)
-
-        
-
-    def fh_printParty(self):
-        # Print the current party with detailed information
-        cFormatter.print(Color.WHITE, f'Current Pokemon-Party in Slot {self.slot}:')
-        cFormatter.fh_printSeperators(55, '-', Color.DEBUG)
-        for i, pokeInfoDict in enumerate(self.currentParty, start=1):
-            shinyStatus = f"Shiny {pokeInfoDict['variant']}" if pokeInfoDict["shiny"] else "Not Shiny"
-            cFormatter.print(Color.WHITE, f'{i}: {Fore.YELLOW}{pokeInfoDict["name"]}{Style.RESET_ALL} | Level: {pokeInfoDict["level"]} | Luck: {pokeInfoDict["luck"]} | {shinyStatus} |')
-        cFormatter.fh_printSeperators(55, '-', Color.DEBUG)
+        self.speciesNameByIDHelper = speciesNameByIDHelper
+        self.moveNamesByIDHelper = moveNamesByIDHelper
+        self.natureNamesByIDHelper = natureNamesByIDHelper
 
     def m_createItemMenu(self):
         m_itemMenuItems = [(f'{version}', 'title')]
@@ -329,6 +301,14 @@ class ModifierEditor:
             self.notifyMessage = (f'Something went wrong. \n {e}', 'error')
             cFormatter.print(Color.INFO, f'Something went wrong. \n {e}', 'error')
 
+    def fh_printParty(self, slotData):
+        self.currentParty = dataParser.data_iterateParty(slotData, self.speciesNameByIDHelper, self.moveNamesByIDHelper, self.natureNamesByIDHelper)
+        cFormatter.print(Color.WHITE, 'Current Party')
+        cFormatter.fh_printSeperators(55, '-', Color.DEBUG)
+        for i, pokeInfoDict in enumerate(self.currentParty, start=1):
+            cFormatter.print(Color.WHITE, f'{i}: {Fore.YELLOW}{pokeInfoDict["name"]}{Style.RESET_ALL} | Level: {pokeInfoDict["level"]} | Luck: {pokeInfoDict["luck"]} | {pokeInfoDict["shinyStatus"]} | HP {pokeInfoDict["hp"]} | {pokeInfoDict["fusionStatus"]}')
+        cFormatter.fh_printSeperators(55, '-', Color.DEBUG)
+
     @handle_operation_exceptions
     def m_itemMenuPresent(self, sessionSlot):
         slotData = self.__fh_loadJSON(f'slot_{sessionSlot}.json')
@@ -366,8 +346,10 @@ class ModifierEditor:
                     cFormatter.print(Color.DEBUG, 'You can always go back to the menu by typing anything not 0-5.')
                     cFormatter.print(Color.DEBUG, f'Item Description: {Style.RESET_ALL}{selectedModifier.value.description}')
                     cFormatter.print(Color.DEBUG, f'Max Stacks: {Style.RESET_ALL}{selectedModifier.value.maxStack}')
-                    
-                    self.fh_printParty()
+
+                    self.fh_printParty(slotData)
+
+
                     selectedPartySlot = int(fh_getIntegerInput('Select the party slot of the Pokemon you want to edit', 1, 6, zeroCancel=True)) -1
                     pokeId = int(slotData["party"][selectedPartySlot]["id"])
                     header = cFormatter.fh_centerText(f'Editing {self.currentParty[selectedPartySlot]['name']} and Trainer', 55, '-')
@@ -401,7 +383,7 @@ class ModifierEditor:
                 cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot edit this property on Daily Runs.')
                 return
 
-            self.fh_printParty()
+            self.fh_printParty(slotData)
             cFormatter.print(Color.DEBUG, 'You can always go back to the menu by typing anything not 0-5.')
             selectedPartySlot = int(fh_getIntegerInput('Select the party slot of the Pokemon you want to edit', 1, 6, zeroCancel=True)) -1
             header = cFormatter.fh_centerText(f'Editing {self.currentParty[selectedPartySlot]['name']} and Trainer', 55, '-')
