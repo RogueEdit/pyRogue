@@ -1,7 +1,6 @@
 # pyRogue
 > ## **pyRogue** is a **educational** project. 
-<img src="https://img.shields.io/badge/Make_sure_to_mark_with_a-Star-yellow"> <a href="https://discord.gg/9ZsnGDmGk2"><img src="https://img.shields.io/badge/Join_our_News-Discord-blue
-"></a>
+<img src="https://img.shields.io/badge/Make_sure_to_mark_with_a-Star-yellow"> <a href="https://discord.gg/9ZsnGDmGk2"><img src="https://img.shields.io/badge/Join_our_News-Discord-blue"></a>
 
 [Based on the Source Code of pokerogue.net](https://github.com/pagefaultgames/pokerogue)
 > In compliance with Pokerogue's License this project here is also released under AGPL3.
