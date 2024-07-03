@@ -3115,7 +3115,7 @@ class hasFormsEnum(Enum):
         '884': {'Duraludon': ['Normal', 'G-Max'], 'isNormalForm': False},
         '888': {'Zacian': ['Hero of many Battles', 'Crowned'], 'isNormalForm': False},
         '889': {'Zamazenta': ['Hero of many Battles', 'Crowned'], 'isNormalForm': False},
-        '890': {'Eternatus': ['Normall', 'E-Max'], 'isNormalForm': False},
+        '890': {'Eternatus': ['Normal', 'E-Max'], 'isNormalForm': False},
         '892': {'Urshifu': ['Single Strike', 'Rapid Strike', 'G-Max Single Strike', 'G-Max Rapid Strike'], 'isNormalForm': False},
         '893': {'Zarude': ['Normal', 'Dada'], 'isNormalForm': True},
         '898': {'Calyrex': ['Normal', 'Ice', 'Shadow'], 'isNormalForm': False},
