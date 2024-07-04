@@ -1,3 +1,10 @@
+# Authors https://github.com/JulianStiebler/
+# Organization: https://github.com/rogueEdit/
+# Repository: https://github.com/rogueEdit/OnlineRogueEditor
+# Contributors: None except Authors
+# Date of release: 06.06.2024 
+# Last Edited: 28.06.2024
+
 import json
 from enum import Enum
 from dataclasses import dataclass, field

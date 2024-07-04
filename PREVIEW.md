@@ -14,3 +14,5 @@
 ![Preview Image](.github/previews/editStarter.png)
 ![Preview Image](.github/previews/editAchievements.png)
 ![Preview Image](.github/previews/editBiome.png)
+![Preview Image](.github/previews/fun1.png)
+![Preview Image](.github/previews/fun2.png)
