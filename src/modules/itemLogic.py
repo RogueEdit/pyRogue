@@ -157,7 +157,7 @@ class ModifierEditor:
         self.slot = slot
 
         self.slotData = self.__fh_loadJSON(f'slot_{self.slot}.json')
-        if self.slotData['gameMode'] == 3:
+        if self.slotData["gameMode"] == 3:
                 cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot edit this property on Daily Runs.')
                 return
 
@@ -235,12 +235,12 @@ class ModifierEditor:
 
     @staticmethod
     def __fh_ensureModifiersBlock(data, typeId, typePregenArgs, pokeId):
-        if 'modifiers' not in data or not isinstance(data['modifiers'], list):
-            data['modifiers'] = []
-        for modifier in data['modifiers']:
-            if (modifier.get('typeId') == typeId and 
-                modifier.get('typePregenArgs') == typePregenArgs and
-                modifier.get('args') and modifier['args'][0] == pokeId):
+        if "modifiers" not in data or not isinstance(data["modifiers"], list):
+            data["modifiers"] = []
+        for modifier in data["modifiers"]:
+            if (modifier.get("typeId") == typeId and 
+                modifier.get("typePregenArgs") == typePregenArgs and
+                modifier.get("args") and modifier["args"][0] == pokeId):
                 return modifier.get('stackCount', 0)
         return None
 
@@ -262,32 +262,32 @@ class ModifierEditor:
                 modifier.args = [pokeId if arg is None else arg for arg in modifier.args]
                 # print(f"Original modifier.args: {original_args}, Modified modifier.args with poke_id: {modifier.args}")
 
-            if 'modifiers' not in data or not isinstance(data['modifiers'], list):
-                data['modifiers'] = []
+            if 'modifiers' not in data or not isinstance(data["modifiers"], list):
+                data["modifiers"] = []
 
             def modifiers_match(existingModifierData, newModifierData):
-                if existingModifierData['typeId'] != newModifierData['typeId']:
+                if existingModifierData["typeId"] != newModifierData["typeId"]:
                     return False
-                if existingModifierData.get('args') != newModifierData.get('args'):
+                if existingModifierData.get("args") != newModifierData.get("args"):
                     return False
-                if existingModifierData.get('typePregenArgs') != newModifierData.get('typePregenArgs'):
+                if existingModifierData.get("typePregenArgs") != newModifierData.get("typePregenArgs"):
                     return False
                 return True
 
             existing = next(
-                (m for m in data['modifiers'] if modifiers_match(m, modifier.fh_toJSON(pokeId))),
+                (m for m in data["modifiers"] if modifiers_match(m, modifier.fh_toJSON(pokeId))),
                 None
             )
 
             if existing:
                 # print(f'Existing modifier JSON: {existing}')
-                if existing['stackCount'] != modifier.stackCount:
-                    existing['stackCount'] = modifier.stackCount
+                if existing["stackCount"] != modifier.stackCount:
+                    existing["stackCount"] = modifier.stackCount
                     message = f'Successfully updated {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot} for Pokémon ID {pokeId}' if modifier.args else f'Successfully updated {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot}'
                 else:
                     message = f'No change for {modifier.typeId} in slot_{sessionSlot} for Pokémon ID {pokeId}' if modifier.args else f'No change for {modifier.typeId} in slot_{sessionSlot}'
             else:
-                data['modifiers'].append(modifier.fh_toJSON(pokeId))
+                data["modifiers"].append(modifier.fh_toJSON(pokeId))
                 message = f'Successfully written {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot} for Pokémon ID {pokeId}' if modifier.args else f'Successfully written {modifier.stackCount} {modifier.typeId} to slot_{sessionSlot}'
 
             # Restore original args state
@@ -313,7 +313,7 @@ class ModifierEditor:
     def m_itemMenuPresent(self, sessionSlot):
         slotData = self.__fh_loadJSON(f'slot_{sessionSlot}.json')
         while True:
-            if slotData['gameMode'] == 3:
+            if slotData["gameMode"] == 3:
                 break
             try:
                 print('')
@@ -352,7 +352,7 @@ class ModifierEditor:
 
                     selectedPartySlot = int(fh_getIntegerInput('Select the party slot of the Pokemon you want to edit', 1, 6, zeroCancel=True)) -1
                     pokeId = int(slotData["party"][selectedPartySlot]["id"])
-                    header = cFormatter.fh_centerText(f'Editing {self.currentParty[selectedPartySlot]['name']} and Trainer', 55, '-')
+                    header = cFormatter.fh_centerText(f'Editing {self.currentParty[selectedPartySlot]["name"]} and Trainer', 55, '-')
                     cFormatter.print(Color.DEBUG, header)
                     
                     existingStackCount = self.__fh_ensureModifiersBlock(slotData, selectedModifier.value.typeId, selectedModifier.value.typePregenArgs, pokeId)
@@ -379,14 +379,14 @@ class ModifierEditor:
         try:
             slotData = self.__fh_loadJSON(f'slot_{sessionSlot}.json')
 
-            if slotData['gameMode'] == 3:
+            if slotData["gameMode"] == 3:
                 cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot edit this property on Daily Runs.')
                 return
 
             self.fh_printParty(slotData)
             cFormatter.print(Color.DEBUG, 'You can always go back to the menu by typing anything not 0-5.')
             selectedPartySlot = int(fh_getIntegerInput('Select the party slot of the Pokemon you want to edit', 1, 6, zeroCancel=True)) -1
-            header = cFormatter.fh_centerText(f'Editing {self.currentParty[selectedPartySlot]['name']} and Trainer', 55, '-')
+            header = cFormatter.fh_centerText(f'Editing {self.currentParty[selectedPartySlot]["name"]} and Trainer', 55, '-')
             cFormatter.print(Color.DEBUG, header)
 
             stackCountInput = int(input('Enter the stack count for the modifiers: '))
@@ -412,9 +412,9 @@ class ModifierEditor:
     """@staticmethod
     def fh_printModifiers(sessionSlot):
         data = ModifierEditor.fh_loadJSON(f'slot_{sessionSlot}.json')
-        if 'modifiers' in data and isinstance(data['modifiers'], list):
+        if 'modifiers' in data and isinstance(data["modifiers"], list):
             cFormatter.print(Color.INFO, 'Current Modifiers:')
-            for modifier in data['modifiers']:
+            for modifier in data["modifiers"]:
                 cFormatter.print(Color.INFO, json.dumps(modifier, indent=4))
         else:
             cFormatter.print(Color.INFO, 'No modifiers found.')"""

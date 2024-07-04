@@ -159,7 +159,7 @@ def f_checkForUpdates(requests: requests, datetime: datetime, timedelta: timedel
         commits = response.json()  # Parse JSON response
 
         # Extract commit titles and SHAs
-        commitList = [{'sha': commit['sha'], 'message': commit['commit']['message']} for commit in commits]
+        commitList = [{'sha': commit["sha"], 'message': commit["commit"]["message"]} for commit in commits]
 
         if commitList:
             print(f'{Fore.YELLOW}********* Outdated source code found. New commits: *********{Style.RESET_ALL}')

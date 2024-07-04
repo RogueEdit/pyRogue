@@ -653,7 +653,7 @@ class Rogue:
 
             # Update the timestamp
             curTimestamp = int(datetime.now().timestamp() * 1000)
-            data['timestamp'] = curTimestamp
+            data["timestamp"] = curTimestamp
 
             # Write the updated data back to the file
             with open(outputFilepath, 'w') as file:
@@ -840,7 +840,7 @@ class Rogue:
             "valueReduction": 0,
             "classicWinCount": 0
         }
-        for entry in gameData['starterData'].keys():
+        for entry in gameData["starterData"].keys():
 
             starterDataToUpdate = {
                 "friendship": random.randint(100, 300),
@@ -866,10 +866,10 @@ class Rogue:
             fullStarterData = {**defaultStarterData, **starterDataToUpdate}
 
             if entry in gameData["starterData"]:
-                gameData['starterData'][entry].update({key: value for key, value in fullStarterData.items() if value is not None})
+                gameData["starterData"][entry].update({key: value for key, value in fullStarterData.items() if value is not None})
             else:
                 cFormatter.print(Color.INFO, f'Key {entry} not found in gameData["starterData"]. Initializing.')
-                gameData['starterData'][entry] = fullStarterData
+                gameData["starterData"][entry] = fullStarterData
 
         # Save changes to JSON file
         self.__fh_writeJSONData(gameData, 'trainer.json')
@@ -920,7 +920,7 @@ class Rogue:
             dexId = inputValue.value
             dexName = inputValue.name
 
-        if str(dexId) not in gameData['starterData']:
+        if str(dexId) not in gameData["starterData"]:
             cFormatter.print(Color.INFO, f'No Species with ID: {dexId}')
             return
 
@@ -987,31 +987,31 @@ class Rogue:
                     else:
                         caughtAttr = 255 if shinyChoice else 253
 
-                    gameData['dexData'][str(dexId)]['caughtAttr'] = caughtAttr
+                    gameData["dexData"][str(dexId)]["caughtAttr"] = caughtAttr
                     changedItems.append('Unlocked forms.')
                     changed = True
 
                 elif action == 'Set caught count':
                     caught = fh_getIntegerInput('How many of this Species have you caught?', 1, self.__MAX_BIG_INT, zeroCancel=True)
-                    gameData['dexData'][str(dexId)]['caughtCount'] = int(caught)
+                    gameData["dexData"][str(dexId)]["caughtCount"] = int(caught)
                     changedItems.append(f'Caught count: {caught}')
                     changed = True
 
                 elif action == 'Set hatched count':
                     hatched = fh_getIntegerInput('How many of this Species have hatched from eggs?', 0, self.__MAX_BIG_INT, zeroCancel=True)
-                    gameData['dexData'][str(dexId)]['hatchedCount'] = int(hatched)
+                    gameData["dexData"][str(dexId)]["hatchedCount"] = int(hatched)
                     changedItems.append(f'Hatched count: {hatched}')
                     changed = True
 
                 elif action == 'Set seen count':
                     seenCount = fh_getIntegerInput('How many of this Species have you seen?', 0, self.__MAX_BIG_INT, zeroCancel=True)
-                    gameData['dexData'][str(dexId)]['seenCount'] = int(seenCount)
+                    gameData["dexData"][str(dexId)]["seenCount"] = int(seenCount)
                     changedItems.append(f'Seen count: {seenCount}')
                     changed = True
 
                 elif action == 'Set candies':
                     candies = fh_getIntegerInput('How many candies do you want?', 0, self.__MAX_BIG_INT, zeroCancel=True)
-                    gameData['starterData'][str(dexId)]['candyCount'] = int(candies)
+                    gameData["starterData"][str(dexId)]["candyCount"] = int(candies)
                     changedItems.append(f'Candies: {candies}')
                     changed = True
 
@@ -1022,7 +1022,7 @@ class Rogue:
                                 **{str(member.value): member for member in self.appData.natureData}},
                         softCancel=True
                     )
-                    gameData['dexData'][str(dexId)]['natureAttr'] = nature.value
+                    gameData["dexData"][str(dexId)]["natureAttr"] = nature.value
                     changedItems.append(f'Nature: {nature.name}')
                     changed = True
 
@@ -1030,12 +1030,12 @@ class Rogue:
                     if str(dexId) in noPassives:
                         cFormatter.print(Color.INFO, 'This Species has no passive.')
                     else:
-                        if gameData['starterData'][str(dexId)]['passiveAttr'] == 3:
-                            gameData['starterData'][str(dexId)]['passiveAttr'] = 0
+                        if gameData["starterData"][str(dexId)]["passiveAttr"] == 3:
+                            gameData["starterData"][str(dexId)]["passiveAttr"] = 0
                             cFormatter.print(Color.INFO, 'Passive deactivated.')
                             changedItems.append('Passive deactivated.')
                         else:
-                            gameData['starterData'][str(dexId)]['passiveAttr'] = 3
+                            gameData["starterData"][str(dexId)]["passiveAttr"] = 3
                             cFormatter.print(Color.INFO, 'Passive activated.')
                             changedItems.append('Passive activated.')
                         changed = True
@@ -1043,7 +1043,7 @@ class Rogue:
                 elif action == 'Set cost reduction':
                     costReduce = fh_getIntegerInput('How much do you want to reduce the cost? 1-20 - 0 doesn\'t touch existing values', 0, 20)
                     if int(costReduce) > 0:
-                        gameData['starterData'][str(dexId)]['valueReduction'] = int(costReduce)
+                        gameData["starterData"][str(dexId)]["valueReduction"] = int(costReduce)
                         changedItems.append(f'Cost reduction: {costReduce}')
                         changed = True
                     else:
@@ -1052,7 +1052,7 @@ class Rogue:
                 elif action == 'Set abilities':
                     ability = fh_getChoiceInput('Do you want to unlock all abilities?', {'1': 'Yes', '2': 'No'}, zeroCancel=True)
                     abilityAttr = 7 if ability == '1' else 0
-                    gameData['starterData'][str(dexId)]['abilityAttr'] = abilityAttr
+                    gameData["starterData"][str(dexId)]["abilityAttr"] = abilityAttr
                     changed = True
                     changedItems.append(f'Abilities: {"All unlocked" if abilityAttr == 7 else "Default"}')
 
@@ -1066,7 +1066,7 @@ class Rogue:
                         int(fh_getIntegerInput('Spe IVs', 1, 31, zeroCancel=True)),
                         int(fh_getIntegerInput('Def IVs', 1, 31, zeroCancel=True))
                     ]
-                    gameData['dexData'][str(dexId)]['ivs'] = ivs
+                    gameData["dexData"][str(dexId)]["ivs"] = ivs
                     changed = True
                     changedItems.append(f'IVs: {ivs}')
 
@@ -1184,7 +1184,7 @@ class Rogue:
         filename = f'slot_{slot}.json'
         slotData = self.__fh_loadDataFromJSON(filename)
 
-        if slotData['gameMode'] == 3:
+        if slotData["gameMode"] == 3:
             cFormatter.print(Color.BRIGHT_YELLOW, 'Cannot edit this property on Daily Runs.')
             return
 
@@ -1352,7 +1352,7 @@ class Rogue:
                     # Prompt user to select a move slot to change
                     selectedMoveIndex = int(fh_getIntegerInput('Select the move you want to change (0-4):', 1, 4, softCancel=True))-1
                     self.fh_completerInfo()
-                    cFormatter.print(Color.GREEN, f'Editing {selectedSpecies['moves'][selectedMoveIndex]} in Slot({selectedMoveIndex+1}) on {selectedSpecies["name"]}') # how to print selected move name
+                    cFormatter.print(Color.GREEN, f'Editing {selectedSpecies["moves"][selectedMoveIndex]} in Slot({selectedMoveIndex+1}) on {selectedSpecies["name"]}') # how to print selected move name
                     newMove = fh_getCompleterInput(
                         promptMessage='Write either the ID or the Name of the Move.',
                         choices={**{member.name.lower(): member for member in self.appData.movesByID}, 
@@ -1365,7 +1365,7 @@ class Rogue:
                     selectedSpeciesData["moveset"][selectedMoveIndex]["moveId"] = moveId
                     changed = True
 
-                    message = f'Edited {selectedSpecies['moves'][selectedMoveIndex]} in Slot({selectedMoveIndex+1}) to {moveName}'
+                    message = f'Edited {selectedSpecies["moves"][selectedMoveIndex]} in Slot({selectedMoveIndex+1}) to {moveName}'
                     __fh_redundantMesage(message)
 
                 # Change Nature
@@ -1992,8 +1992,8 @@ class Rogue:
             >>> example_instance.f_addEggsGenerator()
         """
         trainerData = self.__fh_loadDataFromJSON('trainer.json')
-        if 'eggs' not in trainerData or not isinstance(trainerData['eggs'], list):
-            trainerData['eggs'] = []
+        if 'eggs' not in trainerData or not isinstance(trainerData["eggs"], list):
+            trainerData["eggs"] = []
         currentEggs = trainerData.get('eggs', [])
         currentAmount = len(currentEggs)
 
@@ -2038,9 +2038,9 @@ class Rogue:
         eggDictionary = eggLogic.constructEggs(tier, gachaType, hatchWaves, count, isShiny, variantTier)
 
         if userInput == '1':
-            trainerData['eggs'] = eggDictionary
+            trainerData["eggs"] = eggDictionary
         elif userInput == '2':
-            trainerData['eggs'].extend(eggDictionary)
+            trainerData["eggs"].extend(eggDictionary)
 
         self.__fh_writeJSONData(trainerData, 'trainer.json')
         raise OperationSuccessful(f'{count} eggs successfully generated.')
@@ -2146,7 +2146,7 @@ class Rogue:
             optionList = {str(index + 1): key for index, key in enumerate(keysToUpdate.keys())}
             nameToKey = {key.lower(): key for key in keysToUpdate.keys()}
 
-            menuDisplay = "\n".join([f"{index}: {key} ({gameData['gameStats'].get(key, 0)})" for index, key in optionList.items()])
+            menuDisplay = "\n".join([f"{index}: {key} ({gameData["gameStats"].get(key, 0)})" for index, key in optionList.items()])
             cFormatter.print(Color.INFO, menuDisplay)
             self.fh_completerInfo()
             while True:
@@ -2221,14 +2221,14 @@ class Rogue:
         self.fh_completerInfo(False)
 
         changed = False
-        if 'eggs' in trainerData and trainerData['eggs']:
+        if 'eggs' in trainerData and trainerData["eggs"]:
             minBound = 0
             maxBound = 99
-            eggAmount = len(trainerData['eggs'])
+            eggAmount = len(trainerData["eggs"])
             prompt = f'You currently have ({eggAmount}) eggs, after how many waves should they hatch?'
             hatchWaves = fh_getIntegerInput(prompt, minBound, maxBound, zeroCancel=True)
 
-            for egg in trainerData['eggs']:
+            for egg in trainerData["eggs"]:
                 egg["hatchWaves"] = int(hatchWaves)
 
             # Write updated trainer_data to 'trainer.json'
@@ -2275,30 +2275,37 @@ class Rogue:
     def legacy_pokedex(self) -> None:
         species = [f'{member.value}: {member.name}' for member in self.speciesNameByID]
         cFormatter.print(Color.WHITE, '\n'.join(species))
+        fh_appendMessageBuffer(Color.INFO, 'Information printed. Scroll up or STRG+F to search.')
         
     def legacy_moves(self) -> None:
         moves = [f'{member.value}: {member.name}' for member in self.moveNamesById]
         cFormatter.print(Color.WHITE, '\n'.join(moves))
+        fh_appendMessageBuffer(Color.INFO, 'Information printed. Scroll up or STRG+F to search.')
 
     def legacy_natures(self) -> None:  
         natures = [f'{member.value}: {member.name}' for member in self.natureData]
         cFormatter.print(Color.WHITE, '\n'.join(natures))
+        fh_appendMessageBuffer(Color.INFO, 'Information printed. Scroll up or STRG+F to search.')
         
     def legacy_vouchers(self) -> None:
         vouchers = [f'{member.value}: {member.name}' for member in self.vouchersData]
         cFormatter.print(Color.WHITE, '\n'.join(vouchers))
+        fh_appendMessageBuffer(Color.INFO, 'Information printed. Scroll up or STRG+F to search.')
 
     def legacy_natureSlot(self) -> None:
         natureSlot = [f'{member.value}: {member.name}' for member in self.natureSlotData]
         cFormatter.print(Color.WHITE, '\n'.join(natureSlot))
+        fh_appendMessageBuffer(Color.INFO, 'Information printed. Scroll up or STRG+F to search.')
 
     def legacy_printBiomes(self) -> None:
         biomes = [f'{member.value}: {member.name}' for member in self.biomeNamesById]
         cFormatter.print(Color.WHITE, '\n'.join(biomes))
+        fh_appendMessageBuffer(Color.INFO, 'Information printed. Scroll up or STRG+F to search.')
 
     def legacy_printAchievements(self) -> None:
         achivements = [f'{member.value}: {member.name}' for member in self.achievementsData]
         cFormatter.print(Color.WHITE, '\n'.join(achivements))
+        fh_appendMessageBuffer(Color.INFO, 'Information printed. Scroll up or STRG+F to search.')
 
     @staticmethod
     def fh_completerInfo(id=True):
@@ -2391,7 +2398,7 @@ class Rogue:
             dexId = inputValue.value
             dexName = inputValue.name
 
-            if str(dexId) not in gameData['starterData']:
+            if str(dexId) not in gameData["starterData"]:
                 cFormatter.print(Color.INFO, f'No Species with ID: {dexId}')
                 return
 
@@ -2412,7 +2419,7 @@ class Rogue:
                 selectedForm = selectedSpeciesData.getFormAttribute(selectedFormName.title(), "variant3")  # Adjust the attribute as per your data structure
                 if selectedForm is not None:
                     caughtAttr = selectedForm
-                    gameData['dexData'][str(dexId)]['caughtAttr'] = caughtAttr
+                    gameData["dexData"][str(dexId)]["caughtAttr"] = caughtAttr
                 else:
                     cFormatter.print(Color.INFO, f'Form {selectedFormName} not found for {dexName.title()}.')
 

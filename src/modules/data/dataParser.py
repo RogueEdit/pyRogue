@@ -346,7 +346,7 @@ def fh_getCombinedIDs(includeStarter=True, onlyNormalForms=True):
 @staticmethod
 def data_iterateParty(slotData, speciesNameByIDHelper, moveNamesByIDHelper, natureNamesByIDHelper):
     currentParty = []
-    for object in slotData['party']:
+    for object in slotData["party"]:
         # Define IDs and indices
         speciesDexID = str(object.get('species', 1))
         speciesFusionID = str(object.get('fusionSpecies', 0))

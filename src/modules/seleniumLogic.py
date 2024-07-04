@@ -94,7 +94,7 @@ class SeleniumLogic:
         Returns:
             Dict[str, Any]: The processed response data.
         """
-        response = json.loads(entry['message'])['message']
+        response = json.loads(entry["message"])["message"]
         return response
 
     def logic(self) -> Tuple[Optional[str], Optional[str], Optional[webdriver.Chrome]]:
