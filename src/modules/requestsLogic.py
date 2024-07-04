@@ -211,7 +211,7 @@ class requestsLogic:
 
     :params:
     - token (Optional[str]): Authentication token retrieved after successful login.
-    - session_id (Optional[str]): Randomly generated session ID.
+    - sessionId (Optional[str]): Randomly generated session ID.
     - session (requests.Session): Session object for managing HTTP requests.
 
     Usage:
@@ -274,7 +274,7 @@ class requestsLogic:
             randomIndex = random.randint(0, len(characters) - 1)
             result.append(characters[randomIndex])
 
-        return "".join(result)
+        return ''.join(result)
 
     @limiter.lockout
     def login(self) -> bool:

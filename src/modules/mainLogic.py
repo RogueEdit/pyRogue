@@ -373,12 +373,12 @@ class Rogue:
                         cFormatter.print(Color.GREEN, 'Successfully fetched trainer data.')
                         return data
                     except json.JSONDecodeError as e:
-                        cFormatter.print(Color.WARNING, f"Error decoding JSON: {e}", isLogging=True)
-                        cFormatter.print(Color.WARNING, f"Unexpected response format: {response}", isLogging=True)
+                        cFormatter.print(Color.WARNING, f'Error decoding JSON: {e}', isLogging=True)
+                        cFormatter.print(Color.WARNING, f'Unexpected response format: {response}', isLogging=True)
                 else:
-                    cFormatter.print(Color.WARNING, "The request appeared to be empty.")
+                    cFormatter.print(Color.WARNING, 'The request appeared to be empty.')
             except Exception as e:
-                cFormatter.print(Color.CRITICAL, f"Error in function get_trainer_data(): {e}", isLogging=True)
+                cFormatter.print(Color.CRITICAL, f'Error in function get_trainer_data(): {e}', isLogging=True)
         else:
             try:
                 response = self.session.get(f'{self.TRAINER_DATA_URL}{self.clientSessionId}', headers=self.headers, verify=config.useCaCert)
@@ -951,7 +951,7 @@ class Rogue:
         optionList = {str(index + 1): key for index, key in enumerate(choices.keys())}
         nameToKey = {key.lower(): key for key in choices.keys()}
 
-        menuDisplay = "\n".join([f"{index}: {key}" for index, key in optionList.items()])
+        menuDisplay = '\n'.join([f'{index}: {key}' for index, key in optionList.items()])
 
         noPassives = {member.name: member for member in self.appData.noPassiveIDs}
         combinedFormIDs = dataParser.fh_getCombinedIDs(includeStarter=True, onlyNormalForms=True)
@@ -969,7 +969,7 @@ class Rogue:
 
                 action_key = inputValue.lower()
                 if action_key not in nameToKey:
-                    print(f"Invalid action: {inputValue}")
+                    print(f'Invalid action: {inputValue}')
                     continue
 
                 action = choices[nameToKey[action_key]]
@@ -1073,7 +1073,7 @@ class Rogue:
             except OperationSoftCancel:
                 break
             except Exception as e:
-                print(f"Error during operation: {e}")
+                print(f'Error during operation: {e}')
                 break
 
         if changed:
@@ -1143,7 +1143,7 @@ class Rogue:
                         break  # Break out of the inner loop to proceed to the next item
                     else:
                         gameData.setdefault('voucherCounts', {})[key] = int(value)
-                        changedItems.append(f"{name}: {value}")
+                        changedItems.append(f'{name}: {value}')
                         changed = True
                         cFormatter.print(Color.DEBUG, f'Queued {value} {name}.')
                         break  # Break out of the inner loop after successful input
@@ -1454,7 +1454,7 @@ class Rogue:
                     __fh_redundantMesage(f'{message}')
 
                 elif action == 'changePassive':
-                    if selectedSpecies.get('id') in noPassives:
+                    if selectedSpecies.get("id") in noPassives:
                         cFormatter.print(Color.INFO, 'This Species has no passive.')
                         selectedSpeciesData["passive"] = False
                     else:
@@ -1777,7 +1777,7 @@ class Rogue:
 
                 # Update game data with the chosen Pokémon's candy count
                 gameData["starterData"][str(inputValue.value)]["candyCount"] = int(candies)
-                changedItems.append(f"{inputValue.name.title()}: {candies}")
+                changedItems.append(f'{inputValue.name.title()}: {candies}')
                 changed = True
 
                 cFormatter.print(Color.DEBUG, f'Added {candies} candies to {pokeName}.')
@@ -1911,7 +1911,7 @@ class Rogue:
                         break  # Break out of the inner loop to proceed to the next item
                     else:
                         gameData.setdefault('pokeballCounts', {})[key] = int(value)
-                        changedItems.append(f"{name}: {value}")
+                        changedItems.append(f'{name}: {value}')
                         changed = True
                         cFormatter.print(Color.DEBUG, f'Queued {value} {name}.')
                         break  # Break out of the inner loop after successful input
@@ -2137,7 +2137,7 @@ class Rogue:
         changedItems = []
         if action == 'random':
             for key, value in keysToUpdate.items():
-                changedItems.append(f"{key}: {value}")
+                changedItems.append(f'{key}: {value}')
                 gameData["gameStats"][key] = value
                 changed = True
 
@@ -2146,7 +2146,7 @@ class Rogue:
             optionList = {str(index + 1): key for index, key in enumerate(keysToUpdate.keys())}
             nameToKey = {key.lower(): key for key in keysToUpdate.keys()}
 
-            menuDisplay = "\n".join([f"{index}: {key} ({gameData["gameStats"].get(key, 0)})" for index, key in optionList.items()])
+            menuDisplay = '\n'.join([f'{index}: {key} ({gameData["gameStats"].get(key, 0)})' for index, key in optionList.items()])
             cFormatter.print(Color.INFO, menuDisplay)
             self.fh_completerInfo()
             while True:
@@ -2161,7 +2161,7 @@ class Rogue:
                     newValue = fh_getIntegerInput(promptMessage, 0, 999999, softCancel=True)
 
                     gameData["gameStats"][inputValue] = newValue
-                    changedItems.append(f"{inputValue}: {newValue}")
+                    changedItems.append(f'{inputValue}: {newValue}')
                     changed = True
                     cFormatter.print(Color.DEBUG, f'{inputValue} queued for update.')
                 except OperationSoftCancel:
@@ -2175,7 +2175,7 @@ class Rogue:
                         promptMessage = f'Enter new value for {key} ({gameData["gameStats"].get(key, 0)}): '
                         newValue = fh_getIntegerInput(promptMessage, 0, 999999, softCancel=True)
                         gameData["gameStats"][key] = newValue
-                        changedItems.append(f"{key}: {newValue}")
+                        changedItems.append(f'{key}: {newValue}')
                         changed = True
                         break
                 except OperationSoftCancel:

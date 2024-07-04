@@ -206,22 +206,10 @@ class ModifierEditor:
     def m_createMenuChunks(self, modifiers):
         chunk = []
         for modType in modifiers:
-            # Extracting the ModifierType name
             modifier = modType.value
             modifierDescription = modifier.shortDescription if modifier.shortDescription else modifier.description
-            """
-                # Combining typeId with typePregenArgs if present
-                type_info = modifier.typeId
-                if hasattr(modifier, 'typePregenArgs') and modifier.typePregenArgs:
-                    type_info += f" ({', '.join(map(str, modifier.typePregenArgs))})"
-                # Appending to chunk
-            """
             chunk.append(((modifier.customName, f'{modifierDescription} - (Max. {modifier.maxStack})'), modType))
         return chunk
-
-    """@staticmethod
-    def __fh_formatModifierName(name):
-        return ' '.join([word.capitalize() for word in name.split('_')])"""
 
     @staticmethod
     def __fh_loadJSON(file_path):
@@ -260,7 +248,6 @@ class ModifierEditor:
             # Handle args with poke_id
             if modifier.args:
                 modifier.args = [pokeId if arg is None else arg for arg in modifier.args]
-                # print(f"Original modifier.args: {original_args}, Modified modifier.args with poke_id: {modifier.args}")
 
             if 'modifiers' not in data or not isinstance(data["modifiers"], list):
                 data["modifiers"] = []

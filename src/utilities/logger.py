@@ -41,7 +41,7 @@ class CustomFilter(logging.Filter):
     :rtype: bool
     """
     def filter(self, record):
-        return "data={\"value\":" not in record.getMessage()
+        return 'data={"value":' not in record.getMessage()
 
 class CustomLogger:
     """

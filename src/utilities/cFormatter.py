@@ -132,7 +132,7 @@ class cFormatter(logging.Formatter):
         - logging: Used to log messages.
         - colorama: Used to apply color to text.
         """
-        logger = logging.getLogger('root')
+        logger = logging.getLogger("root")
         
         if isLogging:
             # Determine the logging level based on color
@@ -240,7 +240,7 @@ class cFormatter(logging.Formatter):
 
         fillLength = length - totalLength
         fill = fill_char * fillLength
-        return f"{Style.RESET_ALL}{line}{fill}{helperText}"
+        return f'{Style.RESET_ALL}{line}{fill}{helperText}'
 
     @staticmethod
     def fh_centerText(text: str, length: int = 55, fillChar: str = ' ') -> str:
@@ -265,8 +265,8 @@ class cFormatter(logging.Formatter):
         Modules/Librarys used:
         - re: Used to strip ANSI color codes from text.
         """
-        stripped_text = cFormatter.fh_stripColorCodes(text)
-        totalLength = len(stripped_text)
+        strippedText = cFormatter.fh_stripColorCodes(text)
+        totalLength = len(strippedText)
         if totalLength >= length:
             return text[:length]
         
@@ -277,7 +277,7 @@ class cFormatter(logging.Formatter):
             backFill = '<' * (fillLength - (fillLength // 2))
         
         
-        return f"{frontFill}{text}{backFill}"
+        return f'{frontFill}{text}{backFill}'
 
     @staticmethod
     def m_initializeMenu(term: List[Union[str, Tuple[str, str, Optional[str]], Tuple[str, callable]]], length: Optional[int] = 55) -> List[Tuple[int, callable]]:

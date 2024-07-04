@@ -81,34 +81,34 @@ class EnumLoader:
             dataDir: str = config.dataDirectory
 
             with open(f'{dataDir}/starter.json') as f:
-                self.starterNameByID = json.load(f)
+                self.starterNameByID: Dict[str, int] = json.load(f)
 
             with open(f'{dataDir}/biomes.json') as f:
-                self.biomesByID = json.load(f)
+                self.biomesByID: Dict[str, int] = json.load(f)
 
             with open(f'{dataDir}/moves.json') as f:
-                self.movesByID = json.load(f)
+                self.movesByID: Dict[str, int] = json.load(f)
 
             with open(f'{dataDir}/natures.json') as f:
-                self.natureData = json.load(f)
+                self.natureData: Dict[str, int] = json.load(f)
 
             with open(f'{dataDir}/vouchers.json') as f:
-                self.voucherData = json.load(f)
+                self.voucherData: Dict[str, int] = json.load(f)
             
             with open(f'{dataDir}/natureSlot.json') as f:
-                self.natureDataSlots = json.load(f)
+                self.natureDataSlots: Dict[str, int] = json.load(f)
 
             with open(f'{dataDir}/achievements.json') as f:
-                self.achievementsData = json.load(f)
+                self.achievementsData: Dict[str, int] = json.load(f)
 
             with open(f'{dataDir}/species.json') as f:
-                self.speciesNameByID = json.load(f)
+                self.speciesNameByID: Dict[str, int] = json.load(f)
 
             with open(f'{dataDir}/noPassive.json') as f:
-                self.noPassiveIDs = json.load(f)
+                self.noPassiveIDs: Dict[str, int] = json.load(f)
 
             with open(f'{dataDir}/hasForms.json') as f:
-                self.hasFormIDs = json.load(f)
+                self.hasFormIDs: Dict[str, int] = json.load(f)
 
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in enumLoader.__f_loadData(). {e}', isLogging=True)
@@ -147,16 +147,16 @@ class EnumLoader:
         """
         self.__f_loadData()
 
-        self.starterNameByID = self.__f_createENUMFromDict(self.starterNameByID["dex"], 'StarterEnum')
-        self.biomesByID = self.__f_createENUMFromDict(self.biomesByID["biomes"], 'BiomesEnum')
-        self.movesByID = self.__f_createENUMFromDict(self.movesByID["moves"], 'MovesEnum')
-        self.voucherData = self.__f_createENUMFromDict(self.voucherData["vouchers"], 'VouchersEnum')
-        self.natureData = self.__f_createENUMFromDict(self.natureData["natures"], 'NaturesEnum')
-        self.natureDataSlots = self.__f_createENUMFromDict(self.natureDataSlots["natureSlot"], 'NaturesSlotEnum')
-        self.achievementsData = self.__f_createENUMFromDict(self.achievementsData["achvUnlocks"], 'AchievementsEnum')
-        self.speciesNameByID = self.__f_createENUMFromDict(self.speciesNameByID["dex"], 'PokemonEnum')
-        self.noPassiveIDs = self.__f_createENUMFromDict(self.noPassiveIDs["noPassive"], 'NoPassiveEnum')
-        self.hasFormIDs = self.__f_createENUMFromDict(self.hasFormIDs["hasForms"], 'HasFormsEnum')
+        self.starterNameByID: Dict[str, int] = self.__f_createENUMFromDict(self.starterNameByID["dex"], 'StarterEnum')
+        self.biomesByID: Dict[str, int] = self.__f_createENUMFromDict(self.biomesByID["biomes"], 'BiomesEnum')
+        self.movesByID: Dict[str, int] = self.__f_createENUMFromDict(self.movesByID["moves"], 'MovesEnum')
+        self.voucherData: Dict[str, int] = self.__f_createENUMFromDict(self.voucherData["vouchers"], 'VouchersEnum')
+        self.natureData: Dict[str, int] = self.__f_createENUMFromDict(self.natureData["natures"], 'NaturesEnum')
+        self.natureDataSlots: Dict[str, int] = self.__f_createENUMFromDict(self.natureDataSlots["natureSlot"], 'NaturesSlotEnum')
+        self.achievementsData: Dict[str, int] = self.__f_createENUMFromDict(self.achievementsData["achvUnlocks"], 'AchievementsEnum')
+        self.speciesNameByID: Dict[str, int] = self.__f_createENUMFromDict(self.speciesNameByID["dex"], 'PokemonEnum')
+        self.noPassiveIDs: Dict[str, int] = self.__f_createENUMFromDict(self.noPassiveIDs["noPassive"], 'NoPassiveEnum')
+        self.hasFormIDs: Dict[str, int] = self.__f_createENUMFromDict(self.hasFormIDs["hasForms"], 'HasFormsEnum')
 
         return (self.starterNameByID, self.biomesByID, self.movesByID, self.voucherData, 
                 self.natureData, self.natureDataSlots, self.achievementsData, self.speciesNameByID,
