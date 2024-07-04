@@ -33,9 +33,9 @@ Workflow:
 3. Handle browser performance logs to extract necessary data for authentication.
 
 Usage Example:
->>> selenium_logic = SeleniumLogic(username="your_username", password="your_password", timeout=120)
->>> session_id, token, driver = selenium_logic.logic()
->>> print(f"Session ID: {session_id}")
+>>> seleniumLogic = SeleniumLogic(username="yourUsername", password="yourPassword", timeout=120)
+>>> sessionId, token, driver = seleniumLogic.logic()
+>>> print(f"Session ID: {sessionId}")
 >>> print(f"Token: {token}")
 >>> # driver can be further used for additional operations if needed
 
@@ -84,7 +84,7 @@ class SeleniumLogic:
         self.password = password
         self.useScripts = useScripts
 
-    def _process_browser_log_entry(self, entry: Dict[str, Any]) -> Dict[str, Any]:
+    def _processBrowserLogs(self, entry: Dict[str, Any]) -> Dict[str, Any]:
         """
         Processes a single browser log entry to extract the relevant response data.
 
@@ -106,36 +106,36 @@ class SeleniumLogic:
                 The session ID, token, and WebDriver instance if available, otherwise None.
         """
         # Deactivate logging because selenium clutters it extremely
-        CustomLogger.fh_deactiveLogging()
+        CustomLogger.fh_deactivateLogging()
 
         # Set Browser options
         options = webdriver.ChromeOptions()
         options.set_capability('goog:loggingPrefs', {'performance': 'ALL'}) # All performance logs
-        options.add_argument("--disable-blink-features=AutomationControlled")  # Avoid detection
-        options.add_argument("--no-sandbox")  # Overcome limited resource problems
-        options.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
-        options.add_argument("--disable-infobars")  # Disable infobars
-        options.add_argument("--enable-javascript") # enable javascript explicitly
+        options.add_argument('--disable-blink-features=AutomationControlled')  # Avoid detection
+        options.add_argument('--no-sandbox')  # Overcome limited resource problems
+        options.add_argument('--disable-dev-shm-usage')  # Overcome limited resource problems
+        options.add_argument('--disable-infobars')  # Disable infobars
+        options.add_argument('--enable-javascript') # enable javascript explicitly
         if useCaCert:
-            options.add_argument(f"--ca-certificate={useCaCert}")
+            options.add_argument(f'--ca-certificate={useCaCert}')
 
         driver = webdriver.Chrome(options=options)
-        url = "https://www.pokerogue.net/"
+        url = 'https://www.pokerogue.net/'
         driver.get(url)
 
-        session_id = None
+        sessionID = None
         token = None
 
         try:
             # Wait for the username field to be visible and input the username
             usernameInput = WebDriverWait(driver, self.timeout).until(
-                EC.visibility_of_element_located((By.CSS_SELECTOR, "input[type='text']"))
+                EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[type="text"]'))
             )
             usernameInput.send_keys(self.username)
 
             # Wait for the password field to be visible and input the password
             passwordInput = WebDriverWait(driver, self.timeout).until(
-                EC.visibility_of_element_located((By.CSS_SELECTOR, "input[type='password']"))
+                EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[type="password"]'))
             )
             passwordInput.send_keys(self.password)
 
@@ -147,22 +147,22 @@ class SeleniumLogic:
 
             # Process the browser log
             browserLogs = driver.get_log('performance')
-            events = [self._process_browser_log_entry(entry) for entry in browserLogs]
+            events = [self._processBrowserLogs(entry) for entry in browserLogs]
 
             # Extract session data such as sessionId, auth-token or headers etc
             for event in events:
                 # Extract the clientSessionId
-                if 'response' in event['params']:
+                if 'response' in event["params"]:
                     response = event["params"]["response"]
                     if 'url' in response:
-                        url = response['url']
+                        url = response["url"]
                         if 'clientSessionId' in url:
-                            session_id = url.split('clientSessionId=')[1]
+                            sessionID = url.split('clientSessionId=')[1]
                 # Extract the authorization token
-                if 'method' in event and event['method'] == 'Network.responseReceived':
-                    response = event['params']['response']
-                    if response['url'] == 'https://api.pokerogue.net/account/login':
-                        requestId = event['params']['requestId']
+                if 'method' in event and event["method"] == 'Network.responseReceived':
+                    response = event["params"]["response"]
+                    if response["url"] == 'https://api.pokerogue.net/account/login':
+                        requestId = event["params"]["requestId"]
                         result = driver.execute_cdp_cmd('Network.getResponseBody', {'requestId': requestId})
                         responseBody = result.get('body', '')
                         if responseBody:
@@ -170,12 +170,12 @@ class SeleniumLogic:
                             token = tokenData.get('token')
 
         except TimeoutException as e:
-            print(f"Timeout occurred: {e}")
+            print(f'Timeout occurred: {e}')
 
         finally:
-            CustomLogger.fh_reactiveLogging()
+            CustomLogger.fh_reactivateLogging()
             # If we are not using login method 3 we should close the driver already
             if not self.useScripts:
                 driver.close()
            
-        return session_id, token, driver
+        return sessionID, token, driver

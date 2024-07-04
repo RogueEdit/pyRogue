@@ -14,7 +14,7 @@ class HTTPEmptyResponse(Exception):
         super().__init__(self.message)
 
 # Custom status messages for specific HTTP status codes
-status_messages = {
+statusMessages = {
     200: (Color.BRIGHT_GREEN, 'Response 200 - That seemed to have worked!'),
     400: (Color.WARNING, 'Response 400 - Bad Request: The server could not understand the request due to invalid syntax. This is usually related to wrong credentials.'),
     401: (Color.BRIGHT_RED, 'Response 401 - Unauthorized: Authentication is required and has failed or has not yet been provided.'),
@@ -37,15 +37,15 @@ status_messages = {
     524: (Color.CRITICAL, 'Error 524 - A Timeout Occurred: Cloudflare was able to complete a TCP connection to the origin server, but the origin server did not reply with an HTTP response.')
 }
 
-def handle_http_exceptions(func, requests):
+def dec_handleHTTPExceptions(func, requests):
     @wraps(func)
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
         except requests.exceptions.HTTPError as http_err:
             cFormatter.print(Color.CRITICAL, f'HTTP error occurred: {http_err}')
-            if isinstance(args[0], requests.Response) and args[0].status_code in status_messages:
-                color, message = status_messages[args[0].status_code]
+            if isinstance(args[0], requests.Response) and args[0].status_code in statusMessages:
+                color, message = statusMessages[args[0].status_code]
                 cFormatter.print(color, message, isLogging=True)
             else:
                 cFormatter.print(Color.CRITICAL, 'Unexpected HTTP error occurred.', isLogging=True)

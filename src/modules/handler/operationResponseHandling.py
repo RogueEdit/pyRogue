@@ -10,7 +10,7 @@ from json import JSONDecodeError
 from modules.config import debugEnableTraceback
 from utilities import fh_appendMessageBuffer
 
-def handle_operation_exceptions(func):
+def dec_handleOperationExceptions(func):
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)

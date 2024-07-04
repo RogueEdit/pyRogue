@@ -1,13 +1,13 @@
-from .httpResponseHandling import handle_http_exceptions, HTTPEmptyResponse
+from .httpResponseHandling import dec_handleHTTPExceptions, HTTPEmptyResponse
 
-from .operationResponseHandling import handle_operation_exceptions
+from .operationResponseHandling import dec_handleOperationExceptions
 from .operationResponseHandling import OperationCancel, OperationError, OperationSuccessful, PropagateResponse, OperationSoftCancel
 from .inputHandler import fh_getChoiceInput, fh_getCompleterInput, fh_getIntegerInput
 
 __all__ = [
-    'handle_operation_exceptions', 
+    'dec_handleOperationExceptions', 
     'OperationCancel', 'OperationError', 'OperationSuccessful', 'PropagateResponse', 'OperationSoftCancel',
     
-    'handle_http_exceptions', 'HTTPEmptyResponse',
+    'dec_handleHTTPExceptions', 'HTTPEmptyResponse',
     'fh_getChoiceInput', 'fh_getCompleterInput', 'fh_getIntegerInput'
 ]

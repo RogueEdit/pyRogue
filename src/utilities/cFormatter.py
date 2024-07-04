@@ -159,8 +159,8 @@ class cFormatter(logging.Formatter):
             color (Color, optional): The color to use for formatting separators. Defaults to None.
             
         Usage Example:
-            cFormatter.print_separators(10, '-', Color.GREEN)
-            cFormatter.print_separators(separator='-', color=Color.GREEN)
+            cFormatter.fh_printSeparators(10, '-', Color.GREEN)
+            cFormatter.fh_printSeparators(separator='-', color=Color.GREEN)
             
         Example Output:
             [GREEN]----------[RESET]
@@ -190,8 +190,8 @@ class cFormatter(logging.Formatter):
             str: The text without ANSI color codes.
             
         Usage Example:
-            stripped_text = cFormatter.strip_color_codes('[GREEN]Text[RESET]')
-            print(stripped_text)
+            strippedText = cFormatter.fh_stripColorCodes('[GREEN]Text[RESET]')
+            print(strippedText)
             
         Example Output:
             Text
@@ -219,7 +219,7 @@ class cFormatter(logging.Formatter):
             
         Usage Example:
             formatedLine = cFormatter.fh_lineFill('Main text', 'Helper text', 80, '-')
-            print(formatted_line)
+            print(formattedLine)
             
         Example Output:
             Main text-----------------------------------Helper text
@@ -256,7 +256,7 @@ class cFormatter(logging.Formatter):
             str: The centered text.
             
         Usage Example:
-            centered_text = cFormatter.fh_centerText('Centered Text', 80, '-')
+            centeredText = cFormatter.fh_centerText('Centered Text', 80, '-')
             print(centeredText)
             
         Example Output:

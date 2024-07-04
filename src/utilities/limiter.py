@@ -1,4 +1,4 @@
-# Authors https://github.com/JulianStiebler/
+# Authors: https://github.com/JulianStiebler/
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: None except Author
@@ -28,20 +28,10 @@ Workflow:
 """
 
 import os
-# Provides a way to interact with the operating system, particularly for file and directory operations.
-
 import json
-# Provides functionalities to work with JSON data for reading and writing timestamps.
-
 import time
-# Provides time-related functions, particularly for getting the current time.
-
 from functools import wraps
-# Provides utilities for higher-order functions, particularly for creating decorators.
-
 from utilities import cFormatter, Color
-# Custom module for colored printing and logging functionalities.
-
 from modules.config import timestampFile
 
 class Limiter:
@@ -49,25 +39,14 @@ class Limiter:
     A class to handle lockout mechanism for functions to limit their execution frequency.
 
     Attributes:
-        lockout_period (int): The lockout period in seconds.
-        timestamp_file (str): The file path to store the timestamps.
-
-    :arguments:
-    - lockout_period (int): The lockout period in seconds.
-
-    :params:
-    None
+        lockoutPeriod (int): The lockout period in seconds.
 
     Usage:
         Initialize the limiter and decorate functions to limit their execution frequency:
-        >>> limiter = Limiter(lockout_period=60)
+        >>> limiter = Limiter(lockoutPeriod=60)
         >>> @limiter.lockout
         >>> def my_function():
         >>>     print("Function executed.")
-
-    Output examples:
-        - Prints a message if the function is called within the lockout period.
-        - Executes the function and updates the timestamp if called outside the lockout period.
 
     Modules:
         - os: Module for interacting with the operating system.
@@ -77,13 +56,13 @@ class Limiter:
         - utilities.cFormatter: Custom formatter for colored printing and logging.
     """
     
-    def __init__(self, lockoutPeriod: int = 40):
+    def __init__(self, lockoutPeriod: int = 40) -> None:
         """
         Initialize the Limiter object.
 
         Args:
-            lockout_period (int): The lockout period in seconds.
-            timestamp_file (str, optional): The file path to store the timestamps. Default is './data/extra.json'.
+            lockoutPeriod (int): The lockout period in seconds.
+            timestampFile (str, optional): The file path to store the timestamps. Default is './data/extra.json'.
 
         Modules:
             - os: Provides a way to interact with the operating system, particularly for file and directory operations.
@@ -110,7 +89,7 @@ class Limiter:
 
         Usage:
             Decorate a function with the lockout decorator to limit its execution frequency:
-            >>> limiter = Limiter(lockout_period=60)
+            >>> limiter = Limiter(lockoutPeriod=60)
             >>> @limiter.lockout
             >>> def my_function():
             >>>     print("Function executed.")
@@ -123,9 +102,9 @@ class Limiter:
         @wraps(func)
         def wrapper(*args, **kwargs):
             funcName = func.__name__
-            laxtExecTime = self._fh_getLastExecTime(funcName)
+            lastExecTime = self._fh_getLastExecTime(funcName)
             currentTime = time.time()
-            if currentTime - laxtExecTime < self.lockoutPeriod:
+            if currentTime - lastExecTime < self.lockoutPeriod:
                 cFormatter.print(Color.RED, f'{funcName} is rate limited. You can only do this every {self.lockoutPeriod} seconds!', isLogging=True)
                 return None
             else:
@@ -134,7 +113,7 @@ class Limiter:
                 return result
         return wrapper
 
-    def _fh_getLastExecTime(self, func_name: str) -> float:
+    def _fh_getLastExecTime(self, function: str) -> float:
         """
         Get the timestamp of the last execution of a function.
 
@@ -146,16 +125,16 @@ class Limiter:
 
         Usage:
             Get the last execution time of a function:
-            >>> last_exec_time = limiter._get_last_exec_time('my_function')
+            >>> lastExecTime = limiter._fh_getLastExecTime('my_function')
 
         Modules:
             - json: Provides functionalities to work with JSON data for reading and writing timestamps.
         """
         with open(self.timestampFile, 'r') as f:
             timestamps = json.load(f)
-        return timestamps.get(func_name, 0)
+        return timestamps.get(function, 0)
 
-    def _fh_updateLastExecTime(self, func_name: str, timestamp: float) -> None:
+    def _fh_updateLastExecTime(self, function: str, timestamp: float) -> None:
         """
         Update the timestamp of the last execution of a function.
 
@@ -165,7 +144,7 @@ class Limiter:
 
         Usage:
             Update the last execution time of a function:
-            >>> limiter._update_last_exec_time('my_function', time.time())
+            >>> limiter._fh_updateLastExecTime('my_function', time.time())
 
         Modules:
             - json: Provides functionalities to work with JSON data for reading and writing timestamps.
@@ -175,7 +154,7 @@ class Limiter:
                 timestamps = json.load(f)
             except json.decoder.JSONDecodeError:
                 timestamps = {}
-            timestamps[func_name] = timestamp
+            timestamps[function] = timestamp
             f.seek(0)
             json.dump(timestamps, f, indent=4)
             f.truncate()

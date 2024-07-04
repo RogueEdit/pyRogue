@@ -81,10 +81,10 @@ import re
 
 #import zstandard as zstd
 from colorama import Style, Fore
-from modules.handler import handle_operation_exceptions, OperationError, OperationSuccessful, OperationCancel, PropagateResponse, OperationSoftCancel  # noqa: F401
-from modules.handler import handle_http_exceptions, HTTPEmptyResponse  # noqa: F401
+from modules.handler import dec_handleOperationExceptions, OperationError, OperationSuccessful, OperationCancel, PropagateResponse, OperationSoftCancel  # noqa: F401
+from modules.handler import dec_handleHTTPExceptions, HTTPEmptyResponse  # noqa: F401
 from modules.handler import fh_getIntegerInput, fh_getCompleterInput, fh_getChoiceInput
-from modules import handle_error_response, HeaderGenerator, config
+from modules import fh_handleErrorResponse, HeaderGenerator, config
 from utilities import EnumLoader, cFormatter, Color, Limiter, eggLogic, fh_appendMessageBuffer
 from utilities import Generator
 generator = Generator()
@@ -147,7 +147,7 @@ class Rogue:
         self.session = session
         self.authToken = auth_token
         self.clientSessionId = clientSessionId
-        self.headers = self.__fh_setup_headers()
+        self.headers = self.__fh_setupHeaders()
         self.__MAX_BIG_INT = (2 ** 53) - 1
         self.driver = driver
         self.useScripts = useScripts
@@ -168,7 +168,7 @@ class Rogue:
         self.moveNamesByIDHelper = {str(member.value): member.name for member in self.moveNamesById}
         self.natureNamesByIDHelper = {str(member.value): member.name for member in self.natureSlotData}
           
-        self.__fh_dump_data()
+        self.__fh_dumpDataOnEntry()
 
 
     
@@ -183,7 +183,7 @@ class Rogue:
         decompressed_data = decompressor.decompress(compressed_data)
         return decompressed_data.decode(encoding)"""
 
-    def fh_make_request(self, url: str, method: str = 'GET', data: Optional[Dict[str, Any]] = None) -> str:
+    def fh_makeRequest(self, url: str, method: str = 'GET', data: Optional[Dict[str, Any]] = None) -> str:
         """
         Makes an HTTP request using the Selenium WebDriver.
 
@@ -235,7 +235,7 @@ class Rogue:
 
         return self.driver.execute_async_script(script)
 
-    def __fh_setup_headers(self, headers: Optional[Dict[str, str]] = None) -> Dict[str, str]:
+    def __fh_setupHeaders(self, headers: Optional[Dict[str, str]] = None) -> Dict[str, str]:
         """
         Generates random headers for the session.
 
@@ -256,15 +256,15 @@ class Rogue:
         - HeaderGenerator: Generates headers for HTTP requests.
         """
         if not headers:
-            headers = HeaderGenerator.generate_headers()
+            headers = HeaderGenerator.fh_generateHeaders()
         headers["Accept"] = "application/json"
         headers["Content-Type"] = "application/json"
         headers["Authorization"] = self.authToken
 
         return headers
     
-    @handle_operation_exceptions
-    def __fh_dump_data(self, slot: int = 1) -> None:
+    @dec_handleOperationExceptions
+    def __fh_dumpDataOnEntry(self, slot: int = 1) -> None:
         """
         Dump data from the API to local files.
 
@@ -361,7 +361,7 @@ class Rogue:
         cFormatter.print(Color.INFO, 'Fetching trainer data...')
         if self.useScripts:
             try:
-                response = self.fh_make_request(f'{self.TRAINER_DATA_URL}{self.clientSessionId}')
+                response = self.fh_makeRequest(f'{self.TRAINER_DATA_URL}{self.clientSessionId}')
                 if response:
                     try:
                         # TODO MAYBE: zstandart compression, was in a migration on the server at some point
@@ -391,7 +391,7 @@ class Rogue:
                     self.__fh_writeJSONData(data, 'trainer.json', False)
                     return data
                 else:
-                    return handle_error_response(response)
+                    return fh_handleErrorResponse(response)
             except requests.RequestException as e:
                 cFormatter.print(Color.DEBUG, f'Error fetching trainer data. Please restart the tool. \n {e}', isLogging=True)
 
@@ -419,13 +419,13 @@ class Rogue:
         Modules/Librarys used and for what purpose exactly in each function:
             - requests: Used for making HTTP requests to the API to fetch gamesave data.
             - cFormatter, Color: Used for formatting and printing colored output messages.
-            - handle_error_response: Used to handle and process error responses from API requests.
+            - fh_handleErrorResponse: Used to handle and process error responses from API requests.
         """
         cFormatter.print(Color.INFO, f'Fetching data for Slot {slot}...')
         
         if self.useScripts:
             try:
-                response = self.fh_make_request(f'{self.GAMESAVE_SLOT_URL}{slot-1}&clientSessionId={self.clientSessionId}')
+                response = self.fh_makeRequest(f'{self.GAMESAVE_SLOT_URL}{slot-1}&clientSessionId={self.clientSessionId}')
                 if response:
                     try:
                         # TODO MAYBE: zstandart compression, was in a migration on the server at some point
@@ -453,7 +453,7 @@ class Rogue:
                     self.slot = slot
                     return data
                 else:
-                    return handle_error_response(response)
+                    return fh_handleErrorResponse(response)
             except requests.RequestException as e:
                 cFormatter.print(Color.CRITICAL, f'Error fetching save-slot data. Please restart the tool. \n {e}', isLogging=True)
 
@@ -495,7 +495,7 @@ class Rogue:
         except Exception as e:
             cFormatter.print(Color.WARNING, f'Error logging out. {e}')
 
-    @handle_operation_exceptions
+    @dec_handleOperationExceptions
     def f_createBackup(self, gameData=None, slotData=None, offline: bool = False) -> None:
         """
         Create a backup of provided data or existing files if offline.
@@ -552,7 +552,7 @@ class Rogue:
         __fh_backupData(gameData, 'gameData')
         __fh_backupData(slotData, 'slotData')
 
-    @handle_operation_exceptions
+    @dec_handleOperationExceptions
     def f_restoreBackup(self) -> None:
         """
         Restore a backup of JSON files and update the timestamp in trainer.json or slot_{slot}.json.
@@ -717,7 +717,7 @@ class Rogue:
             #raw_payload = {'clientSessionId': self.clientSessionId, 'session': game_data, "sessionSlotId": slot - 1, 'system': trainer_data}
             #payload = self.__compress_zstd(payload)
             if self.useScripts:
-                response = self.fh_make_request(url, method='POST', data=json.dumps(payload))
+                response = self.fh_makeRequest(url, method='POST', data=json.dumps(payload))
                 cFormatter.print(Color.GREEN, "That seemed to work! Refresh without cache (STRG+F5)")
                 self.f_logout()
             else:
@@ -740,7 +740,7 @@ class Rogue:
         except requests.exceptions.RequestException as e:
            cFormatter.print(Color.WARNING, f'Error occurred during request: {e}', isLogging=True)
 
-    @handle_operation_exceptions
+    @dec_handleOperationExceptions
     def f_unlockStarters(self) -> None:
         """
         Unlock all starter options for the trainer, such as forms, IVs, passives, ribbons, natures, etc.
@@ -877,7 +877,7 @@ class Rogue:
         # Raise success message
         raise OperationSuccessful('Written changes for all starters.')
         
-    @handle_operation_exceptions
+    @dec_handleOperationExceptions
     def f_editStarter(self, dexId: Optional[str] = None) -> None:
         """
         Allows the user to edit starter Species data for a trainer.
@@ -1085,7 +1085,7 @@ class Rogue:
         else:
             fh_appendMessageBuffer(Color.YELLOW, 'No changes made.')
 
-    @handle_operation_exceptions
+    @dec_handleOperationExceptions
     def f_addTicket(self) -> None:
         """
         Simulates an egg gacha.
@@ -1158,7 +1158,7 @@ class Rogue:
         else:
             fh_appendMessageBuffer(Color.YELLOW, 'No changes made.')
 
-    @handle_operation_exceptions
+    @dec_handleOperationExceptions
     def f_editParty(self) -> None:
         """
         Allows the user to edit the Species party.
@@ -1483,7 +1483,7 @@ class Rogue:
             cFormatter.print(Color.INFO, 'No changes made.')
             fh_appendMessageBuffer(Color.INFO, 'No changes made.')
 
-    @handle_operation_exceptions
+    @dec_handleOperationExceptions
     def f_unlockGamemodes(self) -> None:
         """
         Unlocks all game modes for the player.
@@ -1526,7 +1526,7 @@ class Rogue:
             cFormatter.print(Color.INFO, 'You already had all gamemodes.')
             fh_appendMessageBuffer(Color.INFO, 'You already had all gamemodes.')
 
-    @handle_operation_exceptions
+    @dec_handleOperationExceptions
     def f_unlockAchievements(self) -> None:
         """
         Unlocks all achievements for the player or a specific achievement with random unlock times.
@@ -1620,7 +1620,7 @@ class Rogue:
         else:
             fh_appendMessageBuffer(Color.YELLOW, 'No changes made.')
 
-    @handle_operation_exceptions
+    @dec_handleOperationExceptions
     def f_unlockVouchers(self) -> None:
         """
         Unlocks all vouchers for the player or a specific voucher with random unlock times.
@@ -1714,7 +1714,7 @@ class Rogue:
         else:
             fh_appendMessageBuffer(Color.YELLOW, 'No changes made.')
 
-    @handle_operation_exceptions
+    @dec_handleOperationExceptions
     def f_addCandies(self) -> None:
         """
         Args:
@@ -1794,7 +1794,7 @@ class Rogue:
         else:
             fh_appendMessageBuffer(Color.YELLOW, 'No changes made.')
 
-    @handle_operation_exceptions
+    @dec_handleOperationExceptions
     def f_editBiome(self) -> None:
         """
         Edits the biome of the game using helper functions for input validation and word completion.
@@ -1849,7 +1849,7 @@ class Rogue:
         self.__fh_writeJSONData(gameData, f'slot_{self.slot}.json')
         raise OperationSuccessful(f'Biome updated from {currentBiomeName} to {inputValue.name}.')
             
-    @handle_operation_exceptions
+    @dec_handleOperationExceptions
     def f_editPokeballs(self) -> None:
         """
         Edits the number of pokeballs in the game using helper functions for input validation.
@@ -1927,7 +1927,7 @@ class Rogue:
         else:
             fh_appendMessageBuffer(Color.YELLOW, 'No changes made.')
 
-    @handle_operation_exceptions
+    @dec_handleOperationExceptions
     def f_editMoney(self) -> None:
         """
         Edits the amount of Poke-Dollars in the game.
@@ -1965,7 +1965,7 @@ class Rogue:
         self.__fh_writeJSONData(saveData, f'slot_{self.slot}.json')
         raise OperationSuccessful(f'Written {choice} as money value to to local .json.')
 
-    @handle_operation_exceptions
+    @dec_handleOperationExceptions
     def f_addEggsGenerator(self) -> None:
         """
         Generates eggs for the player.
@@ -2045,7 +2045,7 @@ class Rogue:
         self.__fh_writeJSONData(trainerData, 'trainer.json')
         raise OperationSuccessful(f'{count} eggs successfully generated.')
 
-    @handle_operation_exceptions
+    @dec_handleOperationExceptions
     def f_unlockAllCombined(self) -> None:
         self.f_unlockGamemodes()
         self.f_unlockAchievements()
@@ -2053,7 +2053,7 @@ class Rogue:
         self.f_unlockStarters()
         self.f_editAccountStats()
 
-    @handle_operation_exceptions
+    @dec_handleOperationExceptions
     def f_editAccountStats(self) -> None:
         """
         Modifies the statistics and attributes of the player's account.
@@ -2190,7 +2190,7 @@ class Rogue:
         else:
             fh_appendMessageBuffer(Color.YELLOW, 'No changes made.')
 
-    @handle_operation_exceptions
+    @dec_handleOperationExceptions
     def f_editHatchWaves(self) -> None:
         """
         Edits the hatch waves for eggs in the trainer's inventory using helper functions for input validation.
@@ -2243,13 +2243,13 @@ class Rogue:
         else:
             fh_appendMessageBuffer(Color.YELLOW, 'No changes made.')
             
-    @handle_operation_exceptions
+    @dec_handleOperationExceptions
     def f_submenuItemEditor(self):
         from modules import ModifierEditor
         edit = ModifierEditor(self.speciesNameByIDHelper, self.moveNamesByIDHelper, self.natureNamesByIDHelper, int(self.slot))
         edit.m_itemMenuPresent(int(self.slot))
 
-    @handle_operation_exceptions
+    @dec_handleOperationExceptions
     def f_changeSaveSlot(self):
         while True:
             newSlot = fh_getIntegerInput(
@@ -2363,7 +2363,7 @@ class Rogue:
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in function __load_data(): {e}', isLogging=True)
 
-    @handle_operation_exceptions
+    @dec_handleOperationExceptions
     def f_lb(self):
         gameData: dict = self.__fh_loadDataFromJSON('trainer.json')
         slotData: dict = self.__fh_loadDataFromJSON(f'slot_{self.slot}.json')

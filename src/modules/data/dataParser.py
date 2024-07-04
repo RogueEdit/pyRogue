@@ -5,6 +5,8 @@
 # Date of release: 06.06.2024 
 # Last Edited: 28.06.2024
 
+# Unlike the other code, reusing this in your own project is forbidden.
+
 import json
 from enum import Enum
 from dataclasses import dataclass, field
@@ -218,10 +220,10 @@ def computeVariant(speciesData, variantFlag, defaultFlag, variantAdjustment):
 
     return caughtAttr
 
-variant1CaughtAttr = computeVariant(hasForms, DexAttr.VARIANT_1.value, DexAttr.DEFAULT_FORM.value, 224) # 255-(1+2+4+8+16)
-variant2CaughtAttr = computeVariant(hasForms, DexAttr.VARIANT_2.value, DexAttr.DEFAULT_FORM.value, 192) # 255-(1+2+4+8+16+32)
-variant3CaughtAttr = computeVariant(hasForms, DexAttr.VARIANT_3.value, DexAttr.DEFAULT_FORM.value, 128) # 255-(1+2+4+8+16+32+64)
-nonShinyCaughtAttr = computeVariant(hasForms, DexAttr.NON_SHINY.value, DexAttr.DEFAULT_FORM.value, 255) # 255-()
+variant1CaughtAttr = computeVariant(hasForms, DexAttr.VARIANT_1.value, DexAttr.DEFAULT_FORM.value, 224)
+variant2CaughtAttr = computeVariant(hasForms, DexAttr.VARIANT_2.value, DexAttr.DEFAULT_FORM.value, 192)
+variant3CaughtAttr = computeVariant(hasForms, DexAttr.VARIANT_3.value, DexAttr.DEFAULT_FORM.value, 128)
+nonShinyCaughtAttr = computeVariant(hasForms, DexAttr.NON_SHINY.value, DexAttr.DEFAULT_FORM.value, 255)
 
 specieses = []
 speciesDict = {}

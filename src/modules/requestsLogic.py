@@ -22,7 +22,6 @@ Modules:
 - utilities.limiter.Limiter: Limits the frequency of requests to avoid rate limiting issues.
 - utilities.cFormatter: Formats console output for displaying error and debug messages.
 - pyuseragents: Generates random user agent strings for diverse HTTP requests.
-- user_agents.parse: Parses user agent strings to extract browser and operating system information.
 - string: Provides character manipulation functions for generating random session IDs.
 
 Workflow:
@@ -48,7 +47,6 @@ Modules/Librarys used and for what purpose exactly in each function at the end o
 - utilities.limiter.Limiter: Implements rate limiting to prevent excessive login attempts.
 - utilities.cFormatter: Formats console output for displaying debug and error messages during login process.
 - pyuseragents: Generates diverse user agent strings to mimic different browsers and operating systems.
-- user_agents.parse: Extracts browser and operating system details from user agent strings.
 - string: Provides character manipulation functions for generating random session IDs.
 """
 
@@ -64,7 +62,7 @@ from modules.config import useCaCert
 limiter = Limiter()
 
 
-def handle_error_response(response: requests.Response) -> Dict[str, str]:
+def fh_handleErrorResponse(response: requests.Response) -> Dict[str, str]:
     """
     Handle error responses from the server.
 
@@ -80,7 +78,7 @@ def handle_error_response(response: requests.Response) -> Dict[str, str]:
 
     Example:
         >>> response = requests.get("https://example.com")
-        >>> handle_error_response(response)
+        >>> fh_handleErrorResponse(response)
         'Response 404 - Not Found: The server can not find the requested resource.'
 
     Modules/Librarys used and for what purpose exactly in each function:
@@ -140,32 +138,30 @@ class HeaderGenerator:
     Generates random user agent headers for HTTP requests.
 
     This class generates random user agent strings using pyuseragents and parses them
-    using user_agents library to extract browser and operating system information.
+    using pyuseragents library to extract browser and operating system information.
 
     :arguments:
     - isAuthHeader (bool): Whether to generate authentication headers.
 
     :params:
-    - user_agent_string: Randomly generated user agent string.
-    - browser_family: Browser family extracted from the user agent string.
-    - browser_version: Browser version extracted from the user agent string.
-    - os_family: Operating system family extracted from the user agent string.
-    - os_version: Operating system version extracted from the user agent string.
-    - is_mobile: Boolean indicating if the user agent represents a mobile device.
+    - browserFamily: Browser family extracted from the user agent string.
+    - browserVersion: Browser version extracted from the user agent string.
+    - osFamily: Operating system family extracted from the user agent string.
+    - osVersion: Operating system version extracted from the user agent string.
+    - isMobile: Boolean indicating if the user agent represents a mobile device.
 
     Usage:
         Generate user agent headers:
-        >>> headers = HeaderGenerator.generate_headers()
+        >>> headers = HeaderGenerator.generateHeaders()
 
     Output examples:
         - User agent headers with randomly generated browser and operating system information.
 
     Modules/Librarys used and for what purpose exactly in each function:
     - pyuseragents: Generates diverse user agent strings to mimic different browsers and operating systems.
-    - user_agents.parse: Extracts browser and operating system details from user agent strings.
     """
     @classmethod
-    def generate_headers(cls, isAuthHeader: bool = False) -> Dict[str, str]:
+    def fh_generateHeaders(cls, isAuthHeader: bool = False) -> Dict[str, str]:
         userAgentString = pyuseragents.random()
         userAgent = parse(userAgentString)
 
@@ -207,7 +203,7 @@ class requestsLogic:
 
     This class initializes a session, generates random user agent headers using HeaderGenerator,
     implements rate limiting with Limiter, and handles various HTTP response status codes using
-    handle_error_response.
+    fh_handleErrorResponse.
 
     :arguments:
     - username (str): The username for logging in.
@@ -295,26 +291,26 @@ class requestsLogic:
         """
         data = {'username': self.username, 'password': self.password}
         try:
-            headers = HeaderGenerator.generate_headers()
+            headers = HeaderGenerator.fh_generateHeaders()
             cFormatter.print(Color.DEBUG, 'Adding delay to appear more natural to the server. Please stand by...')
             cFormatter.print(Color.DEBUG, '(If it takes longer than 5 Seconds its not on us.)')
             response = self.session.post(self.LOGIN_URL, headers=headers, data=data, verify=useCaCert)
             sleep(random.randint(3, 5))
             response.raise_for_status()
 
-            login_response = response.json()
-            self.token = login_response.get('token')
+            loginResponse = response.json()
+            self.token = loginResponse.get('token')
             cFormatter.fh_printSeperators(30, '-')
             self.sessionId = self.calcSessionId()
             cFormatter.print(Color.GREEN, 'Login successful.')
-            status_code_color = Color.BRIGHT_GREEN if response.status_code == 200 else Color.BRIGHT_RED
-            cFormatter.print(status_code_color, f'HTTP Status Code: {response.status_code}')
+            formattedStatusCode = Color.BRIGHT_GREEN if response.status_code == 200 else Color.BRIGHT_RED
+            cFormatter.print(formattedStatusCode, f'HTTP Status Code: {response.status_code}')
             cFormatter.print(Color.CYAN, f'Response URL: {response.request.url}', isLogging=True)
-            filtered_headers = {key: value for key, value in response.headers.items() if key != 'Report-To'}
-            cFormatter.print(Color.CYAN, f'Response Headers: {filtered_headers}', isLogging=True)
+            filteredHeaders = {key: value for key, value in response.headers.items() if key != 'Report-To'}
+            cFormatter.print(Color.CYAN, f'Response Headers: {filteredHeaders}', isLogging=True)
             cFormatter.fh_printSeperators(30, '-')
             return True
 
         except requests.RequestException:
-            handle_error_response(response)
+            fh_handleErrorResponse(response)
             return False

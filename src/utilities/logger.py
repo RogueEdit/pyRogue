@@ -1,4 +1,4 @@
-# Authors https://github.com/JulianStiebler/
+# Authors: https://github.com/JulianStiebler/
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: None except Author
@@ -27,16 +27,9 @@ Workflow:
 from modules import config
 
 import logging
-# Provides logging capabilities for creating log messages and managing log levels.
-
 import os
-# Provides a way to interact with the operating system, particularly for file and directory operations.
-
 from logging.handlers import TimedRotatingFileHandler
-# Provides a logging handler that rotates log files at specified intervals (e.g., weekly).
-
 from datetime import datetime
-# Provides date and time manipulation capabilities, particularly for timestamping log files.
 
 class CustomFilter(logging.Filter):
     """
@@ -57,21 +50,15 @@ class CustomLogger:
     This logger initializes a TimedRotatingFileHandler that creates a new log file
     every week. It also includes a custom filter to exclude specific log messages.
 
-    :arguments:
-    None
-
-    :params:
-    None
-
     Usage:
         Initialize the custom logger in your script to start logging:
         >>> logger = CustomLogger()
 
         Temporarily deactivate logging:
-        >>> CustomLogger.deactivate_logging()
+        >>> CustomLogger.fh_deactivateLogging()
 
         Reactivate logging:
-        >>> CustomLogger.reactivate_logging()
+        >>> CustomLogger.fh_reactivateLogging()
 
     Output examples:
         - Log file created at logs/YYYY-WW.log with formatted log messages.
@@ -85,7 +72,6 @@ class CustomLogger:
     """
     def __init__(self):
         # Create and configure file handler
-        # Define the path to the logs directory in the current working directory
         logsDirectory = config.logsDirectory
 
         formatterFile = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
@@ -112,18 +98,12 @@ class CustomLogger:
                 rootLogger.removeHandler(handler)
 
     @staticmethod
-    def fh_deactiveLogging():
+    def fh_deactivateLogging():
         """
         Temporarily deactivate logging.
 
         This method sets the logging level of TimedRotatingFileHandler to NOTSET,
         effectively silencing logging output temporarily.
-
-        :arguments:
-        None
-
-        :params:
-        None
 
         Usage:
             Temporarily deactivate logging:
@@ -135,18 +115,12 @@ class CustomLogger:
                 handler.setLevel(logging.NOTSET)
 
     @staticmethod
-    def fh_reactiveLogging():
+    def fh_reactivateLogging():
         """
         Reactivate logging.
 
         This method sets the logging level of TimedRotatingFileHandler back to DEBUG,
         re-enabling logging output.
-
-        :arguments:
-        None
-
-        :params:
-        None
 
         Usage:
             Reactivate logging:
@@ -156,6 +130,3 @@ class CustomLogger:
         for handler in rootLogger.handlers:
             if isinstance(handler, TimedRotatingFileHandler):
                 handler.setLevel(logging.DEBUG)
-
-if __name__ == '__main__':
-    logger = CustomLogger()

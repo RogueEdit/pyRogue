@@ -3138,21 +3138,22 @@ class hasFormsEnum(Enum):
         '8128': {'Paldea Tauros': ['Combat', 'Blaze', 'Aqua'], 'isNormalForm': True}
     }
 
-
-
-
-
 class Generator:
     def __init__(self, natureNames: Optional[List[str]] = None) -> None:
         """
         Initialize the Generator object.
 
         Args:
-            nature_names (Optional[List[str]]): Optional list of nature names as strings. If provided, it will be used to initialize
-            self.nature_names. If not provided, all names from the Nature enum will be used.
+            natureNames (Optional[List[str]]): Optional list of nature names as strings. If provided, it will be used to initialize
+            self.natureNames. If not provided, all names from the Nature enum will be used.
 
-        Modules:
-            - typing: Provides type hints for function signatures and variable declarations.
+        Attributes:
+            natureNames (List[str]): List of nature names.
+            natureIDs (List[int]): List of nature IDs generated from the names.
+            maxId (int): Maximum value in the list of nature IDs.
+
+        Example:
+            generator = Generator(['Hardy', 'Brave', 'Adamant'])
         """
         if natureNames is not None:
             self.natureNames: List[str] = natureNames
@@ -3166,48 +3167,161 @@ class Generator:
 
         self.maxId: int = max(self.natureIDs)  # Calculate max ID
 
+    def __writeJSON(self, filePath: str, json_data: str) -> None:
+        """
+        Write JSON data to a file.
 
-    def __writeJSON(self, filePath: str, json_data: str):
+        Args:
+            filePath (str): The path to the file where JSON data will be written.
+            json_data (str): The JSON data to write to the file.
+
+        Example:
+            generator = Generator()
+            generator.__writeJSON('path/to/file.json', '{"key": "value"}')
+
+        Modules:
+            - os: Provides a way to interact with the operating system, particularly for file and directory operations.
+            - utilities: Custom module for colored printing and logging functionalities.
+        """
         if not os.path.exists(filePath):
             with open(filePath, 'w') as file:
                 file.write(json_data)
             cFormatter.print(Color.GREEN, f'Generated {os.path.basename(filePath)}')
 
     def __natureToJSON(self) -> str:
+        """
+        Convert nature data to JSON format.
+
+        Returns:
+            str: JSON string of nature data.
+
+        Example:
+            generator = Generator()
+            json_data = generator.__natureToJSON()
+        """
         natureDict = {name: id for name, id in zip(self.natureNames, self.natureIDs)}
         return json.dumps({'natures': natureDict}, indent=4)
     
     def __noPassiveToJSON(self) -> str:
+        """
+        Convert no passive data to JSON format.
+
+        Returns:
+            str: JSON string of no passive data.
+
+        Example:
+            generator = Generator()
+            json_data = generator.__noPassiveToJSON()
+        """
         return json.dumps({'noPassive': NoPassive.NO_PASSIVE_DICT.value}, indent=4)
     
     def __biomesToJSON(self) -> str:
+        """
+        Convert biomes data to JSON format.
+
+        Returns:
+            str: JSON string of biomes data.
+
+        Example:
+            generator = Generator()
+            json_data = generator.__biomesToJSON()
+        """
         return json.dumps({'biomes': Biome.BIOMES_DICT.value}, indent=4)
     
     def __vouchersToJSON(self) -> str:
+        """
+        Convert vouchers data to JSON format.
+
+        Returns:
+            str: JSON string of vouchers data.
+
+        Example:
+            generator = Generator()
+            json_data = generator.__vouchersToJSON()
+        """
         return json.dumps({'vouchers': Vouchers.VOUCHERS_DICT.value}, indent=4)
     
     def __natureSlotToJSON(self) -> str:
+        """
+        Convert nature slot data to JSON format.
+
+        Returns:
+            str: JSON string of nature slot data.
+
+        Example:
+            generator = Generator()
+            json_data = generator.__natureSlotToJSON()
+        """
         return json.dumps({'natureSlot': NatureSlot.NATURE_SLOT.value}, indent=4)
     
     def __achievmentsToJSON(self) -> str:
+        """
+        Convert achievements data to JSON format.
+
+        Returns:
+            str: JSON string of achievements data.
+
+        Example:
+            generator = Generator()
+            json_data = generator.__achievmentsToJSON()
+        """
         return json.dumps({'achvUnlocks': AchievementEnum.ACHIEVEMENTS_DICT.value}, indent=4)
     
     def __speciesToJSON(self) -> str:
+        """
+        Convert species data to JSON format.
+
+        Returns:
+            str: JSON string of species data.
+
+        Example:
+            generator = Generator()
+            json_data = generator.__speciesToJSON()
+        """
         return json.dumps({'dex': SpeciesEnum.POKEMON_DICT.value}, indent=4)
     
     def __startersToJSON(self) -> str:
+        """
+        Convert starters data to JSON format.
+
+        Returns:
+            str: JSON string of starters data.
+
+        Example:
+            generator = Generator()
+            json_data = generator.__startersToJSON()
+        """
         return json.dumps({'dex': StarterEnum.STARTER_DICT.value}, indent=4)
     
     def __movesToJSON(self) -> str:
+        """
+        Convert moves data to JSON format.
+
+        Returns:
+            str: JSON string of moves data.
+
+        Example:
+            generator = Generator()
+            json_data = generator.__movesToJSON()
+        """
         return json.dumps({'moves': MovesEnum.MOVES_DICT.value}, indent=4)
 
     def __hasFormsToJSON(self) -> str:
+        """
+        Convert form IDs data to JSON format.
+
+        Returns:
+            str: JSON string of form IDs data.
+
+        Example:
+            generator = Generator()
+            json_data = generator.__hasFormsToJSON()
+        """
         return json.dumps({'hasForms': hasFormsEnum.FORMID_DICT.value}, indent=4)
-    
-    
+
     def generate(self) -> None:
         """
-        Generate and save various JSON files for natures, no passives, biomes, vouchers, and nature slots.
+        Generate and save various JSON files for natures, no passives, biomes, vouchers, nature slots, achievements, species, starters, moves, and forms.
 
         Example:
             generator = Generator()
@@ -3218,7 +3332,6 @@ class Generator:
             - os: Provides a way to interact with the operating system, particularly for file and directory operations.
             - utilities: Custom module for colored printing and logging functionalities.
         """
-
         appData = [
             (self.__natureToJSON, 'natures.json'),
             (self.__noPassiveToJSON, 'noPassive.json'),

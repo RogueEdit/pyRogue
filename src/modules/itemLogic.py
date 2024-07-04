@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 from typing import Any, List, Optional
 from modules.config import version
 from collections import defaultdict
-from modules.handler import handle_operation_exceptions, OperationCancel, OperationSoftCancel, OperationSuccessful  # noqa: F401
+from modules.handler import dec_handleOperationExceptions, OperationCancel, OperationSoftCancel, OperationSuccessful  # noqa: F401
 from modules.handler import fh_getChoiceInput, fh_getCompleterInput, fh_getIntegerInput  # noqa: F401
 from modules.data import dataParser
 
@@ -148,7 +148,7 @@ class ModifierType(Enum):
     FIRE_ORB = Modifier(args=[None], className='TurnStatusEffectModifier', player=True, stackCount=1, typeId='FIRE_ORB', shortDescription='Burn your pokemon', description='Burns its holder at the end of the turn if they do not have a status condition already.', customName='Fire Orb', customType='Danger', maxStack='1')
 
     
-@handle_operation_exceptions
+@dec_handleOperationExceptions
 class ModifierEditor:
     def __init__(self, speciesNameByIDHelper, moveNamesByIDHelper, natureNamesByIDHelper, slot=1):
         self.menuItems = self.m_createItemMenu()
@@ -244,7 +244,7 @@ class ModifierEditor:
                 return modifier.get('stackCount', 0)
         return None
 
-    @handle_operation_exceptions
+    @dec_handleOperationExceptions
     def __f_recursiveAddOrUpdateMods(self, data, modifierType: ModifierType, stack, pokeId, sessionSlot):
         try:
             modifier = modifierType.value
@@ -309,7 +309,7 @@ class ModifierEditor:
             cFormatter.print(Color.WHITE, f'{i}: {Fore.YELLOW}{pokeInfoDict["name"]}{Style.RESET_ALL} | Level: {pokeInfoDict["level"]} | Luck: {pokeInfoDict["luck"]} | {pokeInfoDict["shinyStatus"]} | HP {pokeInfoDict["hp"]} | {pokeInfoDict["fusionStatus"]}')
         cFormatter.fh_printSeperators(55, '-', Color.DEBUG)
 
-    @handle_operation_exceptions
+    @dec_handleOperationExceptions
     def m_itemMenuPresent(self, sessionSlot):
         slotData = self.__fh_loadJSON(f'slot_{sessionSlot}.json')
         while True:

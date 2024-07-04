@@ -8,43 +8,33 @@
 
 """
 Source Code from https://github.com/pagefaultgames/pokerogue/ multiple files
-
-
 Tier and Source Type Initialization:
-
     using eggOptions.tier to determine the _tier of the egg. If not provided, it falls back to Overrides.EGG_TIER_OVERRIDE or rolls a random tier using this.rollEggTier().
     _sourceType is set to eggOptions.sourceType or undefined.
 
 Pulled Eggs:
-
     If eggOptions.pulled is true, you check for eggOptions.scene to potentially override the _tier using this.checkForPityTierOverrides().
 
 ID Generation:
-
     _id is generated using eggOptions.id if provided or by calling Utils.randInt(EGG_SEED, EGG_SEED * this._tier).
 
 Timestamp and Hatch Waves:
-
     _timestamp defaults to the current time if not provided in eggOptions.
     _hatchWaves is determined by eggOptions.hatchWaves or defaults to a tier-specific default using this.getEggTierDefaultHatchWaves().
 
 Shiny, Variant, Species, and Hidden Ability:
-
     _isShiny is set based on eggOptions.isShiny, Overrides.EGG_SHINY_OVERRIDE, or randomly rolled.
     _variantTier is set similarly for variants.
     _species is determined by eggOptions.species or randomly rolled using this.rollSpecies().
     _overrideHiddenAbility is set to eggOptions.overrideHiddenAbility or defaults to false.
 
 Species-Specific Handling:
-
     If eggOptions.species is provided, it overrides _tier and _hatchWaves. If the species has no variants, _variantTier is set to VariantTier.COMMON.
 
 Egg Move Index:
-
     _eggMoveIndex defaults to a random value using this.rollEggMoveIndex() unless specified in eggOptions.
 
 Pulled Egg Actions:
-
     If eggOptions.pulled is true, you increase pull statistics and add the egg to game data using this.increasePullStatistic() and this.addEggToGameData().
 
   constructor(eggOptions?: IEggOptions) {
@@ -159,13 +149,12 @@ from typing import List, Tuple, Dict
 
 # Constant from game source code
 EGG_SEED: int = 1073741824
-GACHA_TYPES: List[str] = ['MoveGacha', 'LegendaryGacha', 'ShinyGacha', 'SAME_SPECIES_EGG', 'EVENT'],
+GACHA_TYPES: List[str] = ['MoveGacha', 'LegendaryGacha', 'ShinyGacha', 'SAME_SPECIES_EGG', 'EVENT']
 EGG_TIERS: List[str] = ['Common', 'Rare', 'Epic', 'Legendary', 'Manaphy']
 
-#From Sourcecode
 def getIDBoundarys(tier: int) -> Tuple[int, int]:
     """
-    Get the ID bounds for a given tier.
+    Get the ID boundaries for a given tier.
 
     Args:
         tier (int): The tier index.
@@ -175,6 +164,7 @@ def getIDBoundarys(tier: int) -> Tuple[int, int]:
 
     Example:
         start, end = getIDBoundarys(2)
+        print(start, end)  # Output: 2147483648 3221225471
     """
     # Calculate the start and end IDs for the given tier
     start: int = tier * EGG_SEED
@@ -183,7 +173,7 @@ def getIDBoundarys(tier: int) -> Tuple[int, int]:
 
 def generateRandomID(start: int, end: int, manaphy: bool = False) -> int:
     """
-    Get a random ID within the given range.
+    Generate a random ID within the given range.
 
     Args:
         start (int): The start of the ID range.
@@ -192,16 +182,14 @@ def generateRandomID(start: int, end: int, manaphy: bool = False) -> int:
 
     Returns:
         int: The random ID.
+
+    Example:
+        random_id = generateRandomID(0, 1073741823)
+        print(random_id)  # Output: 564738291 (example)
     """
     if manaphy:
         # Generate a random ID that is divisible by 204 within the specified range based on tier
         return random.randrange(start // 204 * 204, (end // 204 + 1) * 204, 204)
-        """
-            For better visibility thats whats happening in this oneliner
-            idRangeStart = start // 204 * 204
-            idRangeEnd = (end // 204 + 1) * 204 - 1
-            return random.randrange(idRangeStart, idRangeEnd + 1, 204)
-        """
 
     # Generate a regular random ID within the specified range
     result: int = random.randint(start, end)
@@ -217,17 +205,19 @@ def constructEggs(tier: int, gachaType: int, hatchWaveCount: int, eggAmount: int
 
     Args:
         tier (int): The tier of the eggs.
-        g_type (int): The gacha type.
-        hatch_waves (int): The number of hatch waves.
-        num_eggs (int): The number of eggs to generate.
-        is_shiny (bool): Whether the egg is shiny.
-        hidden_ability (bool): Whether the hidden ability is unlocked.
+        gachaType (int): The gacha type.
+        hatchWaveCount (int): The number of hatch waves.
+        eggAmount (int): The number of eggs to generate.
+        isShiny (bool): Whether the egg is shiny. Defaults to False.
+        variantTier (int): The variant tier for shiny eggs. Defaults to 0.
 
     Returns:
-        List[Dict[str, int]]: A list of generated eggs.
+        List[Dict[str, int]]: A list of generated eggs, each represented as a dictionary with egg properties.
 
     Example:
-        eggs = constructEggs(1, 2, 3, 10, True, False)
+        eggs = constructEggs(1, 2, 3, 10, True, 1)
+        print(eggs)
+        # Output: [{'id': 123456789, 'gachaType': 2, 'hatchWaves': 3, 'timestamp': 1625247123456, 'tier': 0, 'isShiny': True, 'variantTier': 1}, ...]
     """
     isManaphy: bool = tier == 4
     start, end = getIDBoundarys(0 if isManaphy else tier)

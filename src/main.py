@@ -35,7 +35,7 @@ import requests
 import brotli  # noqa: F401
 
 from modules import requestsLogic, Rogue, SeleniumLogic, config
-from modules.handler import OperationSuccessful, handle_operation_exceptions, OperationCancel, OperationSoftCancel
+from modules.handler import OperationSuccessful, dec_handleOperationExceptions, OperationCancel, OperationSoftCancel
 from colorama import Fore, Style, init
 from utilities import cFormatter, Color, CustomLogger
 from datetime import datetime, timedelta
@@ -48,7 +48,7 @@ if not config.debug:
     config.f_checkForUpdates(requests, datetime, timedelta, Style)
 
 
-@handle_operation_exceptions
+@dec_handleOperationExceptions
 def m_executeOptions(choice_index, valid_choices):
     for idx, func in valid_choices:
         if idx == choice_index:
@@ -57,7 +57,7 @@ def m_executeOptions(choice_index, valid_choices):
         elif idx == 'exit':
             raise KeyboardInterrupt
 
-@handle_operation_exceptions
+@dec_handleOperationExceptions
 def m_mainMenu(rogue, editOffline: bool = False):
     title = f'{config.title}>'
     useWhenDone = f'{Fore.LIGHTYELLOW_EX}(Use when Done)'
@@ -112,8 +112,8 @@ def m_mainMenu(rogue, editOffline: bool = False):
         term = [entry for entry in term if entry[1] != rogue.f_updateAllToServer]
         term = [entry for entry in term if entry[1] != rogue.f_getGameData]
         term = [entry for entry in term if entry[1] != rogue.f_logout]
-        replacement_entry = ('Offline-Edits are directly applied', 'helper')
-        term = [replacement_entry if entry == ('You can always edit your JSON manually as well!', 'helper') else entry for entry in term]
+        replaceEntry = ('Offline-Edits are directly applied', 'helper')
+        term = [replaceEntry if entry == ('You can always edit your JSON manually as well!', 'helper') else entry for entry in term]
 
     try:
         while True:
@@ -136,10 +136,10 @@ def m_mainMenu(rogue, editOffline: bool = False):
         cFormatter.print(Color.DEBUG, '\nProgram interrupted by user.')
         exit()
 
-@handle_operation_exceptions
+@dec_handleOperationExceptions
 def main():
     if config.debug:
-        rogue = Rogue(requests.session(), auth_token="Invalid Auth Token", editOffline=config.debug)
+        rogue = Rogue(requests.session(), 'Invalid Auth Token', config.debug)
         m_mainMenu(rogue)
     else:
         while True:

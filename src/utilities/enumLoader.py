@@ -1,4 +1,4 @@
-# Authors https://github.com/JulianStiebler https://github.com/claudiunderthehood
+# Authors: https://github.com/JulianStiebler https://github.com/claudiunderthehood
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: None except Authors
@@ -44,15 +44,16 @@ class EnumLoader:
         Initialize the EnumLoader object.
 
         Attributes:
-            pokemon_id_by_name (Optional[dict]): Dictionary for Pokemon IDs by name.
-            biomes_by_id (Optional[dict]): Dictionary for biomes by ID.
-            moves_by_id (Optional[dict]): Dictionary for moves by ID.
-            natures_data (Optional[dict]): Dictionary for natures data.
-            vouchers_data (Optional[dict]): Dictionary for vouchers data.
-            natureSlot_data (Optional[dict]): Dictionary for nature slot data.
-
-        Modules:
-            - typing: Provides type hints for better code clarity and type checking.
+            starterNameByID (Optional[Dict[str, int]]): Dictionary for starter IDs by name.
+            biomesByID (Optional[Dict[str, int]]): Dictionary for biomes by ID.
+            movesByID (Optional[Dict[str, int]]): Dictionary for moves by ID.
+            natureData (Optional[Dict[str, int]]): Dictionary for natures data.
+            voucherData (Optional[Dict[str, int]]): Dictionary for vouchers data.
+            natureDataSlots (Optional[Dict[str, int]]): Dictionary for nature slot data.
+            noPassiveIDs (Optional[Dict[str, int]]): Dictionary for no passive IDs.
+            hasFormIDs (Optional[Dict[str, int]]): Dictionary for IDs that have forms.
+            speciesNameByID (Optional[Dict[str, int]]): Dictionary for species names by ID.
+            achievementsData (Optional[Dict[str, int]]): Dictionary for achievements data.
         """
         self.starterNameByID: Optional[Dict[str, int]] = None
         self.biomesByID: Optional[Dict[str, int]] = None
@@ -74,12 +75,7 @@ class EnumLoader:
 
         Example:
             loader = EnumLoader()
-            loader.__load_data()
-
-        Modules:
-            - json: Provides functionalities to work with JSON data for reading and writing.
-            - modules.config: Contains configuration settings, specifically for directory paths.
-            - utilities.cFormatter: Custom formatter for colored printing and logging.
+            loader.__f_loadData()
         """
         try:
             dataDir: str = config.dataDirectory
@@ -114,7 +110,6 @@ class EnumLoader:
             with open(f'{dataDir}/hasForms.json') as f:
                 self.hasFormIDs = json.load(f)
 
-            
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in enumLoader.__f_loadData(). {e}', isLogging=True)
 
@@ -123,40 +118,32 @@ class EnumLoader:
         Create an Enum from a dictionary.
 
         Args:
-            data_dict (dict): The dictionary to convert to an Enum.
-            enum_name (str): The name of the Enum.
+            dataDict (Dict[str, int]): The dictionary to convert to an Enum.
+            enumName (str): The name of the Enum.
 
         Returns:
             Enum: The created Enum.
 
         Example:
             loader = EnumLoader()
-            pokemon_enum = loader.__create_enum_from_dict({'PIKACHU': 25}, 'PokemonEnum')
-
-        Modules:
-            - enum: Provides support for enumerations, a set of symbolic names bound to unique, constant values.
+            speciesEnum = loader.__f_createENUMFromDict({'PIKACHU': 25}, 'SpeciesEnum')
         """
         enumClass: Enum = Enum(enumName, {key: value for key, value in dataDict.items()})
         return enumClass
 
-    def f_convertToEnums(self) -> Tuple[Enum, Enum, Enum, Enum, Enum, Enum]:
+    def f_convertToEnums(self) -> Tuple[Enum, Enum, Enum, Enum, Enum, Enum, Enum, Enum, Enum, Enum]:
         """
         Convert loaded data to Enums.
 
         Returns:
-            self.pokemonIDByName, self.biomesByID, self.movesByID, self.voucherData, self.natureData, self.natureDataSlots, self.achievementsData
-            tuple: A tuple containing the created Enums for Pokemon IDs, biomes, moves, natures, vouchers, and nature slots.
+            Tuple[Enum, Enum, Enum, Enum, Enum, Enum, Enum, Enum, Enum, Enum]: 
+            A tuple containing the created Enums for starter names, biomes, moves, vouchers, natures, nature slots,
+            achievements, species names, no passive IDs, and IDs with forms.
 
         Example:
             loader = EnumLoader()
-            enums = loader.convert_to_enums()
-            pokemon_enum = enums[0]  # Access PokemonEnum
-
-        Modules:
-            - json: Provides functionalities to work with JSON data for reading and writing.
-            - enum: Provides support for enumerations, a set of symbolic names bound to unique, constant values.
-            - modules.config: Contains configuration settings, specifically for directory paths.
-            - utilities.cFormatter: Custom formatter for colored printing and logging.
+            enums = loader.f_convertToEnums()
+            StarterEnum = enums[0]  # Access StarterEnum
         """
         self.__f_loadData()
 
