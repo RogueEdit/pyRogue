@@ -181,14 +181,14 @@ def main():
                             print('Driver error')
                         cFormatter.print(Color.INFO, f'Logged in as: {config.f_anonymizeName(username)}')
                         session.cookies.set('pokerogue_sessionId', sessionId, domain='pokerogue.net')
-                        rogue = Rogue(session, auth_token=token, clientSessionId=sessionId, driver=driver, useScripts=(loginChoice == 3))
+                        rogue = Rogue(session, authToken=token, clientSessionId=sessionId, driver=driver, useScripts=(loginChoice == 3))
                         break
                     else:
                         cFormatter.print(Color.CRITICAL, 'Failed to retrieve necessary authentication data from Selenium.')
 
 
                 elif loginChoice == 4:
-                    rogue = Rogue(session, auth_token='Invalid Auth Token', editOffline=True)
+                    rogue = Rogue(session, authToken='Invalid Auth Token', editOffline=True)
                     break
 
                 else:

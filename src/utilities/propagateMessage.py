@@ -30,3 +30,15 @@ def fh_printMessageBuffer():
         else:
             print(text)
     messageBuffer = []  # Clear buffer after printing
+
+def fh_redundantMesage(changedItems, message, target=None, propagate=True):
+    if target:
+        changedItems.append(f'{target}: {message}')
+        cFormatter.print(Color.INFO, f'{target}: {message}')
+        if propagate:
+            fh_appendMessageBuffer(Color.INFO, f'{target}: {message}')
+    else:
+        changedItems.append(f'{message}')
+        cFormatter.print(Color.INFO, f'{message}')
+        if propagate:
+            fh_appendMessageBuffer(Color.INFO, f'{message}')

@@ -37,14 +37,14 @@ Workflow:
 Usage Example:
     # Initialize Rogue instance
     session = requests.Session()
-    auth_token = "your_auth_token_here"
-    rogue_instance = Rogue(session=session, auth_token=auth_token, clientSessionId="your_session_id_here")
+    authToken = "yourToken"
+    rogueInstance = Rogue(session=session, auth_token=auth_token, clientSessionId="your_session_id_here")
 
     # Fetch trainer data
-    trainer_data = rogue_instance.get_trainer_data()
+    gameData = rogueInstance.f_getGameData()
 
     # Update gamesave slot
-    rogue_instance.update_gamesave_slot(slot=1, data={"key": "value"})
+    rogueInstance.fh(slot=1, data={"key": "value"})
 
 Output Example:
     - Successful fetching of trainer data.
@@ -85,7 +85,7 @@ from modules.handler import dec_handleOperationExceptions, OperationError, Opera
 from modules.handler import dec_handleHTTPExceptions, HTTPEmptyResponse  # noqa: F401
 from modules.handler import fh_getIntegerInput, fh_getCompleterInput, fh_getChoiceInput
 from modules import fh_handleErrorResponse, HeaderGenerator, config
-from utilities import EnumLoader, cFormatter, Color, Limiter, eggLogic, fh_appendMessageBuffer
+from utilities import EnumLoader, cFormatter, Color, Limiter, eggLogic, fh_appendMessageBuffer, fh_redundantMesage
 from utilities import Generator
 generator = Generator()
 generator.generate()
@@ -117,14 +117,14 @@ class Rogue:
     UPDATE_ALL_URL = 'https://api.pokerogue.net/savedata/updateall'
     LOGOUT_URL = 'https://api.pokerogue.net/account/logout'
 
-    def __init__(self, session: requests.Session, auth_token: str, clientSessionId: str = None, 
+    def __init__(self, session: requests.Session, authToken: str, clientSessionId: str = None, 
                  driver: dict = None, useScripts: Optional[bool] = None, editOffline: bool=False) -> None:
         """
         Initializes the Rogue class instance.
 
         :args:
             session (requests.Session): The requests session object for making HTTP requests.
-            auth_token (str): Authentication token for accessing the PokeRogue API.
+            authToken (str): Authentication token for accessing the PokeRogue API.
             clientSessionId (str, optional): Client session ID for API authentication.
             driver (dict, optional): Selenium WebDriver dictionary object (default: None).
             useScripts (bool, optional): Flag indicating whether to use custom scripts (default: None).
@@ -134,8 +134,8 @@ class Rogue:
 
         Usage Example:
             session = requests.Session()
-            auth_token = "your_auth_token_here"
-            rogue_instance = Rogue(session=session, auth_token=auth_token, clientSessionId="your_session_id_here")
+            authToken = "your_auth_token_here"
+            rogueInstance = Rogue(session=session, authToken=auth_token, clientSessionId="sessionID")
 
         Output Example:
             None
@@ -145,7 +145,7 @@ class Rogue:
         """
         self.slot = None
         self.session = session
-        self.authToken = auth_token
+        self.authToken = authToken
         self.clientSessionId = clientSessionId
         self.headers = self.__fh_setupHeaders()
         self.__MAX_BIG_INT = (2 ** 53) - 1
@@ -294,6 +294,7 @@ class Rogue:
 
         """     
         while True:
+            # It's handled by our decorator but somehow we specifically need to except a ValueError here for our input
             try:
                 slot = int(fh_getIntegerInput('Enter Slot', 1, 5, zeroCancel=False, softCancel=False, allowSkip=False))
 
@@ -329,6 +330,7 @@ class Rogue:
 
 
     # TODO IMPORTANT: Simplify
+    # TODO wrap in exception handler
     @limiter.lockout
     def f_getGameData(self) -> dict:
         """
@@ -378,7 +380,7 @@ class Rogue:
                 else:
                     cFormatter.print(Color.WARNING, 'The request appeared to be empty.')
             except Exception as e:
-                cFormatter.print(Color.CRITICAL, f'Error in function get_trainer_data(): {e}', isLogging=True)
+                cFormatter.print(Color.CRITICAL, f'Error in function f_getGameData(): {e}', isLogging=True)
         else:
             try:
                 response = self.session.get(f'{self.TRAINER_DATA_URL}{self.clientSessionId}', headers=self.headers, verify=config.useCaCert)
@@ -396,6 +398,7 @@ class Rogue:
                 cFormatter.print(Color.DEBUG, f'Error fetching trainer data. Please restart the tool. \n {e}', isLogging=True)
 
     # TODO IMPORTNAT: Simplify
+    # TODO wrap in exception handler
     def f_getSlotData(self, slot: int = 1) -> Optional[Dict[str, Any]]:
         """
         Fetch gamesave data from the API for a specified slot.
@@ -1208,12 +1211,7 @@ class Rogue:
         while True:
             selectedSpecies = currentParty[selectedPartySlot] # raw data
             selectedSpeciesData = selectedSpecies["data_ref"] # updated data
-            # Since we use that multiple times
-            def __fh_redundantMesage(message):
-                changedItems.append(message)
-                cFormatter.print(Color.INFO, f'{selectedSpecies["name"]}: {message}')
-                fh_appendMessageBuffer(Color.INFO, f'{selectedSpecies["name"]}: {message}')
-                
+            #{selectedSpecies["name"]}
             choices = {
                 'changeSpecies': f'{Fore.YELLOW}Change mon{Style.RESET_ALL}',
                 'changeShiny': f'{Fore.YELLOW}Set it shiny{Style.RESET_ALL} | Current: {selectedSpecies["variant"]}',
@@ -1284,7 +1282,7 @@ class Rogue:
 
                     changed = True
                     # Correctly access the name attribute
-                    __fh_redundantMesage(f'{message}')
+                    fh_redundantMesage(changedItems, message, selectedSpecies["name"])
 
                 # Change Shiny Status
                 elif action == 'changeShiny':
@@ -1297,7 +1295,7 @@ class Rogue:
                     changed = True
 
                     message = f'Changed Shiny from {selectedSpecies["variant"]} to Shiny {pokeShinyType}.'
-                    __fh_redundantMesage(message)
+                    fh_redundantMesage(changedItems, message, selectedSpecies["name"])
 
                 # Change Level
                 elif action == 'changeLevel':
@@ -1309,7 +1307,7 @@ class Rogue:
                     changed = True
 
                     message = f'Changed Level from {selectedSpecies["level"]} to {pokeLevel}.'
-                    __fh_redundantMesage(message)
+                    fh_redundantMesage(changedItems, message, selectedSpecies["name"])
 
                 # Change Luck
                 elif action == 'changeLuck':
@@ -1321,7 +1319,7 @@ class Rogue:
                     changed = True
 
                     message = f'Changed Luck from {selectedSpecies["luck"]} to {pokeLuck}.'
-                    __fh_redundantMesage(message)
+                    fh_redundantMesage(changedItems, message, selectedSpecies["name"])
 
                 # Change IVs
                 elif action == 'changeIV':
@@ -1339,7 +1337,7 @@ class Rogue:
                     changed = True
 
                     message = f'Changed {selectedSpecies["ivs"]} IVs to {ivs}.'
-                    __fh_redundantMesage(message)
+                    fh_redundantMesage(changedItems, message, selectedSpecies["name"])
 
                 # Change moves
                 elif action == 'changeMoves':
@@ -1366,7 +1364,7 @@ class Rogue:
                     changed = True
 
                     message = f'Edited {selectedSpecies["moves"][selectedMoveIndex]} in Slot({selectedMoveIndex+1}) to {moveName}'
-                    __fh_redundantMesage(message)
+                    fh_redundantMesage(changedItems, message, selectedSpecies["name"])
 
                 # Change Nature
                 elif action == 'changeNature':
@@ -1384,7 +1382,7 @@ class Rogue:
                     changed = True
 
                     message = f'Nature changed from {selectedSpecies["nature"]} to {natureSlot.name}.'
-                    __fh_redundantMesage(message)
+                    fh_redundantMesage(changedItems, message, selectedSpecies["name"])
 
                 # Change HP
                 elif action == 'changeHP':
@@ -1396,7 +1394,7 @@ class Rogue:
                     changed = True
 
                     message = f'Changed HP from {selectedSpecies["hp"]} to {pokeHP}.'
-                    __fh_redundantMesage(message)
+                    fh_redundantMesage(changedItems, message, selectedSpecies["name"])
 
                 elif action == 'changeFusion':
                     header = cFormatter.fh_centerText(' Fuse with another mon ', length=55, fillChar='-')
@@ -1451,7 +1449,7 @@ class Rogue:
                     changed = True
 
                     # Correctly access the name attribute
-                    __fh_redundantMesage(f'{message}')
+                    fh_redundantMesage(changedItems, message, selectedSpecies["name"])
 
                 elif action == 'changePassive':
                     if selectedSpecies.get("id") in noPassives:
@@ -1466,7 +1464,7 @@ class Rogue:
                             message = 'Activated passive.'
 
                         changed = True
-                        __fh_redundantMesage(message)
+                        fh_redundantMesage(changedItems, message, selectedSpecies["name"])
 
                 # Refresh the current party data after making changes
                 currentParty = dataParser.data_iterateParty(slotData, self.speciesNameByIDHelper, self.moveNamesByIDHelper, self.natureNamesByIDHelper)
@@ -2436,3 +2434,4 @@ class Rogue:
             self.__fh_writeJSONData(slotData, f'slot_{self.slot}.json', showSuccess=False)
             cFormatter.print(Color.INFO, 'Changes saved. Easter Egg completed.')
             fh_appendMessageBuffer(Color.INFO, 'Removed enemy modifiers.')
+
