@@ -73,7 +73,7 @@ if not os.path.exists(cacertPath):
         cacertPath = False
 
 useCaCert = False if debug else cacertPath
-version: str = 'v0.4.3'
+version: str = 'v0.4.4'
 title: str = f'<(^.^(< pyRogue {version} >)^.^)>'
 owner: str = 'rogueEdit'
 repo: str = 'onlineRogueEditor'
