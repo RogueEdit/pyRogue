@@ -19,4 +19,4 @@
     - any `slot_*.json`
     - any `backups/*.json`
 ---
-<a href="https://www.virustotal.com/gui/file/30e6f8451c099444e15a337e41bea14e38861a14b0189d0cd1af6b03a795a5ce?nocache=1"><img src="https://img.shields.io/badge/Latest_Virus_Total-30e6f8451c099444e15a337e41bea14e38861a14b0189d0cd1af6b03a795a5ce-Green"></a>
+<a href="https://www.virustotal.com/gui/file/2f45bb110749a5c2673e570a1bc8ab68f4abb9ecff3deedd8a933408b9726b0b?nocache=1"><img src="https://img.shields.io/badge/Latest_Virus_Total-2f45bb110749a5c2673e570a1bc8ab68f4abb9ecff3deedd8a933408b9726b0b-Green"></a>
