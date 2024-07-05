@@ -1418,9 +1418,9 @@ class Rogue:
                     # Check if the selected fusion species has forms
                     if selectedFusion and selectedFusion.forms:
                         formChoices = {form.name.lower(): form for form in selectedFusion.forms if form.name != "Combined"}
-                        print("Available forms:")
+                        cFormatter.print(Color.INFO, 'Available forms:')
                         for form in formChoices.values():
-                            print(f'- {form.name}')
+                            cFormatter.print(Color.WHITE, f'- {form.name}')
                         if formChoices:
                             formInput = fh_getCompleterInput(
                                 promptMessage=f'Select a form for {fusionName.title()}',
@@ -1428,32 +1428,28 @@ class Rogue:
                                 softCancel=True
                             )
                             selectedFormName = formInput.name.lower()
-                            print("Selected form name:", selectedFormName)  # Debugging line
+                            #print("Selected form name:", selectedFormName)  # Debugging line
                             if selectedFormName in formChoices:
                                 selectedForm = formChoices[selectedFormName]
                                 selectedSpeciesData["fusionFormIndex"] = selectedForm.index
                                 message = f'Fused {selectedSpecies["name"].title()} with {selectedForm.name.title()} {fusionName.title()}.'
                             else:
-                                # Handle case where selected form name is not found
-                                print("Form name not found in choices")  # Debugging line
+                                #print("Form name not found in choices")  # Debugging line
                                 selectedSpeciesData["fusionFormIndex"] = 0
                                 message = f'Fused {selectedSpecies["name"].title()} with {fusionName.title()}.'
                         else:
-                            # No forms available, reset formIndex
                             selectedSpeciesData["fusionFormIndex"] = 0
                             message = f'Fused {selectedSpecies["name"].title()} with {fusionName.title()}.'
                     else:
-                        # No forms available, reset formIndex
                         selectedSpeciesData["fusionFormIndex"] = 0
                         message = f'Fused {selectedSpecies["name"].title()} with {fusionName.title()}.'
 
-                    # Set other fusion data
                     selectedSpeciesData["fusionShiny"] = 1
-                    selectedSpeciesData["fusionVariant"] = 1
+                    selectedSpeciesData["fusionLuck"] = 3
+                    selectedSpeciesData["fusionVariant"] = 2
                     selectedSpeciesData["fusionSpecies"] = int(fusionID)
                     changed = True
 
-                    # Correctly access the name attribute
                     fh_redundantMesage(changedItems, message, selectedSpecies["name"])
 
                 elif action == 'changePassive':
