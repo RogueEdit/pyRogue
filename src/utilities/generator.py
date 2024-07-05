@@ -3007,7 +3007,7 @@ class hasFormsEnum(Enum):
         '208': {'Steelix': ['Normal', 'Mega'], 'isNormalForm': False},
         '212': {'Scizor': ['Normal', 'Mega'], 'isNormalForm': False},
         '214': {'Heracross': ['Normal', 'Mega'], 'isNormalForm': False},
-        '229': {'houndoom': ['Normal', 'Mega'], 'isNormalForm': False},
+        '229': {'Houndoom': ['Normal', 'Mega'], 'isNormalForm': False},
         '248': {'Tyranitar': ['Normal', 'Mega'], 'isNormalForm': False},
         '254': {'Sceptile': ['Normal', 'Mega'], 'isNormalForm': False},
         '257': {'Blaziken': ['Normal', 'Mega'], 'isNormalForm': False},
@@ -3052,11 +3052,11 @@ class hasFormsEnum(Enum):
         '531': {'Audino': ['Normal', 'Mega'], 'isNormalForm': False},
         '550': {'Basculin': ['Red-Striped', 'Blue-Striped', 'White-Striped'], 'isNormalForm': True},
         '555': {'Darmanitan': ['Standart', 'Zen'], 'isNormalForm': False},
-        '569': {'Ggarbodor': ['Normal', 'G-Max'], 'isNormalForm': False},
+        '569': {'Garbodor': ['Normal', 'G-Max'], 'isNormalForm': False},
         '585': {'Deerling': ['Spring', 'Summer', 'Autumn', 'Winter'], 'isNormalForm': True},
         '586': {'Sawsbuck': ['Spring', 'Summer', 'Autumn', 'Winter'], 'isNormalForm': False},
         '641': {'Tornadus': ['Incarnate', 'Therian'], 'isNormalForm': False},
-        '642': {'Thundrus': ['Incarnate', 'Therian'], 'isNormalForm': False},
+        '642': {'Thundurus': ['Incarnate', 'Therian'], 'isNormalForm': False},
         '645': {'Landorus': ['Incarnate', 'Therian'], 'isNormalForm': False},
         '646': {'Kyurem': ['Normal', 'Black', 'White'], 'isNormalForm': False},
         '647': {'Keldeo': ['Ordinary', 'Resolute'], 'isNormalForm': False},
@@ -3101,12 +3101,12 @@ class hasFormsEnum(Enum):
         '842': {'Appletun': ['Normal', 'G-Max'], 'isNormalForm': False},
         '844': {'Sandaconda': ['Normal', 'G-Max'], 'isNormalForm': False},
         '845': {'Cramorant': ['Normal', 'Gulping', 'Gorging'], 'isNormalForm': False},
-        '849': {'toxtricity': ['Amped', 'Low-key', 'G-Max'], 'isNormalForm': False},
+        '849': {'Toxtricity': ['Amped', 'Low-key', 'G-Max'], 'isNormalForm': False},
         '851': {'Centiskorch': ['Normal', 'G-Max'], 'isNormalForm': False},
         '854': {'Sinistea': ['Phony', 'Antique'], 'isNormalForm': False},
         '855': {'Polteageist': ['Phony', 'Antique'], 'isNormalForm': False},
         '858': {'Hatterene': ['Normal', 'G-Max'], 'isNormalForm': False},
-        '861': {'grimmsnarl': ['Normal', 'G-Max'], 'isNormalForm': False},
+        '861': {'Grimmsnarl': ['Normal', 'G-Max'], 'isNormalForm': False},
         '869': {'Alcremie': ['Vanilla', 'Ruby', 'Matcha', 'Mint', 'Lemon', 'Salted', 'Ruby Swirl', 'Caramel Swirl', 'Rainbow Swirl', 'G-Max'], 'isNormalForm': False},
         '875': {'Eiscue': ['Ice', 'No Ice'], 'isNormalForm': False},
         '876': {'Indeedee': ['Male', 'Female'], 'isNormalForm': False},
@@ -3124,7 +3124,7 @@ class hasFormsEnum(Enum):
         '916': {'Oinkologne': ['Male', 'Female'], 'isNormalForm': False},
         '925': {'Maushold': ['Family of Four', 'Family of Three'], 'isNormalForm': False},
         '931': {'Squawkabilly': ['Green', 'Blue', 'Yellow', 'White'], 'isNormalForm': True},
-        '946': {'Palafin': ['Zero', 'Hero'], 'isNormalForm': False},
+        '964': {'Palafin': ['Zero', 'Hero'], 'isNormalForm': False},
         '978': {'Tatsugiri': ['Curly', 'Droopy', 'Stretchy'], 'isNormalForm': True},
         '982': {'Dudunsparce': ['Two Segment', 'Three Segment'], 'isNormalForm': False},
         '999': {'Gimmighoul': ['Chest', 'Roaming'], 'isNormalForm': True},
@@ -3167,13 +3167,13 @@ class Generator:
 
         self.maxId: int = max(self.natureIDs)  # Calculate max ID
 
-    def __writeJSON(self, filePath: str, json_data: str) -> None:
+    def __writeJSON(self, filePath: str, jsonData: str) -> None:
         """
-        Write JSON data to a file.
+        Write JSON data to a file, merging with existing data if the file already exists.
 
         Args:
             filePath (str): The path to the file where JSON data will be written.
-            json_data (str): The JSON data to write to the file.
+            jsonData (str): The JSON data to write to the file.
 
         Example:
             generator = Generator()
@@ -3181,12 +3181,34 @@ class Generator:
 
         Modules:
             - os: Provides a way to interact with the operating system, particularly for file and directory operations.
-            - utilities: Custom module for colored printing and logging functionalities.
+            - json: Provides functions for parsing and writing JSON data.
         """
-        if not os.path.exists(filePath):
+        existingFile = os.path.exists(filePath)
+        
+        # Load existing data if the file exists
+        if existingFile:
+            with open(filePath, 'r') as file:
+                existingData = json.load(file)
+        else:
+            existingData = {}
+
+        # Load new data from the provided jsonData string
+        newData = json.loads(jsonData)
+
+        # Merge the existing data with the new data
+        mergedData = {**existingData, **newData}
+
+        # Check if there are any changes to be made
+        if existingData != mergedData:
+            # Write the merged data back to the file
             with open(filePath, 'w') as file:
-                file.write(json_data)
-            cFormatter.print(Color.GREEN, f'Generated {os.path.basename(filePath)}')
+                json.dump(mergedData, file, indent=4)
+
+            # Print success message
+            if existingFile:
+                cFormatter.print(Color.GREEN, f'Updated {os.path.basename(filePath)}')
+            else:
+                cFormatter.print(Color.GREEN, f'Generated {os.path.basename(filePath)}')
 
     def __natureToJSON(self) -> str:
         """

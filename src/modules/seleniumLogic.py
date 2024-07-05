@@ -33,10 +33,10 @@ Workflow:
 3. Handle browser performance logs to extract necessary data for authentication.
 
 Usage Example:
->>> seleniumLogic = SeleniumLogic(username="yourUsername", password="yourPassword", timeout=120)
+>>> seleniumLogic = SeleniumLogic(username='yourUsername', password='yourPassword', timeout=120)
 >>> sessionId, token, driver = seleniumLogic.logic()
->>> print(f"Session ID: {sessionId}")
->>> print(f"Token: {token}")
+>>> print(f'Session ID: {sessionId}')
+>>> print(f'Token: {token}')
 >>> # driver can be further used for additional operations if needed
 
 Expected Output Example:

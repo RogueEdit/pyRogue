@@ -360,11 +360,11 @@ def data_iterateParty(slotData, speciesNameByIDHelper, moveNamesByIDHelper, natu
         # Modify names based on form index
         if speciesFormIndex > 0:
             speciesFormName = speciesDict[int(speciesDexID)].forms[speciesFormIndex].name
-            speciesDexName = f"{speciesFormName} {speciesDexName}"
+            speciesDexName = f'{speciesFormName} {speciesDexName}'
 
         if speciesFusionFormIndex > 0 and speciesFusionID != '0':
             speciesFusionFormName = speciesDict[int(speciesFusionID)].forms[speciesFusionFormIndex].name
-            speciesFusionName = f"{speciesFusionFormName} {speciesFusionName}"
+            speciesFusionName = f'{speciesFusionFormName} {speciesFusionName}'
 
         # Fusions
         speciesFusionLuck = object.get('fusionLuck', None)
