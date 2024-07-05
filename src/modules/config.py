@@ -73,12 +73,12 @@ if not os.path.exists(cacertPath):
         cacertPath = False
 
 useCaCert = False if debug else cacertPath
-version: str = 'v0.4.4h'
+version: str = 'v0.4.5'
 title: str = f'<(^.^(< pyRogue {version} >)^.^)>'
 owner: str = 'rogueEdit'
 repo: str = 'onlineRogueEditor'
 repoURL: str = f'https://github.com/{owner}/{repo}/'
-releaseDate: str = '05.07.2024 10:00' # releaed 6:50 roughly but setting ahead in case some stuff pops up
+releaseDate: str = '05.07.2024 23:59' # releaed 22:20 roughly but setting ahead in case some stuff pops up
 
 
 def f_checkForUpdates(requests: requests, datetime: datetime, timedelta: timedelta, Style: object) -> None:

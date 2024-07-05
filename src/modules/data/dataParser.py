@@ -366,12 +366,12 @@ def data_iterateParty(slotData, speciesNameByIDHelper, moveNamesByIDHelper, natu
             speciesFusionFormName = speciesDict[int(speciesFusionID)].forms[speciesFusionFormIndex].name
             speciesFusionName = f'{speciesFusionFormName} {speciesFusionName}'
 
-        # Fusions
+        # General fusion info
         speciesFusionLuck = object.get('fusionLuck', None)
         speciesFusionisShiny = object.get('fusionShiny', None)
         speciesFusionVariant = object.get('fusionVariant', None)
 
-        # General info
+        # General species info
         speciesIsShiny = object.get('shiny', False)
         speciesShinyVariant = object.get('variant', 0)
         speciesLuck = object.get('luck', 1)
@@ -387,18 +387,18 @@ def data_iterateParty(slotData, speciesNameByIDHelper, moveNamesByIDHelper, natu
         # Create a dictionary to hold all relevant information for the current Pokémon
         speciesInfo = {
             'id': speciesDexID,
-            'name': speciesDexName.title(),
-            'formIndex': speciesFormIndex,
             'fusionID': speciesFusionID,
-            'fusion': speciesFusionName.title(),
+            'formIndex': speciesFormIndex,
             'fusionFormIndex': speciesFusionFormIndex,
+            'name': speciesDexName.title(),
+
+            'fusion': speciesFusionName.title(),
             'fusionLuck': speciesFusionLuck,
             'fusionIsShiny': speciesFusionisShiny,
             'fusionVariant': speciesFusionVariant,
-            'fusionStatus': '' if speciesFusionID == '0' else f'Fused with {Fore.YELLOW}{speciesFusionName.title()}{Style.RESET_ALL}',
+
             'shiny': speciesIsShiny,
             'variant': speciesShinyVariant,
-            'shinyStatus': f'Shiny {speciesShinyVariant}' if speciesIsShiny else 'Not Shiny',
             'luck': speciesLuck,
             'level': speciesLevel,
             'moves': speciesMoves,
@@ -407,6 +407,10 @@ def data_iterateParty(slotData, speciesNameByIDHelper, moveNamesByIDHelper, natu
             'ivs': speciesIVs,
             'hp': speciesHP,
             'passive': speciesPassive,
+
+            'fusionStatus': '' if speciesFusionID == '0' else f'Fused with {Fore.YELLOW}{speciesFusionName.title()}{Style.RESET_ALL}',
+            'shinyStatus': f'Shiny {speciesShinyVariant}' if speciesIsShiny else 'Not Shiny',
+            'luckCount': speciesLuck if speciesFusionID == '0' else (speciesLuck+speciesFusionLuck),
             'data_ref': object
         }
 

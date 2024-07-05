@@ -62,7 +62,7 @@ class Modifier:
 class ModifierType(Enum):
     #Stat boosting Items
     SILK_SCARF = Modifier(args=[None, 0, 20], className='AttackTypeBoosterModifier', player=True, stackCount=1, typeId='ATTACK_TYPE_BOOSTER', typePregenArgs=[0], description='Boosts NORMAL types.', customName='Silk Scarf', customType='StatBooster', maxStack='99')                           
-    BLACK_BELT = Modifier(args=[None, 1, 20], className='AttackTypeBoosterModifier', player=True, stackCount=1, typeId='ATTACK_TYPE_BOOSTER', typePregenArgs=[1], description='Boosts FIGHT types.', customName='Black Belt', customType='StatBooster', maxStack='99', shortDescription='Test')
+    BLACK_BELT = Modifier(args=[None, 1, 20], className='AttackTypeBoosterModifier', player=True, stackCount=1, typeId='ATTACK_TYPE_BOOSTER', typePregenArgs=[1], description='Boosts FIGHT types.', customName='Black Belt', customType='StatBooster', maxStack='99')
     SHARP_BEAK = Modifier(args=[None, 2, 20], className='AttackTypeBoosterModifier', player=True, stackCount=1, typeId='ATTACK_TYPE_BOOSTER', typePregenArgs=[2], description='Boosts FLYING types.', customName='Sharp Beak', customType='StatBooster', maxStack='99')
     POISON_BARB = Modifier(args=[None, 3, 20], className='AttackTypeBoosterModifier', player=True, stackCount=1, typeId='ATTACK_TYPE_BOOSTER', typePregenArgs=[3], description='Boosts POISON types.', customName='Poison Barb', customType='StatBooster', maxStack='99')
     SOFT_SAND = Modifier(args=[None, 4, 20], className='AttackTypeBoosterModifier', player=True, stackCount=1, typeId='ATTACK_TYPE_BOOSTER', typePregenArgs=[4], description='Boosts GROUND types.', customName='Soft Sand', customType='StatBooster', maxStack='99')
@@ -142,6 +142,15 @@ class ModifierType(Enum):
     GOLDEN_EGG = Modifier(args=[None, 100], className='PokemonExpBoosterModifier', player=True, stackCount=1, typeId='GOLDEN_EGG', shortDescription='+100% EXP Gain', description='Increases the holder\'s gain of EXP. Points by 100%. ', customName='Golden Pokbeall', customType='OtherHoldable', maxStack='99')
     # FORM_CHANGE_ITEM0 = Modifier(args=[None, 0, True], className='PokemonFormChangeItemModifier', player=True, stackCount=1, typeId='FORM_CHANGE_ITEM', typePregenArgs=[0], description='Causes certain Pokémon to change form.', customName='FormChangeItem', customType='OtherHoldable', maxStack='1')
     # the form change exists from 0-70... 
+    ENEMY_ATTACK_BURN_CHANCE = Modifier(args=[6, 5], className='EnemyAttackStatusEffectChanceModifier', player=False, stackCount=1, typeId='ENEMY_ATTACK_BURN_CHANCE', shortDescription='On-hit 5% burn', description='Adds a 5% chance to inflict burn with attack moves.', customName='Token: Burn', customType='Token', maxStack='10')
+    ENEMY_ATTACK_PARALYZE_CHANCE = Modifier(args=[3, 2.5], className='EnemyAttackStatusEffectChanceModifier', player=False, stackCount=1, typeId='ENEMY_ATTACK_PARALYZE_CHANCE', shortDescription='On-hit 2.5% paralyze', description='Adds a 2.5% chance to inflict paralysis with attack moves.', customName='Token: Paralzye', customType='Token', maxStack='10')
+    ENEMY_ATTACK_POISON_CHANCE = Modifier(args=[1, 5], className='EnemyAttackStatusEffectChanceModifier', player=False, stackCount=1, typeId='ENEMY_ATTACK_POISON_CHANCE', shortDescription='On-hit 5% poison', description='Adds a 5% chance to inflict poisoning with attack moves.', customName='Token: Poison', customType='Token', maxStack='10')
+    ENEMY_DAMAGE_BOOSTER = Modifier(args=[5.000000000000004], className='EnemyDamageBoosterModifier', player=False, stackCount=1, typeId='ENEMY_DAMAGE_BOOSTER', description='Increases damage by 5%', customName='Token: Damage Increase', customType='Token', maxStack='50')
+    ENEMY_DAMAGE_REDUCTION = Modifier(args=[2.500000000000002], className='EnemyDamageReducerModifier', player=False, stackCount=1, typeId='ENEMY_DAMAGE_REDUCTION', description='Reduces incoming damage by 2.5%', customName='Token: Damage Take Reduce', customType='Token', maxStack='50')
+    ENEMY_ENDURE_CHANCE = Modifier(args=[2], className='EnemyEndureChanceModifier', player=False, stackCount=1, typeId='ENEMY_ENDURE_CHANCE', description='Adds a 2% chance of enduring a hit.', customName='Token: Endure', customType='Token', maxStack='10')
+    ENEMY_FUSED_CHANCE = Modifier(args=[1], className='EnemyFusionChanceModifier', player=False, stackCount=1, typeId='ENEMY_FUSED_CHANCE', shortDescription='1% more chance on wild fusions', description='Adds a 1% chance that a wild species will be a fusion.', customName='Token: Wild Fusions', customType='Token', maxStack='10')
+    ENEMY_HEAL = Modifier(args=[2], className='EnemyTurnHealModifier', player=False, stackCount=1, typeId='ENEMY_HEAL', shortDescription='', description='Heals 2% of max HP every turn.', customName='Token: Heal', customType='Token', maxStack='5')
+    ENEMY_STATUS_EFFECT_HEAL_CHANCE = Modifier(args=[2.5], className='EnemyStatusEffectHealChanceModifier', player=False, stackCount=1, typeId='ENEMY_STATUS_EFFECT_HEAL_CHANCE', shortDescription='2.5% per round to drop any negatives', description='Adds a 2.5% chance every turn to heal a status condition.', customName='Token: Heal status', customType='Token', maxStack='10')
     # Dangerous Items
     IV_SCANNER = Modifier(args=None, className='IvScannerModifier', player=True, stackCount=1, typeId='IV_SCANNER', shortDescription='Scan enemy IVs', description='Allows scanning the IVs of wild Pokémon. 2 IVs are revealed per stack. The best IVs are shown first.', customName='IV Scanner', customType='Danger', maxStack='1')
     TOXIC_ORB = Modifier(args=[None], className='TurnStatusEffectModifier', player=True, stackCount=1, typeId='TOXIC_ORB', shortDescription='Poison your pokemon', description='Badly poisons its holder at the end of the turn if they do not have a status condition already', customName='Toxic Orb', customType='Danger', maxStack='1')
@@ -181,6 +190,7 @@ class ModifierEditor:
             'Berry',
             'PassiveBoost',
             'OtherHoldable',
+            'Token',
             'Danger'  # Assuming Orb as 'Danger' type based on your examples
         ]
 
