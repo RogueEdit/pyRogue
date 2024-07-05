@@ -9,7 +9,7 @@
 
 import json
 from enum import Enum
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, asdict
 from typing import List, Optional, Any, Dict, Union
 from modules.config import dataDirectory
 from colorama import Fore, Style
@@ -55,9 +55,15 @@ class Modifier:
     typeId: Optional[str]
     typePregenArgs: Optional[List[Optional[int]]]
 
+    def to_dict(self):
+        return asdict(self)
+
 @dataclass
 class ModifierEnemyData:
     modifiers: List[Optional[Modifier]]
+
+    def to_dict(self):
+        return asdict(self)
 
 @dataclass
 class ModifierPlayerData:
@@ -70,6 +76,9 @@ class Move:
     ppUsed: Optional[int] = None
     virtual: Optional[bool] = None
 
+    def to_dict(self):
+        return asdict(self)
+
 @dataclass
 class PartySummonData:
     abilitiesApplied: Optional[Any] = None
@@ -81,6 +90,9 @@ class PartySummonData:
     moveQueue: Optional[Any] = None
     tags: Optional[Any] = None
     types: Optional[Any] = None
+
+    def to_dict(self):
+        return asdict(self)
 
 @dataclass
 class PartyDetails:
@@ -117,15 +129,24 @@ class PartyDetails:
     summonData: PartySummonData = field(default_factory=PartySummonData)
     variant: Optional[int] = None
 
+    def to_dict(self):
+        return asdict(self)
+
 @dataclass
 class PartyPlayer:
     partyInfo: Optional[PartyDetails] = field(default_factory=PartyDetails)
     partyData: Optional[PartySummonData] = field(default_factory=PartySummonData)
 
+    def to_dict(self):
+        return asdict(self)
+
 @dataclass
 class PartyEnemy:
     partyInfo: Optional[PartyDetails] = field(default_factory=PartyDetails)
     partyData: Optional[PartySummonData] = field(default_factory=PartySummonData)
+
+    def to_dict(self):
+        return asdict(self)
 
 @dataclass
 class SpeciesDexData:
@@ -136,6 +157,9 @@ class SpeciesDexData:
     caughtCount: int = 0
     hatchedCount: int = 0
     ivs: List[int] = field(default_factory=lambda: [0, 0, 0, 0, 0, 0])
+
+    def to_dict(self):
+        return asdict(self)
 
 @dataclass
 class SpeciesStarterData:
@@ -148,6 +172,9 @@ class SpeciesStarterData:
     valueReduction: Optional[int] = 0
     classicWinCount: Optional[int] = 0
 
+    def to_dict(self):
+        return asdict(self)
+
 @dataclass
 class SpeciesForm:
     name: str
@@ -156,6 +183,9 @@ class SpeciesForm:
     variant3: Optional[int] = None
     nonShiny: Optional[int] = None
     index: int = 0
+
+    def to_dict(self):
+        return asdict(self)
 
 @dataclass
 class Species:
@@ -178,6 +208,9 @@ class Species:
             return getattr(form, attribute, None)
         else:
             return None
+        
+    def to_dict(self):
+        return asdict(self)
 
 def computeVariant(speciesData, variantFlag, defaultFlag, variantAdjustment):
     caughtAttr = {}
@@ -409,7 +442,7 @@ def data_iterateParty(slotData, speciesNameByIDHelper, moveNamesByIDHelper, natu
             'passive': speciesPassive,
 
             'fusionStatus': '' if speciesFusionID == '0' else f'Fused with {Fore.YELLOW}{speciesFusionName.title()}{Style.RESET_ALL}',
-            'shinyStatus': f'Shiny {speciesShinyVariant}' if speciesIsShiny else 'Not Shiny',
+            'shinyStatus': f'Shiny {speciesShinyVariant+1}' if speciesIsShiny else 'Not Shiny',
             'luckCount': speciesLuck if speciesFusionID == '0' else (speciesLuck+speciesFusionLuck),
             'data_ref': object
         }

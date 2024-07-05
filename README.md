@@ -86,9 +86,13 @@ Attention: When ever this tool detects you are trying to manipulate a daily seed
 ---
 - Unlock all starters | same as above but for all pokemons
   - This will unlock every single Pokemon depending on your choosings like above
+
+  ![alt text](.github/previews/starter.png)
 ---
 - Modify the number of egg-tickets you have
   - This allows you to set the amount of egg gacha tickets you have of every tier
+
+  ![alt text](.github/previews/tickets.png)
 ---
 - Edit a pokemon in your party
   - Let's you edit g-max, fusions, moves, species, level, luck, fusion etc...
@@ -103,25 +107,40 @@ Attention: When ever this tool detects you are trying to manipulate a daily seed
 ---
 - Unlock all game modes
   - Unlocks: classic, endless, spliced endless
+
 - Add one or unlock all
   - Vouchers
+
+  ![Preview Image](.github/previews/voucher.png)
+
   - Achievements
 
-![Preview Image](.github/previews/editAchievementsMin.png)
+  ![Preview Image](.github/previews/achievements.png)
+
+  ![Preview Image](.github/previews/editAchievementsMin.png)
 
 ---
-- Edit candies on a pokemon
 - Edit amount of money
+  - ![alt text](.github/previews/money.png)
 - Edit pokeballs amount
+  - ![alt text](.github/previews/pokeballs.png)
 - Edit biome
+- Edit candies on a pokemon
 ---
 - Generate eggs
   - Depending on your liking, whatever rarity - gacha type and such
+
+  ![preview](.github/previews/eggsManaphy.png)
+
 - Set your eggs to hatch
 - Edit account stats
+  
+  ![preview](.github/previews/stats.png)
   - Randomize all
-  - Set specific ones
   - Set all in a loop
+  - Set specific ones
+
+  ![preview](.github/previews/editStats.png)
 ---
 - Unlock everything
   - Just calls mulitiple features from above
@@ -135,6 +154,7 @@ Attention: When ever this tool detects you are trying to manipulate a daily seed
 - Display all Nature Slot IDs
 - Save data to server via open accesible API calls
 
+![alt text](.github/previews/fun1.png)
 
 
 ## Regarding Bans and Limited Accounts

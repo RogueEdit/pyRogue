@@ -1214,7 +1214,7 @@ class Rogue:
             #{selectedSpecies["name"]}
             choices = {
                 'changeSpecies': f'{Fore.YELLOW}Change mon{Style.RESET_ALL}',
-                'changeShiny': f'{Fore.YELLOW}Set it shiny{Style.RESET_ALL} | Current: {selectedSpecies["variant"]}',
+                'changeShiny': f'{Fore.YELLOW}Set it shiny{Style.RESET_ALL} | Current: {int(selectedSpecies["variant"])+1}',
                 'changeLuck': f'{Fore.YELLOW}Set Luck{Style.RESET_ALL} | Current: Luck {selectedSpecies["luckCount"]}',
                 'changeLevel': f'{Fore.YELLOW}Set Level{Style.RESET_ALL} | Current: Level {selectedSpecies["level"]}',
                 'changeHP': f'{Fore.YELLOW}Change HP{Style.RESET_ALL} | Curent: {selectedSpecies["hp"]}',
@@ -2377,58 +2377,54 @@ class Rogue:
         header = cFormatter.fh_centerText(' LB\'s Secrets ', 55, '-')
         cFormatter.print(Color.INFO, header)
 
-        choices = {
+        command = {
             'secretStarter': 'Set non avaiable starter forms',
             'enemyModifier': 'Remove enemy modifier'
         }
-        action = fh_getChoiceInput('Choose which action', choices, renderMenu=True, zeroCancel=True)
+        action = fh_getChoiceInput('Choose which action', command, renderMenu=True, zeroCancel=True)
 
         if action == 'secretStarter':
             header = cFormatter.fh_centerText(' Easter Egg ', 55, '-')
             cFormatter.print(Color.DEBUG, header)
             self.fh_completerInfo()
-
-            inputValue = fh_getCompleterInput(
-                promptMessage='Write either the ID or the Name of the Species',
-                choices={**{member.name.lower(): member for member in self.appData.starterNameByID}, 
-                        **{str(member.value): member for member in self.appData.starterNameByID}},
-                softCancel=True
-            )
-            dexId = inputValue.value
-            dexName = inputValue.name
-
-            if str(dexId) not in gameData["starterData"]:
-                cFormatter.print(Color.INFO, f'No Species with ID: {dexId}')
-                return
-
-            selectedSpeciesData = dataParser.speciesDict.get(int(dexId))
-            if selectedSpeciesData:
-                cFormatter.print(Color.INFO, f'Available forms for {dexName.title()}:')
-                availableForms = [form for form in selectedSpeciesData.forms if form.name != "Combined"]
-                for form in availableForms:
-                    cFormatter.print(Color.INFO, f'- {form.name}')
-
-                formInput = fh_getCompleterInput(
-                    promptMessage=f'Select a form for {dexName.title()}',
-                    choices={form.name.lower(): form for form in availableForms},
+            while True:
+                inputValue = fh_getCompleterInput(
+                    promptMessage='Write either the ID or the Name of the Species',
+                    choices={**{member.name.lower(): member for member in self.appData.speciesNameByID},
+                            **{str(member.value): member for member in self.appData.speciesNameByID}},
                     softCancel=True
                 )
-                selectedFormName = formInput.name.lower()
+                dexId = inputValue.value
+                dexName = inputValue.name
 
-                selectedForm = selectedSpeciesData.getFormAttribute(selectedFormName.title(), "variant3")  # Adjust the attribute as per your data structure
-                if selectedForm is not None:
-                    caughtAttr = selectedForm
-                    gameData["dexData"][str(dexId)]["caughtAttr"] = caughtAttr
-                else:
-                    cFormatter.print(Color.INFO, f'Form {selectedFormName} not found for {dexName.title()}.')
+                selectedId = dataParser.speciesDict.get(int(dexId))
 
-                self.__fh_writeJSONData(gameData, 'trainer.json', showSuccess=False)
-                fh_appendMessageBuffer(Color.INFO, f'Form {selectedFormName} not found for {dexName.title()}.')
-                cFormatter.print(Color.INFO, 'Changes saved. Easter Egg completed.')
+                if selectedId:
+                    # Check if the selected species has forms
+                    if selectedId.forms:
+                        formChoices = {form.name.lower(): form for form in selectedId.forms if form.name != "Combined"}
+                        cFormatter.print(Color.INFO, 'Available forms:')
+                        for form in formChoices.values():
+                            cFormatter.print(Color.WHITE, f'- {form.name}')
+                        if formChoices:
+                            formInput = fh_getCompleterInput(
+                                promptMessage=f'Select a form for {dexName.title()}',
+                                choices=formChoices,
+                                softCancel=True
+                            )
+                            selectedFormName = formInput.name.lower()
+                            if selectedFormName in formChoices:
+                                selectedForm = formChoices[selectedFormName]
+                                caughtAttr = selectedForm.variant3
+                                gameData["dexData"][str(dexId)]["caughtAttr"] = caughtAttr
+                                message = f'Changed Species to {dexName.title()} with form {selectedForm.name.title()}.'
+                        break
+                    else:
+                        cFormatter.print(Color.INFO, 'This species has no forms.')
 
-            else:
-                cFormatter.print(Color.INFO, f'No data found for {dexName.title()}.')
-
+            self.__fh_writeJSONData(gameData, 'trainer.json', showSuccess=False)
+            fh_appendMessageBuffer(Color.INFO, message)
+            cFormatter.print(Color.INFO, 'Changes saved. Easter Egg completed.')
 
         if action == 'enemyModifier':
             slotData["enemyModifiers"] = None
