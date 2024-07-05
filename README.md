@@ -8,6 +8,8 @@
 ![Preview Image](.github/previews/main.png)
 ![Preview Image](.github/previews/tool.png)
 
+[All Previews](PREVIEW.md)
+
 # List of content
 - [Important Foreword](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#important-foreword)
 - [FAQ](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#faq)
@@ -26,6 +28,8 @@ Attention: When ever this tool detects you are trying to manipulate a daily seed
 
 - We take no responsibility for your actions when using this tool.  Whenever you startup tho a backup is created and stand: 03.07.2024 - they are applicable no matter created when.
 
+- [Security Notice](TRANSPARENCY.md)
+
 ## FAQ
 
 - How do i revert my changes?
@@ -40,19 +44,25 @@ Attention: When ever this tool detects you are trying to manipulate a daily seed
   - We will not accept any money or any form of payment. If you want to help then only by contributing. We do it for education only, any critique welcome.
 
 ## How to run from code
+### Windows
 - Install python
 - Download the source code
 - Extract the source code
-- Open a terminal, navigate into your `[extracted_folder]/src/`
+- Open a terminal, navigate with it to `[extracted_folder]/src/`
 - Install all the requirements using python according to setup
   - `python3 -m pip install -r requirements.txt`
 - Now you should be able to run main.py
   - `python3 main.py`
-
+### Linux
+- Download the source code
+- Extract the source code
+- Open a terminal, navigate with it to `[extracted_folder]/src/`
+- `chmod +x main.py`
+- `./main.py`
 
 ## License
 
-- See license document and credit headers. 
+- See license document and credit headers. In compliance with PokeRogue's AGPL.
  
 ## Editor Features
 - Extensive logging for easy debug in a log file
