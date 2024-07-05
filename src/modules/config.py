@@ -78,7 +78,7 @@ title: str = f'<(^.^(< pyRogue {version} >)^.^)>'
 owner: str = 'rogueEdit'
 repo: str = 'onlineRogueEditor'
 repoURL: str = f'https://github.com/{owner}/{repo}/'
-releaseDate: str = '05.07.2024 23:59' # releaed 22:20 roughly but setting ahead in case some stuff pops up
+releaseDate: str = '06.07.2024 20:00' # releaed 00:40 roughly but setting ahead in case some stuff pops up
 
 
 def f_checkForUpdates(requests: requests, datetime: datetime, timedelta: timedelta, Style: object) -> None:
