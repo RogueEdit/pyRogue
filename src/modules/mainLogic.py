@@ -1959,7 +1959,7 @@ class Rogue:
 
         promptMessage = 'How many Poke-Dollars do you want? '
         choice = fh_getIntegerInput(promptMessage, 0, float('inf'), zeroCancel=True)
-        saveData["money"] = choice
+        saveData["money"] = int(choice)
         self.__fh_writeJSONData(saveData, f'slot_{self.slot}.json')
         raise OperationSuccessful(f'Written {choice} as money value to to local .json.')
 
