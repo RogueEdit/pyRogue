@@ -415,6 +415,7 @@ def data_iterateParty(slotData, speciesNameByIDHelper, moveNamesByIDHelper, natu
         speciesIVs = object.get('ivs', 1)
         speciesHP = object.get('hp', 1)
         speciesPassive = object.get('passive', False)
+        speciesPassiveStatus = object.get('passive', False) if speciesDict[int(speciesDexID)].hasPassive else 'Not avaiable'
 
 
         # Create a dictionary to hold all relevant information for the current Pokémon
@@ -440,6 +441,7 @@ def data_iterateParty(slotData, speciesNameByIDHelper, moveNamesByIDHelper, natu
             'ivs': speciesIVs,
             'hp': speciesHP,
             'passive': speciesPassive,
+            'passiveStatus': speciesPassiveStatus,
 
             'fusionStatus': '' if speciesFusionID == '0' else f'Fused with {Fore.YELLOW}{speciesFusionName.title()}{Style.RESET_ALL}',
             'shinyStatus': f'Shiny {speciesShinyVariant+1}' if speciesIsShiny else 'Not Shiny',

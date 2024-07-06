@@ -142,6 +142,28 @@ class ModifierType(Enum):
     GOLDEN_EGG = Modifier(args=[None, 100], className='PokemonExpBoosterModifier', player=True, stackCount=1, typeId='GOLDEN_EGG', shortDescription='+100% EXP Gain', description='Increases the holder\'s gain of EXP. Points by 100%. ', customName='Golden Pokbeall', customType='OtherHoldable', maxStack='99')
     # FORM_CHANGE_ITEM0 = Modifier(args=[None, 0, True], className='PokemonFormChangeItemModifier', player=True, stackCount=1, typeId='FORM_CHANGE_ITEM', typePregenArgs=[0], description='Causes certain Pokémon to change form.', customName='FormChangeItem', customType='OtherHoldable', maxStack='1')
     # the form change exists from 0-70... 
+    #Terashards
+    TERA_SHARDM1 = Modifier(args=[None, -1, 10], className='TerastallizeModifier', player=True, stackCount=1, typeId='TERA_SHARD', typePregenArgs=[-1], description='Unknown Terastalizes for 10 battles.', customName='Tera: "UNKNOWN"', customType='Tera', maxStack='99')
+    TERA_SHARD0 = Modifier(args=[None, 0, 10], className='TerastallizeModifier', player=True, stackCount=1, typeId='TERA_SHARD', typePregenArgs=[0], description='Normal Terastalizes for 10 battles.', customName='Tera: "NORMAL"', customType='Tera', maxStack='99')
+    TERA_SHARD1 = Modifier(args=[None, 1, 10], className='TerastallizeModifier', player=True, stackCount=1, typeId='TERA_SHARD', typePregenArgs=[1], description='Fighting Terastalizes for 10 battles.', customName='Tera: "FIGHTING"', customType='Tera', maxStack='99')
+    TERA_SHARD2 = Modifier(args=[None, 2, 10], className='TerastallizeModifier', player=True, stackCount=1, typeId='TERA_SHARD', typePregenArgs=[2], description='Flying Terastalizes for 10 battles.', customName='Tera: "FLYING"', customType='Tera', maxStack='99')
+    TERA_SHARD3 = Modifier(args=[None, 3, 10], className='TerastallizeModifier', player=True, stackCount=1, typeId='TERA_SHARD', typePregenArgs=[3], description='Poison Terastalizes for 10 battles.', customName='Tera: "POISON"', customType='Tera', maxStack='99')
+    TERA_SHARD4 = Modifier(args=[None, 4, 10], className='TerastallizeModifier', player=True, stackCount=1, typeId='TERA_SHARD', typePregenArgs=[4], description='Ground Terastalizes for 10 battles.', customName='Tera: "GROUND"', customType='Tera', maxStack='99')
+    TERA_SHARD5 = Modifier(args=[None, 5, 10], className='TerastallizeModifier', player=True, stackCount=1, typeId='TERA_SHARD', typePregenArgs=[5], description='Rock Terastalizes for 10 battles.', customName='Tera: "ROCK"', customType='Tera', maxStack='99')
+    TERA_SHARD6 = Modifier(args=[None, 6, 10], className='TerastallizeModifier', player=True, stackCount=1, typeId='TERA_SHARD', typePregenArgs=[6], description='Bug Terastalizes for 10 battles.', customName='Tera: "BUG"', customType='Tera', maxStack='99')
+    TERA_SHARD7 = Modifier(args=[None, 7, 10], className='TerastallizeModifier', player=True, stackCount=1, typeId='TERA_SHARD', typePregenArgs=[7], description='Ghost Terastalizes for 10 battles.', customName='Tera: "GHOST"', customType='Tera', maxStack='99')
+    TERA_SHARD8 = Modifier(args=[None, 8, 10], className='TerastallizeModifier', player=True, stackCount=1, typeId='TERA_SHARD', typePregenArgs=[8], description='Steel Terastalizes for 10 battles.', customName='Tera: "STEEL"', customType='Tera', maxStack='99')
+    TERA_SHARD9 = Modifier(args=[None, 9, 10], className='TerastallizeModifier', player=True, stackCount=1, typeId='TERA_SHARD', typePregenArgs=[9], description='Fire Terastalizes for 10 battles.', customName='Tera: "FIRE"', customType='Tera', maxStack='99')
+    TERA_SHARD10 = Modifier(args=[None, 10, 10], className='TerastallizeModifier', player=True, stackCount=1, typeId='TERA_SHARD', typePregenArgs=[10], description='Water Terastalizes for 10 battles.', customName='Tera: "WATER"', customType='Tera', maxStack='99')
+    TERA_SHARD11 = Modifier(args=[None, 11, 10], className='TerastallizeModifier', player=True, stackCount=1, typeId='TERA_SHARD', typePregenArgs=[11], description='Grass Terastalizes for 10 battles.', customName='Tera: "GRASS"', customType='Tera', maxStack='99')
+    TERA_SHARD12 = Modifier(args=[None, 12, 10], className='TerastallizeModifier', player=True, stackCount=1, typeId='TERA_SHARD', typePregenArgs=[12], description='Electric Terastalizes for 10 battles.', customName='Tera: "ELECTRIC"', customType='Tera', maxStack='99')
+    TERA_SHARD13 = Modifier(args=[None, 13, 10], className='TerastallizeModifier', player=True, stackCount=1, typeId='TERA_SHARD', typePregenArgs=[13], description='Psychic Terastalizes for 10 battles.', customName='Tera: "PSYCHIC"', customType='Tera', maxStack='99')
+    TERA_SHARD14 = Modifier(args=[None, 14, 10], className='TerastallizeModifier', player=True, stackCount=1, typeId='TERA_SHARD', typePregenArgs=[14], description='Ice Terastalizes for 10 battles.', customName='Tera: "ICE"', customType='Tera', maxStack='99')
+    TERA_SHARD15 = Modifier(args=[None, 15, 10], className='TerastallizeModifier', player=True, stackCount=1, typeId='TERA_SHARD', typePregenArgs=[15], description='Dragon Terastalizes for 10 battles.', customName='Tera: "DRAGON"', customType='Tera', maxStack='99')
+    TERA_SHARD16 = Modifier(args=[None, 16, 10], className='TerastallizeModifier', player=True, stackCount=1, typeId='TERA_SHARD', typePregenArgs=[16], description='Dark Terastalizes for 10 battles.', customName='Tera: "DARK"', customType='Tera', maxStack='99')
+    TERA_SHARD17 = Modifier(args=[None, 17, 10], className='TerastallizeModifier', player=True, stackCount=1, typeId='TERA_SHARD', typePregenArgs=[17], description='Fairy Terastalizes for 10 battles.', customName='Tera: "FAIRY"', customType='Tera', maxStack='99')
+    TERA_SHARD18 = Modifier(args=[None, 18, 10], className='TerastallizeModifier', player=True, stackCount=1, typeId='TERA_SHARD', typePregenArgs=[18], description='Stellar Terastalizes for 10 battles.', customName='Tera: "Stellar"', customType='Tera', maxStack='99')
+    #Tokens
     ENEMY_ATTACK_BURN_CHANCE = Modifier(args=[6, 5], className='EnemyAttackStatusEffectChanceModifier', player=False, stackCount=1, typeId='ENEMY_ATTACK_BURN_CHANCE', shortDescription='On-hit 5% burn', description='Adds a 5% chance to inflict burn with attack moves.', customName='Token: Burn', customType='Token', maxStack='10')
     ENEMY_ATTACK_PARALYZE_CHANCE = Modifier(args=[3, 2.5], className='EnemyAttackStatusEffectChanceModifier', player=False, stackCount=1, typeId='ENEMY_ATTACK_PARALYZE_CHANCE', shortDescription='On-hit 2.5% paralyze', description='Adds a 2.5% chance to inflict paralysis with attack moves.', customName='Token: Paralzye', customType='Token', maxStack='10')
     ENEMY_ATTACK_POISON_CHANCE = Modifier(args=[1, 5], className='EnemyAttackStatusEffectChanceModifier', player=False, stackCount=1, typeId='ENEMY_ATTACK_POISON_CHANCE', shortDescription='On-hit 5% poison', description='Adds a 5% chance to inflict poisoning with attack moves.', customName='Token: Poison', customType='Token', maxStack='10')
@@ -151,10 +173,11 @@ class ModifierType(Enum):
     ENEMY_FUSED_CHANCE = Modifier(args=[1], className='EnemyFusionChanceModifier', player=False, stackCount=1, typeId='ENEMY_FUSED_CHANCE', shortDescription='1% more chance on wild fusions', description='Adds a 1% chance that a wild species will be a fusion.', customName='Token: Wild Fusions', customType='Token', maxStack='10')
     ENEMY_HEAL = Modifier(args=[2], className='EnemyTurnHealModifier', player=False, stackCount=1, typeId='ENEMY_HEAL', shortDescription='', description='Heals 2% of max HP every turn.', customName='Token: Heal', customType='Token', maxStack='5')
     ENEMY_STATUS_EFFECT_HEAL_CHANCE = Modifier(args=[2.5], className='EnemyStatusEffectHealChanceModifier', player=False, stackCount=1, typeId='ENEMY_STATUS_EFFECT_HEAL_CHANCE', shortDescription='2.5% per round to drop any negatives', description='Adds a 2.5% chance every turn to heal a status condition.', customName='Token: Heal status', customType='Token', maxStack='10')
-    # Dangerous Items
-    IV_SCANNER = Modifier(args=None, className='IvScannerModifier', player=True, stackCount=1, typeId='IV_SCANNER', shortDescription='Scan enemy IVs', description='Allows scanning the IVs of wild Pokémon. 2 IVs are revealed per stack. The best IVs are shown first.', customName='IV Scanner', customType='Danger', maxStack='1')
-    TOXIC_ORB = Modifier(args=[None], className='TurnStatusEffectModifier', player=True, stackCount=1, typeId='TOXIC_ORB', shortDescription='Poison your pokemon', description='Badly poisons its holder at the end of the turn if they do not have a status condition already', customName='Toxic Orb', customType='Danger', maxStack='1')
-    FIRE_ORB = Modifier(args=[None], className='TurnStatusEffectModifier', player=True, stackCount=1, typeId='FIRE_ORB', shortDescription='Burn your pokemon', description='Burns its holder at the end of the turn if they do not have a status condition already.', customName='Fire Orb', customType='Danger', maxStack='1')
+    # Mh Items
+    IV_SCANNER = Modifier(args=None, className='IvScannerModifier', player=True, stackCount=1, typeId='IV_SCANNER', shortDescription='Scan enemy IVs', description='Allows scanning the IVs of wild Pokémon. 2 IVs are revealed per stack. The best IVs are shown first.', customName='IV Scanner', customType='Orb', maxStack='3')
+    TOXIC_ORB = Modifier(args=[None], className='TurnStatusEffectModifier', player=True, stackCount=1, typeId='TOXIC_ORB', shortDescription='Poison your pokemon', description='Badly poisons its holder at the end of the turn if they do not have a status condition already', customName='Toxic Orb', customType='Orb', maxStack='1')
+    FIRE_ORB = Modifier(args=[None], className='TurnStatusEffectModifier', player=True, stackCount=1, typeId='FIRE_ORB', shortDescription='Burn your pokemon', description='Burns its holder at the end of the turn if they do not have a status condition already.', customName='Fire Orb', customType='Orb', maxStack='1')
+    MAP = Modifier(args=None, className='MapModifier', player=True, stackCount=1, typeId='MAP', description='Choose your path at crossings', customName='Map', customType='Maybe', maxStack='1')
 
     
 @dec_handleOperationExceptions
@@ -184,21 +207,23 @@ class ModifierEditor:
 
         # Define the order of categories
         m_menuSorting = [
+            'Token',
+            'Tera',
+            'Orb',
             'StatBooster',
             'Vitamin',
             'XItem',
             'Berry',
             'PassiveBoost',
             'OtherHoldable',
-            'Token',
-            'Danger'  # Assuming Orb as 'Danger' type based on your examples
+            'Maybe'
         ]
 
         # Dynamically create menu items based on the customType categories
         for category in m_menuSorting:
             if category in modifiersByType:
-                if category == 'Danger':
-                    m_itemMenuItems.append(('Not included in Give All', 'category'))
+                if category == 'Danger' or category == 'Token' or category == 'Tera':
+                    m_itemMenuItems.append((f'Not included in Give All - {category}', 'category'))
                 else:
                     m_itemMenuItems.append((category, 'category'))
                 m_itemMenuItems.extend(self.m_createMenuChunks(modifiersByType[category]))
@@ -390,7 +415,7 @@ class ModifierEditor:
             pokeId = slotData["party"][selectedPartySlot]["id"]
             try:
                 for modType in ModifierType:
-                    if modType.value.customType == 'Danger':
+                    if modType.value.customType == 'Orb' or modType.value.customType == 'Token' or modType.value.customType == 'Tera' or modType.value.customType == 'Maybe':
                         continue  # Skip modifiers with customType 'Danger'
                     self.__f_recursiveAddOrUpdateMods(slotData, modType, stackCountInput, pokeId, sessionSlot)
             except Exception as e:
@@ -405,13 +430,3 @@ class ModifierEditor:
     @staticmethod
     def end():
         cFormatter.print(Color.GREEN, 'Leaving pyRogue Item Editor.')
-
-    """@staticmethod
-    def fh_printModifiers(sessionSlot):
-        data = ModifierEditor.fh_loadJSON(f'slot_{sessionSlot}.json')
-        if 'modifiers' in data and isinstance(data["modifiers"], list):
-            cFormatter.print(Color.INFO, 'Current Modifiers:')
-            for modifier in data["modifiers"]:
-                cFormatter.print(Color.INFO, json.dumps(modifier, indent=4))
-        else:
-            cFormatter.print(Color.INFO, 'No modifiers found.')"""

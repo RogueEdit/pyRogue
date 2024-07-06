@@ -1214,11 +1214,11 @@ class Rogue:
             #{selectedSpecies["name"]}
             choices = {
                 'changeSpecies': f'{Fore.YELLOW}Change mon{Style.RESET_ALL}',
-                'changeShiny': f'{Fore.YELLOW}Set it shiny{Style.RESET_ALL} | Current: {int(selectedSpecies["variant"])+1}',
+                'changeShiny': f'{Fore.YELLOW}Set it shiny{Style.RESET_ALL} | Current: {selectedSpecies["shinyStatus"]}',
                 'changeLuck': f'{Fore.YELLOW}Set Luck{Style.RESET_ALL} | Current: Luck {selectedSpecies["luckCount"]}',
                 'changeLevel': f'{Fore.YELLOW}Set Level{Style.RESET_ALL} | Current: Level {selectedSpecies["level"]}',
                 'changeHP': f'{Fore.YELLOW}Change HP{Style.RESET_ALL} | Curent: {selectedSpecies["hp"]}',
-                'changePassive': f'{Fore.YELLOW}Activate/Deactivate passive{Style.RESET_ALL} | Curent: {selectedSpecies.get("passive", "Not available")}',
+                'changePassive': f'{Fore.YELLOW}Activate/Deactivate passive{Style.RESET_ALL} | Curent: {selectedSpecies["passiveStatus"]}',
                 'changeNature': f'{Fore.YELLOW}Change nature{Style.RESET_ALL} | Current: {selectedSpecies["nature"]}',
                 'changeIV': f'{Fore.YELLOW}Set IVs{Style.RESET_ALL} | Current:  {selectedSpecies["ivs"]}',
                 'changeMoves': f'{Fore.YELLOW}Change moves{Style.RESET_ALL} | {selectedSpecies["moves"]}',
@@ -2028,13 +2028,12 @@ class Rogue:
         )) - 1  # Adjusting for 0-based index
 
         hatchWaves = fh_getIntegerInput('After how many waves should they hatch?', 0, 100, zeroCancel=True)
-        variantTier = 0
-        # Get hidden ability preference as boolean
+        variant = 0
         isShiny: bool = fh_getChoiceInput('Do you want it to be shiny?', {'1': 'Yes', '2': 'No'}, zeroCancel=True) == '1'
         if isShiny:
-            variantTier: int = int(fh_getIntegerInput('Which shiny tier?', 0, 3))
+            variant: int = int(fh_getIntegerInput('Which shiny tier?', 0, 3))
 
-        eggDictionary = eggLogic.constructEggs(tier, gachaType, hatchWaves, count, isShiny, variantTier)
+        eggDictionary = eggLogic.constructEggs(tier, gachaType, hatchWaves, count, isShiny, variant)
 
         if userInput == '1':
             trainerData["eggs"] = eggDictionary

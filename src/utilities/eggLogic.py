@@ -236,7 +236,7 @@ def constructEggs(tier: int, gachaType: int, hatchWaveCount: int, eggAmount: int
         }
         if isShiny:
             egg["isShiny"] = isShiny
-            egg["variantTier"] = int(variantTier)
+            egg["variantTier"] = int(variantTier-1)
         eggs.append(egg)
     
     return eggs
