@@ -5,6 +5,8 @@
 [Based on the Source Code of pokerogue.net](https://github.com/pagefaultgames/pokerogue)
 > In compliance with Pokerogue's License this project here is also released under AGPL3.
 
+No copyright or trademark infringement is intended in using Pokémon content on Bulbapedia. 
+
 ![Preview Image](.github/previews/main.png)
 ![Preview Image](.github/previews/tool.png)
 
@@ -166,10 +168,12 @@ Attention: When ever this tool detects you are trying to manipulate a daily seed
 
 ![alt text](.github/previews/fun1.png)
 
-
 ## Regarding Bans and Limited Accounts
 https://www.reddit.com/r/pokerogue/comments/1d8hncf/cheats_and_exploits_post_followup_bannable/
 
 https://www.reddit.com/r/pokerogue/comments/1d8ldlw/a_cheating_and_account_deletionwipe_followup/
 
-<meta name="keywords" content="pokerogue, pokerogue save editor, pokerogue, rogueEditor, free, gacha, ticket, tickets, egg, eggs, shiny, save, edit, pokemon, unlimited, hack, hacks, cheat, cheats, trainer, table, pokedex, dex, wave, money, level, levels, iv, ivs, stat, stats, item, items, api, mod, mods, tool, tools, education, python">
+Pokémon © 2002-2024 Pokémon. © 1995-2024 Nintendo/Creatures Inc./GAME FREAK inc. TM, ® and Pokémon character names are trademarks of Nintendo.
+No copyright or trademark infringement is intended in using Pokémon related names and IDs.
+
+<meta name="keywords" content="pokerogue, pokerogue save editor, pokerogue, rogueEditor, free, gacha, ticket, tickets, egg, eggs, shiny, save, edit, pokemon, unlimited, trainer, table, pokedex, dex, wave, money, level, levels, iv, ivs, stat, stats, item, items, api, mod, tool, tools, education, python">
