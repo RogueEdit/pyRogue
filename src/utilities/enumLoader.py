@@ -65,6 +65,7 @@ class EnumLoader:
         self.hasFormIDs: Optional[Dict[str, int]] = None
         self.speciesNameByID: Optional[Dict[str, int]] = None
         self.achievementsData: Optional[Dict[str, int]] = None
+        self.eggTypesData: Optional[Dict[str, int]] = None
 
     def __f_loadData(self) -> None:
         """
@@ -109,6 +110,9 @@ class EnumLoader:
 
             with open(f'{dataDir}/hasForms.json') as f:
                 self.hasFormIDs: Dict[str, int] = json.load(f)
+
+            with open(f'{dataDir}/eggTypes.json') as f:
+                self.eggTypesData: Dict[str, int] = json.load(f)
 
         except Exception as e:
             cFormatter.print(Color.CRITICAL, f'Error in enumLoader.__f_loadData(). {e}', isLogging=True)
@@ -157,7 +161,9 @@ class EnumLoader:
         self.speciesNameByID: Dict[str, int] = self.__f_createENUMFromDict(self.speciesNameByID["dex"], 'PokemonEnum')
         self.noPassiveIDs: Dict[str, int] = self.__f_createENUMFromDict(self.noPassiveIDs["noPassive"], 'NoPassiveEnum')
         self.hasFormIDs: Dict[str, int] = self.__f_createENUMFromDict(self.hasFormIDs["hasForms"], 'HasFormsEnum')
+        self.eggTypesData: Dict[str, int] = self.__f_createENUMFromDict(self.eggTypesData["eggTypes"], 'eggtypeEnum')
+
 
         return (self.starterNameByID, self.biomesByID, self.movesByID, self.voucherData, 
                 self.natureData, self.natureDataSlots, self.achievementsData, self.speciesNameByID,
-                self.noPassiveIDs, self.hasFormIDs)
+                self.noPassiveIDs, self.hasFormIDs, self.eggTypesData)

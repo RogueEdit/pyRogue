@@ -161,7 +161,7 @@ class Rogue:
         self.dataDirectory = config.dataDirectory
 
         (self.starterNameById, self.biomeNamesById, self.moveNamesById, self.vouchersData, self.natureData, 
-            self.natureSlotData, self.achievementsData, self.speciesNameByID, self.noPassiveIDs, self.hasFormsIDs) = self.appData.f_convertToEnums()
+            self.natureSlotData, self.achievementsData, self.speciesNameByID, self.noPassiveIDs, self.hasFormsIDs, self.eggTypesData) = self.appData.f_convertToEnums()
         self.editOffline = editOffline
 
         self.speciesNameByIDHelper = {str(member.value): member.name for member in self.appData.speciesNameByID}
@@ -296,6 +296,9 @@ class Rogue:
         while True:
             # It's handled by our decorator but somehow we specifically need to except a ValueError here for our input
             try:
+                if config.debug:
+                    self.editOffline = True
+
                 slot = int(fh_getIntegerInput('Enter Slot', 1, 5, zeroCancel=False, softCancel=False, allowSkip=False))
 
                 if self.editOffline:
@@ -711,6 +714,7 @@ class Rogue:
         with open(filename, 'r') as f:
             game_data = json.load(f)
         try:
+            cFormatter.print(Color.INFO, 'Trying to update...')
             sleep(random.randint(3, 5))
             payload = {'clientSessionId': self.clientSessionId, 'session': game_data, "sessionSlotId": slot - 1,
                        'system': trainer_data}
@@ -721,23 +725,20 @@ class Rogue:
             #payload = self.__compress_zstd(payload)
             if self.useScripts:
                 response = self.fh_makeRequest(url, method='POST', data=json.dumps(payload))
-                cFormatter.print(Color.GREEN, "That seemed to work! Refresh without cache (STRG+F5)")
-                self.f_logout()
+                cFormatter.print(Color.INFO, 'With this login-method we cant tell if it worked or not.')
+                cFormatter.print(Color.INFO,'Load your game without cache or in a new private window.')
             else:
                 response = self.session.post(url=url, headers=self.headers, json=payload, verify=config.useCaCert)
-                if response.status_code == 400:
-                    cFormatter.print(Color.WARNING, 'Bad Request!')
-                    return
                 response.raise_for_status()
-                cFormatter.print(Color.GREEN, 'Updated data Successfully!')
-                self.f_logout()
-        except SSLError as ssl_err:
-            cFormatter.print(Color.WARNING, f'SSL error occurred: {ssl_err}', isLogging=True)
-            cFormatter.print(Color.WARNING, 'Took too long to edit, you need to be faster. Session expired.')
+                fh_handleErrorResponse(response)
+            self.f_logout()
+
+        except SSLError as sslErr:
+            cFormatter.print(Color.WARNING, f'SSL error occurred: {sslErr}', isLogging=True)
             sleep(5)
             self.f_logout()
-        except ConnectionError as conn_err:
-            cFormatter.print(Color.WARNING, f'Connection error occurred: {conn_err}', isLogging=True)
+        except ConnectionError as connErr:
+            cFormatter.print(Color.WARNING, f'Connection error occurred: {connErr}', isLogging=True)
         except Timeout as timeout_err:
             cFormatter.print(Color.WARNING, f'Timeout error occurred: {timeout_err}', isLogging=True)
         except requests.exceptions.RequestException as e:
@@ -1291,10 +1292,10 @@ class Rogue:
                     pokeShinyType = fh_getIntegerInput('Choose the shiny variant', 1, 3, softCancel=True)
                     
                     selectedSpeciesData["shiny"] = True
-                    selectedSpeciesData["variant"] = int(pokeShinyType)
+                    selectedSpeciesData["variant"] = int(pokeShinyType)-1
                     changed = True
 
-                    message = f'Changed Shiny from {selectedSpecies["variant"]} to Shiny {pokeShinyType}.'
+                    message = f'Changed Shiny from {selectedSpecies["shinyStatus"]} to Shiny {pokeShinyType}.'
                     fh_redundantMesage(changedItems, message, selectedSpecies["name"])
 
                 # Change Level
@@ -2032,8 +2033,9 @@ class Rogue:
         isShiny: bool = fh_getChoiceInput('Do you want it to be shiny?', {'1': 'Yes', '2': 'No'}, zeroCancel=True) == '1'
         if isShiny:
             variant: int = int(fh_getIntegerInput('Which shiny tier?', 0, 3))
+            fh_appendMessageBuffer(Color.INFO, 'If some do not hatch in shiny as entered, they don\'t have those shiny variants as of now.')
 
-        eggDictionary = eggLogic.constructEggs(tier, gachaType, hatchWaves, count, isShiny, variant)
+        eggDictionary = eggLogic.constructEggs(tier, gachaType, hatchWaves, count, self.appData.eggTypesData, isShiny, variant)
 
         if userInput == '1':
             trainerData["eggs"] = eggDictionary

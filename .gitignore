@@ -22,3 +22,4 @@ src/data/extra.json
 /src/modules/handler/__pycache__
 /src/dev/*
 /data
+/src/logs

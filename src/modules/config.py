@@ -51,7 +51,7 @@ if not os.path.exists(dataDirectory):
 
 # Settings this to true will deactivate backups, skip prompts and use offline mode automatically
 debug: bool = False
-debugDeactivateBackup: bool = True if debug else False
+debugDeactivateBackup: bool = False if debug else False
 debugEnableTraceback: bool = True if debug else False
 
 cacertURL = 'https://curl.se/ca/cacert.pem'
@@ -73,7 +73,7 @@ if not os.path.exists(cacertPath):
         cacertPath = False
 
 useCaCert = False if debug else cacertPath
-version: str = 'v0.4.5'
+version: str = 'v0.4.6'
 title: str = f'<(^.^(< pyRogue {version} >)^.^)>'
 owner: str = 'rogueEdit'
 repo: str = 'onlineRogueEditor'

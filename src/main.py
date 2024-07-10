@@ -105,7 +105,7 @@ def m_mainMenu(rogue, editOffline: bool = False):
         ((f'{Fore.YELLOW}Save data and upload to the Server', useWhenDone), rogue.f_updateAllToServer),
         (('Print help and program information', ''), config.f_printHelp),
         (('Logout', ''), rogue.f_logout),
-        (title, 'title'),
+        (title, 'title')
     ]
     if editOffline or config.debug:
         # Filter entrys that would break offline

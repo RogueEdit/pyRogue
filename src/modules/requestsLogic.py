@@ -85,7 +85,7 @@ def fh_handleErrorResponse(response: requests.Response) -> Dict[str, str]:
     - requests: Handles HTTP response objects to log error messages based on status codes.
     - utilities.cFormatter: Formats console output for displaying error messages with color coding.
     """
-
+    
     if response.status_code == 200:
         cFormatter.print(Color.BRIGHT_GREEN, 'Response 200 - That seemed to have worked!')
         cFormatter.print(Color.BRIGHT_GREEN, 'If it doesn\'t apply in-game, refresh without cache or try a private tab!')

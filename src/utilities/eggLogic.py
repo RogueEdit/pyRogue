@@ -145,7 +145,7 @@ export interface IEggOptions {
 
 import random
 import time
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Optional
 
 # Constant from game source code
 EGG_SEED: int = 1073741824
@@ -199,7 +199,23 @@ def generateRandomID(start: int, end: int, manaphy: bool = False) -> int:
 
     return max(result, 1)
 
-def constructEggs(tier: int, gachaType: int, hatchWaveCount: int, eggAmount: int, isShiny: bool = False, variantTier: int = 0) -> List[Dict[str, int]]:
+def __getRandomSpeciesForShiny(tier: int, eggTypesData: Dict[str, Dict]) -> Optional[int]:
+    speciesMatch = []
+    for member in eggTypesData:
+        #print(f"Checking member: {member}, value: {member.value}")
+        if member.value['isEgg'] is not None and member.value['isEgg']['eggType'] == tier:
+            speciesMatch.append(member)
+            #print(f"Matched species: {member.name} with index {member.value}")
+
+    if not speciesMatch:
+        #print("No matching species found.")
+        return None
+
+    rnd = random.choice(speciesMatch)
+    #print(f"Randomly chosen species: {rnd.name} with index {rnd.value}")
+    return rnd.name
+
+def constructEggs(tier: int, gachaType: int, hatchWaveCount: int, eggAmount: int, eggTypesData, isShiny: bool = False, variantTier: int = 0) -> List[Dict[str, int]]:
     """
     Generate eggs with the given properties.
 
@@ -232,11 +248,25 @@ def constructEggs(tier: int, gachaType: int, hatchWaveCount: int, eggAmount: int
             'gachaType': gachaType,
             'hatchWaves': int(hatchWaveCount),
             'timestamp': timestamp,
-            'tier': tier-1,
+            'tier': tier,
         }
-        if isShiny:
-            egg["isShiny"] = isShiny
-            egg["variantTier"] = int(variantTier-1)
+        
+        shinyRoll = random.randint(1, 64)
+        if isShiny or shinyRoll == 1:
+            egg["isShiny"] = True
+            egg["variantTier"] = int(variantTier-1) if isShiny else 0
+            egg["sourceType"] = 1
+            
+            # Find a random species with matching eggType
+            random_species = __getRandomSpeciesForShiny(tier+1, eggTypesData)
+            if random_species is not None:
+                egg["species"] = int(random_species)
+        else:
+            egg["isShiny"] = False
+            egg["variantTier"] = 0
+            egg["sourceType"] = gachaType
+
+
         eggs.append(egg)
     
     return eggs
