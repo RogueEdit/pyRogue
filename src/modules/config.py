@@ -78,7 +78,7 @@ title: str = f'<(^.^(< pyRogue {version} >)^.^)>'
 owner: str = 'rogueEdit'
 repo: str = 'onlineRogueEditor'
 repoURL: str = f'https://github.com/{owner}/{repo}/'
-releaseDate: str = '06.07.2024 20:00' # releaed 00:40 roughly but setting ahead in case some stuff pops up
+releaseDate: str = '11.07.2024 20:00' # releaed 2:00 roughly but setting ahead in case some stuff pops up
 
 
 def f_checkForUpdates(requests: requests, datetime: datetime, timedelta: timedelta, Style: object) -> None:
@@ -195,6 +195,7 @@ def f_printWelcomeText() -> None:
     print(f'{Fore.GREEN}We create base-backups on every login and further backups every time you start or choose so manually.')
     print(f'{Fore.GREEN}When changes do not seem to apply, refresh without cache / use a private tab.')
     print(f'{Fore.GREEN}Otherwise please visit {repoURL} and report the issue.')
+    print(f'{Fore.YELLOW}Please refer to TRANSPARENCY.md to see what we save or what URL(s) we request to.')
     print('------------------------------------------------------------')
     print(f'{Fore.MAGENTA}{Style.BRIGHT}1: Using no browser with requests.')
     print(f'{Fore.MAGENTA}{Style.BRIGHT}2: Using own browser with requests.')
