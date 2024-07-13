@@ -90,8 +90,7 @@ def fh_handleErrorResponse(response: requests.Response) -> Dict[str, str]:
         cFormatter.print(Color.BRIGHT_GREEN, 'Response 200 - That seemed to have worked!')
         cFormatter.print(Color.BRIGHT_GREEN, 'If it doesn\'t apply in-game, refresh without cache or try a private tab!')
     elif response.status_code == 400:
-        cFormatter.print(Color.WARNING, 'Response 400 - Bad Request: The server could not understand the request due to invalid syntax. This is usually related to wrong credentials.', isLogging=True)
-        cFormatter.print(Color.WARNING, 'Please retry a couple times. It this persists report on GitHub (can happen 3-5 times)')
+        cFormatter.print(Color.WARNING, 'Response 400 - Bad Request: The server could not understand the request due to invalid syntax.', isLogging=True)
     elif response.status_code == 401:
         cFormatter.print(Color.BRIGHT_RED, 'Response 401 - Unauthorized: Authentication is required and has failed or has not yet been provided.', isLogging=True)
     elif response.status_code == 403:
@@ -111,7 +110,7 @@ def fh_handleErrorResponse(response: requests.Response) -> Dict[str, str]:
     elif response.status_code == 429:
         cFormatter.print(Color.BRIGHT_RED, 'Response 429 - Too Many Requests: The user has sent too many requests in a given amount of time ("rate limiting").', isLogging=True)
     elif response.status_code == 500:
-        cFormatter.print(Color.CRITICAL, 'Error 500 - Internal Server Error: The server has encountered a situation it does not know how to handle.', isLogging=True)
+        cFormatter.print(Color.CRITICAL, 'Error 500 - Internal Server Error: The server has encountered a situation it does not know how to handle. This can also be related to wrong credentials.', isLogging=True)
     elif response.status_code == 502:
         cFormatter.print(Color.CRITICAL, 'Error 502 - Bad Gateway: The server was acting as a gateway or proxy and received an invalid response from the upstream server.', isLogging=True)
     elif response.status_code == 503:

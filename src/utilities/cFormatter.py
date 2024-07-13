@@ -46,6 +46,10 @@ from typing import Optional, List, Tuple, Union
 import re
 # Provides support for regular expressions, used for stripping ANSI color codes from text.
 
+@staticmethod
+def format(entry, color=Fore.YELLOW):
+    return f'{color}{entry}{Style.RESET_ALL}'
+
 class Color(Enum):
     """
     Enum defining ANSI color codes for console output.

@@ -199,21 +199,33 @@ def generateRandomID(start: int, end: int, manaphy: bool = False) -> int:
 
     return max(result, 1)
 
-def __getRandomSpeciesForShiny(tier: int, eggTypesData: Dict[str, Dict]) -> Optional[int]:
+def __getRandomSpeciesForShiny(tier: int, eggTypesData) -> Optional[int]:
     speciesMatch = []
     for member in eggTypesData:
-        #print(f"Checking member: {member}, value: {member.value}")
-        if member.value['isEgg'] is not None and member.value['isEgg']['eggType'] == tier:
-            speciesMatch.append(member)
-            #print(f"Matched species: {member.name} with index {member.value}")
+        species = member.value
+        if species["isEgg"] is not None:
+            # If the tier is 6, match by name substrings
+            if tier == 6:
+                if any(substring in species['name'].lower() for substring in ["alola_", "galar_", "hisui_", "paldea_"]):
+                    speciesMatch.append(member)
+                    print(f"Matched species: {species['name']} with index {member.name}")
+            elif tier == 7:
+                paradoxIDs = [984, 985, 986, 987, 988, 989, 990, 991, 992, 993, 994, 995, 1005, 1006, 1009, 1010, 1020, 1021, 1022, 1023]
+                if paradoxIDs and int(member.name) in paradoxIDs:
+                    speciesMatch.append(member)
+                    print(f"Matched species: {species['name']} with index {member.name}")
+            # For other tiers, match by eggType
+            elif species["isEgg"]["eggType"] == tier:
+                speciesMatch.append(member)
+                #print(f"Matched species: {species['name']} with index {member.name}")
 
     if not speciesMatch:
-        #print("No matching species found.")
+        # No matching species found
         return None
 
     rnd = random.choice(speciesMatch)
-    #print(f"Randomly chosen species: {rnd.name} with index {rnd.value}")
-    return rnd.name
+    print(f"Randomly chosen species: {rnd.value['name']} with index {rnd.name}")
+    return rnd.name, rnd.value["isEgg"]["eggType"]
 
 def constructEggs(tier: int, gachaType: int, hatchWaveCount: int, eggAmount: int, eggTypesData, isShiny: bool = False, variantTier: int = 0) -> List[Dict[str, int]]:
     """
@@ -248,7 +260,6 @@ def constructEggs(tier: int, gachaType: int, hatchWaveCount: int, eggAmount: int
             'gachaType': gachaType,
             'hatchWaves': int(hatchWaveCount),
             'timestamp': timestamp,
-            'tier': tier,
         }
         
         shinyRoll = random.randint(1, 64)
@@ -258,13 +269,17 @@ def constructEggs(tier: int, gachaType: int, hatchWaveCount: int, eggAmount: int
             egg["sourceType"] = 1
             
             # Find a random species with matching eggType
-            random_species = __getRandomSpeciesForShiny(tier+1, eggTypesData)
-            if random_species is not None:
-                egg["species"] = int(random_species)
+            speciesID, speciesEggType = __getRandomSpeciesForShiny(tier+1, eggTypesData)
+            if speciesID is not None:
+                egg["species"] = int(speciesID)
+                egg["tier"] = int(speciesEggType)-1
+            print(f'EggType: {speciesEggType}')
+                
         else:
             egg["isShiny"] = False
             egg["variantTier"] = 0
             egg["sourceType"] = gachaType
+            egg["tier"] = tier
 
 
         eggs.append(egg)

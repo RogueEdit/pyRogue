@@ -379,6 +379,14 @@ def fh_getCombinedIDs(includeStarter=True, onlyNormalForms=True):
 @staticmethod
 def data_iterateParty(slotData, speciesNameByIDHelper, moveNamesByIDHelper, natureNamesByIDHelper):
     currentParty = []
+    pokeballList = {
+        0: "Pokeball",
+        1: "Great Ball",
+        2: "Hyper Ball",
+        3: "Rogue Ball",
+        4: "Master Ball",
+        5: "Luxury Ball"
+    }
     for object in slotData["party"]:
         # Define IDs and indices
         speciesDexID = str(object.get('species', 1))
@@ -416,6 +424,9 @@ def data_iterateParty(slotData, speciesNameByIDHelper, moveNamesByIDHelper, natu
         speciesHP = object.get('hp', 1)
         speciesPassive = object.get('passive', False)
         speciesPassiveStatus = object.get('passive', False) if speciesDict[int(speciesDexID)].hasPassive else 'Not avaiable'
+        speciesPokerus = object.get('pokerus', False)
+        speciesPokeball = object.get('pokeball', 0)
+        speciesPokeballStatus = pokeballList[speciesPokeball]
 
 
         # Create a dictionary to hold all relevant information for the current Pokémon
@@ -442,7 +453,10 @@ def data_iterateParty(slotData, speciesNameByIDHelper, moveNamesByIDHelper, natu
             'hp': speciesHP,
             'passive': speciesPassive,
             'passiveStatus': speciesPassiveStatus,
+            'pokerus': speciesPokerus,
+            'pokeball': speciesPokeball,
 
+            'pokeballStatus': speciesPokeballStatus,
             'fusionStatus': '' if speciesFusionID == '0' else f'Fused with {Fore.YELLOW}{speciesFusionName.title()}{Style.RESET_ALL}',
             'shinyStatus': f'Shiny {speciesShinyVariant+1}' if speciesIsShiny else 'Not Shiny',
             'luckCount': speciesLuck if speciesFusionID == '0' else (speciesLuck+speciesFusionLuck),
