@@ -651,6 +651,9 @@ class Rogue:
 
             outputFilepath = os.path.join(parentDirectory, outputFilename)
 
+            currentData = self.__fh_loadDataFromJSON('trainer.json')
+            currentPlaytime = currentData.get('gameStats', {}).get('playTime', 0)  # Default to 0 if playTime doesn't exist
+
             # Copy the chosen file to the output filepath
             shutil.copyfile(chosenFilepath, outputFilepath)
 
@@ -661,6 +664,7 @@ class Rogue:
             # Update the timestamp
             curTimestamp = int(datetime.now().timestamp() * 1000)
             data["timestamp"] = curTimestamp
+            data["gameStats"]["playTime"] = currentPlaytime
 
             # Write the updated data back to the file
             with open(outputFilepath, 'w') as file:
