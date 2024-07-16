@@ -1,11 +1,23 @@
 # pyRogue
-> ## **pyRogue** is a **educational** project. 
-<img src="https://img.shields.io/badge/Make_sure_to_mark_with_a-Star-yellow"> <a href="https://discord.gg/9ZsnGDmGk2"><img src="https://img.shields.io/badge/Join_our_News-Discord-blue"></a>
+> ## **pyRogue** is a `educational` project. 
+
+![Stars](https://img.shields.io/github/stars/rogueEdit/pyRogue?style=social) ![Watchers](https://img.shields.io/github/watchers/rogueEdit/pyRogue?style=social) ![GitHub Forks](https://img.shields.io/github/forks/rogueEdit/pyRogue?style=social)
+
+![Last Commit](https://img.shields.io/github/last-commit/rogueEdit/pyRogue)
+![License](https://img.shields.io/github/license/rogueEdit/pyRogue) ![Open Issues](https://img.shields.io/github/issues-raw/rogueEdit/pyRogue)
+![Open Pull Requests](https://img.shields.io/github/issues-pr-raw/rogueEdit/pyRogue) [![Security Policy](https://img.shields.io/badge/Security-Policy-red.svg)](https://github.com/rogueEdit/pyRogue/security/policy)
+
+
+ ![Version](https://img.shields.io/github/v/release/rogueEdit/pyRogue) ![Release Date](https://img.shields.io/github/release-date/rogueEdit/pyRogue)
+ ![Downloads](https://img.shields.io/github/downloads/rogueEdit/pyRogue/total) ![Code Size](https://img.shields.io/github/languages/code-size/rogueEdit/pyRogue)  ![Code Style](https://img.shields.io/badge/code%20style-ruff-121212.svg) ![Contributors](https://img.shields.io/github/contributors/rogueEdit/pyRogue)
+
+---
+<img src="https://img.shields.io/badge/Join_our_News-Discord-blue"></a>
 
 [Based on the Source Code of pokerogue.net](https://github.com/pagefaultgames/pokerogue)
 > In compliance with Pokerogue's License this project here is also released under AGPL3.
 
-No copyright or trademark infringement is intended in using Pokémon content on Bulbapedia. 
+No copyright or trademark infringement is intended in using Pokémon content anywhere. 
 
 ![Preview Image](.github/previews/main.png)
 ![Preview Image](.github/previews/tool.png)
