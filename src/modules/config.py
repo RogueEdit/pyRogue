@@ -3,7 +3,7 @@
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: None except Authors
 # Date of release: 06.06.2024 
-# Last Edited: 20.06.2024
+# Last Edited: 28.06.2024
 
 """
 Online Rogue Editor Update Checker and Initialization
@@ -29,8 +29,8 @@ from datetime import datetime, timedelta
 import requests
 # need to manually do it to avoid circular imports
 from colorama import Fore, Style, init
-init(autoreset=True)
 
+init(autoreset=True)
 
 logsDirectory: str = os.path.join(os.getcwd(), 'logs')
 backupDirectory: str = os.path.join(os.getcwd(), 'backups')
@@ -48,8 +48,10 @@ if not os.path.exists(dataDirectory):
     os.makedirs(dataDirectory)
     print(f'{Fore.GREEN}Created data directory: {dataDirectory}')
 
-debug: bool = True
-debugDeactivateBackup: bool = True if debug else False
+
+# Settings this to true will deactivate backups, skip prompts and use offline mode automatically
+debug: bool = False
+debugDeactivateBackup: bool = False if debug else False
 debugEnableTraceback: bool = True if debug else False
 
 cacertURL = 'https://curl.se/ca/cacert.pem'
@@ -67,16 +69,16 @@ if not os.path.exists(cacertPath):
             f.write(response.content)
         print(f'{Fore.GREEN}Successfully fetched {cacertURL} and saved as {cacertPath}.{Style.RESET_ALL}')
     else:
-        print(f'Failed to fetch {cacertURL}. \n Status code: {response.status_code}. \n Cannot use SSL.')
+        print(f'Failed to fetch {cacertURL}. \n Status code: {response.status_code}. \n Cannot use SSL but the program might work.')
         cacertPath = False
 
 useCaCert = False if debug else cacertPath
-version: str = 'v0.3.3-wip'
+version: str = 'v0.4.7h'
 title: str = f'<(^.^(< pyRogue {version} >)^.^)>'
 owner: str = 'rogueEdit'
 repo: str = 'onlineRogueEditor'
 repoURL: str = f'https://github.com/{owner}/{repo}/'
-releaseDate: str = '23.06.2024 10:30'
+releaseDate: str = '13.07.2024 23:00' # releaed 21:00 roughly but setting ahead in case some stuff pops up
 
 
 def f_checkForUpdates(requests: requests, datetime: datetime, timedelta: timedelta, Style: object) -> None:
@@ -157,7 +159,7 @@ def f_checkForUpdates(requests: requests, datetime: datetime, timedelta: timedel
         commits = response.json()  # Parse JSON response
 
         # Extract commit titles and SHAs
-        commitList = [{'sha': commit['sha'], 'message': commit['commit']['message']} for commit in commits]
+        commitList = [{'sha': commit["sha"], 'message': commit["commit"]["message"]} for commit in commits]
 
         if commitList:
             print(f'{Fore.YELLOW}********* Outdated source code found. New commits: *********{Style.RESET_ALL}')
@@ -191,12 +193,13 @@ def f_printWelcomeText() -> None:
     """
     print(f'{Fore.GREEN}<pyRogue {version}>')
     print(f'{Fore.GREEN}We create base-backups on every login and further backups every time you start or choose so manually.')
-    print(f'{Fore.GREEN}In case of trouble, please switch your Network (Hotspot, VPN etc).')
+    print(f'{Fore.GREEN}When changes do not seem to apply, refresh without cache / use a private tab.')
     print(f'{Fore.GREEN}Otherwise please visit {repoURL} and report the issue.')
+    print(f'{Fore.YELLOW}Please refer to TRANSPARENCY.md to see what we save or what URL(s) we request to.')
     print('------------------------------------------------------------')
-    print(f'{Fore.MAGENTA}{Style.BRIGHT}1: Using no browser with requests.    Reliability 6/10')
-    print(f'{Fore.MAGENTA}{Style.BRIGHT}2: Using own browser with requests.   Reliability 7/10')
-    print(f'{Fore.MAGENTA}{Style.BRIGHT}3: Using own browser with JavaScript. Reliability 9/10')
+    print(f'{Fore.MAGENTA}{Style.BRIGHT}1: Using no browser with requests.')
+    print(f'{Fore.MAGENTA}{Style.BRIGHT}2: Using own browser with requests.')
+    print(f'{Fore.MAGENTA}{Style.BRIGHT}3: Using own browser with JavaScript.')
     print(f'{Fore.MAGENTA}{Style.BRIGHT}4: Just edit an existing trainer.json')
 
 def f_printHelp() -> None:

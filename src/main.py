@@ -1,173 +1,217 @@
-# Authors
+# Authors https://github.com/JulianStiebler/
 # Organization: https://github.com/rogueEdit/
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
-# Contributors: https://github.com/claudiunderthehood https://github.com/JulianStiebler/
-# Date of release: 05.06.2024 
+# Contributors: https://github.com/claudiunderthehood 
+# Date of release: 13.06.2024
+# Last Edited: 28.06.2024
+# Based on: https://github.com/pagefaultgames/pokerogue/
+
+"""
+This script facilitates user login and session initialization for PokeRogue. It offers a menu-driven interface to 
+perform various account and game data actions after a successful login using either requests or Selenium.
+
+Features:
+- User login through requests or Selenium.
+- Various account and game data actions through a menu-driven interface.
+- Custom logging and colored console output.
+
+Modules:
+- getpass: For securely obtaining the password from the user.
+- requests: For handling HTTP sessions and requests.
+- brotli: (Imported but not directly used in this script).
+- loginLogic: Custom module for handling login logic using requests.
+- Rogue: Custom module for initializing and interacting with the PokeRogue session.
+- SeleniumLogic: Custom module for handling login using Selenium.
+- cFormatter: Custom formatter for colored printing and logging.
+- Color: Enumeration defining color codes for cFormatter.
+- CustomLogger: Custom logging functionality.
+- config: Custom module for configuration and update checking.
+- datetime, timedelta: For date and time operations.
+- colorama: For terminal text color formatting.
+"""
 
 import getpass
 import requests
-import brotli
-from modules.loginLogic import loginLogic, HeaderGenerator
-from modules.mainLogic import Rogue
+import brotli  # noqa: F401
+
+from modules import requestsLogic, Rogue, SeleniumLogic, config
+from modules.handler import OperationSuccessful, dec_handleOperationExceptions, OperationCancel, OperationSoftCancel
 from colorama import Fore, Style, init
-<<<<<<< HEAD
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 5772c92 (removed brotli)
-#Initialize colorama
-=======
->>>>>>> 9225a9d (Logic Refactoring, Ultimate additions)
-=======
-from utilities.cFormatter import cFormatter, Color
-# cFormatter.print(Color.INFO, 'This is a test message', isLogging=True)
-# [CYAN]This is a test message[RESET]
-# cFormatter.print_separators(10, '-', Color.GREEN)
-# [GREEN]----------[RESET]
-
-from utilities.logger import CustomLogger
-
->>>>>>> 68279c3 (More logic rewrite)
+from utilities import cFormatter, Color, CustomLogger
+from datetime import datetime, timedelta
+from utilities import fh_printMessageBuffer
+from sys import exit
 init()
-
 logger = CustomLogger()
 
-if __name__ == '__main__':
-    """
-        Main script execution for user login and session initialization.
+if not config.debug:
+    config.f_checkForUpdates(requests, datetime, timedelta, Style)
 
-        This script prompts the user for a username and password, attempts to log in,
-        and if successful, initializes a PokeRogue session.
 
-        Workflow:
-            1. Initializes a requests session.
-            2. Prompts the user for username and password.
-            3. Attempts to log in using the provided credentials.
-            4. If login is successful, prints a success message and breaks the loop.
-            5. If login fails, prints an error message and re-prompts the user.
-            6. Handles any exceptions that occur during the login process.
+@dec_handleOperationExceptions
+def m_executeOptions(choice_index, valid_choices):
+    for idx, func in valid_choices:
+        if idx == choice_index:
+            func()
+            break
+        elif idx == 'exit':
+            raise KeyboardInterrupt
 
-        Usage:
-            Run the script directly to initiate the login process:
-            $ python script_name.py
-
-        Modules:
-            - requests: For session handling.
-            - getpass: For securely obtaining the password.
-            - custom_logger: Custom logging functionality.
-            - login_logic: Handles the login logic.
-            - rogue: Initializes the Rogue session.
-            - c_formatter: Custom formatter for colored printing.
-            - color: Enum or module defining color codes.
-    """
-    session = requests.Session()
-    while True:
-        print('')
-        cFormatter.print(Color.GREEN, '<pyRogue>')
-        username = input('Username: ')
-        password = getpass.getpass('Password (password is hidden): ')
-
-        login = loginLogic(username, password)
-
-        try:
-            if login.login():
-                cFormatter.print(Color.INFO, f'Logged in as: {username.capitalize()}')
-                rogue = Rogue(session, login.token, login.session_id)
-                
-                break
-            else:
-                cFormatter.print(Color.INFO, 'Wrong credentials.', isLogging=True)
-        except Exception as e:
-            cFormatter.print(Color.GREEN, f'Something went wrong. {e}', isLogging=True)
-            
-    func = {
-        '1': rogue.get_trainer_data,
-        '2': rogue.get_gamesave_data,
-        '3': rogue.edit_starter_separate,
-        '4': rogue.unlock_all_starters,
-        '5': rogue.add_ticket,
-        '6': rogue.edit_pokemon_party,
-        '7': rogue.unlock_all_achievements,
-        '8': rogue.unlock_all_gamemodes,
-        '9': rogue.edit_vouchers,
-        '10': rogue.add_candies,
-        '11': rogue.edit_money,
-        '12': rogue.edit_pokeballs,
-        '13': rogue.edit_biome,
-        '14': rogue.generate_eggs,
-        '15': rogue.edit_hatchWaves,
-        '16': rogue.edit_account_stats,
-        '17': rogue.unlock_all_features,
-        '18': rogue.create_backup,
-        '19': rogue.restore_backup,
-        '20': rogue.print_pokedex,
-        '21': rogue.print_biomes,
-        '22': rogue.print_moves,
-        '23': rogue.print_vouchers,
-        '24': rogue.print_natures,
-        '25': rogue.print_natureSlot,
-        '26': rogue.update_all,
-        '27': rogue.print_help,
-        '28': HeaderGenerator.handle_dynamic_header_data(),
-        '29': HeaderGenerator.handle_dynamic_header_data(force_fetch=True)
-    }
-
-    title = '************************ PyRogue *************************'
-    working_status = '(Working)'
-    broken_status = ' (Broken)'
-    header_status = '(Use when Broken)'
-
-    formatted_title = f'{Fore.GREEN}{Style.BRIGHT}{title}{Style.RESET_ALL}'
-    formatted_working_status = f'{Fore.GREEN}{Style.BRIGHT}{working_status}{Style.RESET_ALL}'
-    formatted_header = f'{Fore.RED}{Style.BRIGHT}{header_status}{Style.RESET_ALL}'
+@dec_handleOperationExceptions
+def m_mainMenu(rogue, editOffline: bool = False):
+    title = f'{config.title}>'
+    useWhenDone = f'{Fore.LIGHTYELLOW_EX}(Use when Done)'
+    reworked = f'{Fore.GREEN}(REWORKED)'
 
     term = [
-        f'{formatted_title}',
-        f'1: Load Game-Data from server{" " * 20}{formatted_working_status}',
-        f'2: Load SaveSlot-Data from server{" " * 16}{formatted_working_status}',
-        f'3: Edit a starter{" " * 32}{formatted_working_status}',
-        f'4: Unlock all starters{" " * 27}{formatted_working_status}',
-        f'5: Edit your egg-tickets{" " * 25}{formatted_working_status}',
-        f'6: Edit CURRENT Pokemon Party{" " * 20}{formatted_working_status}',
-        f'7: Unlock all achievements{" " * 23}{formatted_working_status}',
-        f'8: Unlock all gamemodes{" " * 26}{formatted_working_status}',
-        f'9: Edit vouchers{" " * 33}{formatted_working_status}',
-        f'10: Add candies to a pokemon{" " * 21}{formatted_working_status}',
-        f'11: Edit money amount{" " * 28}{formatted_working_status}',
-        f'12: Edit pokeballs amount{" " * 24}{formatted_working_status}',
-        f'13: Edit biome{" " * 35}{formatted_working_status}',
-        f'14: Generate eggs{" " * 32}{formatted_working_status}',
-        f'15: Set your eggs to hatch{" " * 23}{formatted_working_status}',
-        f'16: Edit account stats{" " * 27}{formatted_working_status}',
-        f'17: Unlock Everything{" " * 28}{formatted_working_status}',
-        Fore.GREEN + Style.BRIGHT + '----------------------------------------------------------' + Style.RESET_ALL,
-        f'18: Create a backup{" " * 30}{formatted_working_status}',
-        f'19: Recover your backup{" " * 26}{formatted_working_status}',
-        f'20: Show all Pokemon ID{" " * 26}{formatted_working_status}',
-        f'21: Show all Biome IDs{" " * 27}{formatted_working_status}',
-        f'22: Show all Move IDs{" " * 28}{formatted_working_status}',
-        f'23: Show all Vouchers IDs{" " * 24}{formatted_working_status}',
-        f'24: Show all Natures IDs{" " * 25}{formatted_working_status}',
-        f'25: Show all NaturesSlot IDs{" " * 21}{formatted_working_status}',
-        Fore.LIGHTYELLOW_EX + Style.BRIGHT + '-- You can always edit your trainer.json also yourself! --' + Style.RESET_ALL,
-        f'26: >> Save data and upload to the Server{" " * 2}' + Fore.LIGHTYELLOW_EX + Style.BRIGHT +'(Use when done)' + Style.RESET_ALL,
-        f'27: >> Print help and program information{" " * 17}',
-        f'28: >> Getting errors? Regenerate some data{" " * 17}{formatted_header}',
-        f'29: >> Errors persisting? Refetch dynamic data{" "* 17}{formatted_header}'
-        f'{formatted_title}',
+        (title, 'title'),
+        ('Account Actions', 'category'),
+        ((f'{Fore.YELLOW}Create a backup', reworked), rogue.f_createBackup),
+        ((f'{Fore.YELLOW}Recover your backup', reworked), rogue.f_restoreBackup),
+        (('Load Game-Data from server', reworked), rogue.f_getGameData),
+        (('Change save-slot to edit', reworked), rogue.f_changeSaveSlot),
+        (('Edit account stats', reworked), rogue.f_editAccountStats),
+
+        ('Edits', 'category'),
+        ((f'{Fore.YELLOW}Create eggs', reworked), rogue.f_addEggsGenerator),
+        ((f'Edit {Fore.YELLOW}Egg-hatch durations', reworked), rogue.f_editHatchWaves),
+        ((f'Edit {Fore.YELLOW}egg-tickets', reworked), rogue.f_addTicket),
+        ((f'Edit {Fore.YELLOW}a starter', reworked), rogue.f_editStarter),
+        ((f'Edit {Fore.YELLOW}candies{Style.RESET_ALL} on a starter', reworked), rogue.f_addCandies),
+
+        ('Unlocks', 'category'),
+        ((f'Unlock {Fore.YELLOW}achievements', reworked), rogue.f_unlockAchievements),
+        ((f'Unlock {Fore.YELLOW}vouchers', reworked), rogue.f_unlockVouchers),
+        ((f'Unlock {Fore.YELLOW}all starters', reworked), rogue.f_unlockStarters),
+        ((f'Unlock {Fore.YELLOW}all gamemodes', reworked), rogue.f_unlockGamemodes),
+        ((f'Unlock {Fore.YELLOW}Everything', reworked), rogue.f_unlockAllCombined),
+
+        ('Session Data Actions', 'category'),
+        ((f'Edit {Fore.YELLOW}current Party', reworked), rogue.f_editParty),
+        ((f'Edit {Fore.YELLOW}money amount', reworked), rogue.f_editMoney),
+        ((f'Edit {Fore.YELLOW}pokeballs amount', reworked), rogue.f_editPokeballs),
+        ((f'Edit {Fore.YELLOW}current biome', reworked), rogue.f_editBiome),
+        ((f'Edit {Fore.YELLOW}Items', reworked), rogue.f_submenuItemEditor),
+
+        ('Print game information', 'category'),
+        (('Show all Species ID', reworked), rogue.legacy_pokedex),
+        (('Show all Biome IDs', reworked), rogue.legacy_printBiomes),
+        (('Show all Move IDs', reworked), rogue.legacy_moves),
+        (('Show all Vouchers IDs', reworked), rogue.legacy_vouchers),
+        (('Show all Natures IDs', reworked), rogue.legacy_natures),
+        (('Show all NaturesSlot IDs', reworked), rogue.legacy_natureSlot),
+
+        ('You can always edit your JSON manually as well!', 'helper'),
+        ((f'{Fore.YELLOW}Save data and upload to the Server', useWhenDone), rogue.f_updateAllToServer),
+        (('Print help and program information', ''), config.f_printHelp),
+        (('Logout', ''), rogue.f_logout),
+        (title, 'title')
     ]
+    if editOffline or config.debug:
+        # Filter entrys that would break offline
+        term = [entry for entry in term if entry[1] != rogue.f_updateAllToServer]
+        term = [entry for entry in term if entry[1] != rogue.f_getGameData]
+        term = [entry for entry in term if entry[1] != rogue.f_logout]
+        replaceEntry = ('Offline-Edits are directly applied', 'helper')
+        term = [replaceEntry if entry == ('You can always edit your JSON manually as well!', 'helper') else entry for entry in term]
+
+    try:
+        while True:
+            validChoices = cFormatter.m_initializeMenu(term)
+            fh_printMessageBuffer()
+            userInput = input('Command: ').strip().lower()
+
+            if userInput == 'exit':
+                raise KeyboardInterrupt
+            if userInput == 'lb':
+                rogue.f_lb()
+
+            if userInput.isdigit() and int(userInput) <= len(validChoices):
+                choiceIndex = int(userInput)
+                m_executeOptions(choiceIndex, validChoices)
+
+    except OperationSuccessful as os:
+        cFormatter.print(Color.DEBUG, f'Operation successful: {os}')
+    except KeyboardInterrupt:
+        cFormatter.print(Color.DEBUG, '\nProgram interrupted by user.')
+        exit()
+
+@dec_handleOperationExceptions
+def main():
+    if config.debug:
+        rogue = Rogue(requests.session(), 'Invalid Auth Token', config.debug)
+        m_mainMenu(rogue)
+    else:
+        while True:
+            try:
+                config.f_printWelcomeText()
+                loginChoice = int(input('Please choose a method of logging in: '))
+                if loginChoice not in [1, 2, 3, 4]:
+                    cFormatter.print(Color.DEBUG, 'Please choose a valid option.')
+                    continue  # Prompt user again if choice is not valid
+
+                if loginChoice != 4:
+                    username = input('Username: ')
+                    password = getpass.getpass('Password (password is hidden): ')
 
 
+                session = requests.Session()
+                if loginChoice == 1:
+                    login = requestsLogic(username, password)
+                    try:
+                        if login.login():
+                            cFormatter.print(Color.INFO, f'Logged in as: {config.f_anonymizeName(username)}')
+                            session.cookies.set('pokerogue_sessionId', login.sessionId, domain='pokerogue.net')
+                            rogue = Rogue(session, login.token, login.sessionId)
+                            break
+                    except Exception as e:
+                        cFormatter.print(Color.CRITICAL, f'Something went wrong. {e}', isLogging=True)
+
+                elif loginChoice in [2, 3]:
+                    if loginChoice == 3:
+                        cFormatter.print(Color.INFO, 'Do not close your browser and do not browse in the game!')
+                        cFormatter.print(Color.INFO, 'Do not close your browser and do not browse in the game!')
+                        cFormatter.print(Color.INFO, 'Do not close your browser and do not browse in the game!')
+                    seleniumLogic = SeleniumLogic(username, password, 120, useScripts=(loginChoice == 3))
+                    sessionId, token, driver = seleniumLogic.logic()
+
+                    if sessionId and token:
+                        if not driver:
+                            driver = None
+                            print('Driver error')
+                        cFormatter.print(Color.INFO, f'Logged in as: {config.f_anonymizeName(username)}')
+                        session.cookies.set('pokerogue_sessionId', sessionId, domain='pokerogue.net')
+                        rogue = Rogue(session, authToken=token, clientSessionId=sessionId, driver=driver, useScripts=(loginChoice == 3))
+                        break
+                    else:
+                        cFormatter.print(Color.CRITICAL, 'Failed to retrieve necessary authentication data from Selenium.')
+
+
+                elif loginChoice == 4:
+                    rogue = Rogue(session, authToken='Invalid Auth Token', editOffline=True)
+                    break
+
+                else:
+                    cFormatter.print(Color.CRITICAL, 'Invalid choice. Please choose a valid method.')
+
+            except KeyboardInterrupt:
+                exit()
+        m_mainMenu(rogue, editOffline=(loginChoice == 4))
+
+if __name__ == '__main__':
     while True:
-        print('')
-        for line in term:
-            print(Fore.GREEN + '* ' + Style.RESET_ALL + line + Fore.GREEN + ' *' + Style.RESET_ALL)
-        command = input('Command: ')
+        try:
+            main()
+        except OperationSuccessful as os:
+            cFormatter.print(Color.DEBUG, f'Operation successful: {os}')
+        except KeyboardInterrupt:
+            cFormatter.print(Color.DEBUG, '\nProgram interrupted by user.')
+            exit()
+        except OperationCancel:
+            cFormatter.print(Color.DEBUG, '\nProgram interrupted by user.')
+            exit()
+        except OperationSoftCancel:
+            cFormatter.print(Color.DEBUG, '\nProgram interrupted by user.')
+            exit()
 
-        if command in func:
-            func[command]()
-        elif command == 'exit':
-            quit()
-        else:
-            cFormatter.print(Color.INFO, 'Command not found.')
+    
