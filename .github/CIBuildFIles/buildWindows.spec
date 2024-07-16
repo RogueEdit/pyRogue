@@ -1,16 +1,17 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 added_files = [
-    ( '../../src/utilities/*.py', 'utilities' ),
-    ( '../../src/modules/*.py', 'modules' )
+    ('../../src/utilities/*.py', 'utilities'),
+    ('../../src/modules/*.py', 'modules')
 ]
+
 
 a = Analysis(
     ['../../src/main.py'],
     pathex=[],
     binaries=[],
     datas=added_files,
-    hiddenimports=[],
+    hiddenimports=['_cffi_backend'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -26,7 +27,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='pyRogue-v014-windows.exe',
+    name='pyRogue-Windows.exe',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
