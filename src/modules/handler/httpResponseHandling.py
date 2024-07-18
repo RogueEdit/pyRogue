@@ -3,7 +3,7 @@
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: None except Author
 # Date of release: 24.06.2024 
-# Last Edited: 28.06.2024
+# Last Edited: 18.07.2024
 
 from functools import wraps
 from utilities import cFormatter, Color
