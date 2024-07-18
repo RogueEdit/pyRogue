@@ -3,7 +3,7 @@
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: None except Authors
 # Date of release: 06.06.2024 
-# Last Edited: 28.06.2024
+# Last Edited: 18.07.2024
 
 # Unlike the other code, reusing this in your own project is forbidden.
 
@@ -55,14 +55,14 @@ class Modifier:
     typeId: Optional[str]
     typePregenArgs: Optional[List[Optional[int]]]
 
-    def to_dict(self):
+    def toDict(self):
         return asdict(self)
 
 @dataclass
 class ModifierEnemyData:
     modifiers: List[Optional[Modifier]]
 
-    def to_dict(self):
+    def toDict(self):
         return asdict(self)
 
 @dataclass
@@ -76,7 +76,7 @@ class Move:
     ppUsed: Optional[int] = None
     virtual: Optional[bool] = None
 
-    def to_dict(self):
+    def toDict(self):
         return asdict(self)
 
 @dataclass
@@ -91,7 +91,7 @@ class PartySummonData:
     tags: Optional[Any] = None
     types: Optional[Any] = None
 
-    def to_dict(self):
+    def toDict(self):
         return asdict(self)
 
 @dataclass
@@ -129,7 +129,7 @@ class PartyDetails:
     summonData: PartySummonData = field(default_factory=PartySummonData)
     variant: Optional[int] = None
 
-    def to_dict(self):
+    def toDict(self):
         return asdict(self)
 
 @dataclass
@@ -137,7 +137,7 @@ class PartyPlayer:
     partyInfo: Optional[PartyDetails] = field(default_factory=PartyDetails)
     partyData: Optional[PartySummonData] = field(default_factory=PartySummonData)
 
-    def to_dict(self):
+    def toDict(self):
         return asdict(self)
 
 @dataclass
@@ -145,7 +145,7 @@ class PartyEnemy:
     partyInfo: Optional[PartyDetails] = field(default_factory=PartyDetails)
     partyData: Optional[PartySummonData] = field(default_factory=PartySummonData)
 
-    def to_dict(self):
+    def toDict(self):
         return asdict(self)
 
 @dataclass
@@ -158,7 +158,7 @@ class SpeciesDexData:
     hatchedCount: int = 0
     ivs: List[int] = field(default_factory=lambda: [0, 0, 0, 0, 0, 0])
 
-    def to_dict(self):
+    def toDict(self):
         return asdict(self)
 
 @dataclass
@@ -172,7 +172,7 @@ class SpeciesStarterData:
     valueReduction: Optional[int] = 0
     classicWinCount: Optional[int] = 0
 
-    def to_dict(self):
+    def toDict(self):
         return asdict(self)
 
 @dataclass
@@ -184,7 +184,7 @@ class SpeciesForm:
     nonShiny: Optional[int] = None
     index: int = 0
 
-    def to_dict(self):
+    def toDict(self):
         return asdict(self)
 
 @dataclass
@@ -209,7 +209,7 @@ class Species:
         else:
             return None
         
-    def to_dict(self):
+    def toDict(self):
         return asdict(self)
 
 def computeVariant(speciesData, variantFlag, defaultFlag, variantAdjustment):
@@ -333,10 +333,14 @@ class SessionData:
     reviveCount: Optional[int] = None
     waveIndex: Optional[int] = None
     battleType: Optional[int] = None
-    # trainer: Optional[int] = None
+    trainer: Optional[int] = None
     gameVersion: Optional[str] = None
     timestamp: Optional[int] = None
-    # challenges: Optional[Dict[str, None]] = None
+    challenges: Optional[Dict[str, None]] = None
+
+    def toDict(self):
+        return asdict(self)
+
 
 @dataclass
 class TrainerData:
@@ -357,6 +361,10 @@ class TrainerData:
     unlockPity: Optional[List[int]] = field(default_factory=lambda: [0, 0, 0, 0])
     gameVersion: Optional[int] = None
     timestamp: Optional[int] = None
+
+    def toDict(self):
+        return asdict(self)
+
 
 
 def fh_getCombinedIDs(includeStarter=True, onlyNormalForms=True):
@@ -387,23 +395,23 @@ def data_iterateParty(slotData, speciesNameByIDHelper, moveNamesByIDHelper, natu
         4: "Master Ball",
         5: "Luxury Ball"
     }
-    for object in slotData["party"]:
+    for object in slotData.get("party", []):  # Use .get() to avoid KeyError if "party" doesn't exist
         # Define IDs and indices
         speciesDexID = str(object.get('species', 1))
         speciesFusionID = str(object.get('fusionSpecies', 0))
-        speciesFormIndex = int(object.get('formIndex', 0))  # Convert to int
-        speciesFusionFormIndex = int(object.get('fusionFormIndex', 0))  # Convert to int
+        speciesFormIndex = int(object.get('formIndex', 0))
+        speciesFusionFormIndex = int(object.get('fusionFormIndex', 0))
 
         # Get base names
         speciesDexName = speciesNameByIDHelper.get(speciesDexID, f'Unknown Dex ID {speciesDexID}')
         speciesFusionName = speciesNameByIDHelper.get(speciesFusionID, f'Unknown Fuse ID {speciesFusionID}')
 
         # Modify names based on form index
-        if speciesFormIndex > 0:
+        if speciesFormIndex > 0 and int(speciesDexID) in speciesDict and len(speciesDict[int(speciesDexID)].forms) > speciesFormIndex:
             speciesFormName = speciesDict[int(speciesDexID)].forms[speciesFormIndex].name
             speciesDexName = f'{speciesFormName} {speciesDexName}'
 
-        if speciesFusionFormIndex > 0 and speciesFusionID != '0':
+        if speciesFusionFormIndex > 0 and speciesFusionID != '0' and int(speciesFusionID) in speciesDict and len(speciesDict[int(speciesFusionID)].forms) > speciesFusionFormIndex:
             speciesFusionFormName = speciesDict[int(speciesFusionID)].forms[speciesFusionFormIndex].name
             speciesFusionName = f'{speciesFusionFormName} {speciesFusionName}'
 
@@ -417,19 +425,28 @@ def data_iterateParty(slotData, speciesNameByIDHelper, moveNamesByIDHelper, natu
         speciesShinyVariant = object.get('variant', 0)
         speciesLuck = object.get('luck', 1)
         speciesLevel = object.get('level', 1)
-        speciesMoves = [moveNamesByIDHelper[str(move["moveId"])] for move in object["moveset"]]
-        speciesNatureID = str(object.get('nature', 0))  # Assuming nature key is "nature" and default ID is 0
+        
+        # Ensure moveset is a list and handle missing move IDs
+        speciesMoves = [moveNamesByIDHelper.get(str(move.get("moveId", 0)), "Unknown Move") for move in object.get("moveset", [])]
+        
+        speciesNatureID = str(object.get('nature', 0))
         speciesNatureName = natureNamesByIDHelper.get(speciesNatureID, "None")
         speciesIVs = object.get('ivs', 1)
         speciesHP = object.get('hp', 1)
         speciesPassive = object.get('passive', False)
-        speciesPassiveStatus = object.get('passive', False) if speciesDict[int(speciesDexID)].hasPassive else 'Not avaiable'
+        
+        # Check if the species has a passive ability
+        if int(speciesDexID) in speciesDict and hasattr(speciesDict[int(speciesDexID)], 'hasPassive') and speciesDict[int(speciesDexID)].hasPassive:
+            speciesPassiveStatus = object.get('passive', False)
+        else:
+            speciesPassiveStatus = 'Not available'
+        
         speciesPokerus = object.get('pokerus', False)
         speciesPokeball = object.get('pokeball', 0)
-        speciesPokeballStatus = pokeballList[speciesPokeball]
+        
+        # Handle missing Pokeball types
+        speciesPokeballStatus = pokeballList.get(speciesPokeball, "Unknown Pokeball")
 
-
-        # Create a dictionary to hold all relevant information for the current Pokémon
         speciesInfo = {
             'id': speciesDexID,
             'fusionID': speciesFusionID,
@@ -458,11 +475,11 @@ def data_iterateParty(slotData, speciesNameByIDHelper, moveNamesByIDHelper, natu
 
             'pokeballStatus': speciesPokeballStatus,
             'fusionStatus': '' if speciesFusionID == '0' else f'Fused with {Fore.YELLOW}{speciesFusionName.title()}{Style.RESET_ALL}',
-            'shinyStatus': f'Shiny {speciesShinyVariant+1}' if speciesIsShiny else 'Not Shiny',
-            'luckCount': speciesLuck if speciesFusionID == '0' else (speciesLuck+speciesFusionLuck),
+            'shinyStatus': f'Shiny {speciesShinyVariant + 1}' if speciesIsShiny else 'Not Shiny',
+            'luckCount': speciesLuck if speciesFusionID == '0' else (speciesLuck + (speciesFusionLuck if speciesFusionLuck is not None else 0)),
             'data_ref': object
         }
 
         currentParty.append(speciesInfo)
-        
+
     return currentParty
