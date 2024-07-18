@@ -1835,7 +1835,7 @@ class Biome(Enum):
         'SLUM': '30',
         'SNOWY_FOREST': '31',
         'ISLAND': '40',
-        'LABORATORY': '33',
+        'LABORATORY': '41',
         'END': '50'
     }
 
