@@ -195,7 +195,7 @@ def f_printWelcomeText() -> None:
     print(f'{Fore.GREEN}We create base-backups on every login and further backups every time you start or choose so manually.')
     print(f'{Fore.GREEN}When changes do not seem to apply, refresh without cache / use a private tab.')
     print(f'{Fore.GREEN}Otherwise please visit {repoURL} and report the issue.')
-    print(f'{Fore.YELLOW}Please refer to TRANSPARENCY.md to see what we save or what URL(s) we request to.')
+    print(f'{Fore.YELLOW}Please refer to SECURITY.md if you have security concerns.')
     print('------------------------------------------------------------')
     print(f'{Fore.MAGENTA}{Style.BRIGHT}1: Using no browser with requests.')
     print(f'{Fore.MAGENTA}{Style.BRIGHT}2: Using own browser with requests.')

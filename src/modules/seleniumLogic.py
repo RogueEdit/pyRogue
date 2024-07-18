@@ -178,4 +178,6 @@ class SeleniumLogic:
             if not self.useScripts:
                 driver.close()
            
+        del self.username, self.password
+
         return sessionID, token, driver

@@ -294,6 +294,7 @@ class requestsLogic:
             cFormatter.print(Color.DEBUG, 'Adding delay to appear more natural to the server. Please stand by...')
             cFormatter.print(Color.DEBUG, '(If it takes longer than 5 Seconds its not on us.)')
             response = self.session.post(self.LOGIN_URL, headers=headers, data=data, verify=useCaCert)
+            del data, self.username, self.password
             sleep(random.randint(3, 5))
             response.raise_for_status()
 
