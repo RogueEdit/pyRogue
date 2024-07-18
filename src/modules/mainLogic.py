@@ -1477,6 +1477,7 @@ class Rogue:
                         message = 'Already boxed in a luxury ball.'
                     else:
                         selectedSpeciesData["pokeball"] = 5
+                        message = 'Switched to Luxury Ball.'
                         changed = True
 
                 if changed:

@@ -3,7 +3,7 @@
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/claudiunderthehood
 # Date of release: 06.06.2024
-# Last Edited: 28.06.2024
+# Last Edited: 18.07.2024
 
 """
 This script provides a Selenium-based login process for pyRogue, enabling automated login
@@ -178,4 +178,6 @@ class SeleniumLogic:
             if not self.useScripts:
                 driver.close()
            
+        del self.username, self.password
+
         return sessionID, token, driver

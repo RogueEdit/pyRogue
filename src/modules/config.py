@@ -3,7 +3,7 @@
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: None except Authors
 # Date of release: 06.06.2024 
-# Last Edited: 28.06.2024
+# Last Edited: 18.07.2024
 
 """
 Online Rogue Editor Update Checker and Initialization
@@ -73,12 +73,12 @@ if not os.path.exists(cacertPath):
         cacertPath = False
 
 useCaCert = False if debug else cacertPath
-version: str = 'v0.4.7h'
+version: str = 'v0.4.8'
 title: str = f'<(^.^(< pyRogue {version} >)^.^)>'
 owner: str = 'rogueEdit'
 repo: str = 'onlineRogueEditor'
 repoURL: str = f'https://github.com/{owner}/{repo}/'
-releaseDate: str = '13.07.2024 23:00' # releaed 21:00 roughly but setting ahead in case some stuff pops up
+releaseDate: str = '19.07.2024 23:00' # releaed 20:00 roughly but setting ahead in case some stuff pops up
 
 
 def f_checkForUpdates(requests: requests, datetime: datetime, timedelta: timedelta, Style: object) -> None:
@@ -195,7 +195,7 @@ def f_printWelcomeText() -> None:
     print(f'{Fore.GREEN}We create base-backups on every login and further backups every time you start or choose so manually.')
     print(f'{Fore.GREEN}When changes do not seem to apply, refresh without cache / use a private tab.')
     print(f'{Fore.GREEN}Otherwise please visit {repoURL} and report the issue.')
-    print(f'{Fore.YELLOW}Please refer to TRANSPARENCY.md to see what we save or what URL(s) we request to.')
+    print(f'{Fore.YELLOW}Please refer to SECURITY.md if you have security concerns.')
     print('------------------------------------------------------------')
     print(f'{Fore.MAGENTA}{Style.BRIGHT}1: Using no browser with requests.')
     print(f'{Fore.MAGENTA}{Style.BRIGHT}2: Using own browser with requests.')
