@@ -3,7 +3,7 @@
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: None except Author
 # Date of release: 25.06.2024 
-# Last Edited: 18.07.2024
+# Last Edited: 28.06.2024
 
 from utilities import Color
 from json import JSONDecodeError

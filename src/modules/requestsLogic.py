@@ -3,7 +3,7 @@
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/claudiunderthehood 
 # Date of release: 13.06.2024 
-# Last Edited: 18.07.2024
+# Last Edited: 28.06.2024
 
 """
 This script provides functionality for handling HTTP requests, including error handling and login logic.

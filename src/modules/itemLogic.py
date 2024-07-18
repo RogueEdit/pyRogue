@@ -3,7 +3,7 @@
 # Repository: https://github.com/rogueEdit/OnlineRogueEditor
 # Contributors: https://github.com/JulianStiebler/
 # Date of release: 23.06.2024 
-# Last Edited: 18.07.2024
+# Last Edited: 28.06.2024
 # Based on: https://github.com/pagefaultgames/pokerogue/
 
 # Unlike the other code, reusing this in your own project is forbidden.

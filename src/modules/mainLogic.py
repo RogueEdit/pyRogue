@@ -318,6 +318,7 @@ class Rogue:
                     self.trainerId = gameData.get('trainerId')
                     self.secretId = gameData.get('secretId')
                     self.slot = slot
+
                 else:
                     gameData = self.f_getGameData()
                     slotData = self.f_getSlotData(slot)

@@ -196,7 +196,8 @@ def main():
 
             except KeyboardInterrupt:
                 exit()
-        del username, password
+        if loginChoice != 4:
+            del username, password
         m_mainMenu(rogue, editOffline=(loginChoice == 4))
 
 if __name__ == '__main__':
