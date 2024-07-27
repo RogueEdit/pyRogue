@@ -89,46 +89,8 @@ def fh_handleErrorResponse(response: requests.Response) -> Dict[str, str]:
     if response.status_code == 200:
         cFormatter.print(Color.BRIGHT_GREEN, 'Response 200 - That seemed to have worked!')
         cFormatter.print(Color.BRIGHT_GREEN, 'If it doesn\'t apply in-game, refresh without cache or try a private tab!')
-    elif response.status_code == 400:
-        cFormatter.print(Color.WARNING, 'Response 400 - Bad Request: The server could not understand the request due to invalid syntax.', isLogging=True)
-    elif response.status_code == 401:
-        cFormatter.print(Color.BRIGHT_RED, 'Response 401 - Unauthorized: Authentication is required and has failed or has not yet been provided.', isLogging=True)
-    elif response.status_code == 403:
-        cFormatter.print(Color.BRIGHT_RED, 'Response 403 - Forbidden. We have no authorization to access the resource.', isLogging=True)
-    elif response.status_code == 404:
-        cFormatter.print(Color.BRIGHT_RED, 'Response 404 - Not Found: The server can not find the requested resource.', isLogging=True)
-    elif response.status_code == 405:
-        cFormatter.print(Color.BRIGHT_RED, 'Response 405 - Method Not Allowed: The request method is known by the server but is not supported by the target resource.', isLogging=True)
-    elif response.status_code == 406:
-        cFormatter.print(Color.BRIGHT_RED, 'Response 406 - Not Acceptable: The server cannot produce a response matching the list of acceptable values defined in the request\'s proactive content negotiation headers.', isLogging=True)
-    elif response.status_code == 407:
-        cFormatter.print(Color.BRIGHT_RED, 'Response 407 - Proxy Authentication Required: The client must first authenticate itself with the proxy.', isLogging=True)
-    elif response.status_code == 408:
-        cFormatter.print(Color.BRIGHT_RED, 'Response 408 - Request Timeout: The server would like to shut down this unused connection.', isLogging=True)
-    elif response.status_code == 413:
-        cFormatter.print(Color.BRIGHT_RED, 'Response 413 - Payload Too Large: The request entity is larger than limits defined by server.', isLogging=True)
-    elif response.status_code == 429:
-        cFormatter.print(Color.BRIGHT_RED, 'Response 429 - Too Many Requests: The user has sent too many requests in a given amount of time ("rate limiting").', isLogging=True)
-    elif response.status_code == 500:
-        cFormatter.print(Color.CRITICAL, 'Error 500 - Internal Server Error: The server has encountered a situation it does not know how to handle. This can also be related to wrong credentials.', isLogging=True)
-    elif response.status_code == 502:
-        cFormatter.print(Color.CRITICAL, 'Error 502 - Bad Gateway: The server was acting as a gateway or proxy and received an invalid response from the upstream server.', isLogging=True)
-    elif response.status_code == 503:
-        cFormatter.print(Color.CRITICAL, 'Error 503 - Service Temporarily Unavailable: The server is not ready to handle the request.', isLogging=True)
-    elif response.status_code == 504:
-        cFormatter.print(Color.CRITICAL, 'Error 504 - Gateway Timeout: The server is acting as a gateway or proxy and did not receive a timely response from the upstream server.', isLogging=True)
-    elif response.status_code == 520:
-        cFormatter.print(Color.CRITICAL, 'Error 520 - Web Server Returns an Unknown Error: The server has returned an unknown error.', isLogging=True)
-    elif response.status_code == 521:
-        cFormatter.print(Color.CRITICAL, 'Error 521 - Web Server Is Down: The server is not responding to Cloudflare requests.', isLogging=True)
-    elif response.status_code == 522:
-        cFormatter.print(Color.CRITICAL, 'Error 522 - Connection Timed Out: Cloudflare was able to complete a TCP connection to the origin server, but the origin server did not reply with an HTTP response.', isLogging=True)
-    elif response.status_code == 523:
-        cFormatter.print(Color.CRITICAL, 'Error 523 - Origin Is Unreachable: Cloudflare could not reach the origin server.', isLogging=True)
-    elif response.status_code == 524:
-        cFormatter.print(Color.CRITICAL, 'Error 524 - A Timeout Occurred: Cloudflare was able to complete a TCP connection to the origin server, but the origin server did not reply with an HTTP response.', isLogging=True)
     else:
-        cFormatter.print(Color.CRITICAL, 'Unexpected response received from the server.', isLogging=True)
+        cFormatter.print(Color.CRITICAL, f'Response {response.status_code} - {response.reason}: {response.text}', isLogging=True)
 
     return {}
 
