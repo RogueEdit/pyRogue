@@ -1,5 +1,7 @@
 # pyRogue
-> ## **pyRogue** is a `educational` project. 
+> ## **pyRogue** is a `educational` project. Not longer updated.
+> This project was alive before they released any ToC, Usage Policy's and such.
+> You accessing the API with this codebase is against they're usage policy's. Please read them thoroughly.
 
 ![Stars](https://img.shields.io/github/stars/rogueEdit/pyRogue?style=social) ![Watchers](https://img.shields.io/github/watchers/rogueEdit/pyRogue?style=social) ![GitHub Forks](https://img.shields.io/github/forks/rogueEdit/pyRogue?style=social)
 
