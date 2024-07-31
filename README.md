@@ -12,7 +12,7 @@
 
 
 ---
-<a href="https://discord.gg/9ZsnGDmGk2"><img src="https://img.shields.io/badge/Join_our_News-Discord-blue?style=for-the-badge&logo=empty"></a>
+
 
 ![Preview Image](.github/previews/main.png)
 ![Preview Image](.github/previews/tool.png)
