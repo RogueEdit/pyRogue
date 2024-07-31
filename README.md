@@ -3,36 +3,37 @@
 
 ![Stars](https://img.shields.io/github/stars/rogueEdit/pyRogue?style=social) ![Watchers](https://img.shields.io/github/watchers/rogueEdit/pyRogue?style=social) ![GitHub Forks](https://img.shields.io/github/forks/rogueEdit/pyRogue?style=social)
 
-![Last Commit](https://img.shields.io/github/last-commit/rogueEdit/pyRogue)
-![License](https://img.shields.io/github/license/rogueEdit/pyRogue) ![Open Issues](https://img.shields.io/github/issues-raw/rogueEdit/pyRogue)
-![Open Pull Requests](https://img.shields.io/github/issues-pr-raw/rogueEdit/pyRogue) [![Security Policy](https://img.shields.io/badge/Security-Policy-red.svg)](https://github.com/rogueEdit/pyRogue/security/policy)
 
+![Release Version][Badge Release Version]  ![Release Date][Badge Release Date] ![Docstring Coverage][Badge Docstring Coverage] ![Downloads][Badge Downloads]
 
- ![Version](https://img.shields.io/github/v/release/rogueEdit/pyRogue) ![Release Date](https://img.shields.io/github/release-date/rogueEdit/pyRogue)
- ![Downloads](https://img.shields.io/github/downloads/rogueEdit/pyRogue/total) ![Code Size](https://img.shields.io/github/languages/code-size/rogueEdit/pyRogue)  ![Code Style](https://img.shields.io/badge/code%20style-ruff-121212.svg) ![Contributors](https://img.shields.io/github/contributors/rogueEdit/pyRogue)
+![Badge Last Commit][Badge Last Commit] ![Badge Security Policy][Badge Security Policy] ![Badge Open Issues][Badge Open Issues] ![Badge Open Pull Requests][Badge Open Pull Requests] ![Badge Contributors][Badge Contributors]
+
 
 ---
-<img src="https://img.shields.io/badge/Join_our_News-Discord-blue"></a>
-
-[Based on the Source Code of pokerogue.net](https://github.com/pagefaultgames/pokerogue)
-> In compliance with Pokerogue's License this project here is also released under AGPL3.
-
-No copyright or trademark infringement is intended in using Pokémon content anywhere. 
+<a href="https://discord.gg/9ZsnGDmGk2"><img src="https://img.shields.io/badge/Join_our_News-Discord-blue?style=for-the-badge&logo=empty"></a>
 
 ![Preview Image](.github/previews/main.png)
 ![Preview Image](.github/previews/tool.png)
 
 [All Previews](PREVIEW.md)
 
-# List of content
-- [Important Foreword](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#important-foreword)
-- [FAQ](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#faq)
-- [How to run from code](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#how-to-run-from-code)
-- [License](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#license)
-- [Features](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#editor-features)
-- [Regarding Bans and Limited Accounts](https://github.com/RogueEdit/onlineRogueEditor?tab=readme-ov-file#regarding-bans-and-limited-accounts) !! IMPORTANT !!
+# Table of Contents
+- [Important Foreword](#important-foreword)
+- [FAQ](#faq)
+- [How to Run the Project](#how-to-run-the-project)
+  - [Prerequisites](#prerequisites)
+  - [Downloading the Source Code](#downloading-the-source-code)
+    - [Option 1: Download and Extract](#option-1-download-and-extract)
+    - [Option 2: Clone the Repository](#option-2-clone-the-repository)
+  - [Running the Project](#running-the-project)
+    - [Windows](#windows)
+    - [Linux](#linux)
+    - [macOS](#macos)
+- [License](#license)
+- [Reversed Stuff](#reversed-stuff)
+- [Regarding Bans and Limited Accounts](#regarding-bans-and-limited-accounts)
 
-## Important foreword
+# Important foreword
 
 We learned enough about freezing python to binarys so from here on out it will be source code only.
 
@@ -44,7 +45,7 @@ Attention: When ever this tool detects you are trying to manipulate a daily seed
 
 - [Security Notice](TRANSPARENCY.md)
 
-## FAQ
+# FAQ
 
 - How do i revert my changes?
   - The programm will always create backups everytime you login! When you load the first time it will create a `base_gameData(trainerID)_03.07.2024_18.03.22.json` unique based on your trainerID coupled with a timestamp. This applies for slot' data aswell; `backup_slotData(slotNumber_trainerID)_03.07.2024_18.03.22.json`. All subsequent backups will be prefixed with `backup_` and you can restore to any file back in time.
@@ -57,44 +58,115 @@ Attention: When ever this tool detects you are trying to manipulate a daily seed
 - Where can i donate?
   - We will not accept any money or any form of payment. If you want to help then only by contributing. We do it for education only, any critique welcome.
 
-## How to run from code
+---
+
+# How to run from code
+### Prerequisites
+- **Python**: Ensure that Python 3 is installed on your system. You can download it from [python.org](https://www.python.org/downloads/).
+
+## Downloading the Source Code
+You can either download the source code as a ZIP file and extract it, or clone the repository using Git.
+
+### Option 1: Download and Extract
+1. Download the ZIP file containing the source code.
+2. Extract the contents to your desired location.
+
+### Option 2: Clone the Repository
+1. Open a terminal or command prompt.
+2. Use the following command to clone the repository, including submodules:
+   ```bash
+   git clone --recursive https://github.com/RogueEdit/pyRogue
+
+---
+
+## Running the Project
+
+> Some Enviroments use `python3` (Microsoft Store) and some need to write `py` only.
+
 ### Windows
-- Install python
-- Download the source code
-- Extract the source code
-- Open a terminal, navigate with it to `[extracted_folder]/src/`
-- Install all the requirements using python according to setup
-  - `python3 -m pip install -r requirements.txt`
-- Now you should be able to run main.py
-  - `python3 main.py`
+1. **Navigate to the Source Directory**:
+   - Open a terminal (Command Prompt or PowerShell).
+   - Navigate to the source directory:
+     ```bash
+     cd [extracted_folder]/src/
+     ```
+2. **Install Dependencies**:
+   - Use `pip` to install the required packages:
+     ```bash
+     python -m pip install -r requirements.txt
+     ```
+3. **Run the Application**:
+   - Run the main script:
+     ```bash
+     python main.py
+     ```
+
+---
+
 ### Linux
-- Download the source code
-- Extract the source code
-- Open a terminal, navigate with it to `[extracted_folder]/src/`
-- `chmod +x main.py`
-- `./main.py`
+1. **Navigate to the Source Directory**:
+   - Open a terminal.
+   - Navigate to the source directory:
+     ```bash
+     cd [extracted_folder]/src/
+     ```
+2. **Make the Main Script Executable**:
+   - Use the following command to ensure the script is executable:
+     ```bash
+     chmod +x main.py
+     ```
+3. **Install Dependencies**:
+   - Use `pip` to install the required packages:
+     ```bash
+     python3 -m pip install -r requirements.txt
+     ```
+4. **Run the Application**:
+   - Execute the main script:
+     ```bash
+     ./main.py
+     ```
 
-## License
+---
 
-- See license document and credit headers. In compliance with PokeRogue's AGPL.
+### macOS
+The steps for macOS are generally similar to those for Linux:
+
+1. **Navigate to the Source Directory**:
+   - Open Terminal.
+   - Navigate to the source directory:
+     ```bash
+     cd [extracted_folder]/src/
+     ```
+2. **Make the Main Script Executable**:
+   - Ensure the script is executable:
+     ```bash
+     chmod +x main.py
+     ```
+3. **Install Dependencies**:
+   - Use `pip` to install the required packages:
+     ```bash
+     python3 -m pip install -r requirements.txt
+     ```
+4. **Run the Application**:
+   - Execute the main script:
+     ```bash
+     ./main.py
+     ```
+
+---
+
+# License
+
+- [Based on the Source Code of pokerogue.net](https://github.com/pagefaultgames/pokerogue)
+> In compliance with Pokerogue's License this project here is also released under AGPL3.
+
+No copyright or trademark infringement is intended in using Pokémon related names and IDs.
+Pokémon © 2002-2024 Pokémon. © 1995-2024 Nintendo/Creatures Inc./GAME FREAK inc. TM, ® and Pokémon character names are trademarks of Nintendo.
  
-## Editor Features
+---
+
+# Reversed Stuff
 - Extensive logging for easy debug in a log file
----
-- Autocomplete recomendations
-
-![Preview Image](.github/previews/autocomplete.png)
-
----
-
-- Checks for updates (new Commits to this repo) on startup
-
-![Preview Image](.github/previews/updateChecker.png)
-
----
-- Four login methods, three for online, one for offline
-
-![Preview Image](.github/previews/loginMethods.png)
 
 ---
 - When logging in it will automatically create backups for you.
@@ -180,12 +252,34 @@ Attention: When ever this tool detects you are trying to manipulate a daily seed
 
 ![alt text](.github/previews/fun1.png)
 
-## Regarding Bans and Limited Accounts
+# Regarding Bans and Limited Accounts
 https://www.reddit.com/r/pokerogue/comments/1d8hncf/cheats_and_exploits_post_followup_bannable/
 
 https://www.reddit.com/r/pokerogue/comments/1d8ldlw/a_cheating_and_account_deletionwipe_followup/
 
-Pokémon © 2002-2024 Pokémon. © 1995-2024 Nintendo/Creatures Inc./GAME FREAK inc. TM, ® and Pokémon character names are trademarks of Nintendo.
-No copyright or trademark infringement is intended in using Pokémon related names and IDs.
-
 <meta name="keywords" content="pokerogue, pokerogue save editor, pokerogue, rogueEditor, free, gacha, ticket, tickets, egg, eggs, shiny, save, edit, pokemon, unlimited, trainer, table, pokedex, dex, wave, money, level, levels, iv, ivs, stat, stats, item, items, api, mod, tool, tools, education, python">
+
+<!-- Define URL aliases for badges -->
+[Badge Stars]: https://img.shields.io/github/stars/rogueEdit/pyRogue?style=social
+[Badge Watchers]: https://img.shields.io/github/watchers/rogueEdit/pyRogue?style=social
+[Badge Forks]: https://img.shields.io/github/forks/rogueEdit/pyRogue?style=social
+
+[Badge CodeQL]: https://img.shields.io/github/actions/workflow/status/rogueEdit/pyRogue/codeql.yml?branch=main&label=CodeQL&logo=github&logoColor=white&style=for-the-badge
+[Badge Ruff]: https://img.shields.io/github/actions/workflow/status/rogueEdit/pyRogue/codeql.yml?branch=main&label=Ruff%20Lint&logo=ruff&logoColor=white&style=for-the-badge
+
+[Badge Release Version]: https://img.shields.io/github/v/release/rogueEdit/pyRogue?style=for-the-badge&logo=empty
+[Badge Release Date]: https://img.shields.io/github/release-date/rogueEdit/pyRogue?style=for-the-badge&logo=empty
+[Badge Code Size]: https://img.shields.io/github/languages/code-size/rogueEdit/pyRogue?style=for-the-badge&logo=empty
+
+[Badge Last Commit]: https://img.shields.io/github/last-commit/rogueEdit/pyRogue?style=for-the-badge&logo=empty
+[Badge Security Policy]: https://img.shields.io/badge/Security-Policy-red.svg?style=for-the-badge&logo=empty
+[Badge Open Issues]: https://img.shields.io/github/issues-raw/rogueEdit/pyRogue?style=for-the-badge&logo=empty
+[Badge Open Pull Requests]: https://img.shields.io/github/issues-pr-raw/rogueEdit/pyRogue?style=for-the-badge&logo=empty
+[Badge Contributors]: https://img.shields.io/github/contributors/rogueEdit/pyRogue?style=for-the-badge&logo=empty
+[Badge Docstring Coverage]: https://img.shields.io/badge/docstr%20coverage-90%25-blue?style=for-the-badge&logo=empty
+
+[Badge Downloads]: https://img.shields.io/github/downloads/rogueEdit/pyRogue/total?style=for-the-badge&logo=empty
+[Badge License]: https://img.shields.io/github/license/rogueEdit/pyRogue?style=for-the-badge&logo=empty
+
+<!-- Aliases for Files -->
+[MD Security]: ./SECURITY.md
