@@ -1,0 +1,3 @@
+[submodule "src/secureRequests"]
+	path = src/secureRequests
+	url = https://github.com/JulianStiebler/secureRequests
