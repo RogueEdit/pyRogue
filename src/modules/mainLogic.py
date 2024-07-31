@@ -1230,8 +1230,8 @@ class Rogue:
                 'changeIV': f'{Fore.YELLOW}Set IVs{Style.RESET_ALL} | Current:  {selectedSpecies["ivs"]}',
                 'changeMoves': f'{Fore.YELLOW}Change moves{Style.RESET_ALL} | {selectedSpecies["moves"]}',
                 'changeFusion': f'{Fore.YELLOW}Fuse with another mon{Style.RESET_ALL} | {selectedSpecies["fusionStatus"]}',
-                'changePokerus': f'{format('Toggle Pokerus')} | Current: {selectedSpecies["pokerus"]}',
-                'changePokeball': f'{format('Toggle Luxury Ball')} | Current: {selectedSpecies["pokeballStatus"]}',
+                'changePokerus': f'{format("Toggle Pokerus")} | Current: {selectedSpecies["pokerus"]}',
+                'changePokeball': f'{format("Toggle Luxury Ball")} | Current: {selectedSpecies["pokeballStatus"]}',
             }
             try:
                 header = cFormatter.fh_centerText(f' {selectedSpecies["name"]} {selectedSpecies["fusionStatus"]} ', length=55, fillChar='-')
