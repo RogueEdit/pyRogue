@@ -1,7 +1,7 @@
 # pyRogue
 > ## **pyRogue** is a `educational` project. Not longer updated.
 
-> ### This project was alive before they released any ToC, Usage Policy's and such. Hence, This codebase is no longer updated and may or may not work.
+> ### This project was alive before they released any ToC, Usage Policy's and such. Since they set down some policys, this project is no longer maintained or updated. Hence, the codebase may or may not work.
 > ### You accessing the API with this codebase is against they're usage policy's and ToS. Please read them thoroughly.
 
 ![Stars](https://img.shields.io/github/stars/rogueEdit/pyRogue?style=social) ![Watchers](https://img.shields.io/github/watchers/rogueEdit/pyRogue?style=social) ![GitHub Forks](https://img.shields.io/github/forks/rogueEdit/pyRogue?style=social)
